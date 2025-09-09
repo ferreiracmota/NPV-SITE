@@ -163,6 +163,7 @@ import especialista3 from "./assets/Especialista3.PNG";
 import especialista4 from "./assets/Especialista4.PNG";
 import videofundo1 from "./assets/videofundo1.MP4";
 import sobremim from "./assets/sobre-mim.JPG";
+import videofundomobile from "./assets/videofundomobile.MP4";
 
 
 import React, { useState, useEffect } from 'react'
@@ -211,6 +212,8 @@ function App() {
       subtitle: "ESTÁ PRESTES",
       subtitle2: "A DECOLAR.",
       subtitle3: "EMBARQUE AGORA",
+      subtitle4: "Treinos inteligentes com acompanhamento profissional para entregar resultados de verdade, no seu tempo e do seu jeito.",
+
       buttonText: "QUERO DECOLAR 🡢"
     },
     beforeAfter: [
@@ -436,26 +439,51 @@ Para ele, o que garante transformação é a constância, conquistada através d
 
       {/* Hero Section */}
 <section id="inicio" className="relative min-h-screen flex items-center justify-center overflow-hidden">
-  {/* Fundo com vídeo em todas as telas */}
-  <div className="absolute inset-0">
-    <video
-      className="w-full h-full object-cover"
-      src={videofundo1}   // se preferir: import heroVideo from "./assets/videofundo1.mp4" e use heroVideo aqui
-      autoPlay
-      muted
-      loop
-      playsInline
-      preload="metadata"
-    />
-  </div>
+  {/* Vídeo de fundo (desktop x mobile) */}
+<div className="absolute inset-0 z-0 overflow-hidden">
+  {/* Desktop / tablet (>= md) */}
+  <video
+    className="hidden md:block w-full h-full object-cover"
+    src={videofundo1}
+    autoPlay
+    muted
+    loop
+    playsInline
+    preload="auto"
+  />
+
+  {/* Mobile (< md) */}
+  <video
+    className="md:hidden w-full h-full object-cover"
+    src={videofundomobile}
+    autoPlay
+    muted
+    loop
+    playsInline
+    preload="auto"
+  />
+</div>
+
 
   {/* Conteúdo por cima do vídeo */}
   <div className="relative z-10 text-center animate-fade-in px-4">
     <h1 className="text-4xl md:text-6xl lg:text-7xl font-black mb-4 leading-tight">
       <span className="text-white block animate-slide-up">{siteData.hero.title}</span>
       <span className="text-white block animate-slide-up animation-delay-200">{siteData.hero.subtitle}</span>
-      <span className="text-[#AFCB21] block drop-shadow-md animate-slide-up animation-delay-400">{siteData.hero.subtitle2}</span>
+      <span className="text-pink-500 text-6xl font-black block animate-slide-up animation-delay-200">
+  {siteData.hero.subtitle2}
+</span>
       <span className="text-white block animate-slide-up animation-delay-600">{siteData.hero.subtitle3}</span>
+      <span className="text-xs sm:text-sm font-light text-white mt-2 block text-center">
+  <span className="hidden sm:inline">
+    Treinos inteligentes com acompanhamento profissional para entregar resultados de verdade, no seu tempo e do seu jeito.
+  </span>
+  <span className="sm:hidden">
+    Treinos inteligentes com acompanhamento profissional para<br />
+    entregar resultados de verdade, no seu tempo e do seu jeito.
+  </span>
+</span>
+
     </h1>
 
     <a
