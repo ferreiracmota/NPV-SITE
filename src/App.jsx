@@ -484,11 +484,13 @@ Para ele, o que garante transformação é a constância, conquistada através d
     {[...siteData.beforeAfter, ...siteData.beforeAfter].map((img, index) => (
       <div
   key={index}
-  className="flex-shrink-0
-             w-32 h-32           /* mobile: 128×128 */
-             sm:w-40 sm:h-40     /* tablets pequenos */
-             md:w-56 md:h-56     /* desktop */
-             "
+  className="
+    flex-shrink-0
+    w-50 h-50            /* MOBILE: volta ao tamanho antigo (160x160) */
+    sm:w-48 sm:h-48      /* tablet pequeno */
+    md:w-80 md:h-80      /* desktop médio */
+    lg:w-92 lg:h-92      /* desktop grande */
+  "
 >
   <img
     src={img}
