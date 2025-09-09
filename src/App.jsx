@@ -480,13 +480,13 @@ Para ele, o que garante transformação é a constância, conquistada através d
           
           {/* Carrossel horizontal de transformações */}
           <div className="relative overflow-hidden">
-  <div className="inline-flex w-max animate-scroll-horizontal gap-0 md:gap-1">
+  <div className="inline-flex w-max animate-scroll-horizontal gap-2 md:gap-2">
     {[...siteData.beforeAfter, ...siteData.beforeAfter].map((img, index) => (
       <div
   key={index}
   className="
     flex-shrink-0
-    w-50 h-50            /* MOBILE: volta ao tamanho antigo (160x160) */
+    w-70 h-70            /* MOBILE: volta ao tamanho antigo (160x160) */
     sm:w-48 sm:h-48      /* tablet pequeno */
     md:w-80 md:h-80      /* desktop médio */
     lg:w-92 lg:h-92      /* desktop grande */
@@ -678,16 +678,16 @@ Para ele, o que garante transformação é a constância, conquistada através d
       </section>
 
       {/* About Me Section */}
-      <section id="about-section" className="py-20 bg-black">
+      <section id="about-section" className="py-0 bg-black">
         <div className="container mx-auto px-4">
           <div className="flex flex-col lg:flex-row items-center gap-12">
             {/* Foto à esquerda */}
             <div className="lg:w-1/2 flex item-stretch">
-              <img 
-                src={siteData.aboutMe.photo} 
-                alt="Sobre mim" 
-                className="w-full h-120 object-cover rounded-lg shadow-2xl"
-              />
+              <img
+  src={siteData.aboutMe.photo}
+  alt="Sobre mim"
+  className="w-full h-96 md:h-[45rem] object-cover md:object-top rounded-lg shadow-2xl"
+/>
             </div>
             
             {/* Texto à direita */}
