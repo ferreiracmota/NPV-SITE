@@ -162,6 +162,7 @@ import especialista2 from "./assets/Especialista2.PNG";
 import especialista3 from "./assets/Especialista3.PNG";
 import especialista4 from "./assets/Especialista4.PNG";
 import videofundo1 from "./assets/videofundo1.MP4";
+import sobremim from "./assets/sobre-mim.JPG";
 
 
 import React, { useState, useEffect } from 'react'
@@ -269,12 +270,12 @@ function App() {
     },
     aboutMe: {
       title: "SOBRE MIM",
-      photo: asset2, // Placeholder - usuário pode trocar
-      text: `Carlos Ferreira, com mais de 8 anos no mercado fitness e mais de 1.000 alunos já treinados, sempre buscou criar metodologias e combinações de treinos que facilitam a rotina e entregam resultados reais de forma prática.
+      photo: sobremim, // Placeholder - usuário pode trocar
+      text: [`Carlos Ferreira, com mais de 8 anos no mercado fitness e mais de 1.000 alunos já treinados, sempre buscou criar metodologias e combinações de treinos que facilitam a rotina e entregam resultados reais de forma prática.
 
 Sempre prezando pela eficiência, desenvolveu técnicas de alta performance adaptadas ao dia a dia, sem excesso e sem desgaste, entendendo que cada pessoa tem uma vida fora da academia que exige energia e disposição.
 
-Para ele, o que garante transformação é a constância, conquistada através de treinos inteligentes, práticos e sustentáveis.`,
+Para ele, o que garante transformação é a constância, conquistada através de treinos inteligentes, práticos e sustentáveis.`],
       sevenDaysBadge: asset47 // Placeholder para selo "7 dias grátis"
     },
     videoTestimonials: {
@@ -329,7 +330,7 @@ Para ele, o que garante transformação é a constância, conquistada através d
   return (
     <div className="min-h-screen bg-black text-white font-inter">
       {/* Top Banner Animado */}
-      <div className="bg-lime-400 text-black py-2 overflow-hidden">
+      <div className="bg-[#AFCB21] text-black py-2 overflow-hidden">
         <div className="animate-marquee whitespace-nowrap">
           <span className="text-sm font-medium px-4">
             {siteData.topBanner.text} • {siteData.topBanner.text} • {siteData.topBanner.text} • 
@@ -346,15 +347,15 @@ Para ele, o que garante transformação é a constância, conquistada através d
           
           {/* Desktop Navigation */}
           <nav className="hidden md:flex space-x-8">
-            <button onClick={() => scrollToSection('inicio')} className="hover:text-lime-400 transition-colors">INÍCIO</button>
-            <button onClick={() => scrollToSection('about-section')} className="hover:text-lime-400 transition-colors">SOBRE</button>
-            <button onClick={() => scrollToSection('planos')} className="hover:text-lime-400 transition-colors">PLANOS</button>
+            <button onClick={() => scrollToSection('inicio')} className="hover:text-[#AFCB21] transition-colors">INÍCIO</button>
+            <button onClick={() => scrollToSection('about-section')} className="hover:text-[#AFCB21] transition-colors">SOBRE</button>
+            <button onClick={() => scrollToSection('planos')} className="hover:text-[#AFCB21] transition-colors">PLANOS</button>
             
             {/* Dropdown Contato */}
             <div className="relative">
               <button 
                 onClick={() => setIsContactDropdownOpen(!isContactDropdownOpen)}
-                className="hover:text-lime-400 transition-colors flex items-center"
+                className="hover:text-[#AFCB21] transition-colors flex items-center"
               >
                 CONTATO
                 <svg className="w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 20 20">
@@ -366,14 +367,14 @@ Para ele, o que garante transformação é a constância, conquistada através d
                 <div className="absolute top-full left-0 mt-2 w-64 bg-gray-800 border border-gray-700 rounded-lg shadow-lg z-50">
                   <div className="p-4">
                     <div className="flex items-center mb-3">
-                      <svg className="w-5 h-5 text-lime-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                      <svg className="w-5 h-5 text-[#AFCB21] mr-2" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
                         <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
                       </svg>
                       <span className="text-white">naopensevai@gmail.com</span>
                     </div>
                     <div className="flex items-center">
-                      <svg className="w-5 h-5 text-lime-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                      <svg className="w-5 h-5 text-[#AFCB21] mr-2" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
                       </svg>
                       <span className="text-white">(31) 97215-8847</span>
@@ -408,7 +409,7 @@ Para ele, o que garante transformação é a constância, conquistada através d
             href="https://pay.hotmart.com/N97646212X?off=xmopb4bq&hotfeature=51&_hi=eyJjaWQiOiIxNzIyODIwNDcyNDEyNTMxNzU1NzcyNjcyMDg0MzAwIiwiYmlkIjoiMTcyMjgyMDQ3MjQxMjUzMTc1NTc3MjY3MjA4NDMwMCIsInNpZCI6IjBlNDEwZGM1ZGExMTQ5YWRiY2ExOWYzYThhMzk0Y2JkIn0=.1757258903000&bid=1757258905260" 
             target="_blank" 
             rel="noopener noreferrer"
-            className="hidden md:block bg-lime-400 text-black px-6 py-2 rounded font-medium hover:bg-lime-300 transition-colors">
+            className="hidden md:block bg-[#AFCB21] text-black px-6 py-2 rounded font-medium hover:bg-[#AFCB21] transition-colors">
             ENTRAR
           </a>
         </div>
@@ -417,15 +418,15 @@ Para ele, o que garante transformação é a constância, conquistada através d
         {isMenuOpen && (
           <div className="md:hidden bg-black border-t border-gray-800">
             <nav className="flex flex-col space-y-4 p-4">
-              <button onClick={() => scrollToSection('inicio')} className="text-left hover:text-lime-400 transition-colors">INÍCIO</button>
-              <button onClick={() => scrollToSection('sobre')} className="text-left hover:text-lime-400 transition-colors">SOBRE</button>
-              <button onClick={() => scrollToSection('planos')} className="text-left hover:text-lime-400 transition-colors">PLANOS</button>
-              <button onClick={() => scrollToSection('contato')} className="text-left hover:text-lime-400 transition-colors">CONTATO</button>
+              <button onClick={() => scrollToSection('inicio')} className="text-left hover:text-[#AFCB21] transition-colors">INÍCIO</button>
+              <button onClick={() => scrollToSection('sobre')} className="text-left hover:text-[#AFCB21] transition-colors">SOBRE</button>
+              <button onClick={() => scrollToSection('planos')} className="text-left hover:text-[#AFCB21] transition-colors">PLANOS</button>
+              <button onClick={() => scrollToSection('contato')} className="text-left hover:text-[#AFCB21] transition-colors">CONTATO</button>
               <a 
             href="https://pay.hotmart.com/N97646212X?off=xmopb4bq&hotfeature=51&_hi=eyJjaWQiOiIxNzIyODIwNDcyNDEyNTMxNzU1NzcyNjcyMDg0MzAwIiwiYmlkIjoiMTcyMjgyMDQ3MjQxMjUzMTc1NTc3MjY3MjA4NDMwMCIsInNpZCI6IjBlNDEwZGM1ZGExMTQ5YWRiY2ExOWYzYThhMzk0Y2JkIn0=.1757258903000&bid=1757258905260" 
             target="_blank" 
             rel="noopener noreferrer"
-              className="bg-lime-400 text-black px-6 py-2 rounded font-medium hover:bg-lime-300 transition-colors w-fit">
+              className="bg-[#AFCB21] text-black px-6 py-2 rounded font-medium hover:bg-[#AFCB21] transition-colors w-fit">
                 ENTRAR
               </a>
             </nav>
@@ -453,7 +454,7 @@ Para ele, o que garante transformação é a constância, conquistada através d
     <h1 className="text-4xl md:text-6xl lg:text-7xl font-black mb-4 leading-tight">
       <span className="text-white block animate-slide-up">{siteData.hero.title}</span>
       <span className="text-white block animate-slide-up animation-delay-200">{siteData.hero.subtitle}</span>
-      <span className="text-lime-400 block drop-shadow-md animate-slide-up animation-delay-400">{siteData.hero.subtitle2}</span>
+      <span className="text-[#AFCB21] block drop-shadow-md animate-slide-up animation-delay-400">{siteData.hero.subtitle2}</span>
       <span className="text-white block animate-slide-up animation-delay-600">{siteData.hero.subtitle3}</span>
     </h1>
 
@@ -461,30 +462,31 @@ Para ele, o que garante transformação é a constância, conquistada através d
       href="https://pay.hotmart.com/N97646212X?off=xmopb4bq&hotfeature=518"
       target="_blank"
       rel="noopener noreferrer"
-      className="bg-lime-400 text-black px-8 py-3 text-xl font-bold rounded hover:bg-lime-300 hover:scale-105 transition-all"
+      className="inline-block mt-8 bg-[#AFCB21] text-black px-8 py-3 text-xl font-bold rounded hover:bg-[#AFCB21] hover:scale-105 transition-all"
     >
+
       QUERO DECOLAR ➜
     </a>
   </div>
 </section>
 
       {/* Before/After Section */}
-      <section id="sobre" className="py-20 bg-gray-900">
+      <section id="sobre" className="py-20 bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold mb-4">ANTES E DEPOIS</h2>
-            <p className="text-gray-400">Veja as transformações reais dos nossos alunos</p>
+            <h2 className="text-4xl font-bold mb-4 text-[#AFCB21]">ANTES E DEPOIS</h2>
+            <p className="text-gray-900">Veja as transformações reais dos nossos alunos</p>
           </div>
           
           {/* Carrossel horizontal de transformações */}
           <div className="relative overflow-hidden">
-  <div className="inline-flex w-max animate-scroll-horizontal space-x-6">
+  <div className="inline-flex w-max animate-scroll-horizontal gap-0 md:gap-1">
     {[...siteData.beforeAfter, ...siteData.beforeAfter].map((img, index) => (
-      <div key={index} className="flex-shrink-0 w-80 md:w-96">
+      <div key={index} className="flex-shrink-0 w-80 md:w-77">
         <img
           src={img}
           alt={`Transformação ${index + 1}`}
-          className="w-full h-64 md:h-80 object-cover rounded-lg shadow-2xl hover:scale-105 transition-transform duration-300"
+          className="w-75 h-40 md:h-80 object-cover rounded-lg shadow-2xl hover:scale-105 transition-transform duration-300"
         />
       </div>
     ))}
@@ -497,7 +499,7 @@ Para ele, o que garante transformação é a constância, conquistada através d
               href="https://pay.hotmart.com/N97646212X?off=xmopb4bq&hotfeature=51&_hi=eyJjaWQiOiIxNzIyODIwNDcyNDEyNTMxNzU1NzcyNjcyMDg0MzAwIiwiYmlkIjoiMTcyMjgyMDQ3MjQxMjUzMTc1NTc3MjY3MjA4NDMwMCIsInNpZCI6IjBlNDEwZGM1ZGExMTQ5YWRiY2ExOWYzYThhMzk0Y2JkIn0=.1757252754756&bid=1757252757439" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="bg-lime-400 text-black px-6 py-3 text-lg font-bold rounded hover:bg-lime-300 hover:scale-105 transition-all duration-300 inline-block"
+              className="bg-[#AFCB21] text-black px-6 py-3 text-lg font-bold rounded hover:bg-[#AFCB21] hover:scale-105 transition-all duration-300 inline-block"
             >
               Quero os mesmos resultados
             </a>
@@ -526,7 +528,7 @@ Para ele, o que garante transformação é a constância, conquistada através d
       {/* Partners Section */}
       <section className="py-8 bg-gray-100">
         <div className="container mx-auto px-4">
-          <h2 className="text-4xl font-bold text-center mb-12 text-black">{siteData.partners.title}</h2>
+          <h2 className="text-4xl font-bold text-center mb-12 text-[#AFCB21]">{siteData.partners.title}</h2>
           <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12 opacity-60">
             {siteData.partners.logos.map((logo, index) => (
               <img
@@ -562,7 +564,7 @@ Para ele, o que garante transformação é a constância, conquistada através d
               href="https://pay.hotmart.com/N97646212X?off=xmopb4bq&hotfeature=51&_hi=eyJjaWQiOiIxNzIyODIwNDcyNDEyNTMxNzU1NzcyNjcyMDg0MzAwIiwiYmlkIjoiMTcyMjgyMDQ3MjQxMjUzMTc1NTc3MjY3MjA4NDMwMCIsInNpZCI6IjBlNDEwZGM1ZGExMTQ5YWRiY2ExOWYzYThhMzk0Y2JkIn0=.1757252754756&bid=1757252757439" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="bg-lime-400 text-black px-8 py-4 text-xl font-bold rounded hover:bg-lime-300 hover:scale-105 transition-all duration-300 inline-block"
+              className="bg-[#AFCB21] text-black px-8 py-4 text-xl font-bold rounded hover:bg-[#AFCB21] hover:scale-105 transition-all duration-300 inline-block"
             >
               Acesso total por apenas R$1,33 por dia
             </a>
@@ -579,12 +581,12 @@ Para ele, o que garante transformação é a constância, conquistada através d
               <img 
                 src={siteData.testimonials[currentTestimonial].image} 
                 alt={siteData.testimonials[currentTestimonial].name}
-                className="w-24 h-24 rounded-full mx-auto mb-6 object-cover border-4 border-lime-400"
+                className="w-24 h-24 rounded-full mx-auto mb-6 object-cover border-4 border-[#AFCB21]"
               />
               <blockquote className="text-lg text-gray-300 mb-6 italic">
                 "{siteData.testimonials[currentTestimonial].text}"
               </blockquote>
-              <h3 className="text-xl font-bold text-lime-400 mb-2">
+              <h3 className="text-xl font-bold text-[#AFCB21] mb-2">
                 {siteData.testimonials[currentTestimonial].name}
               </h3>
               <p className="text-gray-400">
@@ -596,7 +598,7 @@ Para ele, o que garante transformação é a constância, conquistada através d
                 <button
                   key={index}
                   className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                    index === currentTestimonial ? 'bg-lime-400 scale-125' : 'bg-gray-600 hover:bg-gray-500'
+                    index === currentTestimonial ? 'bg-[#AFCB21] scale-125' : 'bg-gray-600 hover:bg-gray-500'
                   }`}
                   onClick={() => setCurrentTestimonial(index)}
                 />
@@ -607,19 +609,19 @@ Para ele, o que garante transformação é a constância, conquistada através d
       </section>
 
       {/* Plans Section */}
-      <section id="planos" className="py-20 bg-gray-900">
+      <section id="planos" className="py-20 bg-gray-100">
         <div className="container mx-auto px-4">
-          <h2 className="text-4xl font-bold text-center mb-12">{siteData.plans.title}</h2>
+          <h2 className="text-4xl font-bold text-center mb-12 text-[#AFCB21]">{siteData.plans.title}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {/* Plano Mensal */}
             <div className="bg-black border border-gray-700 rounded-lg p-8 text-center hover:scale-105 transition-transform duration-300 shadow-xl">
               <h3 className="text-2xl font-bold mb-2">{siteData.plans.monthly.title}</h3>
               <p className="text-gray-400 mb-6">{siteData.plans.monthly.subtitle}</p>
-              <div className="text-4xl font-bold text-lime-400 mb-6">{siteData.plans.monthly.price}</div>
+              <div className="text-4xl font-bold text-[#AFCB21] mb-6">{siteData.plans.monthly.price}</div>
               <ul className="text-left mb-8 space-y-3">
                 {siteData.plans.monthly.features.map((feature, index) => (
                   <li key={index} className="flex items-center">
-                    <span className="text-lime-400 mr-3 text-xl">✓</span>
+                    <span className="text-[#AFCB21] mr-3 text-xl">✓</span>
                     {feature}
                   </li>
                 ))}
@@ -628,15 +630,15 @@ Para ele, o que garante transformação é a constância, conquistada através d
                 href="https://pay.hotmart.com/N97646212X?off=xmopb4bq&hotfeature=51&_hi=eyJjaWQiOiIxNzIyODIwNDcyNDEyNTMxNzU1NzcyNjcyMDg0MzAwIiwiYmlkIjoiMTcyMjgyMDQ3MjQxMjUzMTc1NTc3MjY3MjA4NDMwMCIsInNpZCI6IjBlNDEwZGM1ZGExMTQ5YWRiY2ExOWYzYThhMzk0Y2JkIn0=.1757252754756&bid=1757252757439" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="w-full bg-lime-400 text-black py-3 rounded font-bold hover:bg-lime-300 hover:scale-105 transition-all duration-300 inline-block text-center"
+                className="w-full bg-[#AFCB21] text-black py-3 rounded font-bold hover:bg-[#AFCB21] hover:scale-105 transition-all duration-300 inline-block text-center"
               >
                 ASSINAR AGORA
               </a>
             </div>
 
             {/* Plano Trimestral */}
-            <div className="bg-lime-400 text-black rounded-lg p-8 text-center relative hover:scale-105 transition-transform duration-300 shadow-xl">
-              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-black text-lime-400 px-4 py-1 rounded text-sm font-bold">
+            <div className="bg-[#AFCB21] text-black rounded-lg p-8 text-center relative hover:scale-105 transition-transform duration-300 shadow-xl">
+              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-black text-[#AFCB21] px-4 py-1 rounded text-sm font-bold">
                 MAIS POPULAR
               </div>
               <h3 className="text-2xl font-bold mb-2">{siteData.plans.quarterly.title}</h3>
@@ -657,7 +659,7 @@ Para ele, o que garante transformação é a constância, conquistada através d
                 href="https://pay.hotmart.com/N97646212X?off=xmopb4bq&hotfeature=51&_hi=eyJjaWQiOiIxNzIyODIwNDcyNDEyNTMxNzU1NzcyNjcyMDg0MzAwIiwiYmlkIjoiMTcyMjgyMDQ3MjQxMjUzMTc1NTc3MjY3MjA4NDMwMCIsInNpZCI6IjBlNDEwZGM1ZGExMTQ5YWRiY2ExOWYzYThhMzk0Y2JkIn0=.1757252754756&bid=1757252757439" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="w-full bg-black text-lime-400 py-3 rounded font-bold hover:bg-gray-800 hover:scale-105 transition-all duration-300 inline-block text-center"
+                className="w-full bg-black text-[#AFCB21] py-3 rounded font-bold hover:bg-gray-800 hover:scale-105 transition-all duration-300 inline-block text-center"
               >
                 ASSINAR AGORA
               </a>
@@ -671,25 +673,37 @@ Para ele, o que garante transformação é a constância, conquistada através d
         <div className="container mx-auto px-4">
           <div className="flex flex-col lg:flex-row items-center gap-12">
             {/* Foto à esquerda */}
-            <div className="lg:w-1/2">
+            <div className="lg:w-1/2 flex item-stretch">
               <img 
                 src={siteData.aboutMe.photo} 
                 alt="Sobre mim" 
-                className="w-full max-w-md mx-auto rounded-lg shadow-2xl hover:scale-105 transition-transform duration-300"
+                className="w-full h-120 object-cover rounded-lg shadow-2xl"
               />
             </div>
             
             {/* Texto à direita */}
             <div className="lg:w-1/2">
-              <h2 className="text-4xl font-bold mb-6 text-lime-400">{siteData.aboutMe.title}</h2>
-              <p className="text-lg text-gray-300 leading-relaxed mb-8">
-                {siteData.aboutMe.text}
-              </p>
+              <h2 className="text-4xl font-bold mb-6 text-[#AFCB21]">
+  {siteData.aboutMe.title}
+</h2>
+
+{Array.isArray(siteData.aboutMe.text)
+  ? siteData.aboutMe.text.map((paragraph, index) => (
+      <p key={index} className="text-lg text-gray-300 leading-relaxed mb-4">
+        {paragraph}
+      </p>
+    ))
+  : (
+      <p className="text-lg text-gray-300 leading-relaxed mb-4">
+        {siteData.aboutMe.text}
+      </p>
+    )
+}
               <a 
                 href="https://pay.hotmart.com/N97646212X?off=xmopb4bq&hotfeature=51&_hi=eyJjaWQiOiIxNzIyODIwNDcyNDEyNTMxNzU1NzcyNjcyMDg0MzAwIiwiYmlkIjoiMTcyMjgyMDQ3MjQxMjUzMTc1NTc3MjY3MjA4NDMwMCIsInNpZCI6IjBlNDEwZGM1ZGExMTQ5YWRiY2ExOWYzYThhMzk0Y2JkIn0=.1757252754756&bid=1757252757439" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="bg-lime-400 text-black px-8 py-4 text-xl font-bold rounded hover:bg-lime-300 hover:scale-105 transition-all duration-300 inline-block"
+                className="bg-[#AFCB21] text-black px-8 py-4 text-xl font-bold rounded hover:bg-[#AFCB21] hover:scale-105 transition-all duration-300 inline-block"
               >
                 Começar Agora
               </a>
@@ -736,7 +750,7 @@ Para ele, o que garante transformação é a constância, conquistada através d
               href="https://pay.hotmart.com/N97646212X?off=xmopb4bq&hotfeature=51&_hi=eyJjaWQiOiIxNzIyODIwNDcyNDEyNTMxNzU1NzcyNjcyMDg0MzAwIiwiYmlkIjoiMTcyMjgyMDQ3MjQxMjUzMTc1NTc3MjY3MjA4NDMwMCIsInNpZCI6IjBlNDEwZGM1ZGExMTQ5YWRiY2ExOWYzYThhMzk0Y2JkIn0=.1757252754756&bid=1757252757439" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="bg-lime-400 text-black px-8 py-4 text-xl font-bold rounded hover:bg-lime-300 hover:scale-105 transition-all duration-300 inline-block"
+              className="bg-[#AFCB21] text-black px-8 py-4 text-xl font-bold rounded hover:bg-[#AFCB21] hover:scale-105 transition-all duration-300 inline-block"
             >
               Quero Ter Esses Resultados
             </a>
@@ -761,7 +775,7 @@ Para ele, o que garante transformação é a constância, conquistada através d
 
       {/* Texto — mobile centralizado; desktop alinhado à esquerda */}
       <div className="text-center lg:text-left max-w-prose">
-        <h2 className="text-2xl md:text-4xl font-bold text-lime-400">
+        <h2 className="text-2xl md:text-4xl font-bold text-[#AFCB21]">
           GARANTIA DE 7 DIAS
         </h2>
         <p className="text-base md:text-lg text-gray-300 leading-relaxed">
@@ -778,8 +792,8 @@ Para ele, o que garante transformação é a constância, conquistada através d
       {/* Instagram Section */}
       <section className="py-20 bg-gray-800">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-4xl font-bold mb-4">{siteData.instagram.title}</h2>
-          <p className="text-lime-400 text-xl mb-8">{siteData.instagram.handle}</p>
+          <h2 className="text-4xl font-bold mb-4 ">{siteData.instagram.title}</h2>
+          <p className="text-[#AFCB21] text-xl mb-8">{siteData.instagram.handle}</p>
           
           {/* LightWidget Instagram Feed */}
           <div className="mb-8">
@@ -813,9 +827,9 @@ Para ele, o que garante transformação é a constância, conquistada através d
             Transforme seus objetivos em algo real
           </p>
           <div className="flex justify-center space-x-6 mb-6">
-            <a href="#" className="text-gray-400 hover:text-lime-400 transition-colors">Política de Privacidade</a>
-            <a href="#" className="text-gray-400 hover:text-lime-400 transition-colors">Termos de Uso</a>
-            <a href="#" className="text-gray-400 hover:text-lime-400 transition-colors">Suporte</a>
+            <a href="#" className="text-gray-400 hover:text-[#AFCB21] transition-colors">Política de Privacidade</a>
+            <a href="#" className="text-gray-400 hover:text-[#AFCB21] transition-colors">Termos de Uso</a>
+            <a href="#" className="text-gray-400 hover:text-[#AFCB21] transition-colors">Suporte</a>
           </div>
           <p className="text-gray-500 text-sm">
             © 2025 Não Pense, Vai – Todos os direitos reservados
