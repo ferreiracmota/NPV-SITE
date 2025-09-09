@@ -202,6 +202,24 @@
   }
 }
 
+/* Animação para o botão "aceso" pulsando */
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 0px #AFCB21, 0 0 6px #AFCB21;
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 5px #AFCB21, 0 0 10px #AFCB21;
+    transform: scale(1.02);
+  }
+}
+
+/* Classe que aplica a animação */
+.glow-button {
+  animation: pulseGlow 2.5s infinite ease-in-out;
+  
+}
+
 .animate-fade-in {
   animation: fade-in 1s ease-out;
 }

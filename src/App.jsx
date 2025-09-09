@@ -489,9 +489,15 @@ Para ele, o que garante transformação é a constância, conquistada através d
     <a
       href="https://pay.hotmart.com/N97646212X?off=xmopb4bq&hotfeature=518"
       target="_blank"
-      rel="noopener noreferrer"
-      className="inline-block mt-8 bg-[#AFCB21] text-black px-8 py-3 text-xl font-bold rounded hover:bg-[#AFCB21] hover:scale-105 transition-all"
-    >
+  rel="noopener noreferrer"
+  className="
+    block w-full max-w-md mx-auto text-center text-2xl font-bold text-black
+    py-4 px-6 rounded-lg
+    bg-[#AFCB21]
+    shadow-[0_0_15px_#AFCB21,0_0_30px_#AFCB21]
+    animate-[pulseGlow_1.5s_ease-in-out_infinite]
+  "
+>
 
       QUERO DECOLAR ➜
     </a>
