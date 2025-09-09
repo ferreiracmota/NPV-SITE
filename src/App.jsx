@@ -142,22 +142,25 @@ import asset140 from './assets/647-3746.svg'
 import asset141 from './assets/647-3747.svg'
 import logoNPV from './assets/logo-branca-npv.PNG'
 import seloGarantia from './assets/Selo-de-Garantia-de-7-Dias-PNG-Transparente.png'
-import antesDepois1 from "./assets/antes-depois1.PNG";
-import antesDepois2 from "./assets/antes-depois2.JPG";
+import antesDepois8 from "./assets/antes-depois8.PNG";
 import antesDepois3 from "./assets/antes-depois3.JPG";
+import antesDepois10 from "./assets/antes-depois10.JPG";
 import antesDepois4 from "./assets/antes-depois4.PNG";
 import antesDepois5 from "./assets/antes-depois5.JPG";
-import antesDepois6 from "./assets/antes-depois6.JPG";
 import antesDepois7 from "./assets/antes-depois7.JPG";
-import antesDepois8 from "./assets/antes-depois8.JPG";
+import antesDepois1 from "./assets/antes-depois1.JPG";
+import antesDepois2 from "./assets/antes-depois2.JPG";
 import antesDepois9 from "./assets/antes-depois9.JPG";
-import antesDepois10 from "./assets/antes-depois10.JPG";
-import parceiro1 from "./assets/Parceiro1.png";
-import parceiro2 from "./assets/Parceiro2.png";
-import parceiro3 from "./assets/Parceiro3.png";
-import parceiro4 from "./assets/Parceiro4.png";
-import parceiro5 from "./assets/Parceiro5.png";
-
+import antesDepois6 from "./assets/antes-depois6.JPG";
+import parceiro1 from "./assets/Parceiro1.PNG";
+import parceiro2 from "./assets/Parceiro2.PNG";
+import parceiro3 from "./assets/Parceiro3.PNG";
+import parceiro4 from "./assets/Parceiro4.PNG";
+import parceiro5 from "./assets/Parceiro5.PNG";
+import especialista1 from "./assets/Especialista1.PNG";
+import especialista2 from "./assets/Especialista2.PNG";
+import especialista3 from "./assets/Especialista3.PNG";
+import especialista4 from "./assets/Especialista4.PNG";
 
 import React, { useState, useEffect } from 'react'
 
@@ -212,7 +215,7 @@ function App() {
     ],
     team: {
       title: "UMA EQUIPE DE ESPECIALISTAS",
-      members: [asset2, asset3, asset4, asset5, asset6]
+      members: [especialista1, especialista2, especialista3, especialista4]
     },
     partners: {
       title: "NOSSOS PARCEIROS",
@@ -434,7 +437,7 @@ Para ele, o que garante transformação é a constância, conquistada através d
           <img src={asset1} alt="Background" className="w-full h-full object-cover" />
         </div>
         <div className="relative z-10 text-center animate-fade-in">
-          <h1 className="text-4xl md:text-6xl lg:text-8xl font-black mb-4 leading-tight">
+          <h1 className="text-4xl md:text-6xl lg:text-5xl font-black mb-4 leading-tight">
             <span className="text-white block animate-slide-up">{siteData.hero.title}</span>
             <span className="text-white block animate-slide-up animation-delay-200">{siteData.hero.subtitle}</span>
             <span className="text-lime-400 block animate-slide-up animation-delay-400">{siteData.hero.subtitle2}</span>
@@ -492,7 +495,7 @@ Para ele, o que garante transformação é a constância, conquistada através d
       <section className="py-20 bg-black">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-4xl font-bold mb-12">{siteData.team.title}</h2>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 justify-items-center">
             {siteData.team.members.map((member, index) => (
               <div key={index} className="text-center group">
                 <img 
@@ -768,8 +771,6 @@ Para ele, o que garante transformação é a constância, conquistada através d
           <div className="mb-8">
             <iframe 
               src="//lightwidget.com/widgets/2f1798ec8db754e1bbfa4b14196aaf6c.html" 
-              scrolling="no" 
-              allowTransparency="true" 
               className="lightwidget-widget w-full border-0 overflow-hidden h-96"
               style={{ width: '100%', border: 0, overflow: 'hidden' }}
             />
