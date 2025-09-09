@@ -482,13 +482,20 @@ Para ele, o que garante transformação é a constância, conquistada através d
           <div className="relative overflow-hidden">
   <div className="inline-flex w-max animate-scroll-horizontal gap-0 md:gap-1">
     {[...siteData.beforeAfter, ...siteData.beforeAfter].map((img, index) => (
-      <div key={index} className="flex-shrink-0 w-80 md:w-77">
-        <img
-          src={img}
-          alt={`Transformação ${index + 1}`}
-          className="w-75 h-40 md:h-80 object-cover rounded-lg shadow-2xl hover:scale-105 transition-transform duration-300"
-        />
-      </div>
+      <div
+  key={index}
+  className="flex-shrink-0
+             w-32 h-32           /* mobile: 128×128 */
+             sm:w-40 sm:h-40     /* tablets pequenos */
+             md:w-56 md:h-56     /* desktop */
+             "
+>
+  <img
+    src={img}
+    alt={`Transformação ${index + 1}`}
+    className="w-full h-full object-cover rounded-lg shadow-2xl"
+  />
+</div>
     ))}
   </div>
 </div>
