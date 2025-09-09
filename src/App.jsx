@@ -161,6 +161,8 @@ import especialista1 from "./assets/Especialista1.PNG";
 import especialista2 from "./assets/Especialista2.PNG";
 import especialista3 from "./assets/Especialista3.PNG";
 import especialista4 from "./assets/Especialista4.PNG";
+import videofundo1 from "./assets/videofundo1.MP4";
+
 
 import React, { useState, useEffect } from 'react'
 
@@ -432,27 +434,39 @@ Para ele, o que garante transformação é a constância, conquistada através d
       </header>
 
       {/* Hero Section */}
-      <section id="inicio" className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-black">
-        <div className="absolute inset-0 opacity-20">
-          <img src={asset1} alt="Background" className="w-full h-full object-cover" />
-        </div>
-        <div className="relative z-10 text-center animate-fade-in">
-          <h1 className="text-4xl md:text-6xl lg:text-5xl font-black mb-4 leading-tight">
-            <span className="text-white block animate-slide-up">{siteData.hero.title}</span>
-            <span className="text-white block animate-slide-up animation-delay-200">{siteData.hero.subtitle}</span>
-            <span className="text-lime-400 block animate-slide-up animation-delay-400">{siteData.hero.subtitle2}</span>
-            <span className="text-white block animate-slide-up animation-delay-600">{siteData.hero.subtitle3}</span>
-          </h1>
-          <a 
-            href="https://pay.hotmart.com/N97646212X?off=xmopb4bq&hotfeature=51&_hi=eyJjaWQiOiIxNzIyODIwNDcyNDEyNTMxNzU1NzcyNjcyMDg0MzAwIiwiYmlkIjoiMTcyMjgyMDQ3MjQxMjUzMTc1NTc3MjY3MjA4NDMwMCIsInNpZCI6IjBlNDEwZGM1ZGExMTQ5YWRiY2ExOWYzYThhMzk0Y2JkIn0=.1757252754756&bid=1757252757439" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="bg-lime-400 text-black px-8 py-4 text-xl font-bold rounded hover:bg-lime-300 hover:scale-105 transition-all duration-300 mt-8 animate-bounce-in animation-delay-800 inline-block"
-          >
-            {siteData.hero.buttonText}
-          </a>
-        </div>
-      </section>
+<section id="inicio" className="relative min-h-screen flex items-center justify-center overflow-hidden">
+  {/* Fundo com vídeo em todas as telas */}
+  <div className="absolute inset-0">
+    <video
+      className="w-full h-full object-cover"
+      src={videofundo1}   // se preferir: import heroVideo from "./assets/videofundo1.mp4" e use heroVideo aqui
+      autoPlay
+      muted
+      loop
+      playsInline
+      preload="metadata"
+    />
+  </div>
+
+  {/* Conteúdo por cima do vídeo */}
+  <div className="relative z-10 text-center animate-fade-in px-4">
+    <h1 className="text-4xl md:text-6xl lg:text-7xl font-black mb-4 leading-tight">
+      <span className="text-white block animate-slide-up">{siteData.hero.title}</span>
+      <span className="text-white block animate-slide-up animation-delay-200">{siteData.hero.subtitle}</span>
+      <span className="text-lime-400 block drop-shadow-md animate-slide-up animation-delay-400">{siteData.hero.subtitle2}</span>
+      <span className="text-white block animate-slide-up animation-delay-600">{siteData.hero.subtitle3}</span>
+    </h1>
+
+    <a
+      href="https://pay.hotmart.com/N97646212X?off=xmopb4bq&hotfeature=518"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="bg-lime-400 text-black px-8 py-3 text-xl font-bold rounded hover:bg-lime-300 hover:scale-105 transition-all"
+    >
+      QUERO DECOLAR ➜
+    </a>
+  </div>
+</section>
 
       {/* Before/After Section */}
       <section id="sobre" className="py-20 bg-gray-900">
@@ -510,17 +524,17 @@ Para ele, o que garante transformação é a constância, conquistada através d
       </section>
 
       {/* Partners Section */}
-      <section className="py-16 bg-gray-100">
+      <section className="py-8 bg-gray-100">
         <div className="container mx-auto px-4">
           <h2 className="text-4xl font-bold text-center mb-12 text-black">{siteData.partners.title}</h2>
           <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12 opacity-60">
             {siteData.partners.logos.map((logo, index) => (
-              <img 
-                key={index} 
-                src={logo} 
-                alt={`Parceiro ${index + 1}`} 
-                className="h-12 md:h-20 object-contain grayscale hover:grayscale-0 transition-all duration-300 hover:scale-110"
-              />
+              <img
+  key={index}
+  src={logo}
+  alt={`Parceiro ${index + 1}`}
+  className="h-16 md:h-24 object-contain grayscale md:grayscale hover:grayscale-0 active:grayscale-0 hover:scale-110 active:scale-105 transition-all duration-300 cursor-pointer select-none"
+/>
             ))}
           </div>
         </div>
