@@ -440,7 +440,7 @@ Para ele, o que garante transformação é a constância, conquistada através d
       {/* Hero Section */}
 <section
   id="inicio"
-  className="relative min-h-[80svh] md:min-h-[100svh] flex items-start md:items-center justify-center overflow-hidden"
+  className="relative min-h-[90svh] md:min-h-[100svh] flex items-start md:items-center justify-center overflow-hidden"
 >
   {/* Vídeo de fundo (desktop + mobile) */}
   <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
