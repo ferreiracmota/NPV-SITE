@@ -495,7 +495,7 @@ Para ele, o que garante transformação é a constância, conquistada através d
       href="https://pay.hotmart.com/N97646212X?off=xmopb4bq&hotfeature=518"
       target="_blank"
       rel="noopener noreferrer"
-      className="block w-full max-w-md mx-auto text-center text-2xl font-bold text-black py-4 px-6 rounded-lg bg-[#AFCB21] glow-button mt-7"
+      className="block w-full max-w-md mx-auto text-center text-[15px] font-light text-white py-4 px-6 rounded-lg bg-[#AFCB21] glow-button mt-7"
     >
 
       QUERO DECOLAR ➜
@@ -539,10 +539,10 @@ Para ele, o que garante transformação é a constância, conquistada através d
           <div className="text-center mt-12">
             <a 
               href="https://pay.hotmart.com/N97646212X?off=xmopb4bq&hotfeature=51&_hi=eyJjaWQiOiIxNzIyODIwNDcyNDEyNTMxNzU1NzcyNjcyMDg0MzAwIiwiYmlkIjoiMTcyMjgyMDQ3MjQxMjUzMTc1NTc3MjY3MjA4NDMwMCIsInNpZCI6IjBlNDEwZGM1ZGExMTQ5YWRiY2ExOWYzYThhMzk0Y2JkIn0=.1757252754756&bid=1757252757439" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="bg-[#AFCB21] text-black px-6 py-3 text-lg font-bold rounded hover:bg-[#AFCB21] hover:scale-105 transition-all duration-300 inline-block"
-            >
+              target="_blank"
+      rel="noopener noreferrer"
+      className="block w-full max-w-md mx-auto text-center text-[15px] font-light text-white py-4 px-6 rounded-lg bg-[#AFCB21] glow-button mt-7"
+    >
               Quero os mesmos resultados
             </a>
           </div>
@@ -604,10 +604,10 @@ Para ele, o que garante transformação é a constância, conquistada através d
           <div className="mt-16">
             <a 
               href="https://pay.hotmart.com/N97646212X?off=xmopb4bq&hotfeature=51&_hi=eyJjaWQiOiIxNzIyODIwNDcyNDEyNTMxNzU1NzcyNjcyMDg0MzAwIiwiYmlkIjoiMTcyMjgyMDQ3MjQxMjUzMTc1NTc3MjY3MjA4NDMwMCIsInNpZCI6IjBlNDEwZGM1ZGExMTQ5YWRiY2ExOWYzYThhMzk0Y2JkIn0=.1757252754756&bid=1757252757439" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="bg-[#AFCB21] text-black px-8 py-4 text-xl font-bold rounded hover:bg-[#AFCB21] hover:scale-105 transition-all duration-300 inline-block"
-            >
+              target="_blank"
+      rel="noopener noreferrer"
+      className="block w-full max-w-md mx-auto text-center text-[15px] font-light text-white py-4 px-6 rounded-lg bg-[#AFCB21] glow-button mt-7"
+    >
               Acesso total por apenas R$1,33 por dia
             </a>
           </div>
@@ -670,10 +670,10 @@ Para ele, o que garante transformação é a constância, conquistada através d
               </ul>
               <a 
                 href="https://pay.hotmart.com/N97646212X?off=xmopb4bq&hotfeature=51&_hi=eyJjaWQiOiIxNzIyODIwNDcyNDEyNTMxNzU1NzcyNjcyMDg0MzAwIiwiYmlkIjoiMTcyMjgyMDQ3MjQxMjUzMTc1NTc3MjY3MjA4NDMwMCIsInNpZCI6IjBlNDEwZGM1ZGExMTQ5YWRiY2ExOWYzYThhMzk0Y2JkIn0=.1757252754756&bid=1757252757439" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="w-full bg-[#AFCB21] text-black py-3 rounded font-bold hover:bg-[#AFCB21] hover:scale-105 transition-all duration-300 inline-block text-center"
-              >
+                target="_blank"
+      rel="noopener noreferrer"
+      className="block w-full max-w-md mx-auto text-center text-[15px] font-light text-white py-4 px-6 rounded-lg bg-[#AFCB21] glow-button mt-7"
+    >
                 ASSINAR AGORA
               </a>
             </div>
@@ -699,10 +699,10 @@ Para ele, o que garante transformação é a constância, conquistada através d
               </ul>
               <a 
                 href="https://pay.hotmart.com/N97646212X?off=xmopb4bq&hotfeature=51&_hi=eyJjaWQiOiIxNzIyODIwNDcyNDEyNTMxNzU1NzcyNjcyMDg0MzAwIiwiYmlkIjoiMTcyMjgyMDQ3MjQxMjUzMTc1NTc3MjY3MjA4NDMwMCIsInNpZCI6IjBlNDEwZGM1ZGExMTQ5YWRiY2ExOWYzYThhMzk0Y2JkIn0=.1757252754756&bid=1757252757439" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="w-full bg-black text-[#AFCB21] py-3 rounded font-bold hover:bg-gray-800 hover:scale-105 transition-all duration-300 inline-block text-center"
-              >
+                target="_blank"
+      rel="noopener noreferrer"
+      className="block w-full max-w-md mx-auto text-center text-[15px] font-light text-white py-4 px-6 rounded-lg bg-[#AFCB21] glow-button mt-7"
+    >
                 ASSINAR AGORA
               </a>
             </div>
@@ -743,10 +743,10 @@ Para ele, o que garante transformação é a constância, conquistada através d
 }
               <a 
                 href="https://pay.hotmart.com/N97646212X?off=xmopb4bq&hotfeature=51&_hi=eyJjaWQiOiIxNzIyODIwNDcyNDEyNTMxNzU1NzcyNjcyMDg0MzAwIiwiYmlkIjoiMTcyMjgyMDQ3MjQxMjUzMTc1NTc3MjY3MjA4NDMwMCIsInNpZCI6IjBlNDEwZGM1ZGExMTQ5YWRiY2ExOWYzYThhMzk0Y2JkIn0=.1757252754756&bid=1757252757439" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="bg-[#AFCB21] text-black px-8 py-4 text-xl font-bold rounded hover:bg-[#AFCB21] hover:scale-105 transition-all duration-300 inline-block"
-              >
+                target="_blank"
+      rel="noopener noreferrer"
+      className="block w-full max-w-md mx-auto text-center text-[15px] font-light text-white py-4 px-6 rounded-lg bg-[#AFCB21] glow-button mt-7"
+    >
                 Começar Agora
               </a>
             </div>
@@ -790,10 +790,10 @@ Para ele, o que garante transformação é a constância, conquistada através d
           <div className="text-center mt-12">
             <a 
               href="https://pay.hotmart.com/N97646212X?off=xmopb4bq&hotfeature=51&_hi=eyJjaWQiOiIxNzIyODIwNDcyNDEyNTMxNzU1NzcyNjcyMDg0MzAwIiwiYmlkIjoiMTcyMjgyMDQ3MjQxMjUzMTc1NTc3MjY3MjA4NDMwMCIsInNpZCI6IjBlNDEwZGM1ZGExMTQ5YWRiY2ExOWYzYThhMzk0Y2JkIn0=.1757252754756&bid=1757252757439" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="bg-[#AFCB21] text-black px-8 py-4 text-xl font-bold rounded hover:bg-[#AFCB21] hover:scale-105 transition-all duration-300 inline-block"
-            >
+              target="_blank"
+      rel="noopener noreferrer"
+      className="block w-full max-w-md mx-auto text-center text-[15px] font-light text-white py-4 px-6 rounded-lg bg-[#AFCB21] glow-button mt-7"
+    >
               Quero Ter Esses Resultados
             </a>
           </div>
