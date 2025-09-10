@@ -438,41 +438,37 @@ Para ele, o que garante transformação é a constância, conquistada através d
       </header>
 
       {/* Hero Section */}
-<section id="inicio" className="relative min-h-screen flex items-center justify-center overflow-hidden">
-  {/* Vídeo de fundo (desktop x mobile) */}
-<div className="absolute inset-0 z-0 overflow-hidden">
-  {/* Desktop / tablet (>= md) */}
-  <video
-    className="hidden md:block w-full h-full object-cover"
-    src={videofundo1}
-    autoPlay
-    muted
-    loop
-    playsInline
-    preload="auto"
-  />
-
-  {/* Mobile (< md) */}
-  <video
-    className="md:hidden w-full h-full object-cover"
-    src={videofundomobile}
-    autoPlay
-    muted
-    loop
-    playsInline
-    preload="auto"
-  />
-</div>
-
+<section id="inicio" className="relative min-h-screen flex items-start justify-center overflow-hidden">
+  {/* Vídeo de fundo */}
+  <div className="absolute inset-0 z-0 overflow-hidden">
+    {/* Desktop */}
+    <video
+      className="hidden md:block w-full h-full object-cover"
+      src={videofundo1}
+      autoPlay
+      muted
+      loop
+      playsInline
+      preload="auto"
+    />
+    {/* Mobile */}
+    <video
+      className="md:hidden w-full h-full object-cover"
+      src={videofundomobile}
+      autoPlay
+      muted
+      loop
+      playsInline
+      preload="auto"
+    />
+  </div>
 
   {/* Conteúdo por cima do vídeo */}
-  <div className="relative z-10 text-center animate-fade-in px-4">
+  <div className="relative z-10 w-full max-w-xl mx-auto text-center px-4 pt-16 md:pt-14">
     <h1 className="text-4xl md:text-6xl lg:text-7xl font-black mb-4 leading-tight">
       <span className="text-white block animate-slide-up">{siteData.hero.title}</span>
       <span className="text-white block animate-slide-up animation-delay-200">{siteData.hero.subtitle}</span>
-      <span className="text-pink-500 text-6xl font-black block animate-slide-up animation-delay-200">
-  {siteData.hero.subtitle2}
-</span>
+      <span className="text-pink-500 block drop-shadow-md animate-slide-up animation-delay-400">{siteData.hero.subtitle2}</span>
       <span className="text-white block animate-slide-up animation-delay-600">{siteData.hero.subtitle3}</span>
       <span className="text-xs sm:text-sm font-light text-white mt-2 block text-center">
   <span className="hidden sm:inline">
@@ -486,17 +482,16 @@ Para ele, o que garante transformação é a constância, conquistada através d
 
     </h1>
 
+    <p className="text-white/80 text-base md:text-lg leading-relaxed max-w-md mx-auto">
+      {siteData.hero.kicker}
+    </p>
+
     <a
       href="https://pay.hotmart.com/N97646212X?off=xmopb4bq&hotfeature=518"
       target="_blank"
   rel="noopener noreferrer"
-  className="
-    block w-full max-w-md mx-auto text-center text-2xl font-bold text-black
-    py-4 px-6 rounded-lg
-    bg-[#AFCB21]
-    shadow-[0_0_15px_#AFCB21,0_0_30px_#AFCB21]
-    animate-[pulseGlow_1.5s_ease-in-out_infinite]
-  "
+  className="block w-full max-w-md mx-auto text-center text-2xl font-bold text-white py-4 px-6 rounded-lg
+             bg-gradient-to-r from-[#6E8614] via-[#AFCB21] to-[#D9F37A] glow-button mt-20"
 >
 
       QUERO DECOLAR ➜
