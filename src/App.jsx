@@ -763,28 +763,20 @@ Para ele, o que garante transformação é a constância, conquistada através d
           </div>
           
           {/* Grid de vídeos - 4 vídeos na vertical */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {siteData.videoTestimonials.videos.map((video) => (
-              <div key={video.id} className="group cursor-pointer" onClick={() => window.open(video.videoUrl, '_blank')}>
-                <div className="relative aspect-[9/16] bg-black rounded-lg overflow-hidden shadow-xl hover:scale-105 transition-transform duration-300">
-                  {/* Iframe do vídeo */}
-                  <iframe
-                    src={video.videoUrl}
-                    frameBorder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                    className="w-full h-full"
-                    title={video.title}
-                  ></iframe>
-                  
-                  {/* Título do vídeo */}
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4">
-                    <h3 className="text-white font-semibold text-sm">{video.title}</h3>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+          <div className="grid grid-cols-2 gap-1 h-[600px]">
+  {siteData.videoTestimonials.videos.map((video) => (
+    <div key={video.id} className="relative w-full h-full">
+      <iframe
+        src={video.videoUrl}
+        frameBorder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowFullScreen
+        className="w-full h-full object-cover"
+        title={video.title}
+      ></iframe>
+    </div>
+  ))}
+</div>
           
           {/* CTA após vídeos */}
           <div className="text-center mt-12">
