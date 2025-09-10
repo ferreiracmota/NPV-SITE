@@ -440,7 +440,7 @@ Para ele, o que garante transformação é a constância, conquistada através d
       {/* Hero Section */}
 <section
   id="inicio"
-  className="relative min-h-[100svh] flex items-start md:items-center justify-center overflow-hidden"
+  className="relative min-h-[70svh] md:min-h-[100svh] flex items-start md:items-center justify-center overflow-hidden"
 >
   {/* Vídeo de fundo (desktop + mobile) */}
   <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
@@ -467,7 +467,7 @@ Para ele, o que garante transformação é a constância, conquistada através d
   </div>
 
   {/* Conteúdo por cima do vídeo */}
-  <div className="relative z-10 text-center px-4 mt-40 md:mt-0">
+  <div className="relative z-10 text-center px-4 mt-60 md:mt-0">
     <h1 className="text-4xl md:text-6xl lg:text-7xl font-black leading-tight">
       <span className="text-white block animate-slide-up">{siteData.hero.title}</span>
       <span className="text-white block animate-slide-up animation-delay-200">{siteData.hero.subtitle}</span>
@@ -495,7 +495,7 @@ Para ele, o que garante transformação é a constância, conquistada através d
       href="https://pay.hotmart.com/N97646212X?off=xmopb4bq&hotfeature=518"
       target="_blank"
       rel="noopener noreferrer"
-      className="block w-full max-w-md mx-auto text-center text-2xl font-bold text-black py-4 px-6 rounded-lg bg-[#AFCB21] glow-button mt-16"
+      className="block w-full max-w-md mx-auto text-center text-2xl font-bold text-black py-4 px-6 rounded-lg bg-[#AFCB21] glow-button mt-10"
     >
 
       QUERO DECOLAR ➜
