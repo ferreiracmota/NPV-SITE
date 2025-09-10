@@ -495,7 +495,7 @@ Para ele, o que garante transformação é a constância, conquistada através d
       href="https://pay.hotmart.com/N97646212X?off=xmopb4bq&hotfeature=518"
       target="_blank"
       rel="noopener noreferrer"
-      className="block w-full max-w-md mx-auto text-center text-2xl font-bold text-black py-4 px-6 rounded-lg bg-[#AFCB21] glow-button mt-10"
+      className="block w-full max-w-md mx-auto text-center text-2xl font-bold text-black py-4 px-6 rounded-lg bg-[#AFCB21] glow-button mt-7"
     >
 
       QUERO DECOLAR ➜
