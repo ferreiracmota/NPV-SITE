@@ -514,7 +514,7 @@ Para ele, o que garante transformação é a constância, conquistada através d
 </section>
 
       {/* Before/After Section */}
-      <section id="sobre" className="py-20 bg-white">
+      <section id="sobre" className="py-12 bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold mb-4 text-[#AFCB21]">ANTES E DEPOIS</h2>
@@ -559,8 +559,45 @@ Para ele, o que garante transformação é a constância, conquistada através d
         </div>
       </section>
 
-      {/* Team Section */}
-      <section className="py-20 bg-black">
+
+
+{/* Projects Section (BÔNUS) */}
+<section className="pt-12 pb-6 bg-gray-900">
+  <div className="container mx-auto px-4 text-center">
+    <h2 className="text-4xl font-bold mb-8">{siteData.projects.title}</h2>
+
+    {/* grid dos cards */}
+    <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+      {siteData.projects.items.slice(0, 10).map((project, index) => (
+        <div key={index} className="bg-black rounded-2xl overflow-hidden shadow-xl">
+          <div className="relative w-full aspect-[3/4]">
+            <img
+              src={project}
+              alt={`Bônus ${index + 1}`}
+              className="absolute inset-0 w-full h-full object-cover select-none pointer-events-none"
+              draggable="false"
+            />
+          </div>
+        </div>
+      ))}
+    </div>
+
+    {/* Botão dentro da seção */}
+    <div className="mt-8">
+      <a
+        href="https://pay.hotmart.com/N97646212X"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="block w-full max-w-md mx-auto text-center text-[15px] font-light text-white py-4 px-6 rounded-lg bg-[#AFCB21] glow-button"
+      >
+        ACESSO TOTAL POR APENAS R$1,33/dia
+      </a>
+    </div>
+  </div>
+</section>
+
+ {/* Team Section */}
+      <section className="py-12 bg-black">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-4xl font-bold mb-12">{siteData.team.title}</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 justify-items-center">
@@ -593,44 +630,6 @@ Para ele, o que garante transformação é a constância, conquistada através d
           </div>
         </div>
       </section>
-
-{/* Projects Section (BÔNUS) */}
-<section className="py-20 bg-gray-900">
-  <div className="container mx-auto px-4">
-    <h2 className="text-4xl font-bold mb-12 text-center">{siteData.projects.title}</h2>
-
-    {/* GRADE VERTICAL: mobile 2 colunas; desktop 5 colunas */}
-    <div className="grid grid-cols-2 md:grid-cols-5 gap-2 md:gap-3">
-      {siteData.projects.items.slice(0, 10).map((project, index) => (
-        <div key={index} className="bg-black rounded-2xl overflow-hidden shadow-xl">
-          {/* Wrapper com proporção vertical (retrato) */}
-          <div className="relative w-full aspect-[3/4]">
-            <img
-              src={project}
-              alt={`Bônus ${index + 1}`}
-              className="absolute inset-0 w-full h-full object-cover select-none pointer-events-none"
-              draggable="false"
-            />
-          </div>
-        </div>
-      ))}
-    </div>
-  </div>
-</section>
-
-          
-          {/* Botão estratégico intermediário */}
-          <div className="mt-16">
-            <a 
-              href="https://pay.hotmart.com/N97646212X?off=xmopb4bq&hotfeature=51&_hi=eyJjaWQiOiIxNzIyODIwNDcyNDEyNTMxNzU1NzcyNjcyMDg0MzAwIiwiYmlkIjoiMTcyMjgyMDQ3MjQxMjUzMTc1NTc3MjY3MjA4NDMwMCIsInNpZCI6IjBlNDEwZGM1ZGExMTQ5YWRiY2ExOWYzYThhMzk0Y2JkIn0=.1757252754756&bid=1757252757439" 
-              target="_blank"
-      rel="noopener noreferrer"
-      className="block w-full max-w-md mx-auto text-center text-[15px] font-light text-white py-4 px-6 rounded-lg bg-[#AFCB21] glow-button mt-7"
-    >
-              ACESSO TOTAL POR APENAS R$1,33/dia
-            </a>
-          </div>
-
 
       {/* Testimonials Section */}
       <section className="py-20 bg-black">
@@ -780,21 +779,25 @@ Para ele, o que garante transformação é a constância, conquistada através d
             <p className="text-gray-400 text-lg">{siteData.videoTestimonials.subtitle}</p>
           </div>
           
-          {/* Grid de vídeos - 4 vídeos na vertical */}
-          <div className="grid grid-cols-2 gap-1 h-[600px]">
+          {/* Grid de vídeos - 4 vídeos na vertical (MOBILE) */}
+<div className="grid grid-cols-2 gap-2">
   {siteData.videoTestimonials.videos.map((video) => (
-    <div key={video.id} className="relative w-full h-full">
+    <div
+      key={video.id}
+      className="relative w-full aspect-[9/16] overflow-hidden rounded-lg bg-black"
+    >
       <iframe
-        src={video.videoUrl}
-        frameBorder="0"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowFullScreen
-        className="w-full h-full object-cover"
+        src={video.videoUrl}               // ideal: URL /embed/… (ex.: https://www.youtube.com/embed/ID)
         title={video.title}
-      ></iframe>
+        className="absolute inset-0 w-full h-full block"
+        frameBorder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
+        allowFullScreen
+      />
     </div>
   ))}
 </div>
+
           
           {/* CTA após vídeos */}
           <div className="text-center mt-12">
@@ -821,18 +824,29 @@ Para ele, o que garante transformação é a constância, conquistada através d
         <img
           src={seloGarantia}
           alt="Garantia de 7 Dias"
-          className="mx-auto lg:mx-0 hover:scale-110 transition-transform duration-300"
+          className="mx-auto lg:mx-0 w-60 md:w-40 mb-4 hover:scale-110 transition-transform duration-300"
         />
       </div>
 
       {/* Texto — mobile centralizado; desktop alinhado à esquerda */}
       <div className="text-center lg:text-left max-w-prose">
         <h2 className="text-2xl md:text-4xl font-bold text-[#AFCB21]">
-          GARANTIA DE 7 DIAS
+          <p>ENTRE DE CABEÇA</p> 
+          <p>POR 7 DIAS</p>
         </h2>
-        <p className="text-base md:text-lg text-gray-300 leading-relaxed">
-          Experimente nosso programa por 7 dias completos. Se não ficar satisfeito, devolvemos seu dinheiro.
-        </p>
+        <div className="text-base md:text-lg text-gray-300 leading-relaxed space-y-4">
+  <p className="mt-4"><strong>Se não sentir diferença, o risco é todo nosso.</strong></p>
+  <p>
+    Durante <strong>7 dias você treina de verdade</strong>, aproveita todos os recursos e
+    descobre como a nossa plataforma pode transformar seus resultados.
+  </p>
+  <p>
+    E se achar que não é pra você 👉 <strong>cancelamos e devolvemos 100% do valor, sem desculpas.</strong>
+  </p>
+  <p>⚡ <strong>Zero burocracia. Zero pegadinha. Só resultado.</strong></p>
+  <p>Porque quando acreditamos no que entregamos, não precisamos de rodeios.</p>
+</div>
+
       </div>
 
     </div>
