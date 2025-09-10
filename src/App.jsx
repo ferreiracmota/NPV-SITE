@@ -467,11 +467,11 @@ Para ele, o que garante transformação é a constância, conquistada através d
   </div>
 
   {/* Conteúdo por cima do vídeo */}
-  <div className="relative z-10 text-center px-4 mt-60 md:mt-0">
+  <div className="relative z-10 text-center px-4 mt-50 md:mt-0">
     <h1 className="text-4xl md:text-6xl lg:text-7xl font-black leading-tight">
       <span className="text-white block animate-slide-up">{siteData.hero.title}</span>
       <span className="text-white block animate-slide-up animation-delay-200">{siteData.hero.subtitle}</span>
-      <span className="text-pink-500 block drop-shadow-md animate-slide-up animation-delay-400">{siteData.hero.subtitle2}</span>
+      <span className="text-pink-500 text-[55px] md:text-7x1 lg:text-8x1 font-black block drop-shadow-md animate-slide-up animation-delay-400">{siteData.hero.subtitle2}</span>
       <span className="text-white block animate-slide-up animation-delay-600">{siteData.hero.subtitle3}</span>
       <span className="text-xs sm:text-sm font-light text-white mt-2 block text-center">
   <span className="hidden sm:inline">
