@@ -343,7 +343,7 @@ Para ele, o que garante transformação é a constância, conquistada através d
 
       {/* Header */}
       <header className="bg-black border-b border-gray-800 sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+        <div className="container mx-auto px-4 py-1 flex justify-between items-center">
             <div className="flex items-center">
               <img src={logoNPV} alt="Não Pense, Vai" className="h-12" />
             </div>
@@ -467,7 +467,7 @@ Para ele, o que garante transformação é a constância, conquistada através d
   </div>
 
   {/* Conteúdo por cima do vídeo */}
-  <div className="relative z-10 text-center px-4 mt-50 md:mt-0">
+  <div className="relative z-10 text-center px-4 mt-60 md:mt-0">
     <h1 className="text-4xl md:text-6xl lg:text-7xl font-black leading-tight">
       <span className="text-white block animate-slide-up">{siteData.hero.title}</span>
       <span className="text-white block animate-slide-up animation-delay-200">{siteData.hero.subtitle}</span>
@@ -495,7 +495,7 @@ Para ele, o que garante transformação é a constância, conquistada através d
       href="https://pay.hotmart.com/N97646212X?off=xmopb4bq&hotfeature=518"
       target="_blank"
       rel="noopener noreferrer"
-      className="block w-full max-w-md mx-auto text-center text-[15px] font-light text-white py-4 px-6 rounded-lg bg-[#AFCB21] glow-button mt-7"
+      className="block w-full max-w-md mx-auto text-center text-[20px] font-light text-white py-4 px-6 rounded-lg bg-[#AFCB21] glow-button mt-10"
     >
 
       QUERO DECOLAR ➜
@@ -541,9 +541,9 @@ Para ele, o que garante transformação é a constância, conquistada através d
               href="https://pay.hotmart.com/N97646212X?off=xmopb4bq&hotfeature=51&_hi=eyJjaWQiOiIxNzIyODIwNDcyNDEyNTMxNzU1NzcyNjcyMDg0MzAwIiwiYmlkIjoiMTcyMjgyMDQ3MjQxMjUzMTc1NTc3MjY3MjA4NDMwMCIsInNpZCI6IjBlNDEwZGM1ZGExMTQ5YWRiY2ExOWYzYThhMzk0Y2JkIn0=.1757252754756&bid=1757252757439" 
               target="_blank"
       rel="noopener noreferrer"
-      className="block w-full max-w-md mx-auto text-center text-[15px] font-light text-white py-4 px-6 rounded-lg bg-[#AFCB21] glow-button mt-7"
+      className="block w-full max-w-md mx-auto text-center text-[20px] font-light text-white py-4 px-6 rounded-lg bg-[#AFCB21] glow-button mt-7"
     >
-              Quero os mesmos resultados
+              QUERO OS MESMOS RESULTADOS
             </a>
           </div>
         </div>
@@ -608,7 +608,7 @@ Para ele, o que garante transformação é a constância, conquistada através d
       rel="noopener noreferrer"
       className="block w-full max-w-md mx-auto text-center text-[15px] font-light text-white py-4 px-6 rounded-lg bg-[#AFCB21] glow-button mt-7"
     >
-              Acesso total por apenas R$1,33 por dia
+              ACESSO TOTAL POR APENAS R$1,33/dia
             </a>
           </div>
         </div>
@@ -672,7 +672,7 @@ Para ele, o que garante transformação é a constância, conquistada através d
                 href="https://pay.hotmart.com/N97646212X?off=xmopb4bq&hotfeature=51&_hi=eyJjaWQiOiIxNzIyODIwNDcyNDEyNTMxNzU1NzcyNjcyMDg0MzAwIiwiYmlkIjoiMTcyMjgyMDQ3MjQxMjUzMTc1NTc3MjY3MjA4NDMwMCIsInNpZCI6IjBlNDEwZGM1ZGExMTQ5YWRiY2ExOWYzYThhMzk0Y2JkIn0=.1757252754756&bid=1757252757439" 
                 target="_blank"
       rel="noopener noreferrer"
-      className="block w-full max-w-md mx-auto text-center text-[15px] font-light text-white py-4 px-6 rounded-lg bg-[#AFCB21] glow-button mt-7"
+      className="block w-full max-w-md mx-auto text-center text-[20px] font-light text-white py-4 px-6 rounded-lg bg-[#AFCB21] glow-button mt-7"
     >
                 ASSINAR AGORA
               </a>
@@ -701,7 +701,7 @@ Para ele, o que garante transformação é a constância, conquistada através d
                 href="https://pay.hotmart.com/N97646212X?off=xmopb4bq&hotfeature=51&_hi=eyJjaWQiOiIxNzIyODIwNDcyNDEyNTMxNzU1NzcyNjcyMDg0MzAwIiwiYmlkIjoiMTcyMjgyMDQ3MjQxMjUzMTc1NTc3MjY3MjA4NDMwMCIsInNpZCI6IjBlNDEwZGM1ZGExMTQ5YWRiY2ExOWYzYThhMzk0Y2JkIn0=.1757252754756&bid=1757252757439" 
                 target="_blank"
       rel="noopener noreferrer"
-      className="block w-full max-w-md mx-auto text-center text-[15px] font-light text-white py-4 px-6 rounded-lg bg-[#AFCB21] glow-button mt-7"
+      className="block w-full max-w-md mx-auto text-center text-[20px] font-light text-white py-4 px-6 rounded-lg bg-[#AFCB21] glow-button mt-7"
     >
                 ASSINAR AGORA
               </a>
@@ -745,9 +745,9 @@ Para ele, o que garante transformação é a constância, conquistada através d
                 href="https://pay.hotmart.com/N97646212X?off=xmopb4bq&hotfeature=51&_hi=eyJjaWQiOiIxNzIyODIwNDcyNDEyNTMxNzU1NzcyNjcyMDg0MzAwIiwiYmlkIjoiMTcyMjgyMDQ3MjQxMjUzMTc1NTc3MjY3MjA4NDMwMCIsInNpZCI6IjBlNDEwZGM1ZGExMTQ5YWRiY2ExOWYzYThhMzk0Y2JkIn0=.1757252754756&bid=1757252757439" 
                 target="_blank"
       rel="noopener noreferrer"
-      className="block w-full max-w-md mx-auto text-center text-[15px] font-light text-white py-4 px-6 rounded-lg bg-[#AFCB21] glow-button mt-7"
+      className="block w-full max-w-md mx-auto text-center text-[20px] font-light text-white py-4 px-6 rounded-lg bg-[#AFCB21] glow-button mt-7"
     >
-                Começar Agora
+                COMEÇAR AGORA
               </a>
             </div>
           </div>
@@ -792,9 +792,9 @@ Para ele, o que garante transformação é a constância, conquistada através d
               href="https://pay.hotmart.com/N97646212X?off=xmopb4bq&hotfeature=51&_hi=eyJjaWQiOiIxNzIyODIwNDcyNDEyNTMxNzU1NzcyNjcyMDg0MzAwIiwiYmlkIjoiMTcyMjgyMDQ3MjQxMjUzMTc1NTc3MjY3MjA4NDMwMCIsInNpZCI6IjBlNDEwZGM1ZGExMTQ5YWRiY2ExOWYzYThhMzk0Y2JkIn0=.1757252754756&bid=1757252757439" 
               target="_blank"
       rel="noopener noreferrer"
-      className="block w-full max-w-md mx-auto text-center text-[15px] font-light text-white py-4 px-6 rounded-lg bg-[#AFCB21] glow-button mt-7"
+      className="block w-full max-w-md mx-auto text-center text-[20px] font-light text-white py-4 px-6 rounded-lg bg-[#AFCB21] glow-button mt-7"
     >
-              Quero Ter Esses Resultados
+              QUERO TER ESSES RESULTADOS
             </a>
           </div>
         </div>
