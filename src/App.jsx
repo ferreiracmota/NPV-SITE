@@ -164,6 +164,17 @@ import especialista4 from "./assets/Especialista4.PNG";
 import videofundo1 from "./assets/videofundo1.MP4";
 import sobremim from "./assets/sobre-mim.JPG";
 import videofundomobile from "./assets/videofundomobile.MP4";
+import dicas_corrida from './assets/dicas_corrida.PNG'
+import dicas_especialistas from './assets/dicas_especialistas.PNG'
+import dieta_objetivo from './assets/dieta_objetivo.PNG'
+import ebook_receitas from './assets/ebook_receitas.PNG'
+import planilhas_treino from './assets/planilhas_treino.PNG'
+import projeto_musas from './assets/projeto_musas.PNG'
+import treino_academia from './assets/treino_academia.PNG'
+import treinos_atualizados from './assets/treinos_atualizados.PNG'
+import treinos_express from './assets/treinos_express.PNG'
+import treinos_todos_niveis from './assets/treinos_todos_niveis.PNG'
+
 
 
 import React, { useState, useEffect } from 'react'
@@ -229,7 +240,8 @@ function App() {
     },
     projects: {
       title: "BONUS DA PLATAFORMA",
-      items: [asset47, asset48, asset49]
+      items: [dicas_corrida, dicas_especialistas, dieta_objetivo, ebook_receitas, planilhas_treino, projeto_musas, treino_academia, treinos_atualizados, treinos_express, treinos_todos_niveis]
+
     },
     testimonials: [
       { image: asset66, name: "ALEX MARTINS", role: "PERSONAL TRAINER", text: "Transformação incrível! O programa mudou completamente minha vida e minha forma física." },
@@ -440,7 +452,7 @@ Para ele, o que garante transformação é a constância, conquistada através d
       {/* Hero Section */}
 <section
   id="inicio"
-  className="relative min-h-[100svh] md:min-h-[100svh] flex items-start md:items-center justify-center overflow-hidden"
+  className="relative min-h-[90svh] md:min-h-[100svh] flex items-start md:items-center justify-center overflow-hidden"
 >
   {/* Vídeo de fundo (desktop + mobile) */}
   <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
@@ -584,21 +596,30 @@ Para ele, o que garante transformação é a constância, conquistada através d
         </div>
       </section>
 
-      {/* Projects Section */}
-      <section className="py-20 bg-gray-900">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-4xl font-bold mb-12">{siteData.projects.title}</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {siteData.projects.items.map((project, index) => (
-              <div key={index} className="bg-black rounded-lg overflow-hidden hover:scale-105 transition-transform duration-300 shadow-xl group">
-                <img 
-                  src={project} 
-                  alt={`Projeto ${index + 1}`} 
-                  className="w-full h-64 object-cover group-hover:brightness-110 transition-all duration-300"
-                />
-              </div>
-            ))}
+{/* Projects Section (BÔNUS) */}
+<section className="py-20 bg-gray-900">
+  <div className="container mx-auto px-4">
+    <h2 className="text-4xl font-bold mb-12 text-center">{siteData.projects.title}</h2>
+
+    {/* GRADE VERTICAL: mobile 2 colunas; desktop 5 colunas */}
+    <div className="grid grid-cols-2 md:grid-cols-5 gap-4 md:gap-6">
+      {siteData.projects.items.slice(0, 10).map((project, index) => (
+        <div key={index} className="bg-black rounded-2xl overflow-hidden shadow-xl">
+          {/* Wrapper com proporção vertical (retrato) */}
+          <div className="relative w-full aspect-[3/4]">
+            <img
+              src={project}
+              alt={`Bônus ${index + 1}`}
+              className="absolute inset-0 w-full h-full object-cover select-none pointer-events-none"
+              draggable="false"
+            />
           </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
           
           {/* Botão estratégico intermediário */}
           <div className="mt-16">
@@ -611,8 +632,7 @@ Para ele, o que garante transformação é a constância, conquistada através d
               ACESSO TOTAL POR APENAS R$1,33/dia
             </a>
           </div>
-        </div>
-      </section>
+
 
       {/* Testimonials Section */}
       <section className="py-20 bg-black">
