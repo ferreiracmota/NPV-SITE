@@ -602,7 +602,7 @@ Para ele, o que garante transformação é a constância, conquistada através d
     <h2 className="text-4xl font-bold mb-12 text-center">{siteData.projects.title}</h2>
 
     {/* GRADE VERTICAL: mobile 2 colunas; desktop 5 colunas */}
-    <div className="grid grid-cols-2 md:grid-cols-5 gap-4 md:gap-6">
+    <div className="grid grid-cols-2 md:grid-cols-5 gap-2 md:gap-3">
       {siteData.projects.items.slice(0, 10).map((project, index) => (
         <div key={index} className="bg-black rounded-2xl overflow-hidden shadow-xl">
           {/* Wrapper com proporção vertical (retrato) */}
