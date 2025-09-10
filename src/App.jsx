@@ -164,18 +164,16 @@ import especialista4 from "./assets/Especialista4.PNG";
 import videofundo1 from "./assets/videofundo1.MP4";
 import sobremim from "./assets/sobre-mim.JPG";
 import videofundomobile from "./assets/videofundomobile.MP4";
-import dicas_corrida from './assets/dicas_corrida.PNG'
-import dicas_especialistas from './assets/dicas_especialistas.PNG'
-import dieta_objetivo from './assets/dieta_objetivo.PNG'
-import ebook_receitas from './assets/ebook_receitas.PNG'
-import planilhas_treino from './assets/planilhas_treino.PNG'
-import projeto_musas from './assets/projeto_musas.PNG'
-import treino_academia from './assets/treino_academia.PNG'
-import treinos_atualizados from './assets/treinos_atualizados.PNG'
-import treinos_express from './assets/treinos_express.PNG'
-import treinos_todos_niveis from './assets/treinos_todos_niveis.PNG'
-
-
+import dicas_corrida        from './assets/dicas_corrida.png'
+import dicas_especialistas  from './assets/dicas_especialistas.png'
+import dieta_objetivo       from './assets/dieta_objetivo.png'
+import ebook_receitas       from './assets/ebook_receitas.png'
+import planilhas_treino     from './assets/planilhas_treino.png'
+import projeto_musas        from './assets/projeto_musas.png'
+import treino_academia      from './assets/treino_academia.png'
+import treinos_atualizados  from './assets/treinos_atualizados.png'
+import treinos_express      from './assets/treinos_express.png'
+import treinos_todos_niveis from './assets/treinos_todos_niveis.png'
 
 import React, { useState, useEffect } from 'react'
 
