@@ -162,6 +162,16 @@
   background: #65a30d;
 }
 
+/* Esconde a barra de rolagem no Chrome, Safari e Edge */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Esconde a barra de rolagem no Firefox e IE */
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE e Edge */
+  scrollbar-width: none;    /* Firefox */
+}
 
 /* Advanced animations */
 @keyframes fade-in {
