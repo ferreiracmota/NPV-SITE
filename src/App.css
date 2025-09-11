@@ -173,6 +173,27 @@
   scrollbar-width: none;    /* Firefox */
 }
 
+/* esconde barra se o container permitir scroll (não é necessário aqui, mas útil) */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* loop infinito suave de logos */
+.logo-track {
+  display: inline-flex;           /* fila horizontal contínua */
+  gap: 12px;                      /* espaço entre logos (ajuste) */
+  will-change: transform;
+  animation: logos-marquee 20s linear infinite;
+}
+@keyframes logos-marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }  /* anda exatamente metade (uma cópia) */
+}
+
+/* cada item não quebra de linha e não expande */
+.logo-item { flex: 0 0 auto; width: 100px; } /* ajuste o 100px pro tamanho ideal */
+.logo-img  { width: 100%; height: 64px; object-fit: contain; opacity: .8; }
+
+
 /* Advanced animations */
 @keyframes fade-in {
   from {

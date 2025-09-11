@@ -177,148 +177,6 @@ import treinos_todos_niveis from './assets/treinos_todos_niveis.png'
 
 import React, { useState, useEffect } from 'react'
 
-
-function InfiniteLogos({ logos, itemWidth = "100px", gap = "16px", speed = 0.8 }) {
-  const wrapRef = React.useRef(null);
-  const rowRef  = React.useRef(null);
-  const draggingRef   = React.useRef(false);
-  const loopWidthRef  = React.useRef(0);
-
-  // Duplicamos a lista para um loop contínuo suave
-  const list = React.useMemo(() => logos.concat(logos), [logos]);
-
-  // Mede DEPOIS das imagens carregarem e quando o tamanho mudar
-  React.useEffect(() => {
-    const row = rowRef.current;
-    if (!row) return;
-
-    const waitImages = () =>
-      Promise.all(
-        Array.from(row.querySelectorAll("img")).map(img =>
-          img.complete ? Promise.resolve() : new Promise(res => img.addEventListener("load", res, { once: true }))
-        )
-      );
-
-    let ro;
-    (async () => {
-      await waitImages();
-      const measure = () => (loopWidthRef.current = (row.scrollWidth / 2) || 0);
-      measure();
-      ro = new ResizeObserver(measure);
-      ro.observe(row);
-    })();
-
-    return () => ro && ro.disconnect();
-  }, [list]);
-
-  // Autoplay contínuo (loop infinito para os dois lados)
-  React.useEffect(() => {
-    const wrap = wrapRef.current;
-    if (!wrap) return;
-
-    let raf;
-    const tick = () => {
-      if (!draggingRef.current) {
-        const L = loopWidthRef.current;
-        if (L > 0) {
-          let next = wrap.scrollLeft + speed;       // >0: para direita, <0: para esquerda
-          if (next >= L) next -= L;                 // passou do meio -> volta mantendo continuidade
-          if (next < 0)  next += L;                 // passou para a esquerda -> volta do fim
-          wrap.scrollLeft = next;
-        }
-      }
-      raf = requestAnimationFrame(tick);
-    };
-
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [speed]);
-
-  // Arraste com o dedo/mouse (também infinito)
-  React.useEffect(() => {
-    const wrap = wrapRef.current;
-    if (!wrap) return;
-
-    let isDown = false;
-    let startX = 0;
-    let startLeft = 0;
-    const getX = e => (e.touches ? e.touches[0].pageX : e.pageX);
-
-    const onDown = (e) => {
-      isDown = true;
-      draggingRef.current = true;
-      startX = getX(e);
-      startLeft = wrap.scrollLeft;
-    };
-
-    const onMove = (e) => {
-      if (!isDown) return;
-      e.preventDefault(); // não “puxar” a página no mobile
-      const dx = getX(e) - startX;
-      let next = startLeft - dx;
-
-      // Manter o loop enquanto arrasta
-      const L = loopWidthRef.current;
-      if (L > 0) {
-        if (next >= L) next -= L;
-        if (next < 0)  next += L;
-      }
-
-      wrap.scrollLeft = next;
-    };
-
-    const onUp = () => {
-      if (!isDown) return;
-      isDown = false;
-      draggingRef.current = false;
-    };
-
-    // mouse
-    wrap.addEventListener("mousedown", onDown, { passive: false });
-    window.addEventListener("mousemove", onMove, { passive: false });
-    window.addEventListener("mouseup", onUp, { passive: true });
-    // touch
-    wrap.addEventListener("touchstart", onDown, { passive: false });
-    window.addEventListener("touchmove", onMove, { passive: false });
-    window.addEventListener("touchend", onUp, { passive: true });
-
-    return () => {
-      wrap.removeEventListener("mousedown", onDown);
-      window.removeEventListener("mousemove", onMove);
-      window.removeEventListener("mouseup", onUp);
-      wrap.removeEventListener("touchstart", onDown);
-      window.removeEventListener("touchmove", onMove);
-      window.removeEventListener("touchend", onUp);
-    };
-  }, []);
-
-  return (
-    <div
-      ref={wrapRef}
-      className="-mx-4 px-4 overflow-x-auto no-scrollbar"
-      style={{ WebkitOverflowScrolling: "touch", willChange: "scroll-position" }}
-    >
-      <div
-        ref={rowRef}
-        className="flex items-center"
-        style={{ gap }}
-      >
-        {list.map((logo, i) => (
-          <div key={i} className="flex-shrink-0" style={{ width: itemWidth }}>
-            <img
-              src={logo}
-              alt={`Parceiro ${i + 1}`}
-              className="w-full h-16 object-contain opacity-80"
-              draggable="false"
-            />
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-
 function App() {
   const [currentTestimonial, setCurrentTestimonial] = useState(0)
   const [email, setEmail] = useState('')
@@ -664,7 +522,7 @@ Para ele, o que garante transformação é a constância, conquistada através d
           </div>
           
           {/* Carrossel horizontal de transformações */}
-          <div className="relative overflow-x-auto no-scrollbar">
+          <div className="relative overflow-hidden">
   <div className="inline-flex w-max animate-scroll-horizontal gap-2 md:gap-2">
     {[...siteData.beforeAfter, ...siteData.beforeAfter].map((img, index) => (
       <div
@@ -757,53 +615,21 @@ Para ele, o que garante transformação é a constância, conquistada através d
       </section>
 
       {/* Partners Section */}
-<section className="py-8 bg-gray-100">
-  <div className="container mx-auto px-4">
-    <h2 className="text-4xl font-bold text-center mb-12 text-[#AFCB21]">
-      {siteData.partners.title}
-    </h2>
-
-    {/* MOBILE: mesmo recurso do Antes & Depois */}
-    <div className="md:hidden">
-  <InfiniteLogos
-    logos={siteData.partners.logos} // suas 5 logos
-    itemWidth="100px"               // ajuste o “tamanho” de cada logo
-    gap="12px"                      // distância entre elas
-    speed={0.8}                     // 0.5 (mais lento) | 1.2 (mais rápido)
-  />
-</div>
-
-{/* DESKTOP/TABLET: mantém seu grid atual */}
-<div className="hidden md:block">
-  <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12 opacity-60">
-    {siteData.partners.logos.map((logo, index) => (
-      <img
-        key={index}
-        src={logo}
-        alt={`Parceiro ${index + 1}`}
-        className="h-16 md:h-24 object-contain grayscale md:grayscale-0 hover:scale-110 active:grayscale-0 transition-transform duration-300"
-      />
-    ))}
-  </div>
-</div>
-
-
-    {/* DESKTOP/TABLET: mantém seu grid */}
-    <div className="hidden md:block">
-      <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12 opacity-60">
-        {siteData.partners.logos.map((logo, index) => (
-          <img
-            key={index}
-            src={logo}
-            alt={`Parceiro ${index + 1}`}
-            className="h-16 md:h-24 object-contain grayscale md:grayscale-0 hover:scale-110 active:grayscale-0 transition-transform duration-300"
-          />
-        ))}
-      </div>
-    </div>
-  </div>
-</section>
-
+      <section className="py-8 bg-gray-100">
+        <div className="container mx-auto px-4">
+          <h2 className="text-4xl font-bold text-center mb-12 text-[#AFCB21]">{siteData.partners.title}</h2>
+          <div className="flex flex-wrap justify-center items-center gap-8 gap-y-4 md:gap-12 opacity-60">
+            {siteData.partners.logos.map((logo, index) => (
+              <img
+  key={index}
+  src={logo}
+  alt={`Parceiro ${index + 1}`}
+  className="h-16 md:h-24 object-contain gap-y-4 grayscale md:grayscale hover:grayscale-0 active:grayscale-0 hover:scale-110 active:scale-105 transition-all duration-300 cursor-pointer select-none"
+/>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* Testimonials Section */}
       <section className="py-20 bg-black">
