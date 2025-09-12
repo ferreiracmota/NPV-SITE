@@ -164,16 +164,16 @@ import especialista4 from "./assets/Especialista4.PNG";
 import videofundo1 from "./assets/videofundo1.MP4";
 import sobremim from "./assets/sobre-mim.JPG";
 import videofundomobile from "./assets/videofundomobile.MP4";
-import dicas_corrida        from './assets/dicas_corrida.png'
+import dicas_corrida        from './assets/dicas_corrida.jpg'
 import dicas_especialistas  from './assets/dicas_especialistas.png'
-import dieta_objetivo       from './assets/dieta_objetivo.png'
-import ebook_receitas       from './assets/ebook_receitas.png'
-import planilhas_treino     from './assets/planilhas_treino.png'
-import projeto_musas        from './assets/projeto_musas.png'
+import treino_mobilidade       from './assets/treino_mobilidade.jpg'
+import ebook_receitas       from './assets/ebook_receitas.jpg'
+import planilhas_treino     from './assets/planilhas_treino.jpg'
+import projeto_musas        from './assets/projeto_musas.jpg'
 import treino_academia      from './assets/treino_academia.png'
-import treinos_atualizados  from './assets/treinos_atualizados.png'
-import treinos_express      from './assets/treinos_express.png'
-import treinos_todos_niveis from './assets/treinos_todos_niveis.png'
+import treinos_atualizados  from './assets/treinos_atualizados.jpg'
+import treinos_express      from './assets/treinos_express.jpg'
+import moda_fit from './assets/moda_fit.jpg'
 
 import React, { useState, useEffect } from 'react'
 
@@ -238,7 +238,7 @@ function App() {
     },
     projects: {
       title: "BONUS DA PLATAFORMA",
-      items: [dicas_corrida, dicas_especialistas, dieta_objetivo, ebook_receitas, planilhas_treino, projeto_musas, treino_academia, treinos_atualizados, treinos_express, treinos_todos_niveis]
+      items: [dicas_corrida, dicas_especialistas, treino_mobilidade, ebook_receitas, planilhas_treino, projeto_musas, treino_academia, treinos_atualizados, treinos_express, moda_fit]
 
     },
     testimonials: [
