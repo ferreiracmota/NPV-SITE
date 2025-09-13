@@ -356,21 +356,22 @@ function App() {
         price: "R$ 39,90",
         features: [
           "Acesso completo à plataforma",
-          "Suporte 24/7",
           "Materiais exclusivos",
-          "Comunidade privada"
+          "Comunidade privada",
+          "Dietas e E-book de receitas",
+          "Bônus especiais"
         ]
       },
       quarterly: {
         title: "TRIMESTRAL",
         subtitle: "3 MESES",
-        price: "R$ 99,90",
+        price: "R$ 3x33,30",
         originalPrice: "R$ 119,70",
         features: [
           "Acesso completo à plataforma",
-          "Suporte 24/7",
           "Materiais exclusivos",
           "Comunidade privada",
+          "Dietas e E-book de receitas",
           "Bônus especiais"
         ]
       }
