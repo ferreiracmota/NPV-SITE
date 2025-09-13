@@ -328,3 +328,16 @@
   }
 }
 
+/* FAQ: animação de entrada (fade + subir) */
+.faq-anim {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity .5s ease, transform .5s ease;
+  will-change: opacity, transform;
+}
+
+.faq-anim.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+

@@ -177,7 +177,105 @@ import moda_fit from './assets/moda_fit.jpg'
 import planilha_dieta      from './assets/planilha_dieta.jpg'
 import dicas_psicologa      from './assets/dicas_psicologa.jpg'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
+
+// Componente FAQItem
+function FAQItem({ q, a, index }) {
+  // 1) Começa FECHADO
+  const [open, setOpen] = React.useState(false);
+
+  // 2) Só para animar a entrada (fade/slide) quando aparece na tela
+  const [visible, setVisible] = React.useState(false);
+  const ref = React.useRef(null);
+
+  React.useEffect(() => {
+    const io = new IntersectionObserver(
+      ([entry]) => entry.isIntersecting && setVisible(true),
+      { rootMargin: "0px 0px -20% 0px", threshold: 0.1 }
+    );
+    if (ref.current) io.observe(ref.current);
+    return () => io.disconnect();
+  }, []);
+
+  return (
+    <div
+      ref={ref}
+      // Fade + slide-in apenas; NÃO abre o conteúdo
+      className={`rounded-3xl bg-zinc-100 p-5 md:p-6 mb-4 md:mb-6
+                  transition-all duration-500
+                  ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"}`}
+      style={{ transitionDelay: `${index * 120}ms` }}
+    >
+      <button
+        type="button"
+        className="w-full flex items-center justify-between text-left"
+        aria-expanded={open}
+        aria-controls={`faq-panel-${index}`}
+        onClick={() => setOpen(o => !o)}
+      >
+        <span className="text-lg font-semibold">{q}</span>
+        <span className="text-sm leading-none">{open ? "▲" : "▶"}</span>
+      </button>
+
+      {/* Contêiner colapsável: começa fechado (altura 0) */}
+      <div
+        id={`faq-panel-${index}`}
+        className={`grid transition-all duration-300 ease-out ${
+          open ? "grid-rows-[1fr] mt-3" : "grid-rows-[0fr]"
+        }`}
+      >
+        <div className="overflow-hidden text-gray-700 text-base">
+          {a}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
+
+
+
+// Perguntas & respostas do FAQ
+const faqs = [
+  {
+    q: "Como vou ter acesso aos Treinos?",
+    a: "Após a compra ser confirmada você receberá um e-mail com o botão de login e senha para a área de membros onde terá acesso a todos os treinos."
+  },
+  {
+    q: "Como vou poder tirar dúvidas?",
+    a: "Você terá acesso ao Instagram exclusivo para alunos onde poderá tirar todas as dúvidas que surgirem."
+  },
+  {
+    q: "Quanto tempo dura o Plano?",
+    a: "Mensal: renova em 30 dias. Semestral: renova em 6 meses a partir da compra. Pode cancelar quando quiser pelo e-mail suporte@saomiguelito.com."
+  },
+  {
+    q: "Como faço para cancelar?",
+    a: "Envie um e-mail para suporte@saomiguelito.com ou fale com nosso WhatsApp de suporte."
+  },
+  {
+    q: "Os treinos têm data para serem alterados?",
+    a: "As planilhas são alteradas a cada 5 semanas. A data fica no canto superior das planilhas em PDF."
+  },
+  {
+    q: "Todos os exercícios têm vídeos das execuções?",
+    a: "Sim. Você terá acesso aos vídeos das execuções e às planilhas caso queira imprimir."
+  },
+  {
+    q: "Como vou saber qual o meu nível?",
+    a: "Você verá os três níveis e poderá avaliar em qual se encaixa. Se não concluir as séries e repetições prescritas, você está em um nível acima."
+  },
+  {
+    q: "Vou receber também dieta ou sugestão de suplementos?",
+    a: "Você recebe orientações gerais e materiais complementares conforme seu plano e módulos disponibilizados."
+  },
+  {
+    q: "Como o pagamento é feito?",
+    a: "O pagamento é processado pela plataforma de checkout; após aprovado, o acesso é liberado automaticamente."
+  }
+];
+
 
 function App() {
   const [currentTestimonial, setCurrentTestimonial] = useState(0)
@@ -276,6 +374,7 @@ function App() {
           "Bônus especiais"
         ]
       }
+      
     },
     instagram: {
       title: "SIGA-ME NO INSTAGRAM",
@@ -846,7 +945,7 @@ Para ele, o que garante transformação é a constância, conquistada através d
     E se achar que não é pra você 👉 <strong>cancelamos e devolvemos 100% do valor, sem desculpas.</strong>
   </p>
   <p>⚡ <strong>Zero burocracia. Zero pegadinha. Só resultado.</strong></p>
-  <p>Porque quando acreditamos no que entregamos, não precisamos de rodeios.</p>
+  <p>Porque acreditamos no que entregamos.</p>
 </div>
 
       </div>
@@ -855,7 +954,23 @@ Para ele, o que garante transformação é a constância, conquistada através d
   </div>
 </section>
 
+  <div className="min-h-screen bg-black text-white font-inter">
+    {/* ... aqui vem o banner, header, seções ... */}
 
+    {/* FAQ Section */}
+    <section id="faq" className="py-16 bg-zinc-50 text-black">
+      <div className="container mx-auto px-4">
+        <h2 className="text-3xl md:text-4xl font-bold text-center mb-10">
+          Possui alguma dúvida?
+        </h2>
+
+        <div className="space-y-4">
+          {faqs.map((item, i) => (
+            <FAQItem key={i} q={item.q} a={item.a} index={i} />
+          ))}
+        </div>
+      </div>
+    </section>
 
       {/* Instagram Section */}
       <section className="py-20 bg-gray-800">
@@ -884,6 +999,8 @@ Para ele, o que garante transformação é a constância, conquistada através d
           </div>
         </div>
       </section>
+  </div>
+
 
       {/* Footer */}
       <footer className="bg-black border-t border-gray-800 py-12">
