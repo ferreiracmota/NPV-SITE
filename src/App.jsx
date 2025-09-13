@@ -170,10 +170,12 @@ import treino_mobilidade       from './assets/treino_mobilidade.jpg'
 import ebook_receitas       from './assets/ebook_receitas.jpg'
 import planilhas_treino     from './assets/planilhas_treino.jpg'
 import projeto_musas        from './assets/projeto_musas.jpg'
-import treino_academia      from './assets/treino_academia.png'
+import treino_academia      from './assets/treino_academia.jpg'
 import treinos_atualizados  from './assets/treinos_atualizados.jpg'
 import treinos_express      from './assets/treinos_express.jpg'
 import moda_fit from './assets/moda_fit.jpg'
+import planilha_dieta      from './assets/planilha_dieta.jpg'
+import dicas_psicologa      from './assets/dicas_psicologa.jpg'
 
 import React, { useState, useEffect } from 'react'
 
@@ -238,7 +240,7 @@ function App() {
     },
     projects: {
       title: "BONUS DA PLATAFORMA",
-      items: [dicas_corrida, dicas_especialistas, treino_mobilidade, ebook_receitas, planilhas_treino, projeto_musas, treino_academia, treinos_atualizados, treinos_express, moda_fit]
+      items: [treino_academia, planilha_dieta, treino_mobilidade, ebook_receitas, dicas_corrida, planilhas_treino, projeto_musas, dicas_psicologa, treinos_atualizados, treinos_express, moda_fit, dicas_especialistas]
 
     },
     testimonials: [
@@ -567,8 +569,8 @@ Para ele, o que garante transformação é a constância, conquistada através d
     <h2 className="text-4xl font-bold mb-8">{siteData.projects.title}</h2>
 
     {/* grid dos cards */}
-    <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-      {siteData.projects.items.slice(0, 10).map((project, index) => (
+    <div className="grid grid-cols-2 md:grid-cols-6 gap-3 md:gap-6">
+      {siteData.projects.items.slice(0, 12).map((project, index) => (
         <div key={index} className="bg-black rounded-2xl overflow-hidden shadow-xl">
           <div className="relative w-full aspect-[3/4]">
             <img
