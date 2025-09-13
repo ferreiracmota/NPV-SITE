@@ -214,7 +214,7 @@ function FAQItem({ q, a, index }) {
         onClick={() => setOpen(o => !o)}
       >
         <span className="text-lg font-semibold">{q}</span>
-        <span className="text-sm leading-none">{open ? "▲" : "▶"}</span>
+        <span className="text-sm leading-none">{open ? "▲" : ">"}</span>
       </button>
 
       {/* Contêiner colapsável: começa fechado (altura 0) */}
