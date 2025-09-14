@@ -349,7 +349,31 @@ function App() {
       { image: asset70, name: "ANA COSTA", role: "PERSONAL TRAINER", text: "Programa completo e eficiente. Mudou minha perspectiva sobre fitness." }
     ],
     plans: {
-      title: "PLANOS/BENEFÍCIOS",
+      title: <div className="text-center mt-0 mb-10">
+  {/* Primeira linha */}
+  <p className="font-extrabold tracking-tight leading-tight text-4xl md:text-6xl text-pink-500">
+    VOCÊ É O AVIÃO
+  </p>
+
+  {/* Segunda linha */}
+  <p className="mt-1 uppercase font-semibold tracking-widest text-xs md:text-sm text-gray-800">
+    QUE ESTAVA FALTANDO NO TIME
+  </p>
+
+  {/* Terceira linha - com contorno */}
+  <p className="mt-3 font-extrabold text-5xl md:text-7xl custom-outline">
+    DECOLE AGORA!
+  </p>
+
+  {/* Quarta linha */}
+  <p className="mt-2 text-base md:text-lg text-gray-900">
+    <span className="font-bold">O corpo que você sonha</span>{" "}
+    <span className="font-light">está logo ali.</span>
+  </p>
+</div>
+
+
+,
       monthly: {
         title: "MENSAL",
         subtitle: "SEM FIDELIDADE",
@@ -384,15 +408,16 @@ function App() {
       posts: [asset72, asset73, asset74, asset75, asset76, asset77]
     },
     aboutMe: {
-      title: "SOBRE MIM",
-      photo: sobremim, // Placeholder - usuário pode trocar
-      text: [`Carlos Ferreira, com mais de 8 anos no mercado fitness e mais de 1.000 alunos já treinados, sempre buscou criar metodologias e combinações de treinos que facilitam a rotina e entregam resultados reais de forma prática.
+  title: "POR TRÁS DOS RESULTADOS",
+  photo: sobremim, // Placeholder - usuário pode trocar
+  text: [
+    "Carlos Ferreira, com mais de 8 anos no mercado fitness e mais de 1.000 alunos já treinados, sempre buscou criar metodologias e combinações de treinos que facilitam a rotina e entregam resultados reais de forma prática.",
+    "Sempre prezando pela eficiência, desenvolveu técnicas de alta performance adaptadas ao dia a dia, sem excesso e sem desgaste, entendendo que cada pessoa tem uma vida fora da academia que exige energia e disposição.",
+    "Para ele, o que garante transformação é a constância, conquistada através de treinos inteligentes, práticos e sustentáveis."
+  ],
+  sevenDaysBadge: asset47
+},
 
-Sempre prezando pela eficiência, desenvolveu técnicas de alta performance adaptadas ao dia a dia, sem excesso e sem desgaste, entendendo que cada pessoa tem uma vida fora da academia que exige energia e disposição.
-
-Para ele, o que garante transformação é a constância, conquistada através de treinos inteligentes, práticos e sustentáveis.`],
-      sevenDaysBadge: asset47 // Placeholder para selo "7 dias grátis"
-    },
     videoTestimonials: {
       title: "DEPOIMENTOS EM VÍDEO",
       subtitle: "Veja o que nossos alunos têm a dizer",
@@ -480,22 +505,40 @@ Para ele, o que garante transformação é a constância, conquistada através d
               
               {isContactDropdownOpen && (
                 <div className="absolute top-full left-0 mt-2 w-64 bg-gray-800 border border-gray-700 rounded-lg shadow-lg z-50">
-                  <div className="p-4">
-                    <div className="flex items-center mb-3">
-                      <svg className="w-5 h-5 text-[#AFCB21] mr-2" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
-                        <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
-                      </svg>
-                      <span className="text-white">naopensevai@gmail.com</span>
-                    </div>
-                    <div className="flex items-center">
-                      <svg className="w-5 h-5 text-[#AFCB21] mr-2" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
-                      </svg>
-                      <span className="text-white">(31) 97215-8847</span>
-                    </div>
-                  </div>
-                </div>
+  <div className="p-4">
+
+    {/* E-mail */}
+    <div className="flex items-center mb-3">
+      <svg className="w-5 h-5 text-[#AFCB21] mr-2" fill="currentColor" viewBox="0 0 20 20">
+        <path d="M2.003 5.884l8 4.8 8-4.8A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+        <path d="M18 8.118l-8 4.8-8-4.8V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+      </svg>
+      <a 
+        href="mailto:naopensevai@gmail.com" 
+        className="text-white hover:text-pink-500"
+      >
+        naopensevai@gmail.com
+      </a>
+    </div>
+
+    {/* Telefone/WhatsApp */}
+    <div className="flex items-center">
+      <svg className="w-5 h-5 text-[#AFCB21] mr-2" fill="currentColor" viewBox="0 0 20 20">
+        <path d="M2 3a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 01-1 1H3a1 1 0 01-1-1V3zM3 7h2a1 1 0 011 1v2a1 1 0 01-1 1H3a1 1 0 01-1-1V8a1 1 0 011-1zm0 4h2a1 1 0 011 1v2a1 1 0 01-1 1H3a1 1 0 01-1-1v-2a1 1 0 011-1zm4-8h2a1 1 0 011 1v2a1 1 0 01-1 1H7a1 1 0 01-1-1V3a1 1 0 011-1zm0 4h2a1 1 0 011 1v2a1 1 0 01-1 1H7a1 1 0 01-1-1V8a1 1 0 011-1z" />
+      </svg>
+      <a 
+        href="https://wa.me/5531972158847?text=Ol%C3%A1%2C%20quero%20saber%20mais%20sobre%20a%20plataforma%20de%20treino%20da%20N%C3%A3o%20Pense%20Vai." 
+        target="_blank" 
+        rel="noopener noreferrer"
+        className="text-white hover:text-pink-500"
+      >
+        (31) 97215-8847
+      </a>
+    </div>
+
+  </div>
+</div>
+
               )}
             </div>
           </nav>
@@ -536,18 +579,56 @@ Para ele, o que garante transformação é a constância, conquistada através d
               <button onClick={() => scrollToSection('inicio')} className="text-left hover:text-[#AFCB21] transition-colors">INÍCIO</button>
               <button onClick={() => scrollToSection('sobre')} className="text-left hover:text-[#AFCB21] transition-colors">SOBRE</button>
               <button onClick={() => scrollToSection('planos')} className="text-left hover:text-[#AFCB21] transition-colors">PLANOS</button>
-              <button onClick={() => scrollToSection('contato')} className="text-left hover:text-[#AFCB21] transition-colors">CONTATO</button>
-              <a 
-            href="https://pay.hotmart.com/N97646212X?off=xmopb4bq&hotfeature=51&_hi=eyJjaWQiOiIxNzIyODIwNDcyNDEyNTMxNzU1NzcyNjcyMDg0MzAwIiwiYmlkIjoiMTcyMjgyMDQ3MjQxMjUzMTc1NTc3MjY3MjA4NDMwMCIsInNpZCI6IjBlNDEwZGM1ZGExMTQ5YWRiY2ExOWYzYThhMzk0Y2JkIn0=.1757258903000&bid=1757258905260" 
-            target="_blank" 
-            rel="noopener noreferrer"
-              className="bg-[#AFCB21] text-black px-6 py-2 rounded font-medium hover:bg-[#AFCB21] transition-colors w-fit">
-                ENTRAR
-              </a>
-            </nav>
-          </div>
-        )}
-      </header>
+             {/* Dropdown CONTATO */}
+<div className="relative">
+  <button
+    onClick={() => setIsContactDropdownOpen((v) => !v)}
+    className="hover:text-[#AFCB21] transition-colors flex items-center"
+  >
+    CONTATO
+    <svg className="w-4 h-4 ml-1 fill-current" viewBox="0 0 20 20">
+      <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414L10 13.414 5.293 8.707a1 1 0 010-1.414z" />
+    </svg>
+  </button>
+
+  {isContactDropdownOpen && (
+    <div className="absolute top-full left-0 mt-2 w-64 bg-gray-800 border border-gray-700 rounded-lg shadow-lg z-50 p-4">
+      {/* E-mail */}
+      <a
+        href="mailto:naopensevai@gmail.com"
+        className="flex items-center gap-2 text-white hover:text-[#AFCB21] transition-colors"
+        onClick={() => setIsMenuOpen(false)}
+      >
+        <svg className="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
+          <path d="M2.94 6.34l6.47 4.04c.37.23.83.23 1.2 0l6.47-4.04A2 2 0 0016.76 5H3.24a2 2 0 00-.3 1.34z" />
+          <path d="M17 7.76l-5.74 3.59a3 3 0 01-3.12 0L2.4 7.76V14a2 2 0 002 2h10.8a2 2 0 002-2V7.76z" />
+        </svg>
+        <span>naopensevai@gmail.com</span>
+      </a>
+
+      {/* WhatsApp */}
+      <a
+        href="https://wa.me/5531972158847?text=Ol%C3%A1%2C%20quero%20saber%20mais%20sobre%20a%20plataforma%20de%20treino%20da%20N%C3%A3o%20Pense%20e%20Vai."
+        target="_blank"
+        rel="noopener noreferrer"
+        className="mt-3 flex items-center gap-2 text-white hover:text-[#AFCB21] transition-colors"
+        onClick={() => setIsMenuOpen(false)}
+      >
+        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M20.52 3.48A11.94 11.94 0 0012.06 0C5.45 0 .1 5.35.1 11.96c0 2.11.55 4.17 1.59 5.98L0 24l6.24-1.63a11.93 11.93 0 005.82 1.49h.01c6.61 0 11.96-5.35 11.96-11.96 0-3.2-1.25-6.21-3.51-8.42zM12.06 21.9h-.01a9.93 9.93 0 01-5.04-1.37l-.36-.21-3.7.97.99-3.61-.23-.37a9.92 9.92 0 01-1.51-5.35C2.2 6.45 6.5 2.15 12.06 2.15c2.64 0 5.13 1.03 7 2.9a9.83 9.83 0 012.95 7c0 5.56-4.3 9.85-9.95 9.85zm5.77-7.43c-.31-.16-1.82-.9-2.1-1-.28-.1-.48-.16-.69.16-.2.31-.79 1-.97 1.2-.18.21-.36.23-.67.08-.31-.16-1.3-.48-2.48-1.53-.92-.82-1.54-1.84-1.72-2.15-.18-.31-.02-.48.13-.63.14-.14.31-.36.46-.54.16-.18.21-.31.31-.51.1-.21.05-.39-.02-.55-.08-.16-.69-1.65-.95-2.26-.25-.61-.51-.52-.69-.52-.18 0-.39-.02-.6-.02-.21 0-.55.08-.84.39-.28.31-1.1 1.08-1.1 2.63 0 1.55 1.13 3.05 1.29 3.26.16.21 2.23 3.4 5.4 4.76.76.33 1.36.52 1.83.67.77.25 1.47.21 2.02.13.62-.09 1.82-.74 2.08-1.45.26-.71.26-1.32.18-1.45-.08-.13-.28-.21-.59-.37z" />
+        </svg>
+        <span>(31) 97215-8847</span>
+      </a>
+    </div>
+  )}
+</div>
+{/* fim do CONTATO com dropdown */}
+
+    </nav>
+
+    {/* mantenha aqui embaixo o seu link "ENTRAR" e o que mais já existe */}
+  </div>
+)}      </header>
 
       {/* Hero Section */}
 <section
@@ -580,10 +661,10 @@ Para ele, o que garante transformação é a constância, conquistada através d
 
   {/* Conteúdo por cima do vídeo */}
   <div className="relative z-10 text-center px-4 mt-60 md:mt-0">
-    <h1 className="text-4xl md:text-6xl lg:text-7xl font-black leading-tight">
+    <h1 className="text-4xl md:text-6xl lg:text-6xl font-black leading-tight">
       <span className="text-white block animate-slide-up">{siteData.hero.title}</span>
       <span className="text-white block animate-slide-up animation-delay-200">{siteData.hero.subtitle}</span>
-      <span className="text-pink-500 text-[55px] md:text-7x1 lg:text-8x1 font-black block drop-shadow-md animate-slide-up animation-delay-400">{siteData.hero.subtitle2}</span>
+      <span className="text-pink-500 text-[55px] md:text-[90px] lg:text-8x1 font-black block drop-shadow-md animate-slide-up animation-delay-400">{siteData.hero.subtitle2}</span>
       <span className="text-white block animate-slide-up animation-delay-600">{siteData.hero.subtitle3}</span>
       <span className="text-xs sm:text-sm font-light text-white mt-2 block text-center">
   <span className="hidden sm:inline">
@@ -771,8 +852,12 @@ Para ele, o que garante transformação é a constância, conquistada através d
 
       {/* Plans Section */}
       <section id="planos" className="py-20 bg-gray-100">
-        <div className="container mx-auto px-4">
-          <h2 className="text-4xl font-bold text-center mb-12 text-[#AFCB21]">{siteData.plans.title}</h2>
+  <div className="container mx-auto px-4">
+    <h2 className="text-4xl font-bold text-center mb-12 text-[#AFCB21]">
+      {siteData.plans.title}
+    </h2>
+    {/* ...grid dos cards... */}
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {/* Plano Mensal */}
             <div className="bg-black border border-gray-700 rounded-lg p-8 text-center hover:scale-105 transition-transform duration-300 shadow-xl">
@@ -820,7 +905,7 @@ Para ele, o que garante transformação é a constância, conquistada através d
                 href="https://pay.hotmart.com/N97646212X?off=xmopb4bq&hotfeature=51&_hi=eyJjaWQiOiIxNzIyODIwNDcyNDEyNTMxNzU1NzcyNjcyMDg0MzAwIiwiYmlkIjoiMTcyMjgyMDQ3MjQxMjUzMTc1NTc3MjY3MjA4NDMwMCIsInNpZCI6IjBlNDEwZGM1ZGExMTQ5YWRiY2ExOWYzYThhMzk0Y2JkIn0=.1757252754756&bid=1757252757439" 
                 target="_blank"
       rel="noopener noreferrer"
-      className="block w-full max-w-md mx-auto text-center text-[20px] font-light text-white py-4 px-6 rounded-lg bg-[#AFCB21] glow-button mt-7"
+      className="block w-full max-w-md mx-auto text-center text-[20px] font-light text-white py-4 px-6 rounded-lg bg-black glow-button mt-7"
     >
                 ASSINAR AGORA
               </a>
@@ -830,7 +915,7 @@ Para ele, o que garante transformação é a constância, conquistada através d
       </section>
 
       {/* About Me Section */}
-      <section id="about-section" className="py-0 bg-black">
+      <section id="about-section" className="py-10 bg-black">
         <div className="container mx-auto px-4">
           <div className="flex flex-col lg:flex-row items-center gap-12">
             {/* Foto à esquerda */}
@@ -844,30 +929,25 @@ Para ele, o que garante transformação é a constância, conquistada através d
             
             {/* Texto à direita */}
             <div className="lg:w-1/2">
-              <h2 className="text-4xl font-bold mb-6 text-[#AFCB21]">
+              <h2 className="text-3xl font-bold mb-6 text-[#AFCB21] text-center leading-snug">
   {siteData.aboutMe.title}
 </h2>
 
-{Array.isArray(siteData.aboutMe.text)
-  ? siteData.aboutMe.text.map((paragraph, index) => (
-      <p key={index} className="text-lg text-gray-300 leading-relaxed mb-4">
-        {paragraph}
-      </p>
-    ))
-  : (
-      <p className="text-lg text-gray-300 leading-relaxed mb-4">
-        {siteData.aboutMe.text}
-      </p>
-    )
+{Array.isArray(siteData.aboutMe.text) &&
+  siteData.aboutMe.text.map((paragraph, index) => (
+    <p key={index} className="text-lg text-gray-300 leading-relaxed mb-4">
+      {paragraph}
+    </p>
+  ))
 }
-              <a 
+              {/*<a 
                 href="https://pay.hotmart.com/N97646212X?off=xmopb4bq&hotfeature=51&_hi=eyJjaWQiOiIxNzIyODIwNDcyNDEyNTMxNzU1NzcyNjcyMDg0MzAwIiwiYmlkIjoiMTcyMjgyMDQ3MjQxMjUzMTc1NTc3MjY3MjA4NDMwMCIsInNpZCI6IjBlNDEwZGM1ZGExMTQ5YWRiY2ExOWYzYThhMzk0Y2JkIn0=.1757252754756&bid=1757252757439" 
                 target="_blank"
       rel="noopener noreferrer"
       className="block w-full max-w-md mx-auto text-center text-[20px] font-light text-white py-4 px-6 rounded-lg bg-[#AFCB21] glow-button mt-7"
     >
                 COMEÇAR AGORA
-              </a>
+              </a> */}
             </div>
           </div>
         </div>
