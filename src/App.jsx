@@ -248,11 +248,11 @@ const faqs = [
   },
   {
     q: "Quanto tempo dura o Plano?",
-    a: "Mensal: renova em 30 dias. Semestral: renova em 6 meses a partir da compra. Pode cancelar quando quiser pelo e-mail suporte@saomiguelito.com."
+    a: "Mensal: renova em 30 dias. Trimestral: renova em 3 meses a partir da compra. Pode cancelar quando quiser pelo e-mail naopensevai@gmail.com."
   },
   {
     q: "Como faço para cancelar?",
-    a: "Envie um e-mail para suporte@saomiguelito.com ou fale com nosso WhatsApp de suporte."
+    a: "Envie um e-mail para naopensevai@gmail.com ou fale com nosso WhatsApp de suporte."
   },
   {
     q: "Os treinos têm data para serem alterados?",
@@ -264,7 +264,7 @@ const faqs = [
   },
   {
     q: "Como vou saber qual o meu nível?",
-    a: "Você verá os três níveis e poderá avaliar em qual se encaixa. Se não concluir as séries e repetições prescritas, você está em um nível acima."
+    a: "Você verá os três níveis e poderá avaliar em qual se encaixa. Se não concluir as séries e repetições prescritas, você entrou em um nível acima."
   },
   {
     q: "Vou receber também dieta ou sugestão de suplementos?",
