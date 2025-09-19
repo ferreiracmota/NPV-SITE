@@ -329,13 +329,25 @@ function App() {
       antesDepois1, antesDepois2, antesDepois3, antesDepois4, antesDepois5, antesDepois6, antesDepois7, antesDepois8, antesDepois9, antesDepois10
     ],
     team: {
-      title: "UMA EQUIPE DE ESPECIALISTAS",
-      members: [especialista1, especialista2, especialista3, especialista4]
-    },
+  title: "UMA EQUIPE DE ESPECIALISTAS",
+  members: [
+    { photo: especialista1, name: "Carina Gomes", role: "Corredora" },
+    { photo: especialista2, name: "Gabriel Ferreira", role: "Fisioterapeuta" },
+    { photo: especialista3, name: "Denise Cunha",           role: "Nutricionista" },
+    { photo: especialista4, name: "Carlos Ferreira", role: "Educador Fisico" }
+  ]
+},
     partners: {
-      title: "NOSSOS PARCEIROS",
-      logos: [parceiro1, parceiro2, parceiro3, parceiro4, parceiro5]
-    },
+  title: "NOSSOS PARCEIROS",
+  items: [
+    { logo: parceiro1, link: "https://www.teste.com.br" },
+    { logo: parceiro2, link: "https://www.teste.com.br" },
+    { logo: parceiro3, link: "https://www.teste.com.br" },
+    { logo: parceiro4, link: "https://www.teste.com.br" },
+    { logo: parceiro5, link: "https://www.teste.com.br" }
+  ]
+},
+
     projects: {
       title: "BONUS DA PLATAFORMA",
       items: [treino_academia, planilha_dieta, treino_mobilidade, ebook_receitas, dicas_corrida, planilhas_treino, projeto_musas, dicas_psicologa, treinos_atualizados, treinos_express, moda_fit, dicas_especialistas]
@@ -780,37 +792,60 @@ function App() {
 </section>
 
  {/* Team Section */}
-      <section className="py-12 bg-black">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-4xl font-bold mb-12">{siteData.team.title}</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 justify-items-center">
-            {siteData.team.members.map((member, index) => (
-              <div key={index} className="text-center group">
-                <img 
-                  src={member} 
-                  alt={`Mestre ${index + 1}`} 
-                  className="w-32 h-32 rounded-full mx-auto mb-4 object-cover group-hover:scale-110 transition-transform duration-300 shadow-lg"
-                />
-              </div>
-            ))}
+<section className="py-12 bg-black">
+  <div className="container mx-auto px-4 text-center">
+    
+    {/* UMA EQUIPE DE ESPECIALISTAS */}
+    <h2 className="text-4xl font-bold mb-12 text-center">
+      {siteData.team.title}
+    </h2>
+
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-8 justify-items-center">
+      {siteData.team.members.map((m, index) => (
+        <div key={index} className="text-center group">
+          <img
+            src={m.photo}
+            alt={m.name}
+            className="w-32 h-32 rounded-full mx-auto mb-3 object-cover group-hover:scale-110 transition-transform duration-300 shadow-lg"
+          />
+          <div className="leading-tight">
+            <strong className="block">{m.name}</strong>
+            <span className="block text-xs text-white/70">{m.role}</span>
           </div>
         </div>
-      </section>
+      ))}
+    </div>
+  </div>
+</section>
+
 
       {/* Partners Section */}
       <section className="py-8 bg-gray-100">
         <div className="container mx-auto px-4">
-          <h2 className="text-4xl font-bold text-center mb-12 text-[#AFCB21]">{siteData.partners.title}</h2>
-          <div className="flex flex-wrap justify-center items-center gap-8 gap-y-4 md:gap-12 opacity-60">
-            {siteData.partners.logos.map((logo, index) => (
-              <img
-  key={index}
-  src={logo}
-  alt={`Parceiro ${index + 1}`}
-  className="h-16 md:h-24 object-contain gap-y-4 grayscale md:grayscale hover:grayscale-0 active:grayscale-0 hover:scale-110 active:scale-105 transition-all duration-300 cursor-pointer select-none"
-/>
-            ))}
-          </div>
+          <h2 className="text-4xl font-bold text-[#AFCB21] mb-12 text-center">
+  {siteData.partners.title}
+</h2>
+
+<div className="flex flex-wrap justify-center items-center gap-8 gap-y-4 md:gap-12 opacity-60">
+  {siteData.partners.items.map((p, index) => (
+    <a
+      key={index}
+      href={p.link}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="block"
+    >
+      <img
+        src={p.logo}
+        alt={`Parceiro ${index + 1}`}
+        className="h-16 md:h-24 object-contain gap-y-4 grayscale md:grayscale hover:grayscale-0 active:grayscale-0 hover:scale-110 active:scale-105 transition-all duration-300 cursor-pointer select-none"
+      />
+    </a>
+  ))}
+</div>
+
+
+
         </div>
       </section>
 
