@@ -161,6 +161,7 @@ import especialista1 from "./assets/Especialista1.PNG";
 import especialista2 from "./assets/Especialista2.PNG";
 import especialista3 from "./assets/Especialista3.PNG";
 import especialista4 from "./assets/Especialista4.PNG";
+import especialista5 from "./assets/Especialista5.PNG";
 import videofundo1 from "./assets/videofundo1.MP4";
 import sobremim from "./assets/sobre-mim.JPG";
 import videofundomobile from "./assets/videofundomobile.MP4";
@@ -334,7 +335,8 @@ function App() {
     { photo: especialista1, name: "Carina Gomes", role: "Corredora" },
     { photo: especialista2, name: "Gabriel Ferreira", role: "Fisioterapeuta" },
     { photo: especialista3, name: "Denise Cunha",           role: "Nutricionista" },
-    { photo: especialista4, name: "Carlos Ferreira", role: "Educador Fisico" }
+    { photo: especialista4, name: "Jéssica Silva", role: "Psicóloga" },
+    { photo: especialista5, name: "Carlos Ferreira", role: "Educador Físico" }
   ]
 },
     partners: {
@@ -800,9 +802,19 @@ function App() {
       {siteData.team.title}
     </h2>
 
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-8 justify-items-center">
+    <div className="grid grid-cols-2 gap-8 justify-items-center 
+            md:flex md:flex-wrap md:justify-center md:gap-12">
+
       {siteData.team.members.map((m, index) => (
-        <div key={index} className="text-center group">
+        <div
+    key={index}
+    className={
+      "text-center group " +
+      (index === siteData.team.members.length - 1
+        ? "col-span-2 justify-self-center md:col-span-1" // centraliza a última no mobile
+        : "")
+    }
+  >
           <img
             src={m.photo}
             alt={m.name}
@@ -826,23 +838,28 @@ function App() {
   {siteData.partners.title}
 </h2>
 
-<div className="flex flex-wrap justify-center items-center gap-8 gap-y-4 md:gap-12 opacity-60">
-  {siteData.partners.items.map((p, index) => (
-    <a
-      key={index}
-      href={p.link}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="block"
-    >
-      <img
-        src={p.logo}
-        alt={`Parceiro ${index + 1}`}
-        className="h-16 md:h-24 object-contain gap-y-4 grayscale md:grayscale hover:grayscale-0 active:grayscale-0 hover:scale-110 active:scale-105 transition-all duration-300 cursor-pointer select-none"
-      />
-    </a>
-  ))}
+{/* Carrossel horizontal de parceiros (mesma lógica do Antes & Depois) */}
+<div className="relative overflow-hidden">
+  <div className="inline-flex w-max items-center animate-scroll-horizontal gap-8 md:gap-12">
+    {[...siteData.partners.items, ...siteData.partners.items].map((p, index) => (
+      <a
+        key={index}
+        href={p.link}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-flex shrink-0"
+      >
+        <img
+  src={p.logo}
+  alt={`Parceiro ${index % siteData.partners.items.length + 1}`}
+  className="h-16 md:h-24 w-auto object-contain filter grayscale contrast-75 brightness-110 hover:grayscale-0 hover:brightness-100 transition-all duration-300"
+/>
+
+      </a>
+    ))}
+  </div>
 </div>
+
 
 
 
