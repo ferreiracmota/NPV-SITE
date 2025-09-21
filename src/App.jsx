@@ -683,6 +683,39 @@ function App() {
     />
   </div>
 
+{/* Logos por cima do vídeo – topo da hero */}
+<div
+  className="
+    absolute left-1/2 -translate-x-1/2
+    top-2 md:top-3          /* ajuste fino da distância do topo */
+    z-40                     /* abaixo do header (z-50), acima do vídeo */
+    flex items-center gap-4 md:gap-6
+  "
+>
+  {siteData.partners.items.map((p, i) => (
+    <a
+      key={`hero-logo-${i}`}
+      href={p.link}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="transition duration-300"
+    >
+      <img
+  src={p.logo}
+  alt={`Parceiro ${i + 1}`}
+  className="
+    h-5 md:h-7 object-contain
+    filter brightness-0
+    hover:brightness-100 hover:grayscale-0
+    transition duration-300
+  "
+/>
+
+    </a>
+  ))}
+</div>
+
+
   {/* Conteúdo por cima do vídeo */}
   <div className="relative z-10 text-center px-4 mt-60 md:mt-0">
     <h1 className="text-4xl md:text-6xl lg:text-6xl font-black leading-tight">

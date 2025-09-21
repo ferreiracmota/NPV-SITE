@@ -313,7 +313,7 @@
 /* Acelera APENAS o carrossel dos parceiros no mobile */
 @media (max-width: 768px) {
   .animate-scroll-horizontal.partners-fast {
-    animation-duration: 6s; /* ajuste a gosto: menor = mais rápido */
+    animation-duration: 7s; /* ajuste a gosto: menor = mais rápido */
   }
 }
 
