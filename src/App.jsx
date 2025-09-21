@@ -847,43 +847,52 @@ function App() {
           <h2
   className="
     text-4xl font-bold mb-6 text-center
-    text-gray-400          /* mobile: cinza */
+    text-[#AFCB21]          /* mobile: cinza */
     md:text-[#AFCB21]      /* desktop: verde */
   "
 >
   NOSSOS PARCEIROS
 </h2>
 
-{/* Carrossel horizontal de parceiros (mesma lógica do Antes & Depois) */}
+{/* Carrossel horizontal de parceiros */}
 <div className="relative overflow-hidden">
-  <div className="inline-flex w-max items-center animate-scroll-horizontal gap-8 md:gap-12">
+  <div className="inline-flex w-max items-center animate-scroll-horizontal partners-fast gap-8 md:gap-12">
     {[...siteData.partners.items, ...siteData.partners.items].map((p, index) => (
-      <a
+      <div
         key={index}
-        href={p.link}
-        target="_blank"
-        rel="noopener noreferrer"
         className="group inline-flex shrink-0 flex-col items-center"
+        onTouchStart={(e) => e.currentTarget.classList.add('touched')}
+        onTouchEnd={(e) => e.currentTarget.classList.remove('touched')}
+        onTouchCancel={(e) => e.currentTarget.classList.remove('touched')}
+        onMouseLeave={(e) => e.currentTarget.classList.remove('touched')}
       >
         <a href={p.link} target="_blank" rel="noopener noreferrer" className="group">
-  <img
-    src={p.logo}
-    alt={`Parceiro ${index + 1}`}
-    className="
-      h-20 md:h-24 max-w-[120px] object-contain mx-auto
-      grayscale-0
-      md:grayscale md:group-hover:grayscale-0
-      transition duration-300
-    "
-  />
-</a>
+          <img
+            src={p.logo}
+            alt={`Parceiro ${index + 1}`}
+            className="
+              h-20 md:h-24 max-w-[120px] object-contain mx-auto
+
+              /* MOBILE: lavado por padrão */
+              grayscale brightness-90
+
+              /* MOBILE: toca = colorido */
+              group-[.touched]:grayscale-0 group-[.touched]:brightness-100
+
+              /* DESKTOP: hover = colorido */
+              md:group-hover:grayscale-0 md:group-hover:brightness-100
+
+              transition duration-300
+            "
+          />
+        </a>
 
         {p.coupon && (
-          <span className="mt-1 text-[11px] text-black md:text-xs font-medium uppercase tracking-wide opacity-70 group-hover:opacity-100 transition-opacity">
+          <span className="mt-1 text-[11px] text-black md:text-xs font-medium">
             CUPOM: {p.coupon}
           </span>
         )}
-      </a>
+      </div>
     ))}
   </div>
 </div>
