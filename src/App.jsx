@@ -53,9 +53,9 @@ import modulo9      from './assets/modulo9.jpg'
 import modulo10 from './assets/modulo10.jpg'
 import modulo11      from './assets/modulo11.jpg'
 import modulo12      from './assets/modulo12.png'
-import depoimento1      from './assets/depoimento1.png'
-import depoimento2      from './assets/depoimento2.png'
-import depoimento3      from './assets/depoimento3.png'
+import depoimento1      from './assets/depoimento1.PNG'
+import depoimento2      from './assets/depoimento2.PNG'
+import depoimento3      from './assets/depoimento3.PNG'
 
 import React, { useState, useEffect, useRef } from 'react'
 
