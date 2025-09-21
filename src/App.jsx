@@ -53,9 +53,6 @@ import modulo9      from './assets/modulo9.jpg'
 import modulo10 from './assets/modulo10.jpg'
 import modulo11      from './assets/modulo11.jpg'
 import modulo12      from './assets/modulo12.png'
-import depoimento1      from './assets/depoimento1.PNG'
-import depoimento2      from './assets/depoimento2.PNG'
-import depoimento3      from './assets/depoimento3.PNG'
 
 import React, { useState, useEffect, useRef } from 'react'
 
@@ -237,9 +234,9 @@ function App() {
 
     },
     testimonials: [
-      { image: depoimento1, name: "ALEX MARTINS", role: "PERSONAL TRAINER", text: "Transformação incrível! O programa mudou completamente minha vida e minha forma física." },
-      { image: depoimento2, name: "KETLEN LARA", role: "", text: "Desde que comecei, não foi só o meu corpo que mudou, mas principalmente minha mentalidade. Tem sido incrível! 🤩💪" },
-      { image: depoimento3, name: "ANA CLARA", role: "", text: "a plataforma é simplesmente maraaavilhosa, tem tudo!!" },
+      { image: asset66, name: "ALEX MARTINS", role: "PERSONAL TRAINER", text: "Transformação incrível! O programa mudou completamente minha vida e minha forma física." },
+      { image: asset67, name: "KETLEN LARA", role: "", text: "Desde que comecei, não foi só o meu corpo que mudou, mas principalmente minha mentalidade. Tem sido incrível! 🤩💪" },
+      { image: asset68, name: "ANA CLARA", role: "", text: "a plataforma é simplesmente maraaavilhosa, tem tudo!!" },
       { image: asset69, name: "JOÃO PEDRO", role: "EDUCADOR FÍSICO", text: "Superou todas as minhas expectativas. Equipe altamente qualificada." },
       { image: asset70, name: "ANA COSTA", role: "PERSONAL TRAINER", text: "Programa completo e eficiente. Mudou minha perspectiva sobre fitness." }
     ],
