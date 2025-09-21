@@ -844,8 +844,14 @@ function App() {
       {/* Partners Section */}
       <section className="py-8 bg-gray-100">
         <div className="container mx-auto px-4">
-          <h2 className="text-4xl font-bold text-[#AFCB21] mb-12 text-center">
-  {siteData.partners.title}
+          <h2
+  className="
+    text-4xl font-bold mb-6 text-center
+    text-gray-400          /* mobile: cinza */
+    md:text-[#AFCB21]      /* desktop: verde */
+  "
+>
+  NOSSOS PARCEIROS
 </h2>
 
 {/* Carrossel horizontal de parceiros (mesma lógica do Antes & Depois) */}
@@ -859,12 +865,19 @@ function App() {
         rel="noopener noreferrer"
         className="group inline-flex shrink-0 flex-col items-center"
       >
-        <img
-          src={p.logo}
-          alt={`Parceiro ${index % siteData.partners.items.length + 1}`}
-          className="h-20 md:h-24 max-w-[120px] object-contain grayscale contrast-75 brightness-110 hover:grayscale-0 hover:contrast-100 hover:brightness-100 transition-all duration-300 mx-auto"
+        <a href={p.link} target="_blank" rel="noopener noreferrer" className="group">
+  <img
+    src={p.logo}
+    alt={`Parceiro ${index + 1}`}
+    className="
+      h-20 md:h-24 max-w-[120px] object-contain mx-auto
+      grayscale-0
+      md:grayscale md:group-hover:grayscale-0
+      transition duration-300
+    "
+  />
+</a>
 
-        />
         {p.coupon && (
           <span className="mt-1 text-[11px] text-black md:text-xs font-medium uppercase tracking-wide opacity-70 group-hover:opacity-100 transition-opacity">
             CUPOM: {p.coupon}
