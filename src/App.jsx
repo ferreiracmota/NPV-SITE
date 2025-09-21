@@ -165,18 +165,18 @@ import especialista5 from "./assets/Especialista5.PNG";
 import videofundo1 from "./assets/videofundo1.MP4";
 import sobremim from "./assets/sobre-mim.JPG";
 import videofundomobile from "./assets/videofundomobile.MP4";
-import dicas_corrida        from './assets/dicas_corrida.jpg'
-import dicas_especialistas  from './assets/dicas_especialistas.png'
-import treino_mobilidade       from './assets/treino_mobilidade.jpg'
-import ebook_receitas       from './assets/ebook_receitas.jpg'
-import planilhas_treino     from './assets/planilhas_treino.jpg'
-import projeto_musas        from './assets/projeto_musas.jpg'
-import treino_academia      from './assets/treino_academia.jpg'
-import treinos_atualizados  from './assets/treinos_atualizados.jpg'
-import treinos_express      from './assets/treinos_express.jpg'
-import moda_fit from './assets/moda_fit.jpg'
-import planilha_dieta      from './assets/planilha_dieta.jpg'
-import dicas_psicologa      from './assets/dicas_psicologa.jpg'
+import modulo1        from './assets/modulo1.jpg'
+import modulo2  from './assets/modulo2.jpg'
+import modulo3       from './assets/modulo3.jpg'
+import modulo4       from './assets/modulo4.jpg'
+import modulo5     from './assets/modulo5.jpg'
+import modulo6        from './assets/modulo6.jpg'
+import modulo7      from './assets/modulo7.jpg'
+import modulo8  from './assets/modulo8.jpg'
+import modulo9      from './assets/modulo9.jpg'
+import modulo10 from './assets/modulo10.jpg'
+import modulo11      from './assets/modulo11.jpg'
+import modulo12      from './assets/modulo12.png'
 
 import React, { useState, useEffect, useRef } from 'react'
 
@@ -354,7 +354,7 @@ function App() {
 
     projects: {
       title: "BONUS DA PLATAFORMA",
-      items: [treino_academia, planilha_dieta, treino_mobilidade, ebook_receitas, dicas_corrida, planilhas_treino, projeto_musas, dicas_psicologa, treinos_atualizados, treinos_express, moda_fit, dicas_especialistas]
+      items: [modulo1, modulo2, modulo3, modulo4, modulo5, modulo6, modulo7, modulo8, modulo9, modulo10, modulo11,modulo12]
 
     },
     testimonials: [
