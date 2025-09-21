@@ -424,12 +424,14 @@ function App() {
       posts: [asset72, asset73, asset74, asset75, asset76, asset77]
     },
     aboutMe: {
-  title: "POR TRÁS DOS RESULTADOS",
+  title: "UM NOVO JEITO<br />DE EVOLUIR",
   photo: sobremim, // Placeholder - usuário pode trocar
   text: [
-    "Carlos Ferreira, com mais de 8 anos no mercado fitness e mais de 1.000 alunos já treinados, sempre buscou criar metodologias e combinações de treinos que facilitam a rotina e entregam resultados reais de forma prática.",
-    "Sempre prezando pela eficiência, desenvolveu técnicas de alta performance adaptadas ao dia a dia, sem excesso e sem desgaste, entendendo que cada pessoa tem uma vida fora da academia que exige energia e disposição.",
-    "Para ele, o que garante transformação é a constância, conquistada através de treinos inteligentes, práticos e sustentáveis."
+    "Com mais de 8 anos no mercado fitness e mais de 1.000 alunos já treinados, <strong>Carlos Ferreira</strong> sempre entendeu que <strong>resultados reais não vêm apenas de treinos</strong>. Eles acontecem quando o treino certo, com as combinações adequadas e o volume correto, se unem a uma mente saudável, a uma boa alimentação e ao cuidado com o corpo como um todo.",
+
+    "Foi pensando nisso que nasceu a plataforma <strong>Não Pense, Vai!</strong>, um ambiente completo, criado para entregar tudo o que você precisa em um só lugar.",
+
+    "Aqui, cada detalhe importa: treinos inteligentes, orientação prática e o suporte necessário para que você evolua de forma consistente, saudável e duradoura."
   ],
   sevenDaysBadge: asset47
 },
@@ -704,7 +706,7 @@ function App() {
   src={p.logo}
   alt={`Parceiro ${i + 1}`}
   className="
-    h-5 md:h-7 object-contain
+    h-7 md:h-10 object-contain
     filter brightness-0
     hover:brightness-100 hover:grayscale-0
     transition duration-300
@@ -1051,15 +1053,20 @@ function App() {
             
             {/* Texto à direita */}
             <div className="lg:w-1/2">
-              <h2 className="text-3xl font-bold mb-6 text-[#AFCB21] text-center leading-snug">
-  {siteData.aboutMe.title}
-</h2>
+              <h2
+  className="text-3xl font-bold mb-6 text-[#AFCB21] text-center leading-snug"
+  dangerouslySetInnerHTML={{ __html: siteData.aboutMe.title }}
+/>
+
 
 {Array.isArray(siteData.aboutMe.text) &&
   siteData.aboutMe.text.map((paragraph, index) => (
-    <p key={index} className="text-lg text-gray-300 leading-relaxed mb-4">
-      {paragraph}
-    </p>
+    <p
+  key={index}
+  className="text-lg text-gray-300 leading-relaxed mb-4"
+  dangerouslySetInnerHTML={{ __html: paragraph }}
+/>
+
   ))
 }
               {/*<a 
