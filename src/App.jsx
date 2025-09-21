@@ -772,42 +772,21 @@ function App() {
 <div className="relative overflow-hidden">
   <div className="inline-flex w-max items-center animate-scroll-horizontal partners-fast gap-8 md:gap-12">
     {[...siteData.partners.items, ...siteData.partners.items].map((p, index) => (
-      <div
-        key={index}
-        className="group inline-flex shrink-0 flex-col items-center"
-        onTouchStart={(e) => e.currentTarget.classList.add('touched')}
-        onTouchEnd={(e) => e.currentTarget.classList.remove('touched')}
-        onTouchCancel={(e) => e.currentTarget.classList.remove('touched')}
-        onMouseLeave={(e) => e.currentTarget.classList.remove('touched')}
-      >
-        <a href={p.link} target="_blank" rel="noopener noreferrer" className="group">
-          <img
-            src={p.logo}
-            alt={`Parceiro ${index + 1}`}
-            className="
-              h-20 md:h-24 max-w-[120px] object-contain mx-auto
-
-              /* MOBILE: lavado por padrão */
-              grayscale brightness-90
-
-              /* MOBILE: toca = colorido */
-              group-[.touched]:grayscale-0 group-[.touched]:brightness-100
-
-              /* DESKTOP: hover = colorido */
-              md:group-hover:grayscale-0 md:group-hover:brightness-100
-
-              transition duration-300
-            "
-          />
-        </a>
-
-        {p.coupon && (
-          <span className="mt-1 text-[11px] text-black md:text-xs font-medium">
-            CUPOM: {p.coupon}
-          </span>
-        )}
-      </div>
-    ))}
+  <div key={index} className="group inline-flex shrink-0 flex-col items-center">
+    <a href={p.link} target="_blank" rel="noopener noreferrer" className="group">
+      <img
+        src={p.logo}
+        alt={`Parceiro ${index + 1}`}
+        className="h-20 md:h-24 w-auto max-w-[160px] object-contain mx-auto transition duration-300 grayscale brightness-90 group-[:touched]:grayscale-0 group-[:touched]:brightness-100 md:group-hover:grayscale-0 md:group-hover:brightness-100"
+      />
+    </a>
+    {p.coupon && (
+      <span className="mt-1 text-[11px] text-black md:text-xs font-medium">
+        CUPOM: {p.coupon}
+      </span>
+    )}
+  </div>
+))}
   </div>
 </div>
 
