@@ -159,7 +159,7 @@ function App() {
   const [email, setEmail] = useState('')
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isContactDropdownOpen, setIsContactDropdownOpen] = useState(false)
-  const showTestimonials = true; // começa oculto
+  const showTestimonials = false; // começa oculto
   const showVideoTestimonials = false; // começa oculto
 
   // Carregar script do LightWidget
@@ -763,13 +763,22 @@ useEffect(() => {
         <div className="container mx-auto px-4">
           <h2
   className="
-    text-4xl font-bold mb-6 text-center
-    text-[#AFCB21]          /* mobile: cinza */
-    md:text-[#AFCB21]      /* desktop: verde */
+    text-4xl font-bold mb-2 text-center
+    text-[#AFCB21] /* mobile */
+    md:text-[#AFCB21] /* desktop */
   "
 >
   NOSSOS PARCEIROS
 </h2>
+
+<p
+  className="
+    text-tx text-center text-gray-600 mt-0 mb-4 leading-none
+  "
+>
+  Clique e aproveite os benefícios
+</p>
+
 
 {/* Carrossel horizontal de parceiros */}
 <div className="relative overflow-hidden">
