@@ -159,6 +159,8 @@ function App() {
   const [email, setEmail] = useState('')
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isContactDropdownOpen, setIsContactDropdownOpen] = useState(false)
+  const showTestimonials = false; // começa oculto
+  const showVideoTestimonials = false; // começa oculto
 
   // Carregar script do LightWidget
   useEffect(() => {
@@ -798,45 +800,33 @@ useEffect(() => {
       </section>
 
       {/* Testimonials Section */}
-      <section className="py-20 bg-black">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-4xl font-bold mb-12">DEPOIMENTOS</h2>
-          <div className="max-w-3xl mx-auto">
-            <div className="relative bg-gray-900 rounded-2xl p-8 shadow-2xl">
-  {/* avatar redondo com overflow para esconder qualquer “quadrado” no press */}
-  <div className="w-24 h-24 mx-auto mb-6 rounded-full overflow-hidden border-4 border-[#AFCB21] select-none">
-    <img
-      src={siteData.testimonials[currentTestimonial].image}
-      alt={siteData.testimonials[currentTestimonial].name}
-      className="w-full h-full object-cover"
-      draggable="false"
-    />
-  </div>
-
-              <blockquote className="text-lg text-gray-300 mb-6 italic">
-                "{siteData.testimonials[currentTestimonial].text}"
-              </blockquote>
-              <h3 className="text-xl font-bold text-[#AFCB21] mb-2">
-                {siteData.testimonials[currentTestimonial].name}
-              </h3>
-              <p className="text-gray-400">
-                {siteData.testimonials[currentTestimonial].role}
-              </p>
-            </div>
-            <div className="flex justify-center space-x-2 mt-8">
-              {siteData.testimonials.map((_, index) => (
-                <button
-                  key={index}
-                  className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                    index === currentTestimonial ? 'bg-[#AFCB21] scale-125' : 'bg-gray-600 hover:bg-gray-500'
-                  }`}
-                  onClick={() => setCurrentTestimonial(index)}
-                />
-              ))}
-            </div>
+{showTestimonials && (
+  <section className="py-20 bg-black">
+    <div className="container mx-auto px-4 text-center">
+      <h2 className="text-4xl font-bold mb-12">DEPOIMENTOS</h2>
+      <div className="max-w-3xl mx-auto">
+        <div className="relative bg-gray-900 rounded-2xl p-8 shadow-2xl">
+          {/* avatar redondo */}
+          <div className="w-24 h-24 mx-auto mb-6 rounded-full overflow-hidden border-4 border-[#AFCB21] select-none">
+            <img
+              src={siteData.testimonials[currentTestimonial].image}
+              alt={siteData.testimonials[currentTestimonial].name}
+              className="w-full h-full object-cover"
+              draggable="false"
+            />
           </div>
+          <blockquote className="text-lg text-gray-300 mb-6 italic">
+            {siteData.testimonials[currentTestimonial].text}
+          </blockquote>
+          <h3 className="text-xl font-bold text-[#AFCB21] mb-2">
+            {siteData.testimonials[currentTestimonial].name}
+          </h3>
         </div>
-      </section>
+      </div>
+    </div>
+  </section>
+)}
+
 
       {/* Plans Section */}
       <section id="planos" className="py-20 bg-gray-100">
@@ -947,46 +937,48 @@ useEffect(() => {
       </section>
 
       {/* Video Testimonials Section */}
-      <section className="py-20 bg-gray-900">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold mb-4">{siteData.videoTestimonials.title}</h2>
-            <p className="text-gray-400 text-lg">{siteData.videoTestimonials.subtitle}</p>
-          </div>
-          
-          {/* Grid de vídeos - 4 vídeos na vertical (MOBILE) */}
-<div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-10">
-  {siteData.videoTestimonials.videos.map((video) => (
-    <div
-      key={video.id}
-      className="relative w-full aspect-[9/16] overflow-hidden rounded-lg bg-black"
-    >
-      <iframe
-        src={video.videoUrl}               // ideal: URL /embed/… (ex.: https://www.youtube.com/embed/ID)
-        title={video.title}
-        className="absolute inset-0 w-full h-full block"
-        frameBorder="0"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
-        allowFullScreen
-      />
-    </div>
-  ))}
-</div>
+{showVideoTestimonials && (
+  <section className="py-20 bg-gray-900">
+    <div className="container mx-auto px-4">
+      <div className="text-center mb-12">
+        <h2 className="text-4xl font-bold mb-4">{siteData.videoTestimonials.title}</h2>
+        <p className="text-gray-400 text-lg">{siteData.videoTestimonials.subtitle}</p>
+      </div>
 
-          
-          {/* CTA após vídeos */}
-          <div className="text-center mt-12">
-            <a 
-              href="https://pay.hotmart.com/N97646212X?off=xmopb4bq&hotfeature=51&_hi=eyJjaWQiOiIxNzIyODIwNDcyNDEyNTMxNzU1NzcyNjcyMDg0MzAwIiwiYmlkIjoiMTcyMjgyMDQ3MjQxMjUzMTc1NTc3MjY3MjA4NDMwMCIsInNpZCI6IjBlNDEwZGM1ZGExMTQ5YWRiY2ExOWYzYThhMzk0Y2JkIn0=.1757252754756&bid=1757252757439" 
-              target="_blank"
-      rel="noopener noreferrer"
-      className="block w-full max-w-md mx-auto text-center text-[20px] font-light text-white py-4 px-6 rounded-lg bg-[#AFCB21] glow-button mt-7"
-    >
-              QUERO TER ESSES RESULTADOS
-            </a>
+      {/* Grid de vídeos */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-10">
+        {siteData.videoTestimonials.videos.map((video) => (
+          <div
+            key={video.id}
+            className="relative w-full aspect-[9/16] overflow-hidden rounded-lg bg-black"
+          >
+            <iframe
+              src={video.videoUrl}
+              title={video.title}
+              className="absolute inset-0 w-full h-full block"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
+              allowFullScreen
+            ></iframe>
           </div>
-        </div>
-      </section>
+        ))}
+      </div>
+
+      {/* CTA após vídeos */}
+      <div className="text-center mt-12">
+        <a
+          href="https://pay.hotmart.com/..."
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block w-full max-w-md mx-auto text-center text-[20px] font-light text-white py-4 px-6 rounded-lg bg-[#AFCB21] glow-button mt-4"
+        >
+          QUERO TER ESSES RESULTADOS
+        </a> 
+      </div> {/* CTA */}
+      </div> {/* container */}
+  </section> 
+)}
+
 
       {/* Guarantee Seal Section */}
 <section className="py-16 bg-black">
