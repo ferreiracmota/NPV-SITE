@@ -803,13 +803,15 @@ useEffect(() => {
           <h2 className="text-4xl font-bold mb-12">DEPOIMENTOS</h2>
           <div className="max-w-3xl mx-auto">
             <div className="relative bg-gray-900 rounded-2xl p-8 shadow-2xl">
-              <img
-  src={siteData.testimonials[currentTestimonial].image}
-  alt={siteData.testimonials[currentTestimonial].name}
-  className="w-24 h-24 rounded-full mx-auto mb-6 object-cover border-4 border-[#AFCB21]"
-  draggable="false"
-  onContextMenu={(e) => e.preventDefault()}
-/>
+  {/* avatar redondo com overflow para esconder qualquer “quadrado” no press */}
+  <div className="w-24 h-24 mx-auto mb-6 rounded-full overflow-hidden border-4 border-[#AFCB21] select-none">
+    <img
+      src={siteData.testimonials[currentTestimonial].image}
+      alt={siteData.testimonials[currentTestimonial].name}
+      className="w-full h-full object-cover"
+      draggable="false"
+    />
+  </div>
 
               <blockquote className="text-lg text-gray-300 mb-6 italic">
                 "{siteData.testimonials[currentTestimonial].text}"
