@@ -186,21 +186,32 @@
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-/* loop infinito suave de logos */
-.logo-track {
-  display: inline-flex;           /* fila horizontal contínua */
-  gap: 12px;                      /* espaço entre logos (ajuste) */
+/* --- Parceiros: animação horizontal contínua --- */
+.partners-marquee { overflow: hidden; position: relative; white-space: nowrap; box-sizing: border-box; }
+
+.partners-track {
+  display: inline-block;
   will-change: transform;
-  animation: logos-marquee 20s linear infinite;
-}
-@keyframes logos-marquee {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }  /* anda exatamente metade (uma cópia) */
+  animation: partners-marquee 32s linear infinite;
 }
 
-/* cada item não quebra de linha e não expande */
-.logo-item { flex: 0 0 auto; width: 100px; } /* ajuste o 100px pro tamanho ideal */
-.logo-img  { width: 100%; height: 64px; object-fit: contain; opacity: .8; }
+/* desktop: um pouco mais lento */
+@media (min-width: 768px) {
+  .partners-track { animation-duration: 10s; }
+}
+
+/* acessibilidade: respeita quem reduz animações */
+@media (prefers-reduced-motion: reduce) {
+  .partners-track { animation-duration: 0s; }
+}
+
+@keyframes partners-marquee {
+  0%   { transform: translateX(0); }
+  /* como duplicamos a lista, -50% fecha o loop sem “pulo” */
+  100% { transform: translateX(-100%); }
+}
+.partners-marquee:active .partners-track { animation-play-state: paused; }
+
 
 
 /* Advanced animations */
@@ -384,5 +395,16 @@
     -webkit-text-stroke: 2px #fff;  /* contorno mais grosso no desktop */
     text-stroke: 2px #fff;
   }
+}
+
+/* evita callout/preview no iOS/Android e seleção/arrasto */
+img, .no-touch-callout {
+  -webkit-touch-callout: none;   /* iOS: bloquear menu de toque */
+  -webkit-user-select: none;     /* iOS/Android */
+  user-select: none;
+  -webkit-user-drag: none;       /* Safari */
+  user-drag: none;
+  -webkit-tap-highlight-color: transparent; /* tira flash no tap */
+  touch-action: manipulation;    /* melhora gestos */
 }
 

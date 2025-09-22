@@ -159,7 +159,7 @@ function App() {
   const [email, setEmail] = useState('')
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isContactDropdownOpen, setIsContactDropdownOpen] = useState(false)
-  const showTestimonials = false; // começa oculto
+  const showTestimonials = true; // começa oculto
   const showVideoTestimonials = false; // começa oculto
 
   // Carregar script do LightWidget
