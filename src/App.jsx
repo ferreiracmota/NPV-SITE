@@ -5,11 +5,11 @@ import asset14 from './assets/544-2717.webp'
 import asset15 from './assets/544-2719.webp'
 import asset16 from './assets/544-2721.webp'
 import asset47 from './assets/692-4129.webp'
-import asset66 from './assets/647-3704.webp'
-import asset67 from './assets/647-3709.webp'
-import asset68 from './assets/647-3714.webp'
-import asset69 from './assets/647-3719.webp'
-import asset70 from './assets/647-3724.webp'
+import comentario1 from './assets/comentario1.webp'
+import comentario2 from './assets/comentario2.webp'
+import comentario3 from './assets/comentario3.webp'
+import comentario4 from './assets/comentario4.webp'
+import comentario5 from './assets/comentario5.webp'
 import asset72 from './assets/647-3837.webp'
 import asset73 from './assets/647-3838.webp'
 import asset74 from './assets/647-3839.webp'
@@ -52,7 +52,7 @@ import modulo8  from './assets/modulo8.jpg'
 import modulo9      from './assets/modulo9.jpg'
 import modulo10 from './assets/modulo10.jpg'
 import modulo11      from './assets/modulo11.jpg'
-import modulo12      from './assets/modulo12.png'
+import modulo12      from './assets/modulo12.jpg'
 
 import React, { useState, useEffect, useRef } from 'react'
 
@@ -156,7 +156,6 @@ const faqs = [
 
 
 function App() {
-  const [currentTestimonial, setCurrentTestimonial] = useState(0)
   const [email, setEmail] = useState('')
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isContactDropdownOpen, setIsContactDropdownOpen] = useState(false)
@@ -174,12 +173,12 @@ function App() {
   }, [])
 
   // Auto-rotate testimonials
-  useEffect(() => {
+  /*useEffect(() => {
     const interval = setInterval(() => {
       setCurrentTestimonial((prev) => (prev + 1) % 3) // 3 depoimentos
     }, 4000)
     return () => clearInterval(interval)
-  }, [])
+  }, [])*/
 
   // Função para scroll suave até seção
   const scrollToSection = (sectionId) => {
@@ -212,8 +211,8 @@ function App() {
     { photo: especialista1, name: "Carina Gomes", role: "Corredora" },
     { photo: especialista2, name: "Gabriel Ferreira", role: "Fisioterapeuta" },
     { photo: especialista3, name: "Denise Cunha",           role: "Nutricionista" },
-    { photo: especialista4, name: "Jéssica Silva", role: "Psicóloga" },
-    { photo: especialista5, name: "Carlos Ferreira", role: "Educador Físico" }
+    { photo: especialista4, name: "Carlos Ferreira", role: "Educador Físico" },
+    //{ photo: especialista5, name: "Jéssica Silva", role: "Psicóloga" },
   ]
 },
     partners: {
@@ -234,11 +233,11 @@ function App() {
 
     },
     testimonials: [
-      { image: asset66, name: "ALEX MARTINS", role: "PERSONAL TRAINER", text: "Transformação incrível! O programa mudou completamente minha vida e minha forma física." },
-      { image: asset67, name: "KETLEN LARA", role: "", text: "Desde que comecei, não foi só o meu corpo que mudou, mas principalmente minha mentalidade. Tem sido incrível! 🤩💪" },
-      { image: asset68, name: "ANA CLARA", role: "", text: "a plataforma é simplesmente maraaavilhosa, tem tudo!!" },
-      { image: asset69, name: "JOÃO PEDRO", role: "EDUCADOR FÍSICO", text: "Superou todas as minhas expectativas. Equipe altamente qualificada." },
-      { image: asset70, name: "ANA COSTA", role: "PERSONAL TRAINER", text: "Programa completo e eficiente. Mudou minha perspectiva sobre fitness." }
+      { image: comentario1, name: "ANA CLARA", role: "PERSONAL TRAINER", text: "Transformação incrível! O programa mudou completamente minha vida e minha forma física." },
+      { image: comentario2, name: "KETLEN LARA", role: "", text: "Desde que comecei, não foi só o meu corpo que mudou, mas principalmente minha mentalidade. Tem sido incrível! 🤩💪" },
+      { image: comentario3, name: "LETICIA GOMES", role: "", text: "a plataforma é simplesmente maraaavilhosa, tem tudo!!" },
+      { image: comentario4, name: "MARIA", role: "EDUCADOR FÍSICO", text: "Superou todas as minhas expectativas. Equipe altamente qualificada." },
+      { image: comentario5, name: "EMANUELA ALMEIDA", role: "PERSONAL TRAINER", text: "Programa completo e eficiente. Mudou minha perspectiva sobre fitness." }
     ],
     plans: {
       title: <div className="text-center mt-0 mb-10">
@@ -344,13 +343,17 @@ function App() {
     }
   }
 
-  // Auto-rotate testimonials
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentTestimonial((prev) => (prev + 1) % siteData.testimonials.length)
-    }, 4000)
-    return () => clearInterval(interval)
-  }, [siteData.testimonials.length])
+  const testimonials = siteData.testimonials || [];
+const [currentTestimonial, setCurrentTestimonial] = useState(0);
+
+  // Auto-rotate testimonials (roda todos que existirem)
+useEffect(() => {
+  if (testimonials.length === 0) return; // segurança
+  const id = setInterval(() => {
+    setCurrentTestimonial(prev => (prev + 1) % testimonials.length);
+  }, 4000);
+  return () => clearInterval(id);
+}, [testimonials.length]);
 
   // Handle email subscription
   const handleEmailSubmit = (e) => {
@@ -731,9 +734,10 @@ function App() {
     key={index}
     className={
       "text-center group " +
-      (index === siteData.team.members.length - 1
-        ? "col-span-2 justify-self-center md:col-span-1" // centraliza a última no mobile
-        : "")
+      (index === siteData.team.members.length - 1 && siteData.team.members.length % 2 === 1
+  ? "col-span-2 justify-self-center md:col-span-1" // centraliza a última só se sobrar 1
+  : "")
+
     }
   >
           <img
