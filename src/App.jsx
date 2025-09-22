@@ -233,11 +233,11 @@ function App() {
 
     },
     testimonials: [
-      { image: comentario1, name: "ANA CLARA", role: "PERSONAL TRAINER", text: "Transformação incrível! O programa mudou completamente minha vida e minha forma física." },
+      { image: comentario1, name: "ANA CLARA", role: "", text: "amoooo demais!!" },
       { image: comentario2, name: "KETLEN LARA", role: "", text: "Desde que comecei, não foi só o meu corpo que mudou, mas principalmente minha mentalidade. Tem sido incrível! 🤩💪" },
       { image: comentario3, name: "LETICIA GOMES", role: "", text: "a plataforma é simplesmente maraaavilhosa, tem tudo!!" },
-      { image: comentario4, name: "MARIA", role: "EDUCADOR FÍSICO", text: "Superou todas as minhas expectativas. Equipe altamente qualificada." },
-      { image: comentario5, name: "EMANUELA ALMEIDA", role: "PERSONAL TRAINER", text: "Programa completo e eficiente. Mudou minha perspectiva sobre fitness." }
+      { image: comentario4, name: "MARIA", role: "", text: "Superou todas as minhas expectativas. Equipe altamente qualificada." },
+      { image: comentario5, name: "EMANUELA ALMEIDA", role: "", text: "sempre gostei de treinar so bumbum..kkkk...mas agora com esses resultados de braços e costas ,nossa eu tô amandoooo muito viu!" }
     ],
     plans: {
       title: <div className="text-center mt-0 mb-10">
@@ -803,11 +803,14 @@ useEffect(() => {
           <h2 className="text-4xl font-bold mb-12">DEPOIMENTOS</h2>
           <div className="max-w-3xl mx-auto">
             <div className="relative bg-gray-900 rounded-2xl p-8 shadow-2xl">
-              <img 
-                src={siteData.testimonials[currentTestimonial].image} 
-                alt={siteData.testimonials[currentTestimonial].name}
-                className="w-24 h-24 rounded-full mx-auto mb-6 object-cover border-4 border-[#AFCB21]"
-              />
+              <img
+  src={siteData.testimonials[currentTestimonial].image}
+  alt={siteData.testimonials[currentTestimonial].name}
+  className="w-24 h-24 rounded-full mx-auto mb-6 object-cover border-4 border-[#AFCB21]"
+  draggable="false"
+  onContextMenu={(e) => e.preventDefault()}
+/>
+
               <blockquote className="text-lg text-gray-300 mb-6 italic">
                 "{siteData.testimonials[currentTestimonial].text}"
               </blockquote>
