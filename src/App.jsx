@@ -220,11 +220,11 @@ function App() {
     partners: {
   title: "NOSSOS PARCEIROS",
   items: [
-    { logo: parceiro1, link: "https://www.teste.com.br", coupon: "" },
-    { logo: parceiro2, link: "https://www.teste.com.br", coupon: "NPV10" },
-    { logo: parceiro3, link: "https://www.teste.com.br", coupon: "NPV15" },
-    { logo: parceiro4, link: "https://www.teste.com.br", coupon: "" },
-    { logo: parceiro5, link: "https://www.teste.com.br", coupon: "" }
+    { logo: parceiro1, link: "", coupon: "" },
+    { logo: parceiro2, link: "https://www.instagram.com/ciadoesporte2/", coupon: "NPV10" },
+    { logo: parceiro3, link: "", coupon: "" },
+    { logo: parceiro4, link: "https://www.instagram.com/nf.modafitness/", coupon: "" },
+    { logo: parceiro5, link: "https://www.instagram.com/ciladasburguer/", coupon: "NPV15" }
   ]
 }
 ,
@@ -625,7 +625,7 @@ useEffect(() => {
 
     {/* Botão */}
     <a
-      href="https://pay.hotmart.com/N97646212X?off=xmopb4bq&hotfeature=518"
+      href="https://pay.hotmart.com/J102054674M?off=g64ryxgr&checkoutMode=10"
       target="_blank"
       rel="noopener noreferrer"
       className="block w-full max-w-md mx-auto text-center text-[20px] font-light text-white py-4 px-6 rounded-lg bg-[#AFCB21] glow-button mt-10"
@@ -636,13 +636,26 @@ useEffect(() => {
   </div>
 </section>
 
-      {/* Before/After Section */}
-      <section id="sobre" className="py-12 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold mb-4 text-[#AFCB21]">ANTES E DEPOIS</h2>
-            <p className="text-gray-900">Veja as transformações reais dos nossos alunos</p>
-          </div>
+      {/* Antes e Depois Section */}
+<section className="pt-12 pb-6 bg-white">
+  <div className="container mx-auto px-4 text-center">
+
+    {/* Título principal em verde */}
+    <h2 className="text-3xl md:text-4xl leading-tight text-center text-[#AFCB21] mb-3">
+  <span className="font-light">O ANTES É </span>
+  <span className="font-bold">HISTÓRIA</span>
+  <br />
+  <span className="font-light">O DEPOIS, </span>
+  <span className="font-bold">INSPIRAÇÃO</span>
+</h2>
+
+
+
+    {/* Subtítulo menor e leve */}
+    <p className="text-lg text-gray-600 mb-8">
+      O que hoje é <span className="font-bold text-pink-600">inspiração</span> já foi apenas um começo. 
+      <span className="font-bold text-pink-600">Agora é a sua vez.</span>
+    </p>
           
           {/* Carrossel horizontal de transformações */}
           <div className="relative overflow-hidden">
@@ -671,7 +684,7 @@ useEffect(() => {
           {/* Botão estratégico */}
           <div className="text-center mt-12">
             <a 
-              href="https://pay.hotmart.com/N97646212X?off=xmopb4bq&hotfeature=51&_hi=eyJjaWQiOiIxNzIyODIwNDcyNDEyNTMxNzU1NzcyNjcyMDg0MzAwIiwiYmlkIjoiMTcyMjgyMDQ3MjQxMjUzMTc1NTc3MjY3MjA4NDMwMCIsInNpZCI6IjBlNDEwZGM1ZGExMTQ5YWRiY2ExOWYzYThhMzk0Y2JkIn0=.1757252754756&bid=1757252757439" 
+              href="https://pay.hotmart.com/J102054674M?off=g64ryxgr&checkoutMode=10" 
               target="_blank"
       rel="noopener noreferrer"
       className="block w-full max-w-md mx-auto text-center text-[20px] font-light text-white py-4 px-6 rounded-lg bg-[#AFCB21] glow-button mt-7"
@@ -685,9 +698,17 @@ useEffect(() => {
 
 
 {/* Projects Section (BÔNUS) */}
-<section className="pt-12 pb-6 bg-gray-900">
+<section className="py-6 bg-gray-900">
   <div className="container mx-auto px-4 text-center">
-    <h2 className="text-4xl font-bold mb-8">{siteData.projects.title}</h2>
+    <h2 className="text-4xl leading-tight mt-0 mb-3">
+      <span className="font-bold block">COMPLETO?</span>
+      <span className="font-light block italic">NÃO, ALÉM!</span>
+    </h2>
+
+    <p className="text-lg text-gray-300 mb-8">
+      Nunca foi tão fácil ter <strong>acesso a tudo</strong> o que você precisa <strong>para transformar seu corpo</strong>.
+    </p>
+
 
     {/* grid dos cards */}
     <div className="grid grid-cols-2 md:grid-cols-6 gap-3 md:gap-6">
@@ -708,10 +729,10 @@ useEffect(() => {
     {/* Botão dentro da seção */}
     <div className="mt-8">
       <a
-        href="https://pay.hotmart.com/N97646212X"
+        href="https://pay.hotmart.com/J102054674M?off=g64ryxgr&checkoutMode=10"
         target="_blank"
         rel="noopener noreferrer"
-        className="block w-full max-w-md mx-auto text-center text-[15px] font-light text-white py-4 px-6 rounded-lg bg-[#AFCB21] glow-button"
+        className="block w-full max-w-md mx-auto text-center text-[15px] font-black text-white py-4 px-6 rounded-lg bg-pink-500 glow-button"
       >
         ACESSO TOTAL POR APENAS R$1,33/dia
       </a>
@@ -776,7 +797,7 @@ useEffect(() => {
     text-tx text-center text-gray-600 mt-0 mb-4 leading-none
   "
 >
-  Clique e aproveite os benefícios
+  Clique e aproveite os <strong>benefícios</strong>
 </p>
 
 
@@ -860,7 +881,7 @@ useEffect(() => {
                 ))}
               </ul>
               <a 
-                href="https://pay.hotmart.com/N97646212X?off=xmopb4bq&hotfeature=51&_hi=eyJjaWQiOiIxNzIyODIwNDcyNDEyNTMxNzU1NzcyNjcyMDg0MzAwIiwiYmlkIjoiMTcyMjgyMDQ3MjQxMjUzMTc1NTc3MjY3MjA4NDMwMCIsInNpZCI6IjBlNDEwZGM1ZGExMTQ5YWRiY2ExOWYzYThhMzk0Y2JkIn0=.1757252754756&bid=1757252757439" 
+                href="https://pay.hotmart.com/J102054674M?off=g64ryxgr&checkoutMode=10" 
                 target="_blank"
       rel="noopener noreferrer"
       className="block w-full max-w-md mx-auto text-center text-[20px] font-light text-white py-4 px-6 rounded-lg bg-[#AFCB21] glow-button mt-7"
@@ -933,7 +954,7 @@ useEffect(() => {
   ))
 }
               {/*<a 
-                href="https://pay.hotmart.com/N97646212X?off=xmopb4bq&hotfeature=51&_hi=eyJjaWQiOiIxNzIyODIwNDcyNDEyNTMxNzU1NzcyNjcyMDg0MzAwIiwiYmlkIjoiMTcyMjgyMDQ3MjQxMjUzMTc1NTc3MjY3MjA4NDMwMCIsInNpZCI6IjBlNDEwZGM1ZGExMTQ5YWRiY2ExOWYzYThhMzk0Y2JkIn0=.1757252754756&bid=1757252757439" 
+                href="https://pay.hotmart.com/J102054674M?off=g64ryxgr&checkoutMode=10" 
                 target="_blank"
       rel="noopener noreferrer"
       className="block w-full max-w-md mx-auto text-center text-[20px] font-light text-white py-4 px-6 rounded-lg bg-[#AFCB21] glow-button mt-7"
@@ -976,7 +997,7 @@ useEffect(() => {
       {/* CTA após vídeos */}
       <div className="text-center mt-12">
         <a
-          href="https://pay.hotmart.com/..."
+          href="https://pay.hotmart.com/J102054674M?off=g64ryxgr&checkoutMode=10"
           target="_blank"
           rel="noopener noreferrer"
           className="block w-full max-w-md mx-auto text-center text-[20px] font-light text-white py-4 px-6 rounded-lg bg-[#AFCB21] glow-button mt-4"
