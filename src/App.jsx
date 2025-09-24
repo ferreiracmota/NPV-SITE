@@ -944,7 +944,7 @@ useEffect(() => {
 
 {/* Carrossel horizontal de parceiros */}
 <div className="relative overflow-hidden">
-  <div className="inline-flex w-max items-center animate-scroll-horizontal partners-fast gap-8 md:gap-12">
+  <div className="inline-flex w-max items-center animate-scroll-horizontal partners-fast gap-8 md:gap-12 pl-8 pr-8 md:pl-12 md:pr-12">
     {[...siteData.partners.items, ...siteData.partners.items].map((p, index) => (
   <div key={index} className="group inline-flex shrink-0 flex-col items-center">
     <a href={p.link} target="_blank" rel="noopener noreferrer" className="group">
@@ -1051,7 +1051,7 @@ useEffect(() => {
                 ))}
               </ul>
               <a 
-                href="https://pay.hotmart.com/N97646212X?off=xmopb4bq&hotfeature=51&_hi=eyJjaWQiOiIxNzIyODIwNDcyNDEyNTMxNzU1NzcyNjcyMDg0MzAwIiwiYmlkIjoiMTcyMjgyMDQ3MjQxMjUzMTc1NTc3MjY3MjA4NDMwMCIsInNpZCI6IjBlNDEwZGM1ZGExMTQ5YWRiY2ExOWYzYThhMzk0Y2JkIn0=.1757252754756&bid=1757252757439" 
+                href="https://pay.hotmart.com/J102054674M?off=il6n3k8y&checkoutMode=10&bid=1758659742975" 
                 target="_blank"
       rel="noopener noreferrer"
       className="block w-full max-w-md mx-auto text-center text-[20px] font-light text-white py-4 px-6 rounded-lg bg-black glow-button mt-7"
