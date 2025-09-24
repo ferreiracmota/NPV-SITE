@@ -54,7 +54,158 @@ import modulo10 from './assets/modulo10.jpg'
 import modulo11      from './assets/modulo11.jpg'
 import modulo12      from './assets/modulo12.jpg'
 
-import React, { useState, useEffect, useRef } from 'react'
+
+import React, { useState, useEffect, useRef, useCallback } from 'react'
+
+// ===== Componente Antes/Depois — autoplay + drag + retoma do ponto atual =====
+function BeforeAfter({ slides = [] }) {
+  const total = Math.max(slides.length, 1);
+
+  // estado e refs
+  const [index, setIndex] = useState(0);
+  const railRef = useRef(null);
+  const timerRef = useRef(null);
+  const resumeRef = useRef(null);
+
+  // drag
+  const draggingRef = useRef(false);
+  const startXRef = useRef(0);
+  const deltaXRef = useRef(0);
+
+  // helpers
+  const goTo = useCallback(
+    (i) => setIndex(((i % total) + total) % total),
+    [total]
+  );
+
+  // ===== Autoplay =====
+  const AUTOPLAY_MS = 2000;   // tempo entre slides
+  const RESUME_MS   = 2000;   // retoma depois dessa pausa ao soltar
+
+  const startAutoplay = useCallback(() => {
+    clearInterval(timerRef.current);
+    timerRef.current = setInterval(() => {
+      // loop infinito: do último vai pro primeiro
+      setIndex((i) => (i + 1) % total);
+    }, AUTOPLAY_MS);
+  }, [total]);
+
+  const stopAutoplay = useCallback(() => {
+    clearInterval(timerRef.current);
+    clearTimeout(resumeRef.current);
+  }, []);
+
+  const pauseThenResume = useCallback(() => {
+    // pausa agora e agenda retomada; quando retomar,
+    // continua a partir do índice ATUAL (não reinicia)
+    stopAutoplay();
+    resumeRef.current = setTimeout(startAutoplay, RESUME_MS);
+  }, [startAutoplay, stopAutoplay]);
+
+  useEffect(() => {
+    startAutoplay();
+    return () => {
+      clearInterval(timerRef.current);
+      clearTimeout(resumeRef.current);
+    };
+  }, [startAutoplay]);
+
+  // ===== Drag (mouse/touch) =====
+  const getClientX = (e) =>
+    e?.clientX ?? (e?.touches && e.touches[0]?.clientX) ?? 0;
+
+  const onPointerDown = (e) => {
+    draggingRef.current = true;
+    startXRef.current = getClientX(e);
+    deltaXRef.current = 0;
+    // pausa enquanto o usuário interage
+    stopAutoplay();
+  };
+
+  const onPointerMove = (e) => {
+    if (!draggingRef.current) return;
+    const x = getClientX(e);
+    deltaXRef.current = x - startXRef.current;
+  };
+
+  const onPointerUp = () => {
+    if (!draggingRef.current) return;
+    draggingRef.current = false;
+
+    const dx = deltaXRef.current;
+    const THRESHOLD = 50; // px para considerar troca de slide
+
+    if (dx < -THRESHOLD) goTo(index + 1); // arrastou pra esquerda → próximo
+    else if (dx > THRESHOLD) goTo(index - 1); // arrastou pra direita → anterior
+    // se não passou do limiar, mantém o índice atual
+
+    // retoma o autoplay a partir do ÍNDICE ATUAL
+    pauseThenResume();
+  };
+
+  // ===== Centralizar o slide atual movendo APENAS o trilho (não a página) =====
+  useEffect(() => {
+    const rail = railRef.current;
+    if (!rail) return;
+    const children = rail.children;
+    if (!children || !children.length) return;
+
+    const child = children[index % children.length];
+    if (!child) return;
+
+    const left = child.offsetLeft - (rail.clientWidth - child.clientWidth) / 2;
+
+    // anima só o eixo X do trilho
+    requestAnimationFrame(() => {
+      rail.scrollTo({ left: Math.max(left, 0), behavior: "smooth" });
+    });
+  }, [index]);
+
+  return (
+    <div className="relative select-none touch-pan-x">
+      <div
+        ref={railRef}
+        className="no-scrollbar flex overflow-x-auto snap-x scroll-smooth gap-3"
+        onMouseDown={onPointerDown}
+        onMouseMove={onPointerMove}
+        onMouseUp={onPointerUp}
+        onMouseLeave={onPointerUp}
+        onTouchStart={onPointerDown}
+        onTouchMove={onPointerMove}
+        onTouchEnd={onPointerUp}
+      >
+        {slides.map((img, i) => (
+          <div key={i} className="snap-center shrink-0" style={{ width: "80vw", maxWidth: 360 }}>
+            {/* troque 'aspect-square' por 'aspect-[9/16]' se quiser vertical */}
+            <div className="relative w-full aspect-square rounded-xl overflow-hidden shadow-md bg-black/10">
+              <img
+                src={img}
+                alt={`Transformação ${i + 1}`}
+                className="w-full h-full object-cover"
+                draggable={false}
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* paginação */}
+      <div className="absolute left-1/2 -translate-x-1/2 bottom-2 flex gap-1.5">
+        {slides.map((_, i) => (
+          <span
+            key={i}
+            className={`h-1.5 w-1.5 rounded-full ${
+              i === index ? "bg-neutral-800/80" : "bg-neutral-400/60"
+            }`}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ===== fim do componente =====
+
 
 // Componente FAQItem
 function FAQItem({ q, a, index }) {
@@ -111,6 +262,10 @@ function FAQItem({ q, a, index }) {
 }
 
 
+const beforeAfterSlides = [
+  antesDepois1, antesDepois2, antesDepois3, antesDepois4, antesDepois5,
+  antesDepois6, antesDepois7, antesDepois8, antesDepois9, antesDepois10
+];
 
 
 
@@ -161,6 +316,12 @@ function App() {
   const [isContactDropdownOpen, setIsContactDropdownOpen] = useState(false)
   const showTestimonials = false; // começa oculto
   const showVideoTestimonials = false; // começa oculto
+
+const beforeAfterSlides = [
+  antesDepois1, antesDepois2, antesDepois3, antesDepois4, antesDepois5,
+  antesDepois6, antesDepois7, antesDepois8, antesDepois9, antesDepois10,
+];
+
 
   // Carregar script do LightWidget
   useEffect(() => {
@@ -658,28 +819,8 @@ useEffect(() => {
     </p>
           
           {/* Carrossel horizontal de transformações */}
-          <div className="relative overflow-hidden">
-  <div className="inline-flex w-max animate-scroll-horizontal gap-2 md:gap-2">
-    {[...siteData.beforeAfter, ...siteData.beforeAfter].map((img, index) => (
-      <div
-  key={index}
-  className="
-    flex-shrink-0
-    w-70 h-70            /* MOBILE: volta ao tamanho antigo (160x160) */
-    sm:w-48 sm:h-48      /* tablet pequeno */
-    md:w-80 md:h-80      /* desktop médio */
-    lg:w-92 lg:h-92      /* desktop grande */
-  "
->
-  <img
-    src={img}
-    alt={`Transformação ${index + 1}`}
-    className="w-full h-full object-cover rounded-lg shadow-2xl"
-  />
-</div>
-    ))}
-  </div>
-</div>
+          <BeforeAfter slides={beforeAfterSlides} />
+
           
           {/* Botão estratégico */}
           <div className="text-center mt-12">

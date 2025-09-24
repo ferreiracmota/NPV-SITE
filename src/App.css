@@ -408,3 +408,14 @@ img, .no-touch-callout {
   touch-action: manipulation;    /* melhora gestos */
 }
 
+/* esconder barra de rolagem horizontal */
+.no-scrollbar {
+  -ms-overflow-style: none;    /* IE/Edge */
+  scrollbar-width: none;       /* Firefox */
+}
+.no-scrollbar::-webkit-scrollbar { display: none; } /* Chrome/Safari */
+
+/* ajudar gestos de arrasto no mobile */
+.touch-pan-x { touch-action: pan-x; }
+.select-none { user-select: none; }
+
