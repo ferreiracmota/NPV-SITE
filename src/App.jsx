@@ -381,7 +381,7 @@ const beforeAfterSlides = [
     partners: {
   title: "NOSSOS PARCEIROS",
   items: [
-    { logo: parceiro1, link: "", coupon: "" },
+    { logo: parceiro1, link: "https://cafezinlounge.saipos.com/home/nutrishakemlpqpz", coupon: "NPV15" },
     { logo: parceiro2, link: "https://www.instagram.com/ciadoesporte2/", coupon: "NPV10" },
     { logo: parceiro3, link: "", coupon: "" },
     { logo: parceiro4, link: "https://www.instagram.com/nf.modafitness/", coupon: "" },
