@@ -383,7 +383,7 @@ const beforeAfterSlides = [
   items: [
     { logo: parceiro1, link: "https://cafezinlounge.saipos.com/home/nutrishakemlpqpz", coupon: "NPV15" },
     { logo: parceiro2, link: "https://www.instagram.com/ciadoesporte2/", coupon: "NPV10" },
-    { logo: parceiro3, link: "", coupon: "" },
+    { logo: parceiro3, link: "https://link-prod.tfsports.com.br/events/running-betim-12505301321", coupon: "NAOPENSEVAI" },
     { logo: parceiro4, link: "https://www.instagram.com/nf.modafitness/", coupon: "" },
     { logo: parceiro5, link: "https://www.instagram.com/ciladasburguer/", coupon: "NPV15" }
   ]
