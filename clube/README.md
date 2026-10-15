@@ -70,3 +70,77 @@ webhooks de pagamento e renovação para não premiar pagamentos cancelados/dupl
 Esta branch **não deve ser incorporada à main** até o usuário testar e aprovar
 o protótipo, serem conectados backend/autenticação reais e feitas as verificações
 de segurança, privacidade, recuperação de acesso e termos do Clube.
+
+## Próxima fase preparada: acesso real com Supabase (ainda não ativado)
+
+O protótipo agora contém, na mesma branch, um modo separado de funcionamento real:
+- `src/clubeSupabase.js`: conexão pública Supabase somente quando há configuração;
+- `src/ClubeNPVReal.jsx`: login por e-mail/senha, criação de conta, confirmação
+  por e-mail, solicitação de recuperação e troca de senha, saída, e verificação
+  de acesso aprovado;
+- `clube/schema.sql`: banco, políticas RLS, funções de pontuação, resgates com
+  reserva de saldo e aprovação atômica;
+- o código da lojinha e do painel demonstração **não foi substituído**.
+
+**Sem as variáveis Supabase, `/clube` continua mostrando somente a
+demonstração fictícia**, inclusive após uma implantação. Nenhum login real foi
+ativado. O Supabase ainda não foi conectado e nenhuma migração SQL foi aplicada.
+
+### Conectar quando o responsável autorizar
+
+1. Conectar uma conta Supabase e selecionar/criar um projeto **de teste**;
+   confirmar preço e limites do plano antes de aceitar cobrança.
+2. Abrir o SQL Editor protegido da conta e revisar/executar o script integral
+   `clube/schema.sql` em um banco dedicado novo (não executar em outro banco
+   existente sem comparar políticas e tabelas).
+3. Em Authentication > Providers, habilitar e-mail/senha e **confirmação de
+   e-mail**. Em URL Configuration, ajustar Site URL e Redirect URLs para a URL
+   HTTPS exata da prévia Vercel, incluindo o caminho `/clube`. Configurar
+   serviço de e-mail confiável para produção e revisar limites de envio.
+4. Em Vercel > projeto > Environment Variables, adicionar somente ao ambiente
+   **Preview** as duas variáveis do arquivo `clube/.env.example`:
+   `VITE_CLUBE_SUPABASE_URL` e
+   `VITE_CLUBE_SUPABASE_PUBLISHABLE_KEY`. Nunca colar `service_role`
+   ou secret key no código, .env do GitHub ou variável que começa com `VITE_`.
+5. Criar sua conta normalmente no formulário de login e confirmar o e-mail.
+   O proprietário autoriza qual e-mail será promovido a administrador;
+   só então adicionar a conta à tabela `clube_admins` via SQL Editor privado,
+   conforme as instruções comentadas no final do `clube/schema.sql`.
+6. Testar com duas contas reais de TESTE, com e-mails diferentes:
+   um aluno pendente, um aluno aprovado e um administrador. Confirmar que cada
+   aluno só lê seus registros e que requisições REST para criar/alterar pontos,
+   aprovar resgates ou ativar o próprio perfil falham com usuário comum.
+7. Testar os casos de segurança dos resgates: saldo menor que o preço;
+   duas solicitações simultâneas; duas aprovações simultâneas; estoque zero;
+   recusa; repetição de aprovação; tentativa de débito maior que saldo livre.
+8. Revisar textos de privacidade e termos do clube e definir política de
+   retenção, suporte, expiração anual e atendimento de pedidos de titulares.
+9. Só depois da aprovação do proprietário publicar a área real e cadastrar
+   alunos verdadeiros.
+
+### Regras da operação
+
+- **Cadastro:** o aluno cria a própria senha por e-mail e confirma a caixa.
+  Seu perfil começa em `is_active=false` (pendente), mesmo após login.
+- **Ativação:** administrador promove o aluno; nenhum formulário do usuário
+  comum pode escrever `is_active` ou `clube_admins`.
+- **Pontos:** apenas administrador lança, através da função transacional
+  `clube_award_points`. O extrato é imutável: correção exige evento compensatório.
+- **Lojinha:** o aluno solicita via `clube_request_reward`, que reserva pontos.
+  O administrador aprova/recusa via `clube_decide_reward` — no servidor, com
+  controle de estoque, saldo e bloqueios simultâneos. Não existem pedidos
+  externos nem integração automática a entregas.
+- **Ano:** a interface e as operações contabilizam pontos do ano corrente;
+  pedidos pendentes de ano anterior exigem revisão manual.
+- **Dados visíveis:** perfis e extratos do clube são protegidos por RLS.
+  Não confiar na alternância visual do protótipo como autorização.
+
+### Limitações antes de produção
+
+Ainda precisamos de banco real conectado, e-mail do administrador,
+teste das políticas no Supabase, confirmação de domínio da prévia e
+validação do número esperado de alunos/lançamentos. A primeira interface
+real busca até 2.000 lançamentos recentes e 1.000 solicitações;
+antes de atingir esses volumes, implementar paginação/saldos calculados no
+servidor para evitar totais incorretos. Não há envio automático de notificações
+de aprovação ou integração Hotmart.
