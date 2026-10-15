@@ -3,6 +3,8 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
 import ClubeNPV from './ClubeNPV.jsx'
+import ClubeNPVReal from './ClubeNPVReal.jsx'
+import { clubeReady } from './clubeSupabase.js'
 
 const isClubePreview = window.location.pathname === '/clube' ||
   window.location.pathname.startsWith('/clube/') ||
@@ -10,6 +12,6 @@ const isClubePreview = window.location.pathname === '/clube' ||
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    {isClubePreview ? <ClubeNPV /> : <App />}
+    {isClubePreview ? (clubeReady ? <ClubeNPVReal /> : <ClubeNPV />) : <App />}
   </StrictMode>,
 )
