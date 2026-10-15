@@ -1,4 +1,8 @@
 import './App.css'
+/* Vídeos versionados pelo Vite: urls produzidas junto com a compilação,
+   sem depender de /public/videos, que pode não existir na implantação. */
+import fundoDesktopVideo from './assets/videofundo1.MP4?url'
+import fundoMobileVideo from './assets/videofundomobile.MP4?url'
 import asset12 from './assets/544-2713.webp'
 import asset13 from './assets/544-2715.webp'
 import asset14 from './assets/544-2717.webp'
@@ -833,7 +837,7 @@ useEffect(() => {
         }
       }}
     >
-      <source src="/videos/fundo-desktop.mp4" type="video/mp4" />
+      <source src={fundoDesktopVideo} type="video/mp4" />
     </video>
     {/* Mobile (< md) */}
     <video
@@ -850,7 +854,7 @@ useEffect(() => {
         }
       }}
     >
-      <source src="/videos/fundo-mobile.mp4" type="video/mp4" />
+      <source src={fundoMobileVideo} type="video/mp4" />
     </video>
   </div>
 
