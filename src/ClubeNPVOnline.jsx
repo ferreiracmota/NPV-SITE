@@ -26,8 +26,8 @@ function ShellHeader() {
     <div className="clube-header-actions"><a className="clube-back" href="/"><ArrowLeft size={16}/><span>Voltar ao site</span></a><span className="clube-demo-badge clube-online-badge"><span className="clube-demo-dot"/> CLUBE NPV</span></div>
   </div></header>
 }
-function AuthPage({onLoggedIn}) {
-  const [mode,setMode]=useState('login')
+function AuthPage({onLoggedIn,onResetDone,defaultMode='login'}) {
+  const [mode,setMode]=useState(defaultMode)
   const [fullName,setFullName]=useState('')
   const [email,setEmail]=useState('')
   const [password,setPassword]=useState('')
@@ -59,7 +59,7 @@ function AuthPage({onLoggedIn}) {
         if(password.length<8) throw new Error('A senha precisa ter pelo menos 8 caracteres.')
         const {error}=await supabase.auth.updateUser({password})
         if(error) throw error
-        setPassword('');setMode('login');setShow('Senha atualizada. Seu acesso está pronto.')
+        setPassword('');setMode('login');setShow('Senha atualizada. Seu acesso está pronto.');onResetDone?.()
         return
       }
       if(mode==='signup'){
@@ -104,6 +104,7 @@ function AuthPage({onLoggedIn}) {
 const emptyState={members:[],events:[],rewards:[],requests:[]}
 export default function ClubeNPVOnline() {
   const [session,setSession]=useState(null)
+  const [recovery,setRecovery]=useState(false)
   const [initializing,setInitializing]=useState(true)
   const [profile,setProfile]=useState(null)
   const [isAdmin,setIsAdmin]=useState(false)
@@ -122,8 +123,8 @@ export default function ClubeNPVOnline() {
     supabase.auth.getSession().then(({data})=>{
       if(live){setSession(data?.session||null);setInitializing(false)}
     }).catch(()=>{if(live)setInitializing(false)})
-    const {data:{subscription}}=supabase.auth.onAuthStateChange((_event,nextSession)=>{
-      if(live){setSession(nextSession||null);setInitializing(false)}
+    const {data:{subscription}}=supabase.auth.onAuthStateChange((event,nextSession)=>{
+      if(live){setSession(nextSession||null);setInitializing(false);if(event==='PASSWORD_RECOVERY')setRecovery(true)}
     })
     return ()=>{live=false;subscription.unsubscribe()}
   },[])
@@ -137,8 +138,8 @@ export default function ClubeNPVOnline() {
         supabase.from('clube_profiles').select('*').eq('id',user.id).maybeSingle()
       ])
       if(!active)return
-      if(role.error||owner.error){setError('Não foi possível carregar o seu cadastro. O banco de dados pode estar em configuração.');return}
-      setIsAdmin(Boolean(role.data));setProfile(owner.data||null)
+      if(role.error||owner.error||!owner.data){setError('Não foi possível carregar o seu cadastro. O banco de dados pode estar em configuração.');return}
+      setIsAdmin(Boolean(role.data));setProfile(owner.data)
     })()
     return ()=>{active=false}
   },[user?.id])
@@ -253,6 +254,7 @@ export default function ClubeNPVOnline() {
     })}
   </div>}
   if(initializing) return <div className="clube-shell"><ShellHeader/><div className="clube-auth-loading">Preparando acesso seguro ao Clube NPV...</div></div>
+  if(recovery) return <AuthPage defaultMode="reset" onLoggedIn={setSession} onResetDone={()=>setRecovery(false)}/>
   if(!session) return <AuthPage onLoggedIn={setSession}/>
   if(!profile&&!error)return <div className="clube-shell"><ShellHeader/><div className="clube-auth-loading">Consultando seu cadastro...</div></div>
   if(!approved&&!error)return <div className="clube-shell"><ShellHeader/><div className="clube-auth-loading clube-waiting"><Clock3 size={44}/><h1>Cadastro recebido!</h1><p>Seu e-mail foi confirmado. Agora falta a aprovação do administrador para você visualizar seus pontos e as recompensas.</p><button className="clube-btn clube-btn-outline" onClick={signOut}>Sair da conta</button></div></div>
