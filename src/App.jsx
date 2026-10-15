@@ -358,7 +358,7 @@ const faqs = [
   },
   {
     q: "Como o pagamento é feito?",
-    a: "O pagamento é processado pela plataforma de checkout; após aprovado, o acesso é liberado automaticamente."
+    a: "O pagamento é processado pela Hotmart. Confira moeda, valor final, parcelamento e periodicidade da assinatura na página de pagamento antes de concluir a compra. Após a aprovação, o acesso é liberado pela plataforma."
   }
 ];
 
@@ -675,7 +675,7 @@ useEffect(() => {
         href="https://sso.hotmart.com/login?service=https%3A%2F%2Fsso.hotmart.com%2Foauth2.0%2FcallbackAuthorize%3Fclient_id%3Db432cdd3-eb60-46bd-892b-5b450a65153e%26redirect_uri%3Dhttps%253A%252F%252Fhotmart.com%252Fen%252Fclub%252Fnaopensevai%252Fauth%252Flogin%253Frealm%253Dclub%26response_type%3Dcode%26response_mode%3Dquery%26client_name%3DCasOAuthClient"
         target="_blank"
         rel="noopener noreferrer"
-        className="md:hidden justify-self-end inline-flex items-center rounded-md bg-[#AFCB21] px-3 py-1.5 text-black font-semibold text-xs hover:brightness-110 transition"
+        className="md:hidden justify-self-end inline-flex items-center whitespace-nowrap rounded-md bg-[#AFCB21] px-2 sm:px-3 py-1.5 text-black font-semibold text-[10px] sm:text-xs hover:brightness-110 transition"
       >
         ÁREA DE ALUNOS
       </a>
@@ -1208,6 +1208,9 @@ useEffect(() => {
               </a>
             </div>
           </div>
+          <p className="mx-auto mt-6 max-w-2xl text-center text-xs sm:text-sm leading-relaxed text-zinc-600">
+            Pagamento seguro pela Hotmart. Antes de concluir a compra, confirme o valor total, a moeda, o parcelamento e a frequência de renovação exibidos no checkout.
+          </p>
           <div className="mt-8 text-center">
             <p className="text-zinc-700 text-base">Não sabe qual plano escolher?</p>
             <a
