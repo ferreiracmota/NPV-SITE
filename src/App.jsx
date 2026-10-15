@@ -808,7 +808,7 @@ useEffect(() => {
 
     {/* Subtítulo menor e leve */}
     <p className="text-lg text-gray-600 mb-8">
-      O que hoje é <span className="font-bold text-pink-600">inspiração</span> já foi apenas um começo. 
+      O que hoje é <span className="font-bold text-pink-600">inspiração</span> já foi apenas um começo.{" "}
       <span className="font-bold text-pink-600">Agora é a sua vez.</span>
     </p>
           
@@ -853,6 +853,8 @@ useEffect(() => {
             <img
               src={project}
               alt={`Bônus ${index + 1}`}
+              loading="lazy"
+              decoding="async"
               className="absolute inset-0 w-full h-full object-cover select-none pointer-events-none"
               draggable="false"
             />
@@ -901,6 +903,8 @@ useEffect(() => {
           <img
             src={m.photo}
             alt={m.name}
+            loading="lazy"
+            decoding="async"
             className="w-32 h-32 rounded-full mx-auto mb-3 object-cover group-hover:scale-110 transition-transform duration-300 shadow-lg"
           />
           <div className="leading-tight">
@@ -945,6 +949,8 @@ useEffect(() => {
       <img
         src={p.logo}
         alt={`Parceiro ${index + 1}`}
+        loading="lazy"
+        decoding="async"
         className="h-20 md:h-24 w-auto max-w-[160px] object-contain mx-auto transition duration-300 grayscale brightness-90 group-[:touched]:grayscale-0 group-[:touched]:brightness-100 md:group-hover:grayscale-0 md:group-hover:brightness-100"
       />
     </a>
@@ -1076,7 +1082,9 @@ useEffect(() => {
             <div className="lg:w-1/2 flex item-stretch">
               <img
   src={siteData.aboutMe.photo}
-  alt="Sobre mim"
+  alt="Carlos Ferreira, treinador da plataforma Não Pense, Vai!"
+  loading="lazy"
+  decoding="async"
   className="w-full h-96 md:h-[45rem] object-cover md:object-top rounded-lg shadow-2xl"
 />
             </div>
@@ -1167,6 +1175,8 @@ useEffect(() => {
         <img
           src={seloGarantia}
           alt="Garantia de 7 Dias"
+          loading="lazy"
+          decoding="async"
           className="mx-auto lg:mx-0 w-60 md:w-40 mb-4 hover:scale-110 transition-transform duration-300"
         />
       </div>
