@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/clube",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/clube/",
+      "destination": "/index.html"
+    }
+  ]
+}
