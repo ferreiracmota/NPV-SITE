@@ -109,3 +109,28 @@ O painel fictício anterior continua disponível e inclui cinco recompensas de
 exemplo, quatro em destaque na home do aluno, solicitação de resgate,
 pontos reservados, aprovação/recusa e atualização de estoque e extrato.
 Nada dessa demonstração é transação real.
+
+## Continuação da homologação — 15/10/2026
+
+**Verificações concluídas nesta etapa (somente leitura):**
+- Projeto Supabase `dnlyfwcrfocgafgfoyna` em estado ativo.
+- Migrações aplicadas: esquema inicial, restrição de RPCs anônimas e reserva do e-mail do administrador.
+- Cinco tabelas `public.clube_*` com RLS, zero perfis, zero administradores e zero eventos de pontos ou pedidos; cinco prêmios de exemplo.
+- `clube_private.pending_admin_emails`: uma reserva de e-mail; **sem RLS**. Embora esteja em schema privado e com privilégios revogados para `anon` e `authenticated`, a auditoria de tabelas alertou para RLS desativado. **Não aplicar automaticamente**; avaliar habilitar RLS sem políticas para clientes e confirmar que o mecanismo administrativo continuará acessível. SQL candidato para revisão manual: `ALTER TABLE clube_private.pending_admin_emails ENABLE ROW LEVEL SECURITY;`
+- Advisor: cinco alertas de funções `SECURITY DEFINER` chamáveis por usuários autenticados, necessários às RPCs atuais; verificar cada validação de autorização, sem liberar execução anônima.
+
+**Dependência externa bloqueada nesta etapa:** conexão Vercel retornou **HTTP 403** para o time `ferreiracmotas-projects`; nenhuma variável Vercel foi alterada. Reconectar a integração com acesso a esse time antes de configurar o Preview.
+
+### Procedimento pendente (sem publicar em produção)
+
+1. Reautorizar o acesso à equipe `ferreiracmotas-projects` na integração Vercel.
+2. No projeto Vercel de prévia **npv-site1**, branch `feat/clube-npv-piloto-2026-10`, configurar **apenas target Preview e apenas essa branch**:
+   - `VITE_CLUBE_SUPABASE_URL`: URL pública do projeto Supabase.
+   - `VITE_CLUBE_SUPABASE_PUBLISHABLE_KEY`: chave `sb_publishable_...` habilitada (não usar `service_role`).
+   - Reimplantar a prévia, pois Vite incorpora essas variáveis durante o build.
+3. No Supabase Auth, habilitar confirmação de e-mail e cadastrar a URL HTTPS exata da prévia terminada em `/clube` como **Redirect URL** para confirmação/recuperação. Não usar URL de produção enquanto for piloto.
+4. O proprietário deve abrir a prévia real, cadastrar a conta com o e-mail reservado e confirmar o link recebido.
+5. Somente depois da confirmação, conferir a identidade do usuário pelo **SQL Editor do proprietário** e inserir seu UUID em `public.clube_admins`. O código de cliente não atribui permissão de administrador.
+6. Executar testes de login, recuperação, admin, aluno aprovado/não aprovado, tentativas de acesso cruzado, resgates concorrentes e estoque. Até concluir: **PR #3 continua em rascunho; não mesclar na main**.
+
+**Atenção:** não houve publicação real, cadastro automático do administrador, criação de senha ou envio de e-mail nesta etapa.
