@@ -237,18 +237,24 @@ function FAQItem({ q, a, index }) {
     >
       <button
         type="button"
-        className="w-full flex items-center justify-between text-left"
+        className="w-full flex items-center justify-between gap-4 rounded-lg text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#AFCB21]"
+        id={`faq-question-${index}`}
         aria-expanded={open}
         aria-controls={`faq-panel-${index}`}
         onClick={() => setOpen(o => !o)}
       >
         <span className="text-lg font-semibold">{q}</span>
-        <span className="text-sm leading-none">{open ? "▲" : ">"}</span>
+        <svg aria-hidden="true" className={`h-5 w-5 shrink-0 transition-transform duration-300 ${open ? "rotate-180" : ""}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="m6 9 6 6 6-6" />
+        </svg>
       </button>
 
       {/* Contêiner colapsável: começa fechado (altura 0) */}
       <div
         id={`faq-panel-${index}`}
+        role="region"
+        aria-labelledby={`faq-question-${index}`}
+        aria-hidden={!open}
         className={`grid transition-all duration-300 ease-out ${
           open ? "grid-rows-[1fr] mt-3" : "grid-rows-[0fr]"
         }`}
@@ -383,11 +389,11 @@ const beforeAfterSlides = [
     partners: {
   title: "NOSSOS PARCEIROS",
   items: [
-    { logo: parceiro1, link: "https://cafezinlounge.saipos.com/home/nutrishakemlpqpz", coupon: "NPV15" },
-    { logo: parceiro2, link: "https://www.instagram.com/ciadoesporte2/", coupon: "NPV10" },
-    { logo: parceiro3, link: "https://link-prod.tfsports.com.br/events/running-betim-12505301321", coupon: "NAOPENSEVAI" },
-    { logo: parceiro4, link: "https://www.instagram.com/nf.modafitness/", coupon: "" },
-    { logo: parceiro5, link: "https://www.instagram.com/ciladasburguer/", coupon: "NPV15" }
+    { logo: parceiro1, name: "Cafezin Lounge", link: "https://cafezinlounge.saipos.com/home/nutrishakemlpqpz", coupon: "NPV15" },
+    { logo: parceiro2, name: "Cia do Esporte", link: "https://www.instagram.com/ciadoesporte2/", coupon: "NPV10" },
+    { logo: parceiro3, name: "TF Sports Running Betim", link: "https://link-prod.tfsports.com.br/events/running-betim-12505301321", coupon: "NAOPENSEVAI" },
+    { logo: parceiro4, name: "NF Moda Fitness", link: "https://www.instagram.com/nf.modafitness/", coupon: "" },
+    { logo: parceiro5, name: "Ciladas Burger", link: "https://www.instagram.com/ciladasburguer/", coupon: "NPV15" }
   ]
 }
 ,
@@ -593,6 +599,8 @@ useEffect(() => {
           <div className="relative">
             <button
               onClick={() => setIsContactDropdownOpen(!isContactDropdownOpen)}
+              aria-expanded={isContactDropdownOpen}
+              aria-controls="desktop-contact-options"
               className="hover:text-[#AFCB21] transition-colors flex items-center"
             >
               CONTATO
@@ -602,7 +610,7 @@ useEffect(() => {
             </button>
 
             {isContactDropdownOpen && (
-              <div className="absolute top-full left-0 mt-2 w-64 bg-gray-800 border border-gray-700 rounded-lg shadow-lg z-50">
+              <div id="desktop-contact-options" className="absolute top-full left-0 mt-2 w-64 bg-gray-800 border border-gray-700 rounded-lg shadow-lg z-50">
                 <div className="p-4">
                   {/* E-mail */}
                   <div className="flex items-center mb-3">
@@ -660,6 +668,8 @@ useEffect(() => {
         <div className="relative">
           <button
             onClick={() => setIsContactDropdownOpen((v) => !v)}
+            aria-expanded={isContactDropdownOpen}
+            aria-controls="mobile-contact-options"
             className="hover:text-[#AFCB21] transition-colors flex items-center"
           >
             CONTATO
@@ -669,7 +679,7 @@ useEffect(() => {
           </button>
 
           {isContactDropdownOpen && (
-            <div className="mt-3 w-full max-w-sm bg-gray-800 border border-gray-700 rounded-lg shadow-lg p-4">
+            <div id="mobile-contact-options" className="mt-3 w-full max-w-sm bg-gray-800 border border-gray-700 rounded-lg shadow-lg p-4">
               <a
                 href="mailto:naopensevai@gmail.com"
                 className="flex items-center gap-2 text-white hover:text-[#AFCB21] transition-colors"
@@ -750,7 +760,7 @@ useEffect(() => {
     >
       <img
   src={p.logo}
-  alt={`Parceiro ${i + 1}`}
+  alt={p.name}
   className="
     h-7 md:h-10 object-contain
     filter brightness-0
@@ -945,10 +955,10 @@ useEffect(() => {
   <div className="inline-flex w-max items-center animate-scroll-horizontal partners-fast gap-8 md:gap-12 pl-8 pr-8 md:pl-12 md:pr-12">
     {[...siteData.partners.items, ...siteData.partners.items].map((p, index) => (
   <div key={index} className="group inline-flex shrink-0 flex-col items-center">
-    <a href={p.link} target="_blank" rel="noopener noreferrer" className="group">
+    <a href={p.link} target="_blank" rel="noopener noreferrer" className="group" aria-label={`Visitar ${p.name}`}>
       <img
         src={p.logo}
-        alt={`Parceiro ${index + 1}`}
+        alt={p.name}
         loading="lazy"
         decoding="async"
         className="h-20 md:h-24 w-auto max-w-[160px] object-contain mx-auto transition duration-300 grayscale brightness-90 group-[:touched]:grayscale-0 group-[:touched]:brightness-100 md:group-hover:grayscale-0 md:group-hover:brightness-100"
@@ -1210,7 +1220,7 @@ useEffect(() => {
     {/* ... aqui vem o banner, header, seções ... */}
 
     {/* FAQ Section */}
-    <section id="faq" className="py-16 bg-zinc-50 text-black">
+    <section id="faq" className="py-16 bg-zinc-50 text-black scroll-mt-16">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl md:text-4xl font-bold text-center mb-10">
           Possui alguma dúvida?
@@ -1220,6 +1230,17 @@ useEffect(() => {
           {faqs.map((item, i) => (
             <FAQItem key={i} q={item.q} a={item.a} index={i} />
           ))}
+        </div>
+        <div className="mt-10 text-center">
+          <p className="text-zinc-700">Ainda tem alguma dúvida sobre a plataforma?</p>
+          <a
+            href="https://wa.me/5531972158847?text=Ol%C3%A1%21%20Tenho%20uma%20d%C3%BAvida%20sobre%20a%20plataforma%20N%C3%A3o%20Pense%2C%20Vai%21"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center mt-4 px-6 py-3 rounded-lg bg-[#AFCB21] text-black font-semibold hover:brightness-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black transition"
+          >
+            Falar com o suporte pelo WhatsApp ↗
+          </a>
         </div>
       </div>
     </section>
