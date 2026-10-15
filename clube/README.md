@@ -20,6 +20,22 @@ A página inicial `/` continua mostrando o site comercial sem alterações.
 - Persistir os dados **de demonstração somente no navegador** (localStorage);
 - Restaurar os dados fictícios.
 
+### Lojinha de recompensas (simulação)
+
+- A home do aluno exibe 4 prêmios em destaque **abaixo das atividades e das dicas para acumular pontos**.
+- A aba **Recompensas** apresenta o catálogo completo e o histórico de solicitações.
+- Prêmios ilustrativos: camiseta, coqueteleira, kit snacks, hidratação e benefício de parceiro.
+- Cada card mostra custo em pontos, quantidade disponível e saldo insuficiente, quando aplicável.
+- O aluno simula **Solicitar resgate**. O pedido fica pendente, reservando pontos para outros pedidos.
+- O administrador cria/edita nome, categoria, valor em pontos, estoque, ilustração e visibilidade.
+- O administrador **aprova ou recusa** solicitações. Aprovação lança débito no extrato e diminui o estoque; recusa libera a reserva.
+- Tudo continua armazenado localmente neste navegador, sem pedidos, cobranças, entregas ou compras reais.
+- Os produtos descritos como "parceiros" são apenas **exemplos** e não representam acordos confirmados para troca de pontos.
+
+**Antes de ativar resgates reais:** será necessário adicionar tabelas de prêmios e pedidos com políticas RLS ao Supabase,
+aprovação atômica no servidor (protegendo saldo e estoque contra solicitações simultâneas), autenticação e trilha de auditoria.
+O atual SQL `clube/schema.sql` cobre só perfis e lançamentos de pontos, não o backend da lojinha.
+
 **ATENÇÃO:** esta é uma interface demonstrativa e NÃO há autenticação nem separação
 de contas no servidor nesta fase. O seletor de modo/aluno serve apenas para visualizar
 o projeto. Nunca inserir dados verdadeiros de alunos nem publicar como área privada.
