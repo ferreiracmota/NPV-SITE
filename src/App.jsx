@@ -705,7 +705,7 @@ useEffect(() => {
       {/* Hero Section */}
 <section
   id="inicio"
-  className="relative min-h-[90svh] md:min-h-[100svh] flex items-start md:items-center justify-center overflow-hidden"
+  className="relative min-h-[90svh] md:min-h-[100svh] flex items-start md:items-center justify-center overflow-hidden pb-28 md:pb-0"
 >
   {/* Vídeo de fundo (desktop + mobile) */}
   <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
