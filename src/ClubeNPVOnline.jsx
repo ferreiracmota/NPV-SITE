@@ -257,6 +257,7 @@ export default function ClubeNPVOnline() {
   if(recovery) return <AuthPage defaultMode="reset" onLoggedIn={setSession} onResetDone={()=>setRecovery(false)}/>
   if(!session) return <AuthPage onLoggedIn={setSession}/>
   if(!profile&&!error)return <div className="clube-shell"><ShellHeader/><div className="clube-auth-loading">Consultando seu cadastro...</div></div>
+  if(!profile&&error)return <div className="clube-shell"><ShellHeader/><div className="clube-auth-loading clube-waiting"><ShieldCheck size={40}/><h1>Seu acesso ainda não está disponível</h1><p>{error}</p><button className="clube-btn clube-btn-outline" onClick={signOut}>Voltar ao login</button></div></div>
   if(!approved&&!error)return <div className="clube-shell"><ShellHeader/><div className="clube-auth-loading clube-waiting"><Clock3 size={44}/><h1>Cadastro recebido!</h1><p>Seu e-mail foi confirmado. Agora falta a aprovação do administrador para você visualizar seus pontos e as recompensas.</p><button className="clube-btn clube-btn-outline" onClick={signOut}>Sair da conta</button></div></div>
   return <div className="clube-shell"><ShellHeader/>
     <div className="clube-container"><aside className="clube-sidebar">
