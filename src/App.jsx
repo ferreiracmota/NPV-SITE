@@ -559,7 +559,8 @@ useEffect(() => {
       <button
         type="button"
         onClick={() => setIsMenuOpen((v) => !v)}
-        aria-label="Abrir menu"
+        aria-label={isMenuOpen ? "Fechar menu" : "Abrir menu"}
+        aria-expanded={isMenuOpen}
         className="md:hidden justify-self-center inline-flex items-center p-2 text-white"
       >
         <svg className="w-7 h-7" viewBox="0 0 24 24" fill="none">
@@ -1251,10 +1252,10 @@ useEffect(() => {
           <div className="flex justify-center space-x-6 mb-6">
             <a href="#" className="text-gray-400 hover:text-[#AFCB21] transition-colors">Política de Privacidade</a>
             <a href="#" className="text-gray-400 hover:text-[#AFCB21] transition-colors">Termos de Uso</a>
-            <a href="#" className="text-gray-400 hover:text-[#AFCB21] transition-colors">Suporte</a>
+            <a href="mailto:naopensevai@gmail.com?subject=Suporte%20N%C3%A3o%20Pense%2C%20Vai!" className="text-gray-400 hover:text-[#AFCB21] transition-colors">Suporte</a>
           </div>
           <p className="text-gray-500 text-sm">
-            © 2025 Não Pense, Vai – Todos os direitos reservados
+            © {new Date().getFullYear()} Não Pense, Vai! – Todos os direitos reservados
           </p>
         </div>
       </footer>
