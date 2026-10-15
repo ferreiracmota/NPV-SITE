@@ -877,6 +877,37 @@ useEffect(() => {
   </div>
 </section>
 
+ {/* Como funciona: três etapas baseadas nas perguntas frequentes */}
+ <section id="como-funciona" aria-labelledby="how-heading" className="bg-black py-16 md:py-24 scroll-mt-16">
+  <div className="container mx-auto px-4">
+   <div className="mx-auto max-w-3xl text-center">
+    <span className="npv-eyebrow">SIMPLES ASSIM</span>
+    <h2 id="how-heading" className="mt-4 text-3xl sm:text-4xl md:text-5xl font-black leading-tight">SUA EVOLUÇÃO COMEÇA <span className="text-[#AFCB21]">EM 3 PASSOS.</span></h2>
+    <p className="mt-4 text-zinc-300 text-base md:text-lg">Tudo para você começar com clareza, no seu ritmo.</p>
+   </div>
+   <div className="mx-auto mt-12 grid max-w-6xl grid-cols-1 gap-4 md:grid-cols-3 md:gap-6">
+        <div className="npv-step-card">
+          <span className="npv-step-number">01</span>
+          <h3 className="mt-6 text-xl font-bold">Escolha seu plano</h3>
+          <p className="mt-3 text-zinc-300 leading-relaxed">Selecione a assinatura que faz mais sentido para sua rotina.</p>
+        </div>
+        <div className="npv-step-card">
+          <span className="npv-step-number">02</span>
+          <h3 className="mt-6 text-xl font-bold">Acesse a plataforma</h3>
+          <p className="mt-3 text-zinc-300 leading-relaxed">Após a aprovação da compra, receba por e-mail as instruções de acesso.</p>
+        </div>
+        <div className="npv-step-card">
+          <span className="npv-step-number">03</span>
+          <h3 className="mt-6 text-xl font-bold">Comece a treinar</h3>
+          <p className="mt-3 text-zinc-300 leading-relaxed">Explore os níveis, as planilhas e os vídeos de execução para começar.</p>
+        </div>
+   </div>
+   <div className="mt-10 text-center">
+    <button type="button" onClick={() => scrollToSection('planos')} className="inline-flex min-h-14 items-center justify-center gap-3 rounded-xl bg-[#AFCB21] px-8 py-4 text-base font-black text-black transition hover:brightness-95 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#AFCB21]">CONHECER OS PLANOS <span aria-hidden="true">↗</span></button>
+   </div>
+  </div>
+ </section>
+
  {/* Team Section */}
 <section className="py-12 bg-black">
   <div className="container mx-auto px-4 text-center">
