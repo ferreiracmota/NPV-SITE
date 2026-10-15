@@ -440,6 +440,23 @@ a:focus-visible {
   outline-offset: 4px;
 }
 
+/* Planos com espaçamento consistente, mantendo preços e benefícios intactos. */
+.npv-plan-card {
+  transition: transform .28s ease, box-shadow .28s ease;
+}
+@media (hover:hover) and (pointer:fine) {
+  .npv-plan-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 25px 58px rgba(0,0,0,.21);
+  }
+}
+@media (max-width:767px) {
+  .npv-plan-card { width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .npv-plan-card { transition: none; }
+}
+
 .npv-instagram::before {
   content: "";
   position: absolute;
