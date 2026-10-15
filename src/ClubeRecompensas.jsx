@@ -21,7 +21,7 @@ const newReward = () => ({id:null,name:'',category:'Exclusivo NPV',points:500,st
 const datePt = date => new Date(date).toLocaleDateString('pt-BR',{day:'2-digit',month:'short',year:'numeric'})
 const allPoints = (ledger,id) => ledger.filter(e=>e.studentId===id && new Date(e.date).getFullYear()===new Date().getFullYear()).reduce((n,e)=>n+e.amount,0)
 const holdPoints = (redemptions,id) => redemptions.filter(x=>x.studentId===id&&x.status==='pending').reduce((n,x)=>n+x.points,0)
-function RewardCard({reward,available,onRequest,isAdmin=false,onEdit}) {
+export function RewardCard({reward,available,onRequest,isAdmin=false,onEdit}) {
   const Icon = iconMap[reward.icon] || Gift
   const enough = available >= reward.points
   const soldOut = reward.stock <= 0
