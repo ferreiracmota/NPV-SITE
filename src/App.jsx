@@ -1020,7 +1020,7 @@ useEffect(() => {
         </div>
    </div>
    <div className="mt-10 text-center">
-    <button type="button" onClick={() => scrollToSection('planos')} className="inline-flex min-h-14 items-center justify-center gap-3 rounded-xl bg-[#AFCB21] px-8 py-4 text-base font-black text-black transition hover:brightness-95 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#AFCB21]">CONHECER OS PLANOS <span aria-hidden="true" className="text-xl leading-none">➜</span></button>
+    <button type="button" onClick={() => scrollToSection('planos')} className="inline-flex min-h-14 items-center justify-center gap-4 rounded-xl bg-[#AFCB21] px-8 py-4 text-base font-black text-black transition hover:brightness-95 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#AFCB21]">CONHECER OS PLANOS <span aria-hidden="true" className="text-xl leading-none">➜</span></button>
    </div>
   </div>
  </section>
@@ -1219,7 +1219,7 @@ useEffect(() => {
               rel="noopener noreferrer"
               className="inline-flex mt-3 items-center justify-center rounded-lg border border-zinc-800 px-5 py-3 text-zinc-900 font-semibold hover:bg-zinc-900 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-900 transition-colors"
             >
-              Tire suas dúvidas pelo WhatsApp <span aria-hidden="true" className="inline-block align-middle text-xl leading-none">➜</span>
+              Tire suas dúvidas pelo WhatsApp <span aria-hidden="true" className="inline-block ml-2 align-middle text-xl leading-none">➜</span>
             </a>
           </div>
         </div>
@@ -1380,7 +1380,7 @@ useEffect(() => {
             rel="noopener noreferrer"
             className="inline-flex items-center justify-center mt-4 px-6 py-3 rounded-lg bg-[#AFCB21] text-black font-semibold hover:brightness-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black transition"
           >
-            Falar com o suporte pelo WhatsApp <span aria-hidden="true" className="inline-block align-middle text-xl leading-none">➜</span>
+            Falar com o suporte pelo WhatsApp <span aria-hidden="true" className="inline-block ml-2 align-middle text-xl leading-none">➜</span>
           </a>
         </div>
       </div>
@@ -1402,7 +1402,7 @@ useEffect(() => {
                 href="https://www.instagram.com/naopensevai/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="npv-instagram-cta mt-8 inline-flex min-h-14 items-center justify-center gap-3 rounded-xl px-7 py-4 text-base font-bold text-white transition-transform hover:-translate-y-1 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#AFCB21]"
+                className="npv-instagram-cta mt-8 inline-flex min-h-14 items-center justify-center gap-4 rounded-xl px-7 py-4 text-base font-bold text-white transition-transform hover:-translate-y-1 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#AFCB21]"
               >
                 <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><path d="M17.5 6.5h.01"/></svg>
                 Ver o @naopensevai
@@ -1422,7 +1422,7 @@ useEffect(() => {
                   <img src={logoNPV} alt="" loading="lazy" decoding="async" className="max-h-12 w-full object-contain" />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-lg font-extrabold text-white">@naopensevai <span aria-hidden="true" className="text-[#AFCB21]">➜</span></p>
+                  <p className="text-lg font-extrabold text-white">@naopensevai <span aria-hidden="true" className="inline-block ml-2 text-[#AFCB21]">➜</span></p>
                   <p className="text-sm text-zinc-300">Não Pense, Vai! | Treinamento</p>
                 </div>
               </div>
