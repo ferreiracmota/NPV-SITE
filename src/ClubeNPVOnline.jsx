@@ -293,8 +293,13 @@ export default function ClubeNPVOnline() {
     {(isAdmin?data.rewards:catalogRewards).length===0&&<p className="npv-shop-empty">Nenhuma recompensa cadastrada para exibição no momento.</p>}
     {(isAdmin?data.rewards:catalogRewards).slice(0,limit||undefined).map(item=>{
       const Icon=glyphs[item.icon]||Gift
-      const enough=balance(user?.id)-reserved(user?.id)>=item.points
-      return <article className="npv-shop-card" key={item.id}>
+      const availablePoints=Math.max(0,balance(user?.id)-reserved(user?.id))
+      const missingPoints=Math.max(0,item.points-availablePoints)
+      const enough=missingPoints===0
+      const available=item.active&&item.stock>0
+      const canRedeem=available&&enough&&!isAdmin
+      const progress=item.points>0?Math.min(100,Math.round(availablePoints/item.points*100)):0
+      return <article className={`npv-shop-card ${!isAdmin&&enough?'npv-shop-card-milestone':''}`} key={item.id}>
         <div className={`npv-shop-art npv-shop-art-${themeSet.has(item.theme)?item.theme:'lime'}`}>
           {rewardImageUrl(item.image_path)?<img src={rewardImageUrl(item.image_path)} alt={`Foto de ${item.name}`} className="npv-shop-photo" loading="lazy"/>:<Icon size={87} strokeWidth={1.2}/>}
           <span className="npv-shop-art-stamp">CLUBE NPV ✦</span><span className="npv-shop-art-corner">NPV / {YEAR}</span>
@@ -302,10 +307,17 @@ export default function ClubeNPVOnline() {
         <div className="npv-shop-info">
           <span className="npv-shop-category">{item.category}</span><h3>{item.name}</h3>
           <div className="npv-shop-price"><strong>{format(item.points)}</strong><span>pontos</span></div>
+          {!isAdmin&&<div className="npv-shop-progress" aria-label={`Progresso de pontos para ${item.name}: ${progress}%`}>
+            <div className="npv-shop-progress-track"><span style={{width:`${progress}%`}}/></div>
+            <span className={`npv-shop-progress-label ${enough?'npv-shop-progress-met':''}`}>{enough?<><Check size={13}/> Pontos suficientes!</>:`Faltam ${format(missingPoints)} pts`}</span>
+          </div>}
           <div className="npv-shop-foot">
-            <span className={`npv-shop-stock ${item.stock<=0||(!isAdmin&&!enough)?'npv-shop-stock-off':''}`}>{!item.active?'Em demonstração · resgate indisponível':item.stock<1?'Indisponível':isAdmin?`${item.stock} em estoque`:enough?'Disponível para solicitar':`Faltam ${format(item.points-balance(user?.id)+reserved(user?.id))} pontos`}</span>
+            <span className={`npv-shop-stock ${!available?'npv-shop-stock-off':''}`}>{!item.active?'Prêmio demonstrativo · resgate não liberado':item.stock<1?'Prêmio esgotado':isAdmin?`${item.stock} em estoque`:enough?'Pronto para resgatar agora':`Acumule mais ${format(missingPoints)} pontos`}</span>
             {isAdmin?<button className="npv-shop-edit" onClick={()=>editReward(item)}><Pencil size={15}/> Editar prêmio e foto</button>
-            :<button className="npv-shop-request" disabled={busy||!item.active||!enough||item.stock<1} onClick={()=>requestReward(item)}>{!item.active?'Em breve':enough?'Solicitar resgate':'Acumule pontos'}<ArrowRight size={14}/></button>}
+            :<button className={`npv-shop-request ${enough&&!available?'npv-shop-request-met':''}`} disabled={busy||!canRedeem} onClick={()=>requestReward(item)}>
+              {canRedeem?'Resgatar agora':!available?(enough?'Meta atingida ✓':item.stock<1&&item.active?'Esgotado':'Continue acumulando'):'Acumule pontos'}
+              {canRedeem&&<ArrowRight size={14}/>}
+            </button>}
           </div>
         </div>
       </article>
