@@ -347,7 +347,9 @@ const beforeAfterSlides = [
   const scrollToSection = (sectionId) => {
     const element = document.getElementById(sectionId)
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth' })
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      setIsMenuOpen(false)
+      setIsContactDropdownOpen(false)
     }
   }
 
@@ -561,6 +563,7 @@ useEffect(() => {
         onClick={() => setIsMenuOpen((v) => !v)}
         aria-label={isMenuOpen ? "Fechar menu" : "Abrir menu"}
         aria-expanded={isMenuOpen}
+        aria-controls="mobile-navigation"
         className="md:hidden justify-self-center inline-flex items-center p-2 text-white"
       >
         <svg className="w-7 h-7" viewBox="0 0 24 24" fill="none">
@@ -647,10 +650,10 @@ useEffect(() => {
 
   {/* MENU MOBILE (mantido) */}
   {isMenuOpen && (
-    <div className="md:hidden bg-black border-t border-gray-800">
+    <div id="mobile-navigation" className="md:hidden bg-black border-t border-gray-800">
       <nav className="flex flex-col space-y-4 p-4">
         <button onClick={() => scrollToSection('inicio')} className="text-left hover:text-[#AFCB21] transition-colors">INÍCIO</button>
-        <button onClick={() => scrollToSection('sobre')} className="text-left hover:text-[#AFCB21] transition-colors">SOBRE</button>
+        <button onClick={() => scrollToSection('about-section')} className="text-left hover:text-[#AFCB21] transition-colors">SOBRE</button>
         <button onClick={() => scrollToSection('planos')} className="text-left hover:text-[#AFCB21] transition-colors">PLANOS</button>
 
         {/* Dropdown CONTATO (mantido) */}
@@ -666,7 +669,7 @@ useEffect(() => {
           </button>
 
           {isContactDropdownOpen && (
-            <div className="absolute top-full left-0 mt-2 w-64 bg-gray-800 border border-gray-700 rounded-lg shadow-lg z-50 p-4">
+            <div className="mt-3 w-full max-w-sm bg-gray-800 border border-gray-700 rounded-lg shadow-lg p-4">
               <a
                 href="mailto:naopensevai@gmail.com"
                 className="flex items-center gap-2 text-white hover:text-[#AFCB21] transition-colors"
@@ -768,21 +771,11 @@ useEffect(() => {
       <span className="text-white block animate-slide-up animation-delay-200">{siteData.hero.subtitle}</span>
       <span className="text-pink-500 text-[55px] md:text-[90px] lg:text-8x1 font-black block drop-shadow-md animate-slide-up animation-delay-400">{siteData.hero.subtitle2}</span>
       <span className="text-white block animate-slide-up animation-delay-600">{siteData.hero.subtitle3}</span>
-      <span className="text-xs sm:text-sm font-light text-white mt-2 block text-center">
-  <span className="hidden sm:inline">
-    Treinos inteligentes com acompanhamento profissional para entregar resultados de verdade, no seu tempo e do seu jeito.
-  </span>
-  <span className="sm:hidden">
-    Treinos inteligentes com acompanhamento profissional para<br />
-    entregar resultados de verdade, no seu tempo e do seu jeito.
-  </span>
-</span>
-
     </h1>
 
-    {/* subtítulo curtinho */}
-    <p className="text-white/80 text-base md:text-lg leading-relaxed max-w-md mx-auto mt-3">
-      {siteData.hero.kicker}
+    {/* Descrição fora do título principal: leitura e SEO mais claros */}
+    <p className="text-white/90 text-base md:text-lg leading-relaxed max-w-xl mx-auto mt-5">
+      {siteData.hero.subtitle4}
     </p>
 
     {/* Botão */}
@@ -790,7 +783,7 @@ useEffect(() => {
       href="https://pay.hotmart.com/J102054674M?off=g64ryxgr&checkoutMode=10"
       target="_blank"
       rel="noopener noreferrer"
-      className="block w-full max-w-md mx-auto text-center text-[20px] font-light text-white py-4 px-6 rounded-lg bg-[#AFCB21] glow-button mt-10"
+      className="block w-full max-w-md mx-auto text-center text-[20px] font-semibold text-black py-4 px-6 rounded-lg bg-[#AFCB21] glow-button mt-10"
     >
 
       QUERO DECOLAR ➜
@@ -829,7 +822,7 @@ useEffect(() => {
               href="https://pay.hotmart.com/J102054674M?off=g64ryxgr&checkoutMode=10" 
               target="_blank"
       rel="noopener noreferrer"
-      className="block w-full max-w-md mx-auto text-center text-[20px] font-light text-white py-4 px-6 rounded-lg bg-[#AFCB21] glow-button mt-7"
+      className="block w-full max-w-md mx-auto text-center text-[20px] font-semibold text-black py-4 px-6 rounded-lg bg-[#AFCB21] glow-button mt-7"
     >
               QUERO OS MESMOS RESULTADOS
             </a>
@@ -1001,9 +994,9 @@ useEffect(() => {
 
 
       {/* Plans Section */}
-      <section id="planos" className="py-20 bg-gray-100">
+      <section id="planos" className="py-20 bg-gray-100 scroll-mt-16">
   <div className="container mx-auto px-4">
-    <h2 className="text-4xl font-bold text-center mb-12 text-[#AFCB21]">
+    <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-zinc-900">
       {siteData.plans.title}
     </h2>
     {/* ...grid dos cards... */}
@@ -1026,7 +1019,7 @@ useEffect(() => {
                 href="https://pay.hotmart.com/J102054674M?off=g64ryxgr&checkoutMode=10" 
                 target="_blank"
       rel="noopener noreferrer"
-      className="block w-full max-w-md mx-auto text-center text-[20px] font-light text-white py-4 px-6 rounded-lg bg-[#AFCB21] glow-button mt-7"
+      className="block w-full max-w-md mx-auto text-center text-[20px] font-semibold text-black py-4 px-6 rounded-lg bg-[#AFCB21] glow-button mt-7"
     >
                 ASSINAR AGORA
               </a>
@@ -1061,11 +1054,22 @@ useEffect(() => {
               </a>
             </div>
           </div>
+          <div className="mt-8 text-center">
+            <p className="text-zinc-700 text-base">Não sabe qual plano escolher?</p>
+            <a
+              href="https://wa.me/5531972158847?text=Ol%C3%A1%2C%20tenho%20uma%20d%C3%BAvida%20sobre%20os%20planos%20da%20plataforma%20N%C3%A3o%20Pense%2C%20Vai!"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex mt-3 items-center justify-center rounded-lg border border-zinc-800 px-5 py-3 text-zinc-900 font-semibold hover:bg-zinc-900 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-900 transition-colors"
+            >
+              Tire suas dúvidas pelo WhatsApp ↗
+            </a>
+          </div>
         </div>
       </section>
 
       {/* About Me Section */}
-      <section id="about-section" className="py-10 bg-black">
+      <section id="about-section" className="py-10 bg-black scroll-mt-16">
         <div className="container mx-auto px-4">
           <div className="flex flex-col lg:flex-row items-center gap-12">
             {/* Foto à esquerda */}
@@ -1099,7 +1103,7 @@ useEffect(() => {
                 href="https://pay.hotmart.com/J102054674M?off=g64ryxgr&checkoutMode=10" 
                 target="_blank"
       rel="noopener noreferrer"
-      className="block w-full max-w-md mx-auto text-center text-[20px] font-light text-white py-4 px-6 rounded-lg bg-[#AFCB21] glow-button mt-7"
+      className="block w-full max-w-md mx-auto text-center text-[20px] font-semibold text-black py-4 px-6 rounded-lg bg-[#AFCB21] glow-button mt-7"
     >
                 COMEÇAR AGORA
               </a> */}
@@ -1142,7 +1146,7 @@ useEffect(() => {
           href="https://pay.hotmart.com/J102054674M?off=g64ryxgr&checkoutMode=10"
           target="_blank"
           rel="noopener noreferrer"
-          className="block w-full max-w-md mx-auto text-center text-[20px] font-light text-white py-4 px-6 rounded-lg bg-[#AFCB21] glow-button mt-4"
+          className="block w-full max-w-md mx-auto text-center text-[20px] font-semibold text-black py-4 px-6 rounded-lg bg-[#AFCB21] glow-button mt-4"
         >
           QUERO TER ESSES RESULTADOS
         </a> 
@@ -1219,7 +1223,9 @@ useEffect(() => {
           {/* LightWidget Instagram Feed */}
           <div className="mb-8">
             <iframe 
-              src="//lightwidget.com/widgets/2f1798ec8db754e1bbfa4b14196aaf6c.html" 
+              title="Publicações do Instagram Não Pense, Vai!"
+              loading="lazy"
+              src="https://lightwidget.com/widgets/2f1798ec8db754e1bbfa4b14196aaf6c.html" 
               className="lightwidget-widget w-full border-0 overflow-hidden h-96"
               style={{ width: '100%', border: 0, overflow: 'hidden' }}
             />
@@ -1249,7 +1255,7 @@ useEffect(() => {
           <p className="text-gray-400 mb-6">
             Transforme seus objetivos em algo real
           </p>
-          <div className="flex justify-center space-x-6 mb-6">
+          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 mb-6">
             <a href="#" className="text-gray-400 hover:text-[#AFCB21] transition-colors">Política de Privacidade</a>
             <a href="#" className="text-gray-400 hover:text-[#AFCB21] transition-colors">Termos de Uso</a>
             <a href="mailto:naopensevai@gmail.com?subject=Suporte%20N%C3%A3o%20Pense%2C%20Vai!" className="text-gray-400 hover:text-[#AFCB21] transition-colors">Suporte</a>
