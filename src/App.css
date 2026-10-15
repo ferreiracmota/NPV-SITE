@@ -440,6 +440,32 @@ a:focus-visible {
   outline-offset: 4px;
 }
 
+/* Seção Como funciona — cartões com contraste elegante e pouca distração. */
+.npv-step-card {
+  min-height: 225px;
+  padding: clamp(24px, 3.5vw, 34px);
+  border: 1px solid rgba(255,255,255,.11);
+  border-radius: 20px;
+  background: linear-gradient(140deg,#1c1c20 0%,#131316 100%);
+  transition: border-color .25s ease, transform .25s ease;
+}
+.npv-step-number {
+  font-size: 2rem;
+  line-height: 1;
+  font-weight: 900;
+  letter-spacing: -.04em;
+  color: var(--npv-lime);
+}
+@media (hover:hover) and (pointer:fine) {
+  .npv-step-card:hover {
+    border-color: rgba(175,203,33,.45);
+    transform: translateY(-3px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .npv-step-card { transition: none; }
+}
+
 /* Planos com espaçamento consistente, mantendo preços e benefícios intactos. */
 .npv-plan-card {
   transition: transform .28s ease, box-shadow .28s ease;
