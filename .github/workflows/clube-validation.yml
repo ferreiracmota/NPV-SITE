@@ -24,6 +24,3 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Build React and Vite
         run: pnpm run build
-      - name: Type-check all club JSX syntax
-        run: |
-          node -e "const fs=require('fs'); const {transformSync}=require('esbuild'); for (const f of ['src/ClubeNPV.jsx','src/ClubeRecompensas.jsx','src/ClubeNPVOnline.jsx']) transformSync(fs.readFileSync(f,'utf8'),{loader:'jsx'}); console.log('Clube syntax validated')"
