@@ -11,8 +11,20 @@ sem alteração do site principal em `main`.
   protegidos por RLS. Nunca compartilhar as chaves secretas na aplicação.
 - Para ver apenas o protótipo em prévia, usar `/clube?demo=1`.
 
-**Ainda não foi criado projeto Supabase nem aplicado o banco. A área real
-ainda NÃO foi validada com contas de teste ou publicada em produção.**
+**O projeto Supabase Clube NPV foi criado em 15/10/2026** na organização `ferreiracmota`:
+- Projeto: `dnlyfwcrfocgafgfoyna`, região `sa-east-1` (São Paulo).
+- Plano da organização: `free`; custo de criação retornado pelo Supabase: **0/mês**.
+- Migração inicial `clube_npv_initial_schema_20261015`: aplicada com sucesso.
+- Reforço de permissões `clube_npv_restrict_anonymous_functions_20261015`: aplicado com sucesso.
+- Cinco tabelas com RLS; nenhuma conta real nem movimentação de pontos cadastrada.
+- Cinco exemplos de recompensa carregados como **inativos**.
+- Auditoria: execução anônima de todas as funções internas revogada; permanecem
+  avisos de funções `SECURITY DEFINER` executáveis por usuários autenticados
+  (utilização intencional em chamadas RPC que validam suas próprias permissões).
+
+**A área real NÃO está ativada na Vercel e ainda não foi validada com
+contas de teste. O site de produção continua separado.**
+Não publicar antes de conferir Auth, chaves e permissões de usuários.
 
 ## Funcionalidades preparadas
 
@@ -42,9 +54,9 @@ efetivamente acordados com parceiros e prêmios reais em estoque.
 
 ## Passos para concluir a configuração
 
-1. Usuário escolhe a organização Supabase. Confirmar o custo oferecido antes de
-   criar o projeto de desenvolvimento, preferencialmente na região de São Paulo.
-2. No projeto Supabase vazio, revisar e aplicar `clube/schema.sql` via migração.
+1. ~~Escolher organização e confirmar custo.~~ Concluído: `ferreiracmota`, plano gratuito.
+2. ~~Criar o projeto e aplicar a migração inicial.~~ Concluído: projeto `dnlyfwcrfocgafgfoyna`,
+   migração inicial e reforço de permissões em `clube/security-hardening.sql`.
 3. Configurar Auth e-mail/senha **com confirmação de e-mail ativa**,
    URLs de redirecionamento e limites de envio. O link de confirmação e o de
    recuperação devem apontar para a URL HTTPS exata do preview `/clube`.
