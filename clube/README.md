@@ -134,3 +134,12 @@ Nada dessa demonstração é transação real.
 6. Executar testes de login, recuperação, admin, aluno aprovado/não aprovado, tentativas de acesso cruzado, resgates concorrentes e estoque. Até concluir: **PR #3 continua em rascunho; não mesclar na main**.
 
 **Atenção:** não houve publicação real, cadastro automático do administrador, criação de senha ou envio de e-mail nesta etapa.
+
+## Administrador principal ativado — 15/10/2026
+
+- Confirmada a existência de uma conta `auth.users` com endereço `ferreiracmota@gmail.com` e `email_confirmed_at` preenchido.
+- A conta correspondia ao endereço reservado no schema privado `clube_private.pending_admin_emails`.
+- Inserido o UUID correspondente em `public.clube_admins` via consulta condicionada a essas duas verificações.
+- **Conferência independente posterior:** 1 administrador autorizado e 1 perfil cadastrado; 0 movimentações de pontos e 0 resgates, 5 recompensas de exemplo.
+- O proprietário deve simplesmente **recarregar a prévia `/clube` mantendo a sessão iniciada** para carregar a área administrativa, ou entrar novamente com a senha que ele mesmo criou.
+- Ainda faltam testes funcionais completos de múltiplos usuários, permissão cruzada, resgates, políticas de privacidade e revisão do alerta RLS sobre a tabela privada; não mesclar para `main` nem abrir a área a alunos reais antes de homologação.
