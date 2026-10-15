@@ -37,15 +37,15 @@
 - [ ] Instagram NF Moda Fitness e Ciladas Burger: consultas externas sofreram timeout; revalidar manualmente. Não classificá-los como links quebrados sem evidência.
 
 ## Documentos legais e informações comerciais
-- [ ] Aprovar e disponibilizar Política de Privacidade adequada para os dados realmente tratados.
-- [ ] Aprovar e disponibilizar Termos de Uso da plataforma.
+- [x] Criada Política de Privacidade em `/politica-de-privacidade.html` com linguagem baseada na LGPD. **Pendente de conferência da identificação legal do controlador e dos tratamentos reais antes de publicar.**
+- [x] Criados Termos de Uso em `/termos-de-uso.html` com vedação a compartilhar login e redistribuir materiais, impressão pessoal permitida e direitos do consumidor preservados. **Pendente de revisão final pelo responsável.**
 - [ ] Alinhar as promessas atuais de garantia (incluindo "devolvemos 100%") com as condições reais da Hotmart e da legislação aplicável.
-- [x] Enquanto não há documentos aprovados, rodapé apresenta e-mail de solicitação em vez de páginas fictícias.
+- [x] Rodapé da prévia aponta diretamente para as páginas legais criadas; site oficial ainda não foi alterado.
 - [ ] Revisar com responsável o texto sobre renovação, acesso a conteúdos, suporte e frequência de alteração dos treinos.
 
 ## Critérios mínimos antes de publicar
 1. Responsável confirma preços, moeda, parcelas e periodicidade na Hotmart para compradores do Brasil.
 2. Checkout mensal, trimestral e área de alunos validados no navegador real, sem compra.
-3. Textos legais aprovados e publicados, ou decisão documentada sobre pendências.
+3. Textos legais criados na prévia, revisar identidade cadastral, práticas reais de dados e condições antes da aprovação/publicação.
 4. Revisão visual em celular e desktop da versão de prévia.
 5. Aprovação **expressa** do proprietário para publicação; só então avaliar merge de PR #1.
