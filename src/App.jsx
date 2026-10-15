@@ -329,17 +329,7 @@ const beforeAfterSlides = [
 ];
 
 
-  // Carregar script do LightWidget
-  useEffect(() => {
-    const script = document.createElement('script')
-    script.src = 'https://cdn.lightwidget.com/widgets/lightwidget.js'
-    script.async = true
-    document.head.appendChild(script)
-    
-    return () => {
-      document.head.removeChild(script)
-    }
-  }, [])
+  // Instagram funciona por link oficial, sem iframe ou widget pago.
 
   // Auto-rotate testimonials
   /*useEffect(() => {
@@ -1245,31 +1235,55 @@ useEffect(() => {
       </div>
     </section>
 
-      {/* Instagram Section */}
-      <section className="py-20 bg-gray-800">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-4xl font-bold mb-4 ">{siteData.instagram.title}</h2>
-          <p className="text-[#AFCB21] text-xl mb-8">{siteData.instagram.handle}</p>
-          
-          {/* LightWidget Instagram Feed */}
-          <div className="mb-8">
-            <iframe 
-              title="Publicações do Instagram Não Pense, Vai!"
-              loading="lazy"
-              src="https://lightwidget.com/widgets/2f1798ec8db754e1bbfa4b14196aaf6c.html" 
-              className="lightwidget-widget w-full border-0 overflow-hidden h-96"
-              style={{ width: '100%', border: 0, overflow: 'hidden' }}
-            />
-          </div>
-          
-          <div className="mt-8">
-            <a 
-              href="https://instagram.com/naopensevai" 
-              target="_blank" 
+      {/* Instagram: seção independente, sem depender de widget pago ou API externa */}
+      <section id="instagram" aria-labelledby="instagram-heading" className="npv-instagram relative overflow-hidden bg-[#111114] py-20 md:py-28 scroll-mt-16">
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="grid items-center gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:gap-20">
+            <div className="text-center lg:text-left">
+              <span className="npv-eyebrow"><span className="npv-live-dot" aria-hidden="true"></span> A GENTE SE ENCONTRA LÁ</span>
+              <h2 id="instagram-heading" className="mt-5 text-4xl sm:text-5xl md:text-6xl font-black tracking-tight leading-[1.05]">
+                O MOVIMENTO <span className="text-[#AFCB21]">NÃO PARA</span> POR AQUI.
+              </h2>
+              <p className="mt-5 mx-auto lg:mx-0 max-w-xl text-base sm:text-lg leading-relaxed text-zinc-300">
+                Acompanhe treinos, dicas e bastidores da comunidade Não Pense, Vai! pelo Instagram.
+              </p>
+              <a
+                href="https://www.instagram.com/naopensevai/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="npv-instagram-cta mt-8 inline-flex min-h-14 items-center justify-center gap-3 rounded-xl px-7 py-4 text-base font-bold text-white transition-transform hover:-translate-y-1 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#AFCB21]"
+              >
+                <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><path d="M17.5 6.5h.01"/></svg>
+                Ver o @naopensevai
+                <span aria-hidden="true">↗</span>
+              </a>
+              <p className="mt-4 text-sm text-zinc-400">As publicações são abertas diretamente no Instagram.</p>
+            </div>
+            <a
+              href="https://www.instagram.com/naopensevai/"
+              target="_blank"
               rel="noopener noreferrer"
-              className="inline-block bg-gradient-to-r from-purple-500 to-pink-500 text-white px-8 py-3 rounded-full font-bold hover:scale-105 transition-transform duration-300"
+              aria-label="Abrir perfil oficial Não Pense, Vai! no Instagram"
+              className="npv-instagram-profile group block mx-auto w-full max-w-md rounded-3xl border border-white/15 bg-white/[0.06] p-5 sm:p-7 shadow-2xl transition-transform hover:-translate-y-1 focus-visible:outline-2 focus-visible:outline-[#AFCB21]"
             >
-              Seguir no Instagram
+              <div className="flex items-center gap-4">
+                <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full border-2 border-pink-500 bg-black p-2 shadow-lg">
+                  <img src={logoNPV} alt="" loading="lazy" decoding="async" className="max-h-12 w-full object-contain" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-lg font-extrabold text-white">@naopensevai <span aria-hidden="true" className="text-[#AFCB21]">↗</span></p>
+                  <p className="text-sm text-zinc-300">Não Pense, Vai! | Treinamento</p>
+                </div>
+              </div>
+              <div className="my-6 h-px bg-white/15"></div>
+              <div className="grid grid-cols-3 gap-2 text-center">
+                <div className="npv-profile-pill">TREINO</div>
+                <div className="npv-profile-pill">EVOLUÇÃO</div>
+                <div className="npv-profile-pill">ROTINA</div>
+              </div>
+              <div className="mt-6 flex items-center justify-between rounded-xl bg-[#AFCB21] px-4 py-4 text-sm font-black text-black">
+                SIGA A NOSSA JORNADA <span aria-hidden="true" className="text-xl">↗</span>
+              </div>
             </a>
           </div>
         </div>
