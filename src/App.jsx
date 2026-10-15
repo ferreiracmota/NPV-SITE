@@ -317,7 +317,6 @@ const faqs = [
 
 
 function App() {
-  const [email, setEmail] = useState('')
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isContactDropdownOpen, setIsContactDropdownOpen] = useState(false)
   const showTestimonials = false; // começa oculto
@@ -509,21 +508,12 @@ const [currentTestimonial, setCurrentTestimonial] = useState(0);
 
   // Auto-rotate testimonials (roda todos que existirem)
 useEffect(() => {
-  if (testimonials.length === 0) return; // segurança
+  if (!showTestimonials || testimonials.length === 0) return; // Não gastar bateria com carrossel oculto
   const id = setInterval(() => {
     setCurrentTestimonial(prev => (prev + 1) % testimonials.length);
   }, 4000);
   return () => clearInterval(id);
-}, [testimonials.length]);
-
-  // Handle email subscription
-  const handleEmailSubmit = (e) => {
-    e.preventDefault()
-    if (email) {
-      alert(`Obrigado! Você será notificado no e-mail: ${email}`)
-      setEmail('')
-    }
-  }
+}, [showTestimonials, testimonials.length]);
 
   return (
     <div className="min-h-screen bg-black text-white font-inter">
