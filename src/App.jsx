@@ -717,7 +717,7 @@ useEffect(() => {
       playsInline
       autoPlay
       loop
-      preload="auto"
+      preload="metadata"
     />
     {/* Mobile (< md) */}
     <video
@@ -727,7 +727,7 @@ useEffect(() => {
       playsInline
       autoPlay
       loop
-      preload="auto"
+      preload="metadata"
     />
   </div>
 
