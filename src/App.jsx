@@ -485,7 +485,13 @@ const beforeAfterSlides = [
     { logo: parceiro2, name: "Cia do Esporte", link: "https://www.instagram.com/ciadoesporte2/", coupon: "NPV10" },
     { logo: parceiro3, name: "TF Sports Running Betim", link: "https://link-prod.tfsports.com.br/events/running-betim-12505301321", coupon: "NAOPENSEVAI" },
     { logo: parceiro4, name: "NF Moda Fitness", link: "https://www.instagram.com/nf.modafitness/", coupon: "" },
-    { logo: parceiro5, name: "Ciladas Burger", link: "https://www.instagram.com/ciladasburguer/", coupon: "NPV15" }
+    { logo: parceiro5, name: "Ciladas Burger", link: "https://www.instagram.com/ciladasburguer/", coupon: "NPV15" },
+    // Logomarcas oficiais das lojas (PNG). Para trocar no futuro, altere apenas a URL deste parceiro.
+    { logo: "https://cacow.com.br/cdn/shop/files/Template_de_Banner_2.0_-_by_Estudio_Gole_2_2b6ed56a-607b-42de-a4ca-4e857cb86466.png?v=1765388753&width=270", name: "Cacow", link: "https://cacow.com.br/", coupon: "NPV5" },
+    { logo: "https://z2performance.com/cdn/shop/files/logo_z2_azul_01.png?v=1725888283&width=100", name: "Z2 Performance", link: "https://z2performance.com/", coupon: "Z2naopensevai" },
+    { logo: "https://acdn-us.mitiendanube.com/stores/005/950/623/themes/common/logo-1531537272-1743307940-4b210bcc33dbc7ef880a3ec47b1628e81743307940.png?0", name: "Hey!Mu", link: "https://heymu.com.br/", coupon: "NPV10" },
+    // SVG vetorial extraído do cabeçalho oficial da LIQUIDZ para garantir nitidez em qualquer tamanho.
+    { logo: "/parceiros/logo-liquidz.svg", name: "LIQUIDZ", link: "https://www.liquidz.com.br/", coupon: "naopensevai" }
   ]
 }
 ,
