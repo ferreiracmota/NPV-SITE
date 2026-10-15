@@ -317,6 +317,39 @@ const faqs = [
 
 
 function App() {
+  const heroDesktopVideoRef = useRef(null)
+  const heroMobileVideoRef = useRef(null)
+
+  // Safari/iOS: reaplica o estado mudo e retoma o vídeo após voltar à aba.
+  useEffect(() => {
+    const resumeHeroVideo = () => {
+      if (document.hidden) return
+      const video = window.matchMedia('(min-width: 768px)').matches
+        ? heroDesktopVideoRef.current
+        : heroMobileVideoRef.current
+      if (!video) return
+      video.defaultMuted = true
+      video.muted = true
+      if (video.paused) {
+        const attempt = video.play()
+        if (attempt && typeof attempt.catch === 'function') {
+          attempt.catch(() => {
+            // Navegadores podem bloquear autoplay por economia de energia.
+          })
+        }
+      }
+    }
+    resumeHeroVideo()
+    document.addEventListener('visibilitychange', resumeHeroVideo)
+    window.addEventListener('pageshow', resumeHeroVideo)
+    window.addEventListener('resize', resumeHeroVideo)
+    return () => {
+      document.removeEventListener('visibilitychange', resumeHeroVideo)
+      window.removeEventListener('pageshow', resumeHeroVideo)
+      window.removeEventListener('resize', resumeHeroVideo)
+    }
+  }, [])
+
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isContactDropdownOpen, setIsContactDropdownOpen] = useState(false)
   const showTestimonials = false; // começa oculto
@@ -701,23 +734,35 @@ useEffect(() => {
   <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
     {/* Desktop / tablet (>= md) */}
     <video
+      ref={heroDesktopVideoRef}
       className="hidden md:block w-full h-full object-cover"
       src={videofundo1}
       muted
       playsInline
       autoPlay
       loop
-      preload="metadata"
+      preload="auto"
+      onCanPlay={(event) => {
+        if (event.currentTarget.paused) {
+          event.currentTarget.play().catch(() => {})
+        }
+      }}
     />
     {/* Mobile (< md) */}
     <video
+      ref={heroMobileVideoRef}
       className="md:hidden w-full h-full object-cover"
       src={videofundomobile}
       muted
       playsInline
       autoPlay
       loop
-      preload="metadata"
+      preload="auto"
+      onCanPlay={(event) => {
+        if (event.currentTarget.paused) {
+          event.currentTarget.play().catch(() => {})
+        }
+      }}
     />
   </div>
 
