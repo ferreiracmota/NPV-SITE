@@ -187,31 +187,63 @@ button, a {
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-/* --- Parceiros: animação horizontal contínua --- */
-.partners-marquee { overflow: hidden; position: relative; white-space: nowrap; box-sizing: border-box; }
-
-.partners-track {
-  display: inline-block;
+/* Parceiros: quatro grupos idênticos, sem salto entre ciclos.
+   Cada grupo tem exatamente a mesma largura, inclusive o espaço final.
+   -25% da faixa de quatro grupos equivale a avançar um grupo completo. */
+.npv-partners-viewport {
+  overflow: hidden;
+}
+.npv-partners-track {
+  display: flex;
+  width: max-content;
+  max-width: none;
+  align-items: center;
+  animation: npv-partners-loop var(--npv-partners-desktop-duration, 30s) linear infinite;
   will-change: transform;
-  animation: partners-marquee 32s linear infinite;
 }
-
-/* desktop: um pouco mais lento */
+.npv-partners-group {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 32px;
+  padding-right: 32px;
+}
+@keyframes npv-partners-loop {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(-25%, 0, 0); }
+}
 @media (min-width: 768px) {
-  .partners-track { animation-duration: 10s; }
+  .npv-partners-group {
+    gap: 48px;
+    padding-right: 48px;
+  }
 }
-
-/* acessibilidade: respeita quem reduz animações */
+@media (max-width: 767px) {
+  .npv-partners-track {
+    animation-duration: var(--npv-partners-mobile-duration, 9s);
+  }
+}
+@media (hover: hover) and (pointer: fine) {
+  .npv-partners-viewport:hover .npv-partners-track {
+    animation-play-state: paused;
+  }
+}
+.npv-partners-viewport:focus-within .npv-partners-track {
+  animation-play-state: paused;
+}
 @media (prefers-reduced-motion: reduce) {
-  .partners-track { animation-duration: 0s; }
+  .npv-partners-viewport {
+    overflow-x: auto;
+  }
+  .npv-partners-track {
+    animation: none !important;
+    transform: none !important;
+    will-change: auto;
+  }
+  .npv-partners-group:not(:first-child) {
+    display: none;
+  }
 }
-
-@keyframes partners-marquee {
-  0%   { transform: translateX(0); }
-  /* como duplicamos a lista, -50% fecha o loop sem “pulo” */
-  100% { transform: translateX(-100%); }
-}
-.partners-marquee:active .partners-track { animation-play-state: paused; }
 
 
 
@@ -322,39 +354,7 @@ button, a {
   }
 }
 
-/* Acelera APENAS o carrossel dos parceiros no mobile */
-@media (max-width: 768px) {
-  .animate-scroll-horizontal.partners-fast {
-    animation-duration: 9s; /* ajuste a gosto: menor = mais rápido */
-  }
-}
-
-
-/* Carrossel horizontal animado */
-@keyframes scroll-horizontal {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-50%);
-  }
-}
-
-.animate-scroll-horizontal {
-  animation: scroll-horizontal 30s linear infinite;
-  will-change: transform;
-}
-
-.animate-scroll-horizontal:hover {
-  animation-play-state: paused;
-}
-
-/* Melhorias responsivas para carrossel */
-@media (max-width: 768px) {
-  .animate-scroll-horizontal {
-    animation-duration: 15s;
-  }
-}
+/* A faixa de parceiros tem regras exclusivas acima; sem estilos concorrentes. */
 
 /* FAQ: animação de entrada (fade + subir) */
 .faq-anim {
