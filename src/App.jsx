@@ -3,8 +3,10 @@ import './App.css'
    sem depender de /public/videos, que pode não existir na implantação. */
 import fundoDesktopVideo from './assets/videofundo1.MP4?url'
 import fundoMobileVideo from './assets/videofundomobile.MP4?url'
-/* Segunda exportação mobile existente no projeto: testar compatibilidade iOS/Safari. */
-import fundoMobileAlternativeVideo from './assets/videofundomobile (1).mp4?url'
+/* Versão mobile H.264 silenciosa, criada a partir do vídeo original para Safari.
+   A capa mantém a abertura bonita mesmo quando o navegador restringe autoplay. */
+import fundoMobileIOSVideo from './assets/fundo-mobile-ios.mp4?url'
+import fundoMobilePoster from './assets/fundo-mobile-poster.jpg?url'
 import asset12 from './assets/544-2713.webp'
 import asset13 from './assets/544-2715.webp'
 import asset14 from './assets/544-2717.webp'
@@ -372,10 +374,10 @@ const faqs = [
 function App() {
   const heroDesktopVideoRef = useRef(null)
   const heroMobileVideoRef = useRef(null)
-  const [mobileVideoSource, setMobileVideoSource] = useState(fundoMobileAlternativeVideo)
-  const [mobilePlayPrompt, setMobilePlayPrompt] = useState(false)
+  const [mobileVideoSource, setMobileVideoSource] = useState(fundoMobileIOSVideo)
 
-  // Safari/iOS: reaplica o estado mudo e retoma o vídeo após voltar à aba.
+  // Safari/iOS: vídeo sempre mudo, inline, com nova tentativa ao carregar,
+  // voltar para a página ou interagir. Nenhum controle visual adicional.
   useEffect(() => {
     const resumeHeroVideo = () => {
       if (document.hidden) return
@@ -385,31 +387,29 @@ function App() {
       if (!video) return
       video.defaultMuted = true
       video.muted = true
-      if (video.paused) {
-        const attempt = video.play()
-        if (attempt && typeof attempt.catch === 'function') {
-          attempt.catch(() => {
-            // Safari/iOS pode impedir autoplay (ex.: economia de energia).
-            if (!window.matchMedia('(min-width: 768px)').matches) setMobilePlayPrompt(true)
-          })
-        }
+      video.setAttribute('muted', '')
+      video.setAttribute('playsinline', '')
+      video.setAttribute('webkit-playsinline', '')
+      if (!video.paused) return
+      const attempt = video.play()
+      if (attempt && typeof attempt.catch === 'function') {
+        attempt.catch(() => {
+          // O navegador pode proibir autoplay independentemente do código.
+          // Nesse caso, a imagem de capa do próprio vídeo evita fundo preto.
+        })
       }
     }
     resumeHeroVideo()
     document.addEventListener('visibilitychange', resumeHeroVideo)
     window.addEventListener('pageshow', resumeHeroVideo)
+    window.addEventListener('focus', resumeHeroVideo)
+    window.addEventListener('pointerdown', resumeHeroVideo, { passive: true })
     window.addEventListener('resize', resumeHeroVideo)
-    // Se a reprodução não começar, oferecer ativação por gesto no celular.
-    const mobileCheckTimer = window.setTimeout(() => {
-      const mobileVideo = heroMobileVideoRef.current
-      if (mobileVideo && mobileVideo.paused && window.matchMedia('(max-width: 767px)').matches) {
-        setMobilePlayPrompt(true)
-      }
-    }, 3500)
     return () => {
-      window.clearTimeout(mobileCheckTimer)
       document.removeEventListener('visibilitychange', resumeHeroVideo)
       window.removeEventListener('pageshow', resumeHeroVideo)
+      window.removeEventListener('focus', resumeHeroVideo)
+      window.removeEventListener('pointerdown', resumeHeroVideo)
       window.removeEventListener('resize', resumeHeroVideo)
     }
   }, [])
@@ -852,50 +852,36 @@ useEffect(() => {
     >
       <source src={fundoDesktopVideo} type="video/mp4" />
     </video>
-    {/* Mobile (< md) */}
+    {/* Mobile (< md): MP4 H.264 sem áudio e capa estática em caso de bloqueio de autoplay. */}
     <video
       key={mobileVideoSource}
       ref={heroMobileVideoRef}
       className="md:hidden w-full h-full object-cover"
-      onPlaying={() => setMobilePlayPrompt(false)}
-      onError={() => {
-        // Se a exportação alternativa não for compatível, tenta o arquivo original.
-        if (mobileVideoSource !== fundoMobileVideo) {
-          setMobileVideoSource(fundoMobileVideo)
-        } else {
-          setMobilePlayPrompt(true)
-        }
-      }}
+      poster={fundoMobilePoster}
       muted
       playsInline
       autoPlay
       loop
       preload="auto"
+      onLoadedData={(event) => {
+        const video = event.currentTarget
+        video.defaultMuted = true
+        video.muted = true
+        if (video.paused) video.play().catch(() => {})
+      }}
       onCanPlay={(event) => {
-        if (event.currentTarget.paused) {
-          event.currentTarget.play().catch(() => {})
-        }
+        const video = event.currentTarget
+        video.defaultMuted = true
+        video.muted = true
+        if (video.paused) video.play().catch(() => {})
+      }}
+      onError={() => {
+        // Fallback técnico caso a nova versão não carregue.
+        if (mobileVideoSource !== fundoMobileVideo) setMobileVideoSource(fundoMobileVideo)
       }}
     >
       <source src={mobileVideoSource} type="video/mp4" />
     </video>
-    {mobilePlayPrompt && (
-      <button
-        type="button"
-        onClick={() => {
-          const video = heroMobileVideoRef.current
-          if (!video) return
-          video.defaultMuted = true
-          video.muted = true
-          const attempt = video.play()
-          if (attempt && typeof attempt.then === 'function') {
-            attempt.then(() => setMobilePlayPrompt(false)).catch(() => setMobilePlayPrompt(true))
-          }
-        }}
-        className="absolute bottom-5 right-4 z-20 md:hidden pointer-events-auto rounded-full border border-[#AFCB21] bg-black/80 px-4 py-2 text-xs font-bold text-white shadow-lg"
-        aria-label="Iniciar vídeo de fundo"
-      >▶ Reproduzir fundo</button>
-    )}
   </div>
 
 {/* Logos por cima do vídeo – topo da hero */}
