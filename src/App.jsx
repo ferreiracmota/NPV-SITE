@@ -1452,8 +1452,8 @@ useEffect(() => {
             Transforme seus objetivos em algo real
           </p>
           <nav aria-label="Links do rodapé" className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 mb-6">
-            <a href="mailto:naopensevai@gmail.com?subject=Solicita%C3%A7%C3%A3o%20de%20Pol%C3%ADtica%20de%20Privacidade" className="text-gray-400 hover:text-[#AFCB21] transition-colors">Solicitar Política de Privacidade</a>
-            <a href="mailto:naopensevai@gmail.com?subject=Solicita%C3%A7%C3%A3o%20dos%20Termos%20de%20Uso" className="text-gray-400 hover:text-[#AFCB21] transition-colors">Solicitar Termos de Uso</a>
+            <a href="/politica-de-privacidade.html" className="text-gray-400 hover:text-[#AFCB21] transition-colors">Política de Privacidade</a>
+            <a href="/termos-de-uso.html" className="text-gray-400 hover:text-[#AFCB21] transition-colors">Termos de Uso</a>
             <a href="mailto:naopensevai@gmail.com?subject=Suporte%20N%C3%A3o%20Pense%2C%20Vai!" className="text-gray-400 hover:text-[#AFCB21] transition-colors">Suporte</a>
           </nav>
           <p className="text-gray-500 text-sm">
