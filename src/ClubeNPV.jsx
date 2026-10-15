@@ -157,6 +157,16 @@ export default function ClubeNPV() {
         </div>
       </aside>
       <main className="clube-main">
+        <div className="clube-mobile-mode">
+          <label>Ver como
+            <select value={role} onChange={e=>{setRole(e.target.value);setTab('inicio')}} aria-label="Simular perfil de acesso">
+              <option value="admin">Administrador</option><option value="aluno">Aluno</option>
+            </select>
+          </label>
+          {!isAdmin&&<label>Aluno fictício
+            <select aria-label="Escolher aluno fictício" value={current?.id||''} onChange={e=>{setStudentId(e.target.value);setTab('inicio')}}>{students.map(x=><option key={x.id} value={x.id}>{x.name}</option>)}</select>
+          </label>}
+        </div>
         {notice&&<Feedback onClose={()=>setNotice('')}>{notice}</Feedback>}
         <div className="clube-intro"><div><div className="clube-eyebrow"><span/> {isAdmin?'PAINEL DE GESTÃO':'MEU CLUBE NPV'}</div><h1>{tab==='inicio'?(isAdmin?'Seu clube, sob controle.':'Sua evolução vale pontos.'):tab==='alunos'?'Alunos do clube':tab==='historico'?'Histórico de pontos':'Benefícios e recompensas'}</h1><p>{tab==='inicio'?(isAdmin?'Acompanhe as atividades, cadastre alunos e registre pontos em poucos cliques.':'Acompanhe seus pontos e cada conquista dentro do Não Pense, Vai!.'):tab==='alunos'?'Cadastre e acompanhe a pontuação dos alunos.':tab==='historico'?'Consulte os lançamentos com data, motivo e valor.':'Um espaço para as futuras vantagens dos membros do clube.'}</p></div>
           {isAdmin&&tab!=='recompensas'&&<button className="clube-btn clube-btn-primary" onClick={()=>openPoints()}><Plus size={18}/> Lançar pontos</button>}
