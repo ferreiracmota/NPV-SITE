@@ -863,7 +863,9 @@ useEffect(() => {
     flex items-center gap-4 md:gap-6
   "
 >
-  {siteData.partners.items.map((p, i) => (
+  {/* Mantém a fileira da abertura com os cinco logos originais.
+      Todos os parceiros, incluindo novos, aparecem no carrossel próprio abaixo. */}
+  {siteData.partners.items.slice(0, 5).map((p, i) => (
     <a
       key={`hero-logo-${i}`}
       href={p.link}
