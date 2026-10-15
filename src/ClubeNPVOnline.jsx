@@ -137,7 +137,14 @@ export default function ClubeNPVOnline() {
   const [award,setAward]=useState(null)
   const [rewardDraft,setRewardDraft]=useState(null)
   const [rewardImageFile,setRewardImageFile]=useState(null)
+  const [imagePreviewUrl,setImagePreviewUrl]=useState('')
   const [ruleDraft,setRuleDraft]=useState(null)
+  useEffect(()=>{
+    if(!rewardImageFile){setImagePreviewUrl('');return}
+    const objectUrl=URL.createObjectURL(rewardImageFile)
+    setImagePreviewUrl(objectUrl)
+    return ()=>URL.revokeObjectURL(objectUrl)
+  },[rewardImageFile])
   const user=session?.user
   useEffect(()=>{
     let live=true
@@ -362,7 +369,7 @@ export default function ClubeNPVOnline() {
       <label>Descrição<textarea rows={2} value={rewardDraft.description} onChange={e=>setRewardDraft(d=>({...d,description:e.target.value}))}/></label>
       <div className="npv-reward-photo-editor">
         <strong>Foto do produto</strong>
-        <div className="npv-photo-preview">{rewardImageFile?<img src={URL.createObjectURL(rewardImageFile)} alt="Prévia da nova foto"/>:rewardImageUrl(rewardDraft.image_path)?<img src={rewardImageUrl(rewardDraft.image_path)} alt="Foto atual"/>:<ImagePlus size={40}/>}</div>
+        <div className="npv-photo-preview">{imagePreviewUrl?<img src={imagePreviewUrl} alt="Prévia da nova foto"/>:rewardImageUrl(rewardDraft.image_path)?<img src={rewardImageUrl(rewardDraft.image_path)} alt="Foto atual"/>:<ImagePlus size={40}/>}</div>
         <label>Substituir por uma foto do celular<input type="file" accept="image/jpeg,image/png,image/webp" onChange={e=>setRewardImageFile(e.target.files?.[0]||null)}/></label>
         {rewardDraft.image_path&&<button type="button" className="npv-shop-edit" onClick={()=>{setRewardImageFile(null);setRewardDraft(d=>({...d,image_path:''}))}}>Remover foto atual</button>}
         <small>JPG, PNG ou WebP, máximo 4 MB. A foto do catálogo será pública.</small>
