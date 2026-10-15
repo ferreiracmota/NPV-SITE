@@ -81,6 +81,7 @@ export default function ClubeNPV() {
   useEffect(() => { localStorage.setItem(STORAGE, JSON.stringify(demo)) }, [demo])
   useEffect(() => { document.title = 'Clube NPV — Demonstração | Não Pense, Vai!' }, [])
   const { students, ledger, rules } = demo
+  const pendingRequests = (demo.redemptions || []).filter(x => x.status === 'pending')
   const allYearLedger = useMemo(() => ledger.filter(isAnoAtual), [ledger])
   const balance = (id) => allYearLedger.filter(x => x.studentId === id).reduce((v, x) => v + x.amount, 0)
   const current = students.find(x => x.id === studentId) || students[0]
@@ -184,6 +185,7 @@ export default function ClubeNPV() {
             <div className="clube-kpi"><IconChip icon={Users}/><span>ALUNOS CADASTRADOS</span><strong>{students.length}</strong><small>Contas fictícias no protótipo</small></div>
             <div className="clube-kpi"><IconChip icon={History} tone="pink"/><span>LANÇAMENTOS NO ANO</span><strong>{allYearLedger.length}</strong><small>Registros no histórico</small></div>
           </div>
+          {pendingRequests.length>0&&<button type="button" className="npv-shop-pending-banner" onClick={()=>setTab('recompensas')}><Gift size={19}/><span><strong>{pendingRequests.length} solicitação(ões) de resgate aguardando aprovação</strong><small>Verificar pedidos fictícios e atualizar o estoque</small></span><ArrowRight size={17}/></button>}
           <div className="clube-columns">
             <section className="clube-card"><div className="clube-card-head"><div><h2>Últimas movimentações</h2><p>Atividades recentes do clube</p></div><button className="clube-text-button" onClick={()=>setTab('historico')}>Ver tudo <ArrowRight size={16}/></button></div>{renderLedger([...allYearLedger].sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,5),true)}</section>
             <section className="clube-card"><div className="clube-card-head"><div><h2>Seus alunos</h2><p>Maiores saldos de {ANO}</p></div></div>
@@ -193,7 +195,7 @@ export default function ClubeNPV() {
           </div>
         </>}
         {tab==='inicio'&&!isAdmin&&<>
-          <div className="clube-student-summary"><div><div className="clube-student-hello">OLÁ, {current?.name?.split(' ')[0]?.toUpperCase()}! <span>✦</span></div><p>SEU SALDO EM {ANO}</p><strong>{pontos(balance(current?.id))} <small>pontos</small></strong><span className="clube-summary-caption">Cada atividade aprovada soma à sua trajetória.</span></div><Award size={100} strokeWidth={1.1}/></div>
+          <div className="clube-student-summary"><div><div className="clube-student-hello">OLÁ, {current?.name?.split(' ')[0]?.toUpperCase()}! <span>✦</span></div><p>SEU SALDO EM {ANO}</p><strong>{pontos(balance(current?.id))} <small>pontos</small></strong><span className="clube-summary-caption">Cada atividade aprovada soma à sua trajetória.</span>{pendingRequests.some(x=>x.studentId===current?.id)&&<span className="clube-summary-caption clube-reserved-note">Pontos de solicitações pendentes ficam reservados até a resposta.</span>}</div><Award size={100} strokeWidth={1.1}/></div>
           <div className="clube-columns">
             <section className="clube-card"><div className="clube-card-head"><div><h2>Minhas atividades</h2><p>Seu histórico individual de pontos</p></div><button className="clube-text-button" onClick={()=>setTab('historico')}>Ver tudo <ArrowRight size={16}/></button></div>{renderLedger(currentLedger.slice(0,6))}</section>
             <section className="clube-card clube-next"><div className="clube-card-head"><div><h2>Continue acumulando</h2><p>Atividades que podem render pontos</p></div></div><div className="clube-how">{rules.slice(0,4).map((x,i)=><div key={x.id}><span>{x.icon}</span><strong>{x.label}</strong><b>+{pontos(x.points)}</b></div>)}</div><p className="clube-micro">Pontuação ilustrativa, sujeita à tabela oficial do clube. Os lançamentos são validados pela administração.</p></section>
