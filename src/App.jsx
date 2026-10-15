@@ -854,6 +854,7 @@ useEffect(() => {
     </video>
     {/* Mobile (< md) */}
     <video
+      key={mobileVideoSource}
       ref={heroMobileVideoRef}
       className="md:hidden w-full h-full object-cover"
       onPlaying={() => setMobilePlayPrompt(false)}
