@@ -1,0 +1,41 @@
+/* Fase de integração Supabase — mesmas cores e tipografia do protótipo aprovado */
+.clube-live .clube-live-badge{display:inline-flex;align-items:center;gap:7px;border:1px solid #3b522d;border-radius:30px;padding:7px 10px;color:#cbe984;font-size:10px;letter-spacing:.08em;font-weight:900}
+.clube-live .clube-logout{display:flex;align-items:center;gap:7px;color:#dce4d9;background:transparent;border:0;font-size:12px;font-weight:750;padding:8px}
+.clube-live .clube-logout:hover{color:#b6d638}
+.clube-auth-wrap{width:min(1160px,100%);margin:0 auto;min-height:calc(100svh - 83px);display:grid;grid-template-columns:1fr 410px;align-items:center;gap:clamp(30px,7vw,105px);padding:60px 26px 80px}
+.clube-auth-intro{max-width:595px}
+.clube-auth-intro h1{font-size:clamp(37px,5vw,60px);letter-spacing:-.065em;line-height:1.06;margin:10px 0 24px;color:#202d20;font-weight:950}
+.clube-auth-intro>p{font-size:15px;color:#748171;max-width:510px;line-height:1.75}
+.clube-auth-perks{margin-top:32px;display:flex;flex-direction:column;gap:15px}
+.clube-auth-perks span{display:flex;gap:12px;align-items:center;font-size:13px;font-weight:750;color:#3f513c}
+.clube-auth-perks svg{color:#70932e}
+.clube-auth-card{background:white;border:1px solid #e1e8da;border-radius:17px;box-shadow:0 30px 80px #13200e0c;overflow:hidden;max-width:480px;width:100%;margin:auto}
+.clube-auth-card-head{padding:30px 27px 17px}
+.clube-auth-card-head>span{display:flex;align-items:center;justify-content:center;width:52px;height:52px;background:#eff6df;border-radius:14px;color:#648b25;margin-bottom:18px}
+.clube-auth-card-head h2{font-size:25px;letter-spacing:-.045em;font-weight:900;color:#293525;margin:0 0 8px}
+.clube-auth-card-head p{font-size:12px;color:#909a8c;line-height:1.6;margin:0}
+.clube-auth-card .clube-form{padding-top:12px}
+.clube-auth-options{display:flex;flex-wrap:wrap;align-items:center;gap:14px;justify-content:center}
+.clube-auth-options button{border:0;background:transparent;color:#698c28;font-weight:750;font-size:11px;padding:8px 2px}
+.clube-auth-options button:hover{text-decoration:underline}
+.clube-real-error{padding:13px 14px;border:1px solid #eeb7be;border-radius:8px;background:#fff2f3;color:#9a333e;font-size:12px;line-height:1.6;margin:0 0 14px}
+.clube-real-error button{border:0;text-decoration:underline;color:inherit;font-weight:850;background:transparent}
+.clube-real-success{padding:13px 14px;background:#eef7df;border:1px solid #bbd996;color:#4b6724;border-radius:9px;font-size:12px;line-height:1.6}
+.clube-pending{display:flex;min-height:calc(100svh - 90px);align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:45px 20px;gap:14px;max-width:610px;margin:auto}
+.clube-pending-icon{width:74px;height:74px;border-radius:20px;background:#ebf5d9;color:#668f28;display:flex;align-items:center;justify-content:center}
+.clube-pending h1{font-size:clamp(26px,4vw,36px);line-height:1.17;font-weight:900;letter-spacing:-.035em;margin:12px 0 0}
+.clube-pending p{font-size:14px;line-height:1.7;color:#748074;margin:0 0 12px}
+.clube-live-loader{min-height:70svh;display:flex;align-items:center;justify-content:center;color:#647c39;font-size:14px;font-weight:800}
+.clube-real-search{margin-bottom:17px}
+.clube-real-account{font-size:10px;color:#86917e;word-break:break-all}
+.clube-real-hint{font-size:11px;color:#7c897b;margin:16px 0;line-height:1.6}
+.clube-real-small{border:0;background:transparent;color:#899485;font-size:10px;font-weight:750;padding:7px}
+.clube-real-small:hover{color:#a94a52}
+.clube-real-select{background:#fff;border:1px solid #dbe3d5;border-radius:8px;padding:10px;margin:2px 0 18px;max-width:100%;font-size:12px;color:#344533}
+.clube-live .clube-student-row .clube-btn{flex:none}
+.clube-live .clube-kpis{grid-template-columns:1.2fr 1fr 1fr}
+.clube-live .clube-card .clube-avatar{width:35px;height:35px;border-radius:9px;font-size:14px}
+.clube-live .clube-ranking .clube-avatar{width:33px;height:33px;font-size:12px}
+.clube-live .clube-main-footer a{color:#698e20;text-decoration:underline}
+@media(max-width:1050px){.clube-auth-wrap{grid-template-columns:1fr 390px;gap:28px}.clube-auth-intro h1{font-size:43px}}
+@media(max-width:760px){.clube-live .clube-live-badge{display:none}.clube-live .clube-logout{font-size:11px}.clube-auth-wrap{display:flex;flex-direction:column;align-items:stretch;min-height:auto;padding:43px 17px 65px;gap:28px}.clube-auth-intro h1{font-size:35px;margin:8px 0 15px}.clube-auth-intro>p{font-size:13px}.clube-auth-perks{margin-top:20px;gap:9px}.clube-auth-perks span{font-size:11px}.clube-auth-perks svg{width:16px}.clube-auth-card{max-width:540px}.clube-live .clube-kpis{grid-template-columns:1fr 1fr}.clube-live .clube-kpi-dark{grid-column:span 2}.clube-live .clube-student-row .clube-btn{margin-left:auto}}
