@@ -38,9 +38,7 @@ import especialista2 from "./assets/Especialista2.PNG";
 import especialista3 from "./assets/Especialista3.PNG";
 import especialista4 from "./assets/Especialista4.PNG";
 import especialista5 from "./assets/Especialista5.PNG";
-import videofundo1 from "./assets/videofundo1.MP4";
 import sobremim from "./assets/sobre-mim.JPG";
-import videofundomobile from "./assets/videofundomobile.MP4";
 import modulo1        from './assets/modulo1.jpg'
 import modulo2  from './assets/modulo2.jpg'
 import modulo3       from './assets/modulo3.jpg'
@@ -736,7 +734,6 @@ useEffect(() => {
     <video
       ref={heroDesktopVideoRef}
       className="hidden md:block w-full h-full object-cover"
-      src={videofundo1}
       muted
       playsInline
       autoPlay
@@ -747,12 +744,13 @@ useEffect(() => {
           event.currentTarget.play().catch(() => {})
         }
       }}
-    />
+    >
+      <source src="/videos/fundo-desktop.mp4" type="video/mp4" />
+    </video>
     {/* Mobile (< md) */}
     <video
       ref={heroMobileVideoRef}
       className="md:hidden w-full h-full object-cover"
-      src={videofundomobile}
       muted
       playsInline
       autoPlay
@@ -763,7 +761,9 @@ useEffect(() => {
           event.currentTarget.play().catch(() => {})
         }
       }}
-    />
+    >
+      <source src="/videos/fundo-mobile.mp4" type="video/mp4" />
+    </video>
   </div>
 
 {/* Logos por cima do vídeo – topo da hero */}
