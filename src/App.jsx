@@ -403,9 +403,9 @@ const beforeAfterSlides = [
     plans: {
       title: <div className="text-center mt-0 mb-10">
   {/* Primeira linha */}
-  <p className="font-extrabold tracking-tight leading-tight text-4xl md:text-6xl text-pink-500">
+  <h2 className="font-extrabold tracking-tight leading-tight text-4xl md:text-6xl text-pink-500">
     VOCÊ É O AVIÃO
-  </p>
+  </h2>
 
   {/* Segunda linha */}
   <p className="mt-1 uppercase font-semibold tracking-widest text-xs md:text-sm text-gray-800">
@@ -1000,20 +1000,20 @@ useEffect(() => {
 
 
       {/* Plans Section */}
-      <section id="planos" className="py-20 bg-gray-100 scroll-mt-16">
+      <section id="planos" className="py-20 md:py-24 bg-gray-100 scroll-mt-16">
   <div className="container mx-auto px-4">
-    <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-zinc-900">
+    <div className="mb-12 text-center text-zinc-900" aria-label="Planos de assinatura">
       {siteData.plans.title}
-    </h2>
+    </div>
     {/* ...grid dos cards... */}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto items-stretch">
             {/* Plano Mensal */}
-            <div className="bg-black border border-gray-700 rounded-lg p-8 text-center hover:scale-105 transition-transform duration-300 shadow-xl">
+            <div className="npv-plan-card flex h-full flex-col bg-black border border-gray-700 rounded-2xl p-7 sm:p-8 text-center shadow-xl">
               <h3 className="text-2xl font-bold mb-2">{siteData.plans.monthly.title}</h3>
               <p className="text-gray-400 mb-6">{siteData.plans.monthly.subtitle}</p>
               <div className="text-4xl font-bold text-[#AFCB21] mb-6">{siteData.plans.monthly.price}</div>
-              <ul className="text-left mb-8 space-y-3">
+              <ul className="flex-1 text-left mb-8 space-y-3">
                 {siteData.plans.monthly.features.map((feature, index) => (
                   <li key={index} className="flex items-center">
                     <span className="text-[#AFCB21] mr-3 text-xl">✓</span>
@@ -1025,14 +1025,14 @@ useEffect(() => {
                 href="https://pay.hotmart.com/J102054674M?off=g64ryxgr&checkoutMode=10" 
                 target="_blank"
       rel="noopener noreferrer"
-      className="block w-full max-w-md mx-auto text-center text-[20px] font-semibold text-black py-4 px-6 rounded-lg bg-[#AFCB21] glow-button mt-7"
+      className="block w-full max-w-md mx-auto text-center text-[20px] font-semibold text-black py-4 px-6 rounded-lg bg-[#AFCB21] glow-button mt-auto"
     >
                 ASSINAR AGORA
               </a>
             </div>
 
             {/* Plano Trimestral */}
-            <div className="bg-[#AFCB21] text-black rounded-lg p-8 text-center relative hover:scale-105 transition-transform duration-300 shadow-xl">
+            <div className="npv-plan-card flex h-full flex-col bg-[#AFCB21] text-black rounded-2xl p-7 sm:p-8 text-center relative shadow-xl">
               <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-black text-[#AFCB21] px-4 py-1 rounded text-sm font-bold">
                 MAIS POPULAR
               </div>
@@ -1042,7 +1042,7 @@ useEffect(() => {
                 <div className="text-4xl font-bold mb-2">{siteData.plans.quarterly.price}</div>
                 <div className="text-sm text-gray-700 line-through">{siteData.plans.quarterly.originalPrice}</div>
               </div>
-              <ul className="text-left mb-8 space-y-3">
+              <ul className="flex-1 text-left mb-8 space-y-3">
                 {siteData.plans.quarterly.features.map((feature, index) => (
                   <li key={index} className="flex items-center">
                     <span className="text-black mr-3 text-xl">✓</span>
@@ -1051,10 +1051,10 @@ useEffect(() => {
                 ))}
               </ul>
               <a 
-                href="https://pay.hotmart.com/J102054674M?off=il6n3k8y&checkoutMode=10&bid=1758659742975" 
+                href="https://pay.hotmart.com/J102054674M?off=il6n3k8y&checkoutMode=10" 
                 target="_blank"
       rel="noopener noreferrer"
-      className="block w-full max-w-md mx-auto text-center text-[20px] font-light text-white py-4 px-6 rounded-lg bg-black glow-button mt-7"
+      className="block w-full max-w-md mx-auto text-center text-[20px] font-semibold text-white py-4 px-6 rounded-lg bg-black mt-auto"
     >
                 ASSINAR AGORA
               </a>
@@ -1300,11 +1300,11 @@ useEffect(() => {
           <p className="text-gray-400 mb-6">
             Transforme seus objetivos em algo real
           </p>
-          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 mb-6">
-            <a href="#" className="text-gray-400 hover:text-[#AFCB21] transition-colors">Política de Privacidade</a>
-            <a href="#" className="text-gray-400 hover:text-[#AFCB21] transition-colors">Termos de Uso</a>
+          <nav aria-label="Links do rodapé" className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 mb-6">
+            <a href="mailto:naopensevai@gmail.com?subject=Solicita%C3%A7%C3%A3o%20de%20Pol%C3%ADtica%20de%20Privacidade" className="text-gray-400 hover:text-[#AFCB21] transition-colors">Solicitar Política de Privacidade</a>
+            <a href="mailto:naopensevai@gmail.com?subject=Solicita%C3%A7%C3%A3o%20dos%20Termos%20de%20Uso" className="text-gray-400 hover:text-[#AFCB21] transition-colors">Solicitar Termos de Uso</a>
             <a href="mailto:naopensevai@gmail.com?subject=Suporte%20N%C3%A3o%20Pense%2C%20Vai!" className="text-gray-400 hover:text-[#AFCB21] transition-colors">Suporte</a>
-          </div>
+          </nav>
           <p className="text-gray-500 text-sm">
             © {new Date().getFullYear()} Não Pense, Vai! – Todos os direitos reservados
           </p>
