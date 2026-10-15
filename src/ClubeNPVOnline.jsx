@@ -102,6 +102,22 @@ function AuthPage({onLoggedIn,onResetDone,defaultMode='login'}) {
   </div></div>
 }
 const emptyState={members:[],events:[],rewards:[],requests:[]}
+// O limite padrão de linhas da API não pode truncar extratos nem listas de alunos.
+// Paginação estável por data e ID, inclusive quando há eventos no mesmo segundo.
+const CLUB_PAGE_SIZE=500
+async function fetchAllClubeRows(table,columns,ascending=false) {
+  const rows=[]
+  for(let start=0;;start+=CLUB_PAGE_SIZE){
+    const result=await supabase.from(table)
+      .select(columns)
+      .order('created_at',{ascending})
+      .order('id',{ascending:false})
+      .range(start,start+CLUB_PAGE_SIZE-1)
+    if(result.error)return {data:null,error:result.error}
+    rows.push(...(result.data||[]))
+    if((result.data||[]).length<CLUB_PAGE_SIZE)return {data:rows,error:null}
+  }
+}
 export default function ClubeNPVOnline() {
   const [session,setSession]=useState(null)
   const [recovery,setRecovery]=useState(false)
@@ -146,20 +162,25 @@ export default function ClubeNPVOnline() {
   const refresh=useCallback(async()=>{
     if(!user?.id || !profile || (!isAdmin&&!profile.approved)) return
     setLoading(true)
-    const queries=[
-      isAdmin ? supabase.from('clube_profiles').select('id,full_name,email,approved,created_at').order('created_at',{ascending:false}) : Promise.resolve({data:[],error:null}),
-      supabase.from('clube_point_events').select('id,student_id,event_type,points,note,created_at').order('created_at',{ascending:false}).limit(1000),
-      supabase.from('clube_rewards').select('id,name,category,description,points,stock,icon,theme,active,created_at').order('created_at',{ascending:true}),
-      supabase.from('clube_redemptions').select('id,student_id,reward_id,reward_name,points,status,created_at,resolved_at').order('created_at',{ascending:false}).limit(1000)
-    ]
-    const results=await Promise.all(queries)
-    if(results.some(x=>x.error)){
-      setError('Não foi possível carregar o Clube NPV. Confira a estrutura do banco e as permissões.')
-    } else {
-      setData({members:results[0].data||[],events:results[1].data||[],rewards:results[2].data||[],requests:results[3].data||[]})
-      setError('')
+    try {
+      const queries=[
+        isAdmin ? fetchAllClubeRows('clube_profiles','id,full_name,email,approved,created_at') : Promise.resolve({data:[],error:null}),
+        fetchAllClubeRows('clube_point_events','id,student_id,event_type,points,note,created_at'),
+        fetchAllClubeRows('clube_rewards','id,name,category,description,points,stock,icon,theme,active,created_at',true),
+        fetchAllClubeRows('clube_redemptions','id,student_id,reward_id,reward_name,points,status,created_at,resolved_at')
+      ]
+      const results=await Promise.all(queries)
+      if(results.some(x=>x.error)){
+        setError('Não foi possível carregar o Clube NPV. Confira a estrutura do banco e as permissões.')
+      } else {
+        setData({members:results[0].data||[],events:results[1].data||[],rewards:results[2].data||[],requests:results[3].data||[]})
+        setError('')
+      }
+    } catch {
+      setError('A conexão foi interrompida. Tente atualizar os dados do clube.')
+    } finally {
+      setLoading(false)
     }
-    setLoading(false)
   },[user?.id,profile?.id,profile?.approved,isAdmin])
   useEffect(()=>{refresh()},[refresh])
   const approved=profile?.approved || isAdmin
@@ -167,6 +188,7 @@ export default function ClubeNPVOnline() {
   const reserved=id=>data.requests.filter(x=>x.student_id===id && x.status==='pending').reduce((acc,x)=>acc+x.points,0)
   const mine=useMemo(()=>data.events.filter(x=>x.student_id===user?.id),[data.events,user?.id])
   const mineRequests=useMemo(()=>data.requests.filter(x=>x.student_id===user?.id),[data.requests,user?.id])
+  const studentMembers=isAdmin?data.members.filter(x=>x.id!==user?.id):data.members
   const activeRewards=data.rewards.filter(x=>x.active)
   const totalPoints=data.events.filter(isThisYear).reduce((acc,x)=>acc+x.points,0)
   const pendingCount=data.requests.filter(x=>x.status==='pending').length
@@ -224,7 +246,7 @@ export default function ClubeNPVOnline() {
     },'Recompensa salva no banco de dados.')
   }
   async function signOut(){await supabase.auth.signOut();setSession(null)}
-  function newAward(id){setAward({studentId:id||data.members.find(x=>x.approved)?.id||'',type:'renovacao',points:100,note:''})}
+  function newAward(id){setAward({studentId:id||studentMembers.find(x=>x.approved)?.id||'',type:'renovacao',points:100,note:''})}
   const activityList=(rows,showMember=false)=><div className="clube-activities">
     {!rows.length&&<p className="clube-empty">Nenhuma movimentação registrada ainda.</p>}
     {rows.map(x=><div className="clube-activity" key={x.id}>
@@ -279,16 +301,16 @@ export default function ClubeNPVOnline() {
       </div>
       {loading&&<p className="clube-online-loading">Atualizando dados do clube...</p>}
       {tab==='inicio'&&isAdmin&&<>
-        <div className="clube-kpis"><div className="clube-kpi clube-kpi-dark"><span>PONTOS DISTRIBUÍDOS EM {YEAR}</span><strong>{format(totalPoints)}</strong><small><TrendingUp size={15}/> Saldo líquido dos lançamentos</small></div><div className="clube-kpi"><span>ALUNOS APROVADOS</span><strong>{data.members.filter(x=>x.approved).length}</strong><small>Perfis autorizados</small></div><div className="clube-kpi"><span>RESGATES PENDENTES</span><strong>{pendingCount}</strong><small>Aguardando decisão</small></div></div>
+        <div className="clube-kpis"><div className="clube-kpi clube-kpi-dark"><span>PONTOS DISTRIBUÍDOS EM {YEAR}</span><strong>{format(totalPoints)}</strong><small><TrendingUp size={15}/> Saldo líquido dos lançamentos</small></div><div className="clube-kpi"><span>ALUNOS APROVADOS</span><strong>{studentMembers.filter(x=>x.approved).length}</strong><small>Perfis autorizados</small></div><div className="clube-kpi"><span>RESGATES PENDENTES</span><strong>{pendingCount}</strong><small>Aguardando decisão</small></div></div>
         {pendingCount>0&&<button className="npv-shop-pending-banner" onClick={()=>setTab('recompensas')}><Gift size={20}/><span><strong>{pendingCount} pedido(s) aguardando aprovação</strong><small>Ver a fila de resgates</small></span><ArrowRight size={17}/></button>}
-        <div className="clube-columns"><section className="clube-card"><div className="clube-card-head"><div><h2>Últimas movimentações</h2><p>Histórico do clube</p></div></div>{activityList(data.events.slice(0,6),true)}</section><section className="clube-card"><div className="clube-card-head"><div><h2>Novos cadastros</h2><p>Alunos aguardando aprovação</p></div></div>{data.members.filter(x=>!x.approved).slice(0,6).map(x=><div className="clube-online-member" key={x.id}><div><strong>{x.full_name}</strong><small>{x.email}</small></div><button disabled={busy} className="clube-btn clube-btn-outline" onClick={()=>approve(x.id)}><Check size={15}/> Aprovar</button></div>)}{data.members.every(x=>x.approved)&&<p className="clube-empty">Nenhum cadastro pendente.</p>}<button className="clube-btn clube-btn-outline clube-btn-full" onClick={()=>setTab('alunos')}>Gerenciar alunos</button></section></div>
+        <div className="clube-columns"><section className="clube-card"><div className="clube-card-head"><div><h2>Últimas movimentações</h2><p>Histórico do clube</p></div></div>{activityList(data.events.slice(0,6),true)}</section><section className="clube-card"><div className="clube-card-head"><div><h2>Novos cadastros</h2><p>Alunos aguardando aprovação</p></div></div>{studentMembers.filter(x=>!x.approved).slice(0,6).map(x=><div className="clube-online-member" key={x.id}><div><strong>{x.full_name}</strong><small>{x.email}</small></div><button disabled={busy} className="clube-btn clube-btn-outline" onClick={()=>approve(x.id)}><Check size={15}/> Aprovar</button></div>)}{studentMembers.every(x=>x.approved)&&<p className="clube-empty">Nenhum cadastro pendente.</p>}<button className="clube-btn clube-btn-outline clube-btn-full" onClick={()=>setTab('alunos')}>Gerenciar alunos</button></section></div>
       </>}
       {tab==='inicio'&&!isAdmin&&<>
         <div className="clube-student-summary"><div><div className="clube-student-hello">OLÁ, {profile?.full_name?.split(' ')[0]?.toUpperCase()||'ALUNO'}! ✦</div><p>SEUS PONTOS EM {YEAR}</p><strong>{format(balance(user.id))} <small>pontos</small></strong><span className="clube-summary-caption">Disponíveis para solicitar: {format(Math.max(0,balance(user.id)-reserved(user.id)))} pontos</span></div><Award size={90}/></div>
         <div className="clube-columns"><section className="clube-card"><div className="clube-card-head"><div><h2>Minhas atividades</h2><p>Meu extrato de pontos</p></div><button className="clube-text-button" onClick={()=>setTab('historico')}>Ver tudo <ArrowRight size={16}/></button></div>{activityList(mine.slice(0,6))}</section><section className="clube-card clube-next"><div className="clube-card-head"><div><h2>Continue acumulando</h2><p>Atividades que podem render pontos</p></div></div><div className="clube-how">{Object.entries(ruleNames).filter(([k])=>!['ajuste','resgate'].includes(k)).map(([k,label])=><div key={k}><span>✦</span><strong>{label}</strong></div>)}</div><p className="clube-micro">A administração confirma as atividades e lança os pontos. Sua tabela oficial será definida em conjunto.</p></section></div>
         <section className="npv-shop npv-shop-featured"><div className="npv-shop-heading"><div><div className="npv-shop-eyebrow"><Gift size={15}/>LOJINHA DO CLUBE NPV</div><h2>Troque seus pontos ✦</h2><p>Seu próximo objetivo pode estar aqui.</p></div><button className="npv-shop-view-all" onClick={()=>setTab('recompensas')}>Ver catálogo <ArrowRight size={16}/></button></div>{rewardsGrid(4)}<p className="npv-shop-demo-note">A disponibilidade real será confirmada após a aprovação do prêmio e dos parceiros.</p></section>
       </>}
-      {tab==='alunos'&&isAdmin&&<><div className="clube-toolbar"><label className="clube-search"><Search size={18}/><input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Buscar aluno ou e-mail"/></label></div><div className="clube-card clube-students">{data.members.filter(x=>`${x.full_name} ${x.email}`.toLowerCase().includes(search.toLowerCase())).map(x=><div className="clube-student-row" key={x.id}><span className="clube-avatar">{x.full_name?.charAt(0)||'A'}</span><div><strong>{x.full_name||x.email}</strong><small>{x.email} · {x.approved?'Aprovado':'Aguardando aprovação'}</small></div><span className="clube-student-saldo">{format(balance(x.id))} pts</span>{x.approved?<button className="clube-btn clube-btn-outline" onClick={()=>newAward(x.id)}><Plus size={15}/> Pontos</button>:<button disabled={busy} className="clube-btn clube-btn-primary" onClick={()=>approve(x.id)}><Check size={15}/> Aprovar</button>}</div>)}</div></>}
+      {tab==='alunos'&&isAdmin&&<><div className="clube-toolbar"><label className="clube-search"><Search size={18}/><input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Buscar aluno ou e-mail"/></label></div><div className="clube-card clube-students">{studentMembers.filter(x=>`${x.full_name} ${x.email}`.toLowerCase().includes(search.toLowerCase())).map(x=><div className="clube-student-row" key={x.id}><span className="clube-avatar">{x.full_name?.charAt(0)||'A'}</span><div><strong>{x.full_name||x.email}</strong><small>{x.email} · {x.approved?'Aprovado':'Aguardando aprovação'}</small></div><span className="clube-student-saldo">{format(balance(x.id))} pts</span>{x.approved?<button className="clube-btn clube-btn-outline" onClick={()=>newAward(x.id)}><Plus size={15}/> Pontos</button>:<button disabled={busy} className="clube-btn clube-btn-primary" onClick={()=>approve(x.id)}><Check size={15}/> Aprovar</button>}</div>)}</div></>}
       {tab==='historico'&&<div className="clube-card"><div className="clube-card-head"><div><h2>{isAdmin?'Extrato do Clube':'Meu extrato'}</h2><p>Lançamentos com data e motivo</p></div></div>{activityList(isAdmin?data.events:mine,isAdmin)}</div>}
       {tab==='recompensas'&&<section className="npv-shop"><div className="npv-shop-heading"><div><div className="npv-shop-eyebrow"><Gift size={15}/> CLUBE NPV</div><h2>Vitrine de recompensas ✦</h2><p>Prêmios, benefícios e pedidos de resgate.</p></div>{isAdmin?<button className="clube-btn clube-btn-primary" onClick={()=>setRewardDraft({name:'',category:'Benefícios',description:'',points:500,stock:1,icon:'gift',theme:'lime',active:true})}><Plus size={16}/> Novo prêmio</button>:<div className="npv-shop-balance">Saldo disponível<strong>{format(Math.max(0,balance(user.id)-reserved(user.id)))} pts</strong></div>}</div>{rewardsGrid()}
         <div className="npv-shop-requests"><div className="npv-shop-requests-head"><div><h3>{isAdmin?'Solicitações para aprovação':'Meus resgates'}</h3><p>{isAdmin?'Pedidos feitos pelos alunos':'Histórico e andamento dos pedidos'}</p></div>{isAdmin&&<span className="npv-shop-pending-count">{pendingCount} pendentes</span>}</div>{(isAdmin?data.requests:mineRequests).length===0&&<p className="npv-shop-no-requests">Nenhum pedido por enquanto.</p>}{(isAdmin?data.requests:mineRequests).map(req=><div className="npv-shop-request-row" key={req.id}><span className="npv-shop-request-icon"><Gift size={19}/></span><div className="npv-shop-request-text"><strong>{req.reward_name}</strong>{isAdmin&&<span>{memberName(req.student_id)}</span>}<small>{date(req.created_at)} · {format(req.points)} pts</small></div><span className={`npv-shop-status npv-shop-status-${req.status}`}>{req.status==='pending'?'Aguardando':req.status==='approved'?'Aprovado':'Recusado'}</span>{isAdmin&&req.status==='pending'&&<div className="npv-shop-resolve"><button disabled={busy} onClick={()=>resolve(req,true)}>Aprovar</button><button disabled={busy} onClick={()=>resolve(req,false)}>Recusar</button></div>}</div>)}</div>
@@ -296,7 +318,7 @@ export default function ClubeNPVOnline() {
       <footer className="clube-main-footer"><span>© {YEAR} Não Pense, Vai! — Clube NPV</span><span>Conta e histórico individual protegidos por autenticação.</span></footer>
     </main></div>
     {award&&isAdmin&&<div className="clube-modal-backdrop" onMouseDown={e=>{if(e.target===e.currentTarget)setAward(null)}}><section className="clube-modal" role="dialog" aria-modal="true" aria-labelledby="award-title"><div className="clube-modal-top"><div><small>ADMINISTRAÇÃO</small><h2 id="award-title">Lançar pontos</h2></div><button onClick={()=>setAward(null)} aria-label="Fechar"><X size={20}/></button></div><form className="clube-form" onSubmit={submitAward}>
-      <label>Aluno aprovado<select required value={award.studentId} onChange={e=>setAward(d=>({...d,studentId:e.target.value}))}><option value="">Selecione um aluno</option>{data.members.filter(x=>x.approved).map(x=><option value={x.id} key={x.id}>{x.full_name||x.email}</option>)}</select></label>
+      <label>Aluno aprovado<select required value={award.studentId} onChange={e=>setAward(d=>({...d,studentId:e.target.value}))}><option value="">Selecione um aluno</option>{studentMembers.filter(x=>x.approved).map(x=><option value={x.id} key={x.id}>{x.full_name||x.email}</option>)}</select></label>
       <label>Atividade<select value={award.type} onChange={e=>setAward(d=>({...d,type:e.target.value}))}>{Object.entries(ruleNames).filter(([k])=>k!=='resgate').map(([k,v])=><option value={k} key={k}>{v}</option>)}</select></label>
       <label>Pontos<input type="number" min="-100000" max="100000" step="1" value={award.points} onChange={e=>setAward(d=>({...d,points:e.target.value}))} required/></label>
       <label>Justificativa {award.type==='ajuste'?'(obrigatória)':'(opcional)'}<textarea rows={2} value={award.note} onChange={e=>setAward(d=>({...d,note:e.target.value}))} required={award.type==='ajuste'}/></label>
