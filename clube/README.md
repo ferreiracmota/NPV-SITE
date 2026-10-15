@@ -1,5 +1,21 @@
 # Clube NPV — homologação e ativação segura
 
+## Administrador principal reservado (15/10/2026)
+
+- E-mail indicado pelo proprietário: `ferreiracmota@gmail.com`.
+- Registrado **somente como convite pendente**, numa tabela privada
+  `clube_private.pending_admin_emails`, pela migração
+  `clube_npv_reserve_verified_admin_email_20261015`.
+- Verificação no banco: 1 endereço reservado, **0 usuários Auth e 0 administradores**.
+- NÃO atribuir `clube_admins` até existir uma conta correspondente com
+  `email_confirmed_at is not null`. A migração não cria senha nem usuário.
+- O próximo passo é conectar **Vercel** para configurar somente as variáveis
+  públicas de Supabase no ambiente Preview e as URLs de confirmação de e-mail
+  no Auth. O proprietário cadastra a senha pelo formulário da prévia.
+- Após ele confirmar o e-mail, consultar `auth.users` e promover apenas o UUID
+  confirmado à tabela `clube_admins` via ação administrativa controlada.
+- O site oficial permanece em `main`, que não deve ser alterada nesta fase.
+
 ## Situação atual
 Projeto desenvolvido em `feat/clube-npv-piloto-2026-10`, PR #3 **rascunho**,
 sem alteração do site principal em `main`.
