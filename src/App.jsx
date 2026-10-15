@@ -1235,7 +1235,7 @@ useEffect(() => {
             </div>
           </div>
           <p className="mx-auto mt-6 max-w-2xl text-center text-xs sm:text-sm leading-relaxed text-zinc-600">
-            Pagamento seguro pela Hotmart. Antes de concluir a compra, confirme o valor total, a moeda, o parcelamento e a frequência de renovação exibidos no checkout.
+            Pagamento seguro pela Hotmart.
           </p>
           <div className="mt-8 text-center">
             <p className="text-zinc-700 text-base">Não sabe qual plano escolher?</p>
