@@ -270,15 +270,16 @@ revoke all on function public.clube_resolve_redemption(uuid,boolean) from public
 grant execute on function public.clube_resolve_redemption(uuid,boolean) to authenticated;
 
 insert into public.clube_rewards(name,category,description,points,stock,icon,theme,active) values
-('Camiseta NPV','Exclusivo NPV','Produto ilustrativo; sem resgate real até ativação',1000,4,'shirt','ink',true),
-('Coqueteleira NPV','Exclusivo NPV','Produto ilustrativo; sem resgate real até ativação',450,7,'cup','lime',true),
-('Kit snacks parceiro','Parceiros','Prêmio ilustrativo; nenhum acordo confirmado',700,5,'package','pink',true),
-('Kit de hidratação','Parceiros','Prêmio ilustrativo; nenhum acordo confirmado',600,3,'water','sky',true),
-('Benefício especial','Benefícios','Prêmio ilustrativo; nenhum acordo confirmado',300,10,'ticket','cream',true);
+('Camiseta NPV','Exclusivo NPV','Produto ilustrativo; sem resgate real até ativação',1000,4,'shirt','ink',false),
+('Coqueteleira NPV','Exclusivo NPV','Produto ilustrativo; sem resgate real até ativação',450,7,'cup','lime',false),
+('Kit snacks parceiro','Parceiros','Prêmio ilustrativo; nenhum acordo confirmado',700,5,'package','pink',false),
+('Kit de hidratação','Parceiros','Prêmio ilustrativo; nenhum acordo confirmado',600,3,'water','sky',false),
+('Benefício especial','Benefícios','Prêmio ilustrativo; nenhum acordo confirmado',300,10,'ticket','cream',false);
 
 -- PRIMEIRO ADMIN: após criar a conta em Auth, executar manualmente pelo SQL Editor
 -- insert into public.clube_admins(user_id)
 -- select id from auth.users where email = 'EMAIL_ADMIN_APROVADO';
 --
 -- SEMPRE testar no mínimo duas contas diferentes e um usuário não aprovado.
--- Os produtos de demonstração acima NÃO são ofertas válidas.
+-- Os produtos de demonstração acima NÃO são ofertas válidas; começam INATIVOS.
+-- Antes de ativar, cadastrar recompensas verdadeiras e confirmar disponibilidade.
