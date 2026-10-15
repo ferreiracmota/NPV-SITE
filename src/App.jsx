@@ -190,7 +190,7 @@ function BeforeAfter({ slides = [] }) {
   }, [index]);
 
   return (
-    <div className="relative select-none touch-pan-x">
+    <div className="relative select-none touch-pan-y">
       <div
         ref={railRef}
         className="no-scrollbar flex overflow-x-auto snap-x scroll-smooth gap-3"
@@ -211,6 +211,7 @@ function BeforeAfter({ slides = [] }) {
         onTouchStart={onPointerDown}
         onTouchMove={onPointerMove}
         onTouchEnd={onPointerUp}
+        onTouchCancel={onPointerUp}
       >
         {slides.map((img, i) => (
           <div key={i} className="snap-center shrink-0" style={{ width: "80vw", maxWidth: 360 }}>
@@ -542,7 +543,7 @@ const beforeAfterSlides = [
       quarterly: {
         title: "TRIMESTRAL",
         subtitle: "3 MESES",
-        price: "R$ 3x33,30",
+        price: "3x de R$ 33,30",
         originalPrice: "R$ 119,70",
         features: [
           "Acesso completo à plataforma",
@@ -641,9 +642,14 @@ useEffect(() => {
     <div className="grid grid-cols-3 items-center md:flex md:items-center md:justify-between">
       
       {/* ESQUERDA (logo) */}
-      <div className="justify-self-start flex items-center">
-        <img src={logoNPV} alt="Não Pense, Vai" className="h-12" />
-      </div>
+      <button
+        type="button"
+        aria-label="Voltar ao início"
+        onClick={() => scrollToSection('inicio')}
+        className="justify-self-start flex items-center rounded focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#AFCB21]"
+      >
+        <img src={logoNPV} alt="Não Pense, Vai!" className="h-12" />
+      </button>
 
       {/* CENTRO (hambúrguer) — só MOBILE */}
       <button
@@ -802,7 +808,7 @@ useEffect(() => {
       {/* Hero Section */}
 <section
   id="inicio"
-  className="relative min-h-[90svh] md:min-h-[100svh] flex items-start md:items-center justify-center overflow-hidden pb-36 md:pb-0"
+  className="relative min-h-[90svh] md:min-h-[100svh] flex items-start md:items-center justify-center overflow-hidden pb-36 md:pb-0 scroll-mt-16"
 >
   {/* Vídeo de fundo (desktop + mobile) */}
   <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
