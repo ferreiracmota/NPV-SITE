@@ -148,9 +148,10 @@
   font-family: 'Inter', sans-serif;
 }
 
-/* Smooth transitions */
-* {
-  transition: all 0.3s ease;
+/* Transições apenas nos componentes que precisam delas: evita
+   animações involuntárias nos vídeos, layouts e mudanças de página. */
+button, a {
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* Custom scrollbar */
@@ -419,3 +420,104 @@ img, .no-touch-callout {
 .touch-pan-x { touch-action: pan-x; }
 .select-none { user-select: none; }
 
+
+/* ------------------------
+   NPV — acabamento visual 2026
+   Mantém as cores originais da marca e o espaçamento mobile da hero.
+   ------------------------ */
+:root {
+  --npv-lime: #AFCB21;
+  --npv-pink: #ec4899;
+}
+
+html { scroll-behavior: smooth; }
+body { overflow-x: clip; }
+
+a, button { touch-action: manipulation; }
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--npv-lime);
+  outline-offset: 4px;
+}
+
+.npv-instagram::before {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  top: -220px;
+  right: -180px;
+  height: 540px;
+  width: 540px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(175,203,33,0.11) 0%, transparent 70%);
+}
+.npv-instagram::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  bottom: -300px;
+  left: -210px;
+  width: 650px;
+  height: 650px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(236,72,153,0.10), transparent 67%);
+}
+.npv-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--npv-lime);
+  font-size: .76rem;
+  font-weight: 800;
+  letter-spacing: .19em;
+}
+.npv-live-dot {
+  display: inline-block;
+  height: 8px;
+  width: 8px;
+  flex-shrink: 0;
+  border-radius: 9999px;
+  background: var(--npv-lime);
+  box-shadow: 0 0 0 5px rgba(175,203,33,0.12);
+}
+.npv-instagram-cta {
+  background: linear-gradient(110deg,#833ab4 0%,#c13584 45%,#e1306c 100%);
+  box-shadow: 0 12px 36px rgba(193,53,132,.22);
+}
+.npv-instagram-profile {
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+.npv-profile-pill {
+  padding: 12px 6px;
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: 10px;
+  color: rgba(255,255,255,.83);
+  font-size: clamp(.58rem, 1.7vw, .72rem);
+  font-weight: 800;
+  letter-spacing: .06em;
+}
+
+/* Evita o efeito de zoom dos cards em telas touch e preserva o conforto de leitura. */
+@media (hover:none) {
+  .npv-instagram-profile:hover,
+  .npv-instagram-cta:hover { transform: none; }
+}
+
+/* Preferência de movimento reduzido: carrossel e vídeos não devem
+   impor animações contínuas a quem optou por menos movimento. */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .animate-marquee,
+  .animate-scroll-horizontal,
+  .glow-button,
+  .animate-slide-up,
+  .animate-fade-in,
+  .animate-bounce-in {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .npv-instagram-profile,
+  .npv-instagram-cta { transition: none !important; }
+}
