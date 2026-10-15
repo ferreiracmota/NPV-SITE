@@ -369,15 +369,38 @@ const beforeAfterSlides = [
     return () => clearInterval(interval)
   }, [])*/
 
-  // Função para scroll suave até seção
+  // Fecha o menu antes de rolar, evitando deslocamento da seção no celular.
   const scrollToSection = (sectionId) => {
     const element = document.getElementById(sectionId)
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' })
-      setIsMenuOpen(false)
-      setIsContactDropdownOpen(false)
-    }
+    if (!element) return
+    setIsMenuOpen(false)
+    setIsContactDropdownOpen(false)
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        element.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', block: 'start' })
+      })
+    })
   }
+
+  // Escape fecha menus abertos, sem interferir na navegação da página.
+  useEffect(() => {
+    const handleEscape = (event) => {
+      if (event.key === 'Escape') {
+        setIsMenuOpen(false)
+        setIsContactDropdownOpen(false)
+      }
+    }
+    const closeMobileMenuOnDesktop = () => {
+      if (window.matchMedia('(min-width: 768px)').matches) setIsMenuOpen(false)
+    }
+    document.addEventListener('keydown', handleEscape)
+    window.addEventListener('resize', closeMobileMenuOnDesktop)
+    return () => {
+      document.removeEventListener('keydown', handleEscape)
+      window.removeEventListener('resize', closeMobileMenuOnDesktop)
+    }
+  }, [])
 
   // Dados editáveis do site
   const siteData = {
