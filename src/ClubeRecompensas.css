@@ -75,3 +75,10 @@
 @media(max-width:760px){.npv-shop-featured{margin-top:29px}.npv-shop-heading{align-items:flex-start;flex-wrap:wrap}.npv-shop-heading h2{font-size:25px}.npv-shop-grid{gap:10px}.npv-shop-art{height:150px}.npv-shop-info{padding:12px 11px}.npv-shop-info h3{font-size:12px;min-height:33px}.npv-shop-price strong{font-size:20px}.npv-shop-art>svg{width:67px;height:67px}.npv-shop-request{font-size:10px;padding:8px 4px}.npv-shop-resolve{width:100%;padding-left:47px}.npv-shop-request-row{flex-wrap:wrap}.npv-shop-resolve button{flex:1;justify-content:center}.npv-shop-requests{padding:15px}.npv-shop-balance{align-items:flex-start}.npv-shop-view-all{padding:4px 0}}
 @media(max-width:365px){.npv-shop-art{height:129px}.npv-shop-info{padding:10px 9px}.npv-shop-art-stamp{font-size:7px;top:10px;left:9px}.npv-shop-stock{font-size:9px}.npv-shop-info h3{font-size:11px}.npv-shop-request{min-height:36px}.npv-shop-price strong{font-size:18px}}
 @media(prefers-reduced-motion:reduce){.npv-shop-card{transition:none}}
+
+.npv-shop-pending-banner{display:flex;align-items:center;gap:13px;width:100%;text-align:left;margin:-4px 0 21px;border:1px solid #c9dba4;border-radius:12px;padding:15px 17px;background:#edf5da;color:#4f6922}
+.npv-shop-pending-banner>span{display:flex;flex:1;flex-direction:column;gap:3px}
+.npv-shop-pending-banner strong{font-size:12px;font-weight:850}
+.npv-shop-pending-banner small{font-size:10px;color:#77885e}
+.npv-shop-pending-banner:hover{background:#e4f0c8}
+.clube-reserved-note{display:block;margin-top:8px!important;color:#efebb8!important}
