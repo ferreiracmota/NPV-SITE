@@ -64,6 +64,7 @@ function BeforeAfter({ slides = [] }) {
   const railRef = useRef(null);
   const timerRef = useRef(null);
   const resumeRef = useRef(null);
+  const isInViewRef = useRef(false);
 
   // drag
   const draggingRef = useRef(false);
@@ -82,6 +83,8 @@ function BeforeAfter({ slides = [] }) {
 
   const startAutoplay = useCallback(() => {
     clearInterval(timerRef.current);
+    if (document.hidden || !isInViewRef.current ||
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     timerRef.current = setInterval(() => {
       // loop infinito: do último vai pro primeiro
       setIndex((i) => (i + 1) % total);
@@ -100,13 +103,40 @@ function BeforeAfter({ slides = [] }) {
     resumeRef.current = setTimeout(startAutoplay, RESUME_MS);
   }, [startAutoplay, stopAutoplay]);
 
+  // Gira somente quando o carrossel está visível. Economiza bateria e
+  // respeita a opção do aparelho de reduzir movimentos.
   useEffect(() => {
-    startAutoplay();
-    return () => {
-      clearInterval(timerRef.current);
-      clearTimeout(resumeRef.current);
+    const rail = railRef.current;
+    const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const visibilityChanged = () => {
+      if (document.hidden) stopAutoplay();
+      else startAutoplay();
     };
-  }, [startAutoplay]);
+    const motionChanged = () => {
+      if (motionPreference.matches) stopAutoplay();
+      else startAutoplay();
+    };
+    let observer;
+    if (typeof IntersectionObserver === 'function' && rail) {
+      observer = new IntersectionObserver(([entry]) => {
+        isInViewRef.current = entry.isIntersecting;
+        if (entry.isIntersecting) startAutoplay();
+        else stopAutoplay();
+      }, { threshold: 0.1 });
+      observer.observe(rail);
+    } else {
+      isInViewRef.current = true;
+      startAutoplay();
+    }
+    document.addEventListener('visibilitychange', visibilityChanged);
+    motionPreference.addEventListener?.('change', motionChanged);
+    return () => {
+      observer?.disconnect();
+      document.removeEventListener('visibilitychange', visibilityChanged);
+      motionPreference.removeEventListener?.('change', motionChanged);
+      stopAutoplay();
+    };
+  }, [startAutoplay, stopAutoplay]);
 
   // ===== Drag (mouse/touch) =====
   const getClientX = (e) =>
@@ -164,6 +194,16 @@ function BeforeAfter({ slides = [] }) {
       <div
         ref={railRef}
         className="no-scrollbar flex overflow-x-auto snap-x scroll-smooth gap-3"
+        tabIndex={0}
+        role="region"
+        aria-label="Resultados de alunos. Use as setas do teclado ou deslize para navegar."
+        onKeyDown={(event) => {
+          if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
+            event.preventDefault()
+            goTo(index + (event.key === 'ArrowRight' ? 1 : -1))
+            pauseThenResume()
+          }
+        }}
         onMouseDown={onPointerDown}
         onMouseMove={onPointerMove}
         onMouseUp={onPointerUp}
@@ -179,6 +219,8 @@ function BeforeAfter({ slides = [] }) {
               <img
                 src={img}
                 alt={`Transformação ${i + 1}`}
+                loading="lazy"
+                decoding="async"
                 className="w-full h-full object-cover"
                 draggable={false}
               />
