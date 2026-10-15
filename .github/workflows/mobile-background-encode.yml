@@ -1,0 +1,47 @@
+name: Generate Safari-compatible mobile background
+on:
+  push:
+    branches:
+      - fix/seo-e-links-out-2026
+    paths:
+      - .github/workflows/mobile-background-encode.yml
+permissions:
+  contents: write
+jobs:
+  encode-mobile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Ensure ffmpeg installed
+        run: command -v ffmpeg || (sudo apt-get update && sudo apt-get install -y ffmpeg)
+      - name: Inspect and encode mobile video (H.264, no audio, fast start)
+        shell: bash
+        run: |
+          set -euo pipefail
+          SOURCE="src/assets/videofundomobile (1).mp4"
+          ffprobe -v error -show_entries stream=codec_type,codec_name,width,height -of compact "$SOURCE"
+          ffmpeg -hide_banner -loglevel warning -y \
+            -i "$SOURCE" -map 0:v:0 -an \
+            -vf "scale='min(720,iw)':-2,fps=24,format=yuv420p" \
+            -c:v libx264 -profile:v main -level:v 3.1 \
+            -crf 25 -preset medium -movflags +faststart \
+            src/assets/fundo-mobile-ios.mp4
+          ffmpeg -hide_banner -loglevel warning -y \
+            -ss 00:00:00.3 -i "$SOURCE" -frames:v 1 \
+            -vf "scale='min(720,iw)':-2" -q:v 3 \
+            src/assets/fundo-mobile-poster.jpg
+          ffprobe -v error -show_entries stream=codec_type,codec_name,width,height -of compact src/assets/fundo-mobile-ios.mp4
+          ls -lh src/assets/fundo-mobile-ios.mp4 src/assets/fundo-mobile-poster.jpg
+      - name: Commit optimized files to test branch only
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/assets/fundo-mobile-ios.mp4 src/assets/fundo-mobile-poster.jpg
+          if ! git diff --staged --quiet; then
+            git commit -m "assets: video mobile Safari H.264 silencioso e capa"
+            git push origin HEAD:fix/seo-e-links-out-2026
+          fi

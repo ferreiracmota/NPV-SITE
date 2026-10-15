@@ -1,4 +1,12 @@
 import './App.css'
+/* Vídeos versionados pelo Vite: urls produzidas junto com a compilação,
+   sem depender de /public/videos, que pode não existir na implantação. */
+import fundoDesktopVideo from './assets/videofundo1.MP4?url'
+import fundoMobileVideo from './assets/videofundomobile.MP4?url'
+/* Versão mobile H.264 silenciosa, criada a partir do vídeo original para Safari.
+   A capa mantém a abertura bonita mesmo quando o navegador restringe autoplay. */
+import fundoMobileIOSVideo from './assets/fundo-mobile-ios.mp4?url'
+import fundoMobilePoster from './assets/fundo-mobile-poster.jpg?url'
 import asset12 from './assets/544-2713.webp'
 import asset13 from './assets/544-2715.webp'
 import asset14 from './assets/544-2717.webp'
@@ -38,9 +46,7 @@ import especialista2 from "./assets/Especialista2.PNG";
 import especialista3 from "./assets/Especialista3.PNG";
 import especialista4 from "./assets/Especialista4.PNG";
 import especialista5 from "./assets/Especialista5.PNG";
-import videofundo1 from "./assets/videofundo1.MP4";
 import sobremim from "./assets/sobre-mim.JPG";
-import videofundomobile from "./assets/videofundomobile.MP4";
 import modulo1        from './assets/modulo1.jpg'
 import modulo2  from './assets/modulo2.jpg'
 import modulo3       from './assets/modulo3.jpg'
@@ -66,6 +72,7 @@ function BeforeAfter({ slides = [] }) {
   const railRef = useRef(null);
   const timerRef = useRef(null);
   const resumeRef = useRef(null);
+  const isInViewRef = useRef(false);
 
   // drag
   const draggingRef = useRef(false);
@@ -84,6 +91,8 @@ function BeforeAfter({ slides = [] }) {
 
   const startAutoplay = useCallback(() => {
     clearInterval(timerRef.current);
+    if (document.hidden || !isInViewRef.current ||
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     timerRef.current = setInterval(() => {
       // loop infinito: do último vai pro primeiro
       setIndex((i) => (i + 1) % total);
@@ -102,13 +111,40 @@ function BeforeAfter({ slides = [] }) {
     resumeRef.current = setTimeout(startAutoplay, RESUME_MS);
   }, [startAutoplay, stopAutoplay]);
 
+  // Gira somente quando o carrossel está visível. Economiza bateria e
+  // respeita a opção do aparelho de reduzir movimentos.
   useEffect(() => {
-    startAutoplay();
-    return () => {
-      clearInterval(timerRef.current);
-      clearTimeout(resumeRef.current);
+    const rail = railRef.current;
+    const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const visibilityChanged = () => {
+      if (document.hidden) stopAutoplay();
+      else startAutoplay();
     };
-  }, [startAutoplay]);
+    const motionChanged = () => {
+      if (motionPreference.matches) stopAutoplay();
+      else startAutoplay();
+    };
+    let observer;
+    if (typeof IntersectionObserver === 'function' && rail) {
+      observer = new IntersectionObserver(([entry]) => {
+        isInViewRef.current = entry.isIntersecting;
+        if (entry.isIntersecting) startAutoplay();
+        else stopAutoplay();
+      }, { threshold: 0.1 });
+      observer.observe(rail);
+    } else {
+      isInViewRef.current = true;
+      startAutoplay();
+    }
+    document.addEventListener('visibilitychange', visibilityChanged);
+    motionPreference.addEventListener?.('change', motionChanged);
+    return () => {
+      observer?.disconnect();
+      document.removeEventListener('visibilitychange', visibilityChanged);
+      motionPreference.removeEventListener?.('change', motionChanged);
+      stopAutoplay();
+    };
+  }, [startAutoplay, stopAutoplay]);
 
   // ===== Drag (mouse/touch) =====
   const getClientX = (e) =>
@@ -162,10 +198,20 @@ function BeforeAfter({ slides = [] }) {
   }, [index]);
 
   return (
-    <div className="relative select-none touch-pan-x">
+    <div className="relative select-none touch-pan-y">
       <div
         ref={railRef}
         className="no-scrollbar flex overflow-x-auto snap-x scroll-smooth gap-3"
+        tabIndex={0}
+        role="region"
+        aria-label="Resultados de alunos. Use as setas do teclado ou deslize para navegar."
+        onKeyDown={(event) => {
+          if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
+            event.preventDefault()
+            goTo(index + (event.key === 'ArrowRight' ? 1 : -1))
+            pauseThenResume()
+          }
+        }}
         onMouseDown={onPointerDown}
         onMouseMove={onPointerMove}
         onMouseUp={onPointerUp}
@@ -173,6 +219,7 @@ function BeforeAfter({ slides = [] }) {
         onTouchStart={onPointerDown}
         onTouchMove={onPointerMove}
         onTouchEnd={onPointerUp}
+        onTouchCancel={onPointerUp}
       >
         {slides.map((img, i) => (
           <div key={i} className="snap-center shrink-0" style={{ width: "80vw", maxWidth: 360 }}>
@@ -181,6 +228,8 @@ function BeforeAfter({ slides = [] }) {
               <img
                 src={img}
                 alt={`Transformação ${i + 1}`}
+                loading="lazy"
+                decoding="async"
                 className="w-full h-full object-cover"
                 draggable={false}
               />
@@ -217,6 +266,12 @@ function FAQItem({ q, a, index }) {
   const ref = React.useRef(null);
 
   React.useEffect(() => {
+    // Se a animação não for suportada, as dúvidas continuam visíveis.
+    if (typeof IntersectionObserver !== 'function' ||
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setVisible(true);
+      return;
+    }
     const io = new IntersectionObserver(
       ([entry]) => entry.isIntersecting && setVisible(true),
       { rootMargin: "0px 0px -20% 0px", threshold: 0.1 }
@@ -237,18 +292,24 @@ function FAQItem({ q, a, index }) {
     >
       <button
         type="button"
-        className="w-full flex items-center justify-between text-left"
+        className="w-full flex items-center justify-between gap-4 rounded-lg text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#AFCB21]"
+        id={`faq-question-${index}`}
         aria-expanded={open}
         aria-controls={`faq-panel-${index}`}
         onClick={() => setOpen(o => !o)}
       >
         <span className="text-lg font-semibold">{q}</span>
-        <span className="text-sm leading-none">{open ? "▲" : ">"}</span>
+        <svg aria-hidden="true" className={`h-5 w-5 shrink-0 transition-transform duration-300 ${open ? "rotate-180" : ""}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="m6 9 6 6 6-6" />
+        </svg>
       </button>
 
       {/* Contêiner colapsável: começa fechado (altura 0) */}
       <div
         id={`faq-panel-${index}`}
+        role="region"
+        aria-labelledby={`faq-question-${index}`}
+        aria-hidden={!open}
         className={`grid transition-all duration-300 ease-out ${
           open ? "grid-rows-[1fr] mt-3" : "grid-rows-[0fr]"
         }`}
@@ -305,13 +366,54 @@ const faqs = [
   },
   {
     q: "Como o pagamento é feito?",
-    a: "O pagamento é processado pela plataforma de checkout; após aprovado, o acesso é liberado automaticamente."
+    a: "O pagamento é processado pela Hotmart. Confira moeda, valor final, parcelamento e periodicidade da assinatura na página de pagamento antes de concluir a compra. Após a aprovação, o acesso é liberado pela plataforma."
   }
 ];
 
 
 function App() {
-  const [email, setEmail] = useState('')
+  const heroDesktopVideoRef = useRef(null)
+  const heroMobileVideoRef = useRef(null)
+  const [mobileVideoSource, setMobileVideoSource] = useState(fundoMobileIOSVideo)
+
+  // Safari/iOS: vídeo sempre mudo, inline, com nova tentativa ao carregar,
+  // voltar para a página ou interagir. Nenhum controle visual adicional.
+  useEffect(() => {
+    const resumeHeroVideo = () => {
+      if (document.hidden) return
+      const video = window.matchMedia('(min-width: 768px)').matches
+        ? heroDesktopVideoRef.current
+        : heroMobileVideoRef.current
+      if (!video) return
+      video.defaultMuted = true
+      video.muted = true
+      video.setAttribute('muted', '')
+      video.setAttribute('playsinline', '')
+      video.setAttribute('webkit-playsinline', '')
+      if (!video.paused) return
+      const attempt = video.play()
+      if (attempt && typeof attempt.catch === 'function') {
+        attempt.catch(() => {
+          // O navegador pode proibir autoplay independentemente do código.
+          // Nesse caso, a imagem de capa do próprio vídeo evita fundo preto.
+        })
+      }
+    }
+    resumeHeroVideo()
+    document.addEventListener('visibilitychange', resumeHeroVideo)
+    window.addEventListener('pageshow', resumeHeroVideo)
+    window.addEventListener('focus', resumeHeroVideo)
+    window.addEventListener('pointerdown', resumeHeroVideo, { passive: true })
+    window.addEventListener('resize', resumeHeroVideo)
+    return () => {
+      document.removeEventListener('visibilitychange', resumeHeroVideo)
+      window.removeEventListener('pageshow', resumeHeroVideo)
+      window.removeEventListener('focus', resumeHeroVideo)
+      window.removeEventListener('pointerdown', resumeHeroVideo)
+      window.removeEventListener('resize', resumeHeroVideo)
+    }
+  }, [])
+
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isContactDropdownOpen, setIsContactDropdownOpen] = useState(false)
   const showTestimonials = false; // começa oculto
@@ -323,17 +425,7 @@ const beforeAfterSlides = [
 ];
 
 
-  // Carregar script do LightWidget
-  useEffect(() => {
-    const script = document.createElement('script')
-    script.src = 'https://cdn.lightwidget.com/widgets/lightwidget.js'
-    script.async = true
-    document.head.appendChild(script)
-    
-    return () => {
-      document.head.removeChild(script)
-    }
-  }, [])
+  // Instagram funciona por link oficial, sem iframe ou widget pago.
 
   // Auto-rotate testimonials
   /*useEffect(() => {
@@ -343,18 +435,43 @@ const beforeAfterSlides = [
     return () => clearInterval(interval)
   }, [])*/
 
-  // Função para scroll suave até seção
+  // Fecha o menu antes de rolar, evitando deslocamento da seção no celular.
   const scrollToSection = (sectionId) => {
     const element = document.getElementById(sectionId)
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' })
-    }
+    if (!element) return
+    setIsMenuOpen(false)
+    setIsContactDropdownOpen(false)
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        element.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', block: 'start' })
+      })
+    })
   }
+
+  // Escape fecha menus abertos, sem interferir na navegação da página.
+  useEffect(() => {
+    const handleEscape = (event) => {
+      if (event.key === 'Escape') {
+        setIsMenuOpen(false)
+        setIsContactDropdownOpen(false)
+      }
+    }
+    const closeMobileMenuOnDesktop = () => {
+      if (window.matchMedia('(min-width: 768px)').matches) setIsMenuOpen(false)
+    }
+    document.addEventListener('keydown', handleEscape)
+    window.addEventListener('resize', closeMobileMenuOnDesktop)
+    return () => {
+      document.removeEventListener('keydown', handleEscape)
+      window.removeEventListener('resize', closeMobileMenuOnDesktop)
+    }
+  }, [])
 
   // Dados editáveis do site
   const siteData = {
     topBanner: {
-      text: "Acesse nossa plataforma / Encontre conteúdos incríveis"
+      text: "NÃO PENSE, VAI! • SUA EVOLUÇÃO COMEÇA AGORA"
     },
     hero: {
       title: "SEU CORPO DOS SONHOS",
@@ -363,7 +480,7 @@ const beforeAfterSlides = [
       subtitle3: "EMBARQUE AGORA",
       subtitle4: "Treinos inteligentes com acompanhamento profissional para entregar resultados de verdade, no seu tempo e do seu jeito.",
 
-      buttonText: "QUERO DECOLAR 🡢"
+      buttonText: "QUERO DECOLAR ➜"
     },
     beforeAfter: [
       antesDepois1, antesDepois2, antesDepois3, antesDepois4, antesDepois5, antesDepois6, antesDepois7, antesDepois8, antesDepois9, antesDepois10
@@ -381,15 +498,21 @@ const beforeAfterSlides = [
     partners: {
   title: "NOSSOS PARCEIROS",
   items: [
-    { logo: parceiro1, link: "https://cafezinlounge.saipos.com/home/nutrishakemlpqpz", coupon: "NPV15" },
-    { logo: parceiro2, link: "https://www.instagram.com/ciadoesporte2/", coupon: "NPV10" },
-    { logo: parceiro3, link: "https://link-prod.tfsports.com.br/events/running-betim-12505301321", coupon: "NAOPENSEVAI" },
-    { logo: parceiro4, link: "https://www.instagram.com/nf.modafitness/", coupon: "" },
-    { logo: parceiro5, link: "https://www.instagram.com/ciladasburguer/", coupon: "NPV15" }
+    // Novos parceiros em destaque: aparecem primeiro no carrossel.
+    { logo: "https://cacow.com.br/cdn/shop/files/Template_de_Banner_2.0_-_by_Estudio_Gole_2_2b6ed56a-607b-42de-a4ca-4e857cb86466.png?v=1765388753&width=270", name: "Cacow", link: "https://cacow.com.br/", coupon: "NPV5" },
+    { logo: "https://z2performance.com/cdn/shop/files/logo_z2_azul_01.png?v=1725888283&width=100", name: "Z2 Performance", link: "https://z2performance.com/", coupon: "Z2naopensevai" },
+    { logo: "https://acdn-us.mitiendanube.com/stores/005/950/623/themes/common/logo-1531537272-1743307940-4b210bcc33dbc7ef880a3ec47b1628e81743307940.png?0", name: "Hey!Mu", link: "https://heymu.com.br/", coupon: "NPV10" },
+    { logo: "/parceiros/logo-liquidz.svg", name: "LIQUIDZ", link: "https://www.liquidz.com.br/", coupon: "naopensevai" },
+    // Parceiros anteriores: ordem original preservada após os quatro novos.
+    { logo: parceiro1, name: "Cafezin Lounge", link: "https://cafezinlounge.saipos.com/home/nutrishakemlpqpz", coupon: "NPV15" },
+    { logo: parceiro2, name: "Cia do Esporte", link: "https://www.instagram.com/ciadoesporte2/", coupon: "NPV10" },
+    { logo: parceiro3, name: "TF Sports Running Betim", link: "https://link-prod.tfsports.com.br/events/running-betim-12505301321", coupon: "NAOPENSEVAI" },
+    { logo: parceiro4, name: "NF Moda Fitness", link: "https://www.instagram.com/nf.modafitness/", coupon: "" },
+    { logo: parceiro5, name: "Ciladas Burger", link: "https://www.instagram.com/ciladasburguer/", coupon: "NPV15" }
   ]
 }
 ,
-
+ 
     projects: {
       title: "BONUS DA PLATAFORMA",
       items: [modulo1, modulo2, modulo3, modulo4, modulo5, modulo6, modulo7, modulo8, modulo9, modulo10, modulo11,modulo12]
@@ -405,9 +528,9 @@ const beforeAfterSlides = [
     plans: {
       title: <div className="text-center mt-0 mb-10">
   {/* Primeira linha */}
-  <p className="font-extrabold tracking-tight leading-tight text-4xl md:text-6xl text-pink-500">
+  <h2 className="font-extrabold tracking-tight leading-tight text-4xl md:text-6xl text-pink-500">
     VOCÊ É O AVIÃO
-  </p>
+  </h2>
 
   {/* Segunda linha */}
   <p className="mt-1 uppercase font-semibold tracking-widest text-xs md:text-sm text-gray-800">
@@ -443,7 +566,7 @@ const beforeAfterSlides = [
       quarterly: {
         title: "TRIMESTRAL",
         subtitle: "3 MESES",
-        price: "R$ 3x33,30",
+        price: "3x de R$ 33,30",
         originalPrice: "R$ 119,70",
         features: [
           "Acesso completo à plataforma",
@@ -511,21 +634,12 @@ const [currentTestimonial, setCurrentTestimonial] = useState(0);
 
   // Auto-rotate testimonials (roda todos que existirem)
 useEffect(() => {
-  if (testimonials.length === 0) return; // segurança
+  if (!showTestimonials || testimonials.length === 0) return; // Não gastar bateria com carrossel oculto
   const id = setInterval(() => {
     setCurrentTestimonial(prev => (prev + 1) % testimonials.length);
   }, 4000);
   return () => clearInterval(id);
-}, [testimonials.length]);
-
-  // Handle email subscription
-  const handleEmailSubmit = (e) => {
-    e.preventDefault()
-    if (email) {
-      alert(`Obrigado! Você será notificado no e-mail: ${email}`)
-      setEmail('')
-    }
-  }
+}, [showTestimonials, testimonials.length]);
 
   return (
     <div className="min-h-screen bg-black text-white font-inter">
@@ -551,19 +665,31 @@ useEffect(() => {
     <div className="grid grid-cols-3 items-center md:flex md:items-center md:justify-between">
       
       {/* ESQUERDA (logo) */}
-      <div className="justify-self-start flex items-center">
-        <img src={logoNPV} alt="Não Pense, Vai" className="h-12" />
-      </div>
+      <button
+        type="button"
+        aria-label="Voltar ao início"
+        onClick={() => scrollToSection('inicio')}
+        className="justify-self-start flex items-center rounded focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#AFCB21]"
+      >
+        <img src={logoNPV} alt="Não Pense, Vai!" className="h-12" />
+      </button>
 
       {/* CENTRO (hambúrguer) — só MOBILE */}
       <button
         type="button"
         onClick={() => setIsMenuOpen((v) => !v)}
-        aria-label="Abrir menu"
+        aria-label={isMenuOpen ? "Fechar menu" : "Abrir menu"}
+        aria-expanded={isMenuOpen}
+        aria-controls="mobile-navigation"
         className="md:hidden justify-self-center inline-flex items-center p-2 text-white"
       >
-        <svg className="w-7 h-7" viewBox="0 0 24 24" fill="none">
-          <path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" strokeWidth="2" />
+        <svg className="w-7 h-7" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path
+            d={isMenuOpen ? "M5 5l14 14M19 5L5 19" : "M3 6h18M3 12h18M3 18h18"}
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
         </svg>
       </button>
 
@@ -572,7 +698,7 @@ useEffect(() => {
         href="https://sso.hotmart.com/login?service=https%3A%2F%2Fsso.hotmart.com%2Foauth2.0%2FcallbackAuthorize%3Fclient_id%3Db432cdd3-eb60-46bd-892b-5b450a65153e%26redirect_uri%3Dhttps%253A%252F%252Fhotmart.com%252Fen%252Fclub%252Fnaopensevai%252Fauth%252Flogin%253Frealm%253Dclub%26response_type%3Dcode%26response_mode%3Dquery%26client_name%3DCasOAuthClient"
         target="_blank"
         rel="noopener noreferrer"
-        className="md:hidden justify-self-end inline-flex items-center rounded-md bg-[#AFCB21] px-3 py-1.5 text-black font-semibold text-xs hover:brightness-110 transition"
+        className="md:hidden justify-self-end inline-flex items-center whitespace-nowrap rounded-md bg-[#AFCB21] px-2 sm:px-3 py-1.5 text-black font-semibold text-[10px] sm:text-xs hover:brightness-110 transition"
       >
         ÁREA DE ALUNOS
       </a>
@@ -589,6 +715,8 @@ useEffect(() => {
           <div className="relative">
             <button
               onClick={() => setIsContactDropdownOpen(!isContactDropdownOpen)}
+              aria-expanded={isContactDropdownOpen}
+              aria-controls="desktop-contact-options"
               className="hover:text-[#AFCB21] transition-colors flex items-center"
             >
               CONTATO
@@ -598,7 +726,7 @@ useEffect(() => {
             </button>
 
             {isContactDropdownOpen && (
-              <div className="absolute top-full left-0 mt-2 w-64 bg-gray-800 border border-gray-700 rounded-lg shadow-lg z-50">
+              <div id="desktop-contact-options" className="absolute top-full left-0 mt-2 w-64 bg-gray-800 border border-gray-700 rounded-lg shadow-lg z-50">
                 <div className="p-4">
                   {/* E-mail */}
                   <div className="flex items-center mb-3">
@@ -646,16 +774,18 @@ useEffect(() => {
 
   {/* MENU MOBILE (mantido) */}
   {isMenuOpen && (
-    <div className="md:hidden bg-black border-t border-gray-800">
+    <div id="mobile-navigation" className="md:hidden bg-black border-t border-gray-800">
       <nav className="flex flex-col space-y-4 p-4">
         <button onClick={() => scrollToSection('inicio')} className="text-left hover:text-[#AFCB21] transition-colors">INÍCIO</button>
-        <button onClick={() => scrollToSection('sobre')} className="text-left hover:text-[#AFCB21] transition-colors">SOBRE</button>
+        <button onClick={() => scrollToSection('about-section')} className="text-left hover:text-[#AFCB21] transition-colors">SOBRE</button>
         <button onClick={() => scrollToSection('planos')} className="text-left hover:text-[#AFCB21] transition-colors">PLANOS</button>
 
         {/* Dropdown CONTATO (mantido) */}
         <div className="relative">
           <button
             onClick={() => setIsContactDropdownOpen((v) => !v)}
+            aria-expanded={isContactDropdownOpen}
+            aria-controls="mobile-contact-options"
             className="hover:text-[#AFCB21] transition-colors flex items-center"
           >
             CONTATO
@@ -665,7 +795,7 @@ useEffect(() => {
           </button>
 
           {isContactDropdownOpen && (
-            <div className="absolute top-full left-0 mt-2 w-64 bg-gray-800 border border-gray-700 rounded-lg shadow-lg z-50 p-4">
+            <div id="mobile-contact-options" className="mt-3 w-full max-w-sm bg-gray-800 border border-gray-700 rounded-lg shadow-lg p-4">
               <a
                 href="mailto:naopensevai@gmail.com"
                 className="flex items-center gap-2 text-white hover:text-[#AFCB21] transition-colors"
@@ -701,87 +831,71 @@ useEffect(() => {
       {/* Hero Section */}
 <section
   id="inicio"
-  className="relative min-h-[90svh] md:min-h-[100svh] flex items-start md:items-center justify-center overflow-hidden"
+  className="relative min-h-[90svh] md:min-h-[100svh] flex items-start md:items-center justify-center overflow-hidden pb-36 md:pb-0 scroll-mt-16"
 >
   {/* Vídeo de fundo (desktop + mobile) */}
   <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
     {/* Desktop / tablet (>= md) */}
     <video
+      ref={heroDesktopVideoRef}
       className="hidden md:block w-full h-full object-cover"
-      src={videofundo1}
       muted
       playsInline
       autoPlay
       loop
       preload="auto"
-    />
-    {/* Mobile (< md) */}
+      onCanPlay={(event) => {
+        if (event.currentTarget.paused) {
+          event.currentTarget.play().catch(() => {})
+        }
+      }}
+    >
+      <source src={fundoDesktopVideo} type="video/mp4" />
+    </video>
+    {/* Mobile (< md): MP4 H.264 sem áudio e capa estática em caso de bloqueio de autoplay. */}
     <video
+      key={mobileVideoSource}
+      ref={heroMobileVideoRef}
       className="md:hidden w-full h-full object-cover"
-      src={videofundomobile}
+      poster={fundoMobilePoster}
       muted
       playsInline
       autoPlay
       loop
       preload="auto"
-    />
+      onLoadedData={(event) => {
+        const video = event.currentTarget
+        video.defaultMuted = true
+        video.muted = true
+        if (video.paused) video.play().catch(() => {})
+      }}
+      onCanPlay={(event) => {
+        const video = event.currentTarget
+        video.defaultMuted = true
+        video.muted = true
+        if (video.paused) video.play().catch(() => {})
+      }}
+      onError={() => {
+        // Fallback técnico caso a nova versão não carregue.
+        if (mobileVideoSource !== fundoMobileVideo) setMobileVideoSource(fundoMobileVideo)
+      }}
+    >
+      <source src={mobileVideoSource} type="video/mp4" />
+    </video>
   </div>
 
-{/* Logos por cima do vídeo – topo da hero */}
-<div
-  className="
-    absolute left-1/2 -translate-x-1/2
-    top-2 md:top-3          /* ajuste fino da distância do topo */
-    z-40                     /* abaixo do header (z-50), acima do vídeo */
-    flex items-center gap-4 md:gap-6
-  "
->
-  {siteData.partners.items.map((p, i) => (
-    <a
-      key={`hero-logo-${i}`}
-      href={p.link}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="transition duration-300"
-    >
-      <img
-  src={p.logo}
-  alt={`Parceiro ${i + 1}`}
-  className="
-    h-7 md:h-10 object-contain
-    filter brightness-0
-    hover:brightness-100 hover:grayscale-0
-    transition duration-300
-  "
-/>
-
-    </a>
-  ))}
-</div>
-
-
-  {/* Conteúdo por cima do vídeo */}
+{/* Conteúdo por cima do vídeo */}
   <div className="relative z-10 text-center px-4 mt-60 md:mt-0">
     <h1 className="text-4xl md:text-6xl lg:text-6xl font-black leading-tight">
       <span className="text-white block animate-slide-up">{siteData.hero.title}</span>
       <span className="text-white block animate-slide-up animation-delay-200">{siteData.hero.subtitle}</span>
       <span className="text-pink-500 text-[55px] md:text-[90px] lg:text-8x1 font-black block drop-shadow-md animate-slide-up animation-delay-400">{siteData.hero.subtitle2}</span>
       <span className="text-white block animate-slide-up animation-delay-600">{siteData.hero.subtitle3}</span>
-      <span className="text-xs sm:text-sm font-light text-white mt-2 block text-center">
-  <span className="hidden sm:inline">
-    Treinos inteligentes com acompanhamento profissional para entregar resultados de verdade, no seu tempo e do seu jeito.
-  </span>
-  <span className="sm:hidden">
-    Treinos inteligentes com acompanhamento profissional para<br />
-    entregar resultados de verdade, no seu tempo e do seu jeito.
-  </span>
-</span>
-
     </h1>
 
-    {/* subtítulo curtinho */}
-    <p className="text-white/80 text-base md:text-lg leading-relaxed max-w-md mx-auto mt-3">
-      {siteData.hero.kicker}
+    {/* Descrição fora do título principal: leitura e SEO mais claros */}
+    <p className="text-white/90 text-base md:text-lg leading-relaxed max-w-xl mx-auto mt-5">
+      {siteData.hero.subtitle4}
     </p>
 
     {/* Botão */}
@@ -789,7 +903,7 @@ useEffect(() => {
       href="https://pay.hotmart.com/J102054674M?off=g64ryxgr&checkoutMode=10"
       target="_blank"
       rel="noopener noreferrer"
-      className="block w-full max-w-md mx-auto text-center text-[20px] font-light text-white py-4 px-6 rounded-lg bg-[#AFCB21] glow-button mt-10"
+      className="block w-full max-w-md mx-auto text-center text-[20px] font-semibold text-black py-4 px-6 rounded-lg bg-[#AFCB21] glow-button mt-10"
     >
 
       QUERO DECOLAR ➜
@@ -814,7 +928,7 @@ useEffect(() => {
 
     {/* Subtítulo menor e leve */}
     <p className="text-lg text-gray-600 mb-8">
-      O que hoje é <span className="font-bold text-pink-600">inspiração</span> já foi apenas um começo. 
+      O que hoje é <span className="font-bold text-pink-600">inspiração</span> já foi apenas um começo.{" "}
       <span className="font-bold text-pink-600">Agora é a sua vez.</span>
     </p>
           
@@ -828,7 +942,7 @@ useEffect(() => {
               href="https://pay.hotmart.com/J102054674M?off=g64ryxgr&checkoutMode=10" 
               target="_blank"
       rel="noopener noreferrer"
-      className="block w-full max-w-md mx-auto text-center text-[20px] font-light text-white py-4 px-6 rounded-lg bg-[#AFCB21] glow-button mt-7"
+      className="block w-full max-w-md mx-auto text-center text-[20px] font-semibold text-black py-4 px-6 rounded-lg bg-[#AFCB21] glow-button mt-7"
     >
               QUERO OS MESMOS RESULTADOS
             </a>
@@ -859,6 +973,8 @@ useEffect(() => {
             <img
               src={project}
               alt={`Bônus ${index + 1}`}
+              loading="lazy"
+              decoding="async"
               className="absolute inset-0 w-full h-full object-cover select-none pointer-events-none"
               draggable="false"
             />
@@ -880,6 +996,37 @@ useEffect(() => {
     </div>
   </div>
 </section>
+
+ {/* Como funciona: três etapas baseadas nas perguntas frequentes */}
+ <section id="como-funciona" aria-labelledby="how-heading" className="bg-black py-16 md:py-24 scroll-mt-16">
+  <div className="container mx-auto px-4">
+   <div className="mx-auto max-w-3xl text-center">
+    <span className="npv-eyebrow">SIMPLES ASSIM</span>
+    <h2 id="how-heading" className="mt-4 text-3xl sm:text-4xl md:text-5xl font-black leading-tight">SUA EVOLUÇÃO COMEÇA <span className="text-[#AFCB21]">EM 3 PASSOS.</span></h2>
+    <p className="mt-4 text-zinc-300 text-base md:text-lg">Tudo para você começar com clareza, no seu ritmo.</p>
+   </div>
+   <div className="mx-auto mt-12 grid max-w-6xl grid-cols-1 gap-4 md:grid-cols-3 md:gap-6">
+        <div className="npv-step-card">
+          <span className="npv-step-number">01</span>
+          <h3 className="mt-6 text-xl font-bold">Escolha seu plano</h3>
+          <p className="mt-3 text-zinc-300 leading-relaxed">Selecione a assinatura que faz mais sentido para sua rotina.</p>
+        </div>
+        <div className="npv-step-card">
+          <span className="npv-step-number">02</span>
+          <h3 className="mt-6 text-xl font-bold">Acesse a plataforma</h3>
+          <p className="mt-3 text-zinc-300 leading-relaxed">Após a aprovação da compra, receba por e-mail as instruções de acesso.</p>
+        </div>
+        <div className="npv-step-card">
+          <span className="npv-step-number">03</span>
+          <h3 className="mt-6 text-xl font-bold">Comece a treinar</h3>
+          <p className="mt-3 text-zinc-300 leading-relaxed">Explore os níveis, as planilhas e os vídeos de execução para começar.</p>
+        </div>
+   </div>
+   <div className="mt-10 text-center">
+    <button type="button" onClick={() => scrollToSection('planos')} className="inline-flex min-h-14 items-center justify-center gap-4 rounded-xl bg-[#AFCB21] px-8 py-4 text-base font-black text-black transition hover:brightness-95 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#AFCB21]">CONHECER OS PLANOS <span aria-hidden="true" className="text-xl leading-none">➜</span></button>
+   </div>
+  </div>
+ </section>
 
  {/* Team Section */}
 <section className="py-12 bg-black">
@@ -907,6 +1054,8 @@ useEffect(() => {
           <img
             src={m.photo}
             alt={m.name}
+            loading="lazy"
+            decoding="async"
             className="w-32 h-32 rounded-full mx-auto mb-3 object-cover group-hover:scale-110 transition-transform duration-300 shadow-lg"
           />
           <div className="leading-tight">
@@ -942,25 +1091,50 @@ useEffect(() => {
 </p>
 
 
-{/* Carrossel horizontal de parceiros */}
-<div className="relative overflow-hidden">
-  <div className="inline-flex w-max items-center animate-scroll-horizontal partners-fast gap-8 md:gap-12 pl-8 pr-8 md:pl-12 md:pr-12">
-    {[...siteData.partners.items, ...siteData.partners.items].map((p, index) => (
-  <div key={index} className="group inline-flex shrink-0 flex-col items-center">
-    <a href={p.link} target="_blank" rel="noopener noreferrer" className="group">
-      <img
-        src={p.logo}
-        alt={`Parceiro ${index + 1}`}
-        className="h-20 md:h-24 w-auto max-w-[160px] object-contain mx-auto transition duration-300 grayscale brightness-90 group-[:touched]:grayscale-0 group-[:touched]:brightness-100 md:group-hover:grayscale-0 md:group-hover:brightness-100"
-      />
-    </a>
-    {p.coupon && (
-      <span className="mt-1 text-[11px] text-black md:text-xs font-medium">
-        CUPOM: {p.coupon}
-      </span>
-    )}
-  </div>
-))}
+{/* Carrossel contínuo: quatro grupos iguais avançam um grupo por ciclo.
+    Adicionar parceiros apenas em siteData.partners.items; a faixa se repete automaticamente. */}
+<div className="npv-partners-viewport relative"
+     aria-label="Parceiros e benefícios da Não Pense, Vai!">
+  <div
+    className="npv-partners-track"
+    style={{
+      '--npv-partners-desktop-duration': `${Math.max(siteData.partners.items.length, 5) * 6}s`,
+      '--npv-partners-mobile-duration': `${Math.max(siteData.partners.items.length, 5) * 1.8}s`
+    }}
+  >
+    {Array.from({ length: 4 }, (_, copyIndex) => (
+      <div
+        key={copyIndex}
+        className="npv-partners-group"
+        aria-hidden={copyIndex > 0 ? 'true' : undefined}
+      >
+        {siteData.partners.items.map((p, index) => (
+          <div key={index} className="group inline-flex shrink-0 flex-col items-center">
+            <a
+              href={p.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group"
+              aria-label={`Visitar ${p.name}`}
+              tabIndex={copyIndex === 0 ? undefined : -1}
+            >
+              <img
+                src={p.logo}
+                alt={copyIndex === 0 ? p.name : ''}
+                loading="eager"
+                decoding="async"
+                className="h-20 md:h-24 w-auto max-w-[160px] object-contain mx-auto transition duration-300 grayscale brightness-90 group-[:touched]:grayscale-0 group-[:touched]:brightness-100 md:group-hover:grayscale-0 md:group-hover:brightness-100"
+              />
+            </a>
+            {p.coupon && (
+              <span className="mt-1 text-[11px] text-black md:text-xs font-medium">
+                CUPOM: {p.coupon}
+              </span>
+            )}
+          </div>
+        ))}
+      </div>
+    ))}
   </div>
 </div>
 
@@ -1000,20 +1174,20 @@ useEffect(() => {
 
 
       {/* Plans Section */}
-      <section id="planos" className="py-20 bg-gray-100">
+      <section id="planos" className="py-20 md:py-24 bg-gray-100 scroll-mt-16">
   <div className="container mx-auto px-4">
-    <h2 className="text-4xl font-bold text-center mb-12 text-[#AFCB21]">
+    <div className="mb-12 text-center text-zinc-900" aria-label="Planos de assinatura">
       {siteData.plans.title}
-    </h2>
+    </div>
     {/* ...grid dos cards... */}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto items-stretch">
             {/* Plano Mensal */}
-            <div className="bg-black border border-gray-700 rounded-lg p-8 text-center hover:scale-105 transition-transform duration-300 shadow-xl">
+            <div className="npv-plan-card flex h-full flex-col bg-black border border-gray-700 rounded-2xl p-7 sm:p-8 text-center shadow-xl">
               <h3 className="text-2xl font-bold mb-2">{siteData.plans.monthly.title}</h3>
               <p className="text-gray-400 mb-6">{siteData.plans.monthly.subtitle}</p>
               <div className="text-4xl font-bold text-[#AFCB21] mb-6">{siteData.plans.monthly.price}</div>
-              <ul className="text-left mb-8 space-y-3">
+              <ul className="flex-1 text-left mb-8 space-y-3">
                 {siteData.plans.monthly.features.map((feature, index) => (
                   <li key={index} className="flex items-center">
                     <span className="text-[#AFCB21] mr-3 text-xl">✓</span>
@@ -1025,14 +1199,14 @@ useEffect(() => {
                 href="https://pay.hotmart.com/J102054674M?off=g64ryxgr&checkoutMode=10" 
                 target="_blank"
       rel="noopener noreferrer"
-      className="block w-full max-w-md mx-auto text-center text-[20px] font-light text-white py-4 px-6 rounded-lg bg-[#AFCB21] glow-button mt-7"
+      className="block w-full max-w-md mx-auto text-center text-[20px] font-semibold text-black py-4 px-6 rounded-lg bg-[#AFCB21] glow-button mt-auto"
     >
                 ASSINAR AGORA
               </a>
             </div>
 
             {/* Plano Trimestral */}
-            <div className="bg-[#AFCB21] text-black rounded-lg p-8 text-center relative hover:scale-105 transition-transform duration-300 shadow-xl">
+            <div className="npv-plan-card flex h-full flex-col bg-[#AFCB21] text-black rounded-2xl p-7 sm:p-8 text-center relative shadow-xl">
               <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-black text-[#AFCB21] px-4 py-1 rounded text-sm font-bold">
                 MAIS POPULAR
               </div>
@@ -1042,7 +1216,7 @@ useEffect(() => {
                 <div className="text-4xl font-bold mb-2">{siteData.plans.quarterly.price}</div>
                 <div className="text-sm text-gray-700 line-through">{siteData.plans.quarterly.originalPrice}</div>
               </div>
-              <ul className="text-left mb-8 space-y-3">
+              <ul className="flex-1 text-left mb-8 space-y-3">
                 {siteData.plans.quarterly.features.map((feature, index) => (
                   <li key={index} className="flex items-center">
                     <span className="text-black mr-3 text-xl">✓</span>
@@ -1051,27 +1225,43 @@ useEffect(() => {
                 ))}
               </ul>
               <a 
-                href="https://pay.hotmart.com/J102054674M?off=il6n3k8y&checkoutMode=10&bid=1758659742975" 
+                href="https://pay.hotmart.com/J102054674M?off=il6n3k8y&checkoutMode=10" 
                 target="_blank"
       rel="noopener noreferrer"
-      className="block w-full max-w-md mx-auto text-center text-[20px] font-light text-white py-4 px-6 rounded-lg bg-black glow-button mt-7"
+      className="block w-full max-w-md mx-auto text-center text-[20px] font-semibold text-white py-4 px-6 rounded-lg bg-black mt-auto"
     >
                 ASSINAR AGORA
               </a>
             </div>
           </div>
+          <p className="mx-auto mt-6 max-w-2xl text-center text-xs sm:text-sm leading-relaxed text-zinc-600">
+            Pagamento seguro pela Hotmart. Antes de concluir a compra, confirme o valor total, a moeda, o parcelamento e a frequência de renovação exibidos no checkout.
+          </p>
+          <div className="mt-8 text-center">
+            <p className="text-zinc-700 text-base">Não sabe qual plano escolher?</p>
+            <a
+              href="https://wa.me/5531972158847?text=Ol%C3%A1%2C%20tenho%20uma%20d%C3%BAvida%20sobre%20os%20planos%20da%20plataforma%20N%C3%A3o%20Pense%2C%20Vai!"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex mt-3 items-center justify-center rounded-lg border border-zinc-800 px-5 py-3 text-zinc-900 font-semibold hover:bg-zinc-900 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-900 transition-colors"
+            >
+              Tire suas dúvidas pelo WhatsApp <span aria-hidden="true" className="inline-block ml-2 align-middle text-xl leading-none">➜</span>
+            </a>
+          </div>
         </div>
       </section>
 
       {/* About Me Section */}
-      <section id="about-section" className="py-10 bg-black">
+      <section id="about-section" className="py-10 bg-black scroll-mt-16">
         <div className="container mx-auto px-4">
           <div className="flex flex-col lg:flex-row items-center gap-12">
             {/* Foto à esquerda */}
             <div className="lg:w-1/2 flex item-stretch">
               <img
   src={siteData.aboutMe.photo}
-  alt="Sobre mim"
+  alt="Carlos Ferreira, treinador da plataforma Não Pense, Vai!"
+  loading="lazy"
+  decoding="async"
   className="w-full h-96 md:h-[45rem] object-cover md:object-top rounded-lg shadow-2xl"
 />
             </div>
@@ -1098,7 +1288,7 @@ useEffect(() => {
                 href="https://pay.hotmart.com/J102054674M?off=g64ryxgr&checkoutMode=10" 
                 target="_blank"
       rel="noopener noreferrer"
-      className="block w-full max-w-md mx-auto text-center text-[20px] font-light text-white py-4 px-6 rounded-lg bg-[#AFCB21] glow-button mt-7"
+      className="block w-full max-w-md mx-auto text-center text-[20px] font-semibold text-black py-4 px-6 rounded-lg bg-[#AFCB21] glow-button mt-7"
     >
                 COMEÇAR AGORA
               </a> */}
@@ -1141,7 +1331,7 @@ useEffect(() => {
           href="https://pay.hotmart.com/J102054674M?off=g64ryxgr&checkoutMode=10"
           target="_blank"
           rel="noopener noreferrer"
-          className="block w-full max-w-md mx-auto text-center text-[20px] font-light text-white py-4 px-6 rounded-lg bg-[#AFCB21] glow-button mt-4"
+          className="block w-full max-w-md mx-auto text-center text-[20px] font-semibold text-black py-4 px-6 rounded-lg bg-[#AFCB21] glow-button mt-4"
         >
           QUERO TER ESSES RESULTADOS
         </a> 
@@ -1162,6 +1352,8 @@ useEffect(() => {
         <img
           src={seloGarantia}
           alt="Garantia de 7 Dias"
+          loading="lazy"
+          decoding="async"
           className="mx-auto lg:mx-0 w-60 md:w-40 mb-4 hover:scale-110 transition-transform duration-300"
         />
       </div>
@@ -1169,8 +1361,8 @@ useEffect(() => {
       {/* Texto — mobile centralizado; desktop alinhado à esquerda */}
       <div className="text-center lg:text-left max-w-prose">
         <h2 className="text-2xl md:text-4xl font-bold text-[#AFCB21]">
-          <p>ENTRE DE CABEÇA</p> 
-          <p>POR 7 DIAS</p>
+          <span className="block">ENTRE DE CABEÇA</span>
+          <span className="block">POR 7 DIAS</span>
         </h2>
         <div className="text-base md:text-lg text-gray-300 leading-relaxed space-y-4">
   <p className="mt-4"><strong>Se não sentir diferença, o risco é todo nosso.</strong></p>
@@ -1195,7 +1387,7 @@ useEffect(() => {
     {/* ... aqui vem o banner, header, seções ... */}
 
     {/* FAQ Section */}
-    <section id="faq" className="py-16 bg-zinc-50 text-black">
+    <section id="faq" className="py-16 bg-zinc-50 text-black scroll-mt-16">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl md:text-4xl font-bold text-center mb-10">
           Possui alguma dúvida?
@@ -1206,32 +1398,69 @@ useEffect(() => {
             <FAQItem key={i} q={item.q} a={item.a} index={i} />
           ))}
         </div>
+        <div className="mt-10 text-center">
+          <p className="text-zinc-700">Ainda tem alguma dúvida sobre a plataforma?</p>
+          <a
+            href="https://wa.me/5531972158847?text=Ol%C3%A1%21%20Tenho%20uma%20d%C3%BAvida%20sobre%20a%20plataforma%20N%C3%A3o%20Pense%2C%20Vai%21"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center mt-4 px-6 py-3 rounded-lg bg-[#AFCB21] text-black font-semibold hover:brightness-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black transition"
+          >
+            Falar com o suporte pelo WhatsApp <span aria-hidden="true" className="inline-block ml-2 align-middle text-xl leading-none">➜</span>
+          </a>
+        </div>
       </div>
     </section>
 
-      {/* Instagram Section */}
-      <section className="py-20 bg-gray-800">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-4xl font-bold mb-4 ">{siteData.instagram.title}</h2>
-          <p className="text-[#AFCB21] text-xl mb-8">{siteData.instagram.handle}</p>
-          
-          {/* LightWidget Instagram Feed */}
-          <div className="mb-8">
-            <iframe 
-              src="//lightwidget.com/widgets/2f1798ec8db754e1bbfa4b14196aaf6c.html" 
-              className="lightwidget-widget w-full border-0 overflow-hidden h-96"
-              style={{ width: '100%', border: 0, overflow: 'hidden' }}
-            />
-          </div>
-          
-          <div className="mt-8">
-            <a 
-              href="https://instagram.com/naopensevai" 
-              target="_blank" 
+      {/* Instagram: seção independente, sem depender de widget pago ou API externa */}
+      <section id="instagram" aria-labelledby="instagram-heading" className="npv-instagram relative overflow-hidden bg-[#111114] py-20 md:py-28 scroll-mt-16">
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="grid items-center gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:gap-20">
+            <div className="text-center lg:text-left">
+              <span className="npv-eyebrow"><span className="npv-live-dot" aria-hidden="true"></span> A GENTE SE ENCONTRA LÁ</span>
+              <h2 id="instagram-heading" className="mt-5 text-4xl sm:text-5xl md:text-6xl font-black tracking-tight leading-[1.05]">
+                O MOVIMENTO <span className="text-[#AFCB21]">NÃO PARA</span> POR AQUI.
+              </h2>
+              <p className="mt-5 mx-auto lg:mx-0 max-w-xl text-base sm:text-lg leading-relaxed text-zinc-300">
+                Acompanhe treinos, dicas e bastidores da comunidade Não Pense, Vai! pelo Instagram.
+              </p>
+              <a
+                href="https://www.instagram.com/naopensevai/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="npv-instagram-cta mt-8 inline-flex min-h-14 items-center justify-center gap-4 rounded-xl px-7 py-4 text-base font-bold text-white transition-transform hover:-translate-y-1 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#AFCB21]"
+              >
+                <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><path d="M17.5 6.5h.01"/></svg>
+                Ver o @naopensevai
+                <span aria-hidden="true" className="text-xl leading-none">➜</span>
+              </a>
+              <p className="mt-4 text-sm text-zinc-400">As publicações são abertas diretamente no Instagram.</p>
+            </div>
+            <a
+              href="https://www.instagram.com/naopensevai/"
+              target="_blank"
               rel="noopener noreferrer"
-              className="inline-block bg-gradient-to-r from-purple-500 to-pink-500 text-white px-8 py-3 rounded-full font-bold hover:scale-105 transition-transform duration-300"
+              aria-label="Abrir perfil oficial Não Pense, Vai! no Instagram"
+              className="npv-instagram-profile group block mx-auto w-full max-w-md rounded-3xl border border-white/15 bg-white/[0.06] p-5 sm:p-7 shadow-2xl transition-transform hover:-translate-y-1 focus-visible:outline-2 focus-visible:outline-[#AFCB21]"
             >
-              Seguir no Instagram
+              <div className="flex items-center gap-4">
+                <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full border-2 border-pink-500 bg-black p-2 shadow-lg">
+                  <img src={logoNPV} alt="" loading="lazy" decoding="async" className="max-h-12 w-full object-contain" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-lg font-extrabold text-white">@naopensevai <span aria-hidden="true" className="inline-block ml-2 text-[#AFCB21]">➜</span></p>
+                  <p className="text-sm text-zinc-300">Não Pense, Vai! | Treinamento</p>
+                </div>
+              </div>
+              <div className="my-6 h-px bg-white/15"></div>
+              <div className="grid grid-cols-3 gap-2 text-center">
+                <div className="npv-profile-pill">TREINO</div>
+                <div className="npv-profile-pill">EVOLUÇÃO</div>
+                <div className="npv-profile-pill">ROTINA</div>
+              </div>
+              <div className="mt-6 flex items-center justify-between rounded-xl bg-[#AFCB21] px-4 py-4 text-sm font-black text-black">
+                SIGA A NOSSA JORNADA <span aria-hidden="true" className="text-xl">➜</span>
+              </div>
             </a>
           </div>
         </div>
@@ -1248,13 +1477,13 @@ useEffect(() => {
           <p className="text-gray-400 mb-6">
             Transforme seus objetivos em algo real
           </p>
-          <div className="flex justify-center space-x-6 mb-6">
-            <a href="#" className="text-gray-400 hover:text-[#AFCB21] transition-colors">Política de Privacidade</a>
-            <a href="#" className="text-gray-400 hover:text-[#AFCB21] transition-colors">Termos de Uso</a>
-            <a href="#" className="text-gray-400 hover:text-[#AFCB21] transition-colors">Suporte</a>
-          </div>
+          <nav aria-label="Links do rodapé" className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 mb-6">
+            <a href="/politica-de-privacidade.html" className="text-gray-400 hover:text-[#AFCB21] transition-colors">Política de Privacidade</a>
+            <a href="/termos-de-uso.html" className="text-gray-400 hover:text-[#AFCB21] transition-colors">Termos de Uso</a>
+            <a href="mailto:naopensevai@gmail.com?subject=Suporte%20N%C3%A3o%20Pense%2C%20Vai!" className="text-gray-400 hover:text-[#AFCB21] transition-colors">Suporte</a>
+          </nav>
           <p className="text-gray-500 text-sm">
-            © 2025 Não Pense, Vai – Todos os direitos reservados
+            © {new Date().getFullYear()} Não Pense, Vai! – Todos os direitos reservados
           </p>
         </div>
       </footer>
