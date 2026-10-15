@@ -6,6 +6,7 @@ import {
   Users, Wallet, X
 } from 'lucide-react'
 import './ClubeNPV.css'
+import ClubeRecompensas, { RECOMPENSAS_INICIAIS } from './ClubeRecompensas.jsx'
 
 const ANO = new Date().getFullYear()
 const RULES_INICIAIS = [
@@ -37,9 +38,15 @@ const ID = () => (typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.ra
 function carregar() {
   try {
     const v = JSON.parse(localStorage.getItem(STORAGE) || 'null')
-    if (v && Array.isArray(v.students) && Array.isArray(v.ledger) && Array.isArray(v.rules)) return v
+    if (v && Array.isArray(v.students) && Array.isArray(v.ledger) && Array.isArray(v.rules)) {
+      return {
+        ...v,
+        rewards: Array.isArray(v.rewards) ? v.rewards : RECOMPENSAS_INICIAIS,
+        redemptions: Array.isArray(v.redemptions) ? v.redemptions : []
+      }
+    }
   } catch { /* modo de demonstração começa com dados fictícios */ }
-  return { students: ALUNOS_INICIAIS, ledger: MOV_INICIAIS, rules: RULES_INICIAIS }
+  return { students: ALUNOS_INICIAIS, ledger: MOV_INICIAIS, rules: RULES_INICIAIS, rewards: RECOMPENSAS_INICIAIS, redemptions: [] }
 }
 const brData = (date) => new Date(date).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })
 const pontos = (n) => Number(n).toLocaleString('pt-BR')
@@ -117,12 +124,12 @@ export default function ClubeNPV() {
   }
   function resetDemo() {
     if (!window.confirm('Restaurar somente os dados fictícios desta demonstração?')) return
-    setDemo({ students:ALUNOS_INICIAIS, ledger:MOV_INICIAIS, rules:RULES_INICIAIS })
+    setDemo({ students:ALUNOS_INICIAIS, ledger:MOV_INICIAIS, rules:RULES_INICIAIS, rewards:RECOMPENSAS_INICIAIS, redemptions:[] })
     setStudentId('demo-alice');setTab('inicio');setModal(null);setNotice('Demonstração restaurada.')
   }
   const isAdmin = role==='admin'
   const displayName = isAdmin?'Administrador (teste)':current?.name || 'Aluno'
-  const activityName = (item) => item.ruleId === 'ajuste' ? 'Ajuste administrativo' : rules.find(x => x.id === item.ruleId)?.label || 'Atividade'
+  const activityName = (item) => item.ruleId === 'ajuste' ? 'Ajuste administrativo' : item.ruleId === 'resgate' ? 'Resgate de recompensa' : rules.find(x => x.id === item.ruleId)?.label || 'Atividade'
   const renderLedger = (items, showStudent=false) => <div className="clube-activities">
     {items.length === 0 && <div className="clube-empty">Ainda não há movimentações neste período.</div>}
     {items.map(row => <div className="clube-activity" key={row.id}>
@@ -191,13 +198,17 @@ export default function ClubeNPV() {
             <section className="clube-card"><div className="clube-card-head"><div><h2>Minhas atividades</h2><p>Seu histórico individual de pontos</p></div><button className="clube-text-button" onClick={()=>setTab('historico')}>Ver tudo <ArrowRight size={16}/></button></div>{renderLedger(currentLedger.slice(0,6))}</section>
             <section className="clube-card clube-next"><div className="clube-card-head"><div><h2>Continue acumulando</h2><p>Atividades que podem render pontos</p></div></div><div className="clube-how">{rules.slice(0,4).map((x,i)=><div key={x.id}><span>{x.icon}</span><strong>{x.label}</strong><b>+{pontos(x.points)}</b></div>)}</div><p className="clube-micro">Pontuação ilustrativa, sujeita à tabela oficial do clube. Os lançamentos são validados pela administração.</p></section>
           </div>
+          <ClubeRecompensas isAdmin={false} mode="featured" demo={demo} setDemo={setDemo} current={current} students={students} balance={balance} onNotice={setNotice} onViewAll={()=>setTab('recompensas')}/>
         </>}
         {tab==='alunos'&&isAdmin&&<>
           <div className="clube-toolbar"><label className="clube-search"><Search size={18}/><input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Buscar por nome ou e-mail" aria-label="Buscar alunos"/></label><button className="clube-btn clube-btn-primary" onClick={()=>{setName('');setEmail('');setModal('student')}}><Plus size={18}/> Novo aluno</button></div>
           <div className="clube-card clube-students">{filtrados.length===0&&<p className="clube-empty">Nenhum aluno encontrado.</p>}{filtrados.map(x=><div className="clube-student-row" key={x.id}><span className="clube-avatar">{x.name.charAt(0)}</span><div><strong>{x.name}</strong><small>{x.email}</small></div><span className="clube-student-saldo">{pontos(balance(x.id))} pts</span><button className="clube-btn clube-btn-outline" onClick={()=>openPoints(x.id)}><Plus size={16}/> Pontos</button></div>)}</div>
         </>}
         {tab==='historico'&&<div className="clube-card"><div className="clube-card-head"><div><h2>{isAdmin?'Todos os lançamentos':'Meu extrato'}</h2><p>Exibindo os registros do ano de {ANO}</p></div><span className="clube-year"><CalendarDays size={17}/>{ANO}</span></div>{renderLedger(isAdmin?[...allYearLedger].sort((a,b)=>new Date(b.date)-new Date(a.date)):currentLedger,isAdmin)}</div>}
-        {tab==='recompensas'&&<div className="clube-card clube-rewards"><div className="clube-coming-icon"><Gift size={32}/></div><h2>O melhor ainda está por vir.</h2><p>Este espaço vai mostrar prêmios, brindes e vantagens nos parceiros Não Pense, Vai!. Vamos definir as recompensas e as regras de resgate com sua tabela oficial de pontuação.</p><div className="clube-rule-list">{rules.map(r=><div key={r.id}><span>{r.icon}</span><strong>{r.label}</strong><b>+{pontos(r.points)} pts</b></div>)}</div>{isAdmin&&<button className="clube-btn clube-btn-primary" onClick={()=>{setRuleDraft(rules.map(x=>({...x})));setModal('rules')}}>Editar pontuações fictícias</button>}</div>}
+        {tab==='recompensas'&&<>
+          <ClubeRecompensas isAdmin={isAdmin} mode="catalog" demo={demo} setDemo={setDemo} current={current} students={students} balance={balance} onNotice={setNotice}/>
+          {isAdmin&&<div className="npv-shop-rules-action"><button className="clube-btn clube-btn-outline" onClick={()=>{setRuleDraft(rules.map(x=>({...x})));setModal('rules')}}>Editar regras de pontos fictícios</button></div>}
+        </>}
         <footer className="clube-main-footer"><span>© {ANO} Não Pense, Vai! — Demonstração do Clube NPV</span><span>Dados fictícios · Sem acesso a informações reais de alunos</span></footer>
       </main>
     </div>
