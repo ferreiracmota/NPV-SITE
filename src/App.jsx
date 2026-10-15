@@ -1088,27 +1088,50 @@ useEffect(() => {
 </p>
 
 
-{/* Carrossel horizontal de parceiros */}
-<div className="relative overflow-hidden">
-  <div className="inline-flex w-max items-center animate-scroll-horizontal partners-fast gap-8 md:gap-12 pl-8 pr-8 md:pl-12 md:pr-12">
-    {[...siteData.partners.items, ...siteData.partners.items].map((p, index) => (
-  <div key={index} className="group inline-flex shrink-0 flex-col items-center">
-    <a href={p.link} target="_blank" rel="noopener noreferrer" className="group" aria-label={`Visitar ${p.name}`}>
-      <img
-        src={p.logo}
-        alt={p.name}
-        loading="lazy"
-        decoding="async"
-        className="h-20 md:h-24 w-auto max-w-[160px] object-contain mx-auto transition duration-300 grayscale brightness-90 group-[:touched]:grayscale-0 group-[:touched]:brightness-100 md:group-hover:grayscale-0 md:group-hover:brightness-100"
-      />
-    </a>
-    {p.coupon && (
-      <span className="mt-1 text-[11px] text-black md:text-xs font-medium">
-        CUPOM: {p.coupon}
-      </span>
-    )}
-  </div>
-))}
+{/* Carrossel contínuo: quatro grupos iguais avançam um grupo por ciclo.
+    Adicionar parceiros apenas em siteData.partners.items; a faixa se repete automaticamente. */}
+<div className="npv-partners-viewport relative"
+     aria-label="Parceiros e benefícios da Não Pense, Vai!">
+  <div
+    className="npv-partners-track"
+    style={{
+      '--npv-partners-desktop-duration': `${Math.max(siteData.partners.items.length, 5) * 6}s`,
+      '--npv-partners-mobile-duration': `${Math.max(siteData.partners.items.length, 5) * 1.8}s`
+    }}
+  >
+    {Array.from({ length: 4 }, (_, copyIndex) => (
+      <div
+        key={copyIndex}
+        className="npv-partners-group"
+        aria-hidden={copyIndex > 0 ? 'true' : undefined}
+      >
+        {siteData.partners.items.map((p, index) => (
+          <div key={index} className="group inline-flex shrink-0 flex-col items-center">
+            <a
+              href={p.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group"
+              aria-label={`Visitar ${p.name}`}
+              tabIndex={copyIndex === 0 ? undefined : -1}
+            >
+              <img
+                src={p.logo}
+                alt={copyIndex === 0 ? p.name : ''}
+                loading="eager"
+                decoding="async"
+                className="h-20 md:h-24 w-auto max-w-[160px] object-contain mx-auto transition duration-300 grayscale brightness-90 group-[:touched]:grayscale-0 group-[:touched]:brightness-100 md:group-hover:grayscale-0 md:group-hover:brightness-100"
+              />
+            </a>
+            {p.coupon && (
+              <span className="mt-1 text-[11px] text-black md:text-xs font-medium">
+                CUPOM: {p.coupon}
+              </span>
+            )}
+          </div>
+        ))}
+      </div>
+    ))}
   </div>
 </div>
 
