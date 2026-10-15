@@ -352,7 +352,7 @@ const beforeAfterSlides = [
   // Dados editáveis do site
   const siteData = {
     topBanner: {
-      text: "Acesse nossa plataforma / Encontre conteúdos incríveis"
+      text: "NÃO PENSE, VAI! • SUA EVOLUÇÃO COMEÇA AGORA"
     },
     hero: {
       title: "SEU CORPO DOS SONHOS",
@@ -1184,8 +1184,8 @@ useEffect(() => {
       {/* Texto — mobile centralizado; desktop alinhado à esquerda */}
       <div className="text-center lg:text-left max-w-prose">
         <h2 className="text-2xl md:text-4xl font-bold text-[#AFCB21]">
-          <p>ENTRE DE CABEÇA</p> 
-          <p>POR 7 DIAS</p>
+          <span className="block">ENTRE DE CABEÇA</span>
+          <span className="block">POR 7 DIAS</span>
         </h2>
         <div className="text-base md:text-lg text-gray-300 leading-relaxed space-y-4">
   <p className="mt-4"><strong>Se não sentir diferença, o risco é todo nosso.</strong></p>
