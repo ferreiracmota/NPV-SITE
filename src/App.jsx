@@ -371,6 +371,28 @@ const faqs = [
 ];
 
 
+// Área do Aluno: preserva a plataforma de treinos na Hotmart e adiciona
+// o Clube de Benefícios no mesmo domínio. Sem alterar a rota dos treinos.
+const HOTMART_STUDENT_LOGIN = 'https://sso.hotmart.com/login?service=https%3A%2F%2Fsso.hotmart.com%2Foauth2.0%2FcallbackAuthorize%3Fclient_id%3Db432cdd3-eb60-46bd-892b-5b450a65153e%26redirect_uri%3Dhttps%253A%252F%252Fhotmart.com%252Fen%252Fclub%252Fnaopensevai%252Fauth%252Flogin%253Frealm%253Dclub%26response_type%3Dcode%26response_mode%3Dquery%26client_name%3DCasOAuthClient'
+function StudentAccessMenu({mobile=false}) {
+  return <details className={mobile?'relative md:hidden justify-self-end':'relative ml-4 hidden md:block'}>
+    <summary aria-label="Abrir opções da Área do Aluno"
+      className={mobile
+        ? 'cursor-pointer list-none whitespace-nowrap rounded-md bg-[#AFCB21] px-2 sm:px-3 py-1.5 text-black font-semibold text-[10px] sm:text-xs focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white'
+        : 'cursor-pointer list-none whitespace-nowrap rounded-md bg-[#AFCB21] px-4 py-2 text-black font-semibold hover:brightness-110 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white'}>
+      ÁREA DE ALUNOS <span aria-hidden="true">⌄</span>
+    </summary>
+    <nav aria-label="Opções da Área do Aluno" className="absolute right-0 top-full z-[100] mt-2 w-64 overflow-hidden rounded-xl border border-[#3a4933] bg-[#141d15] p-2 shadow-2xl">
+      <a href={HOTMART_STUDENT_LOGIN} target="_blank" rel="noopener noreferrer" className="block rounded-lg px-3 py-3 text-sm font-semibold text-white hover:bg-[#2e3c28] focus-visible:bg-[#2e3c28]">
+        Meus treinos <span className="block pt-1 text-xs font-normal text-gray-300">Acessar a Hotmart ↗</span>
+      </a>
+      <a href="/clube" className="mt-1 block rounded-lg bg-[#AFCB21]/10 px-3 py-3 text-sm font-semibold text-[#C8E45C] hover:bg-[#AFCB21]/20 focus-visible:bg-[#AFCB21]/20">
+        Clube de Benefícios NPV <span className="block pt-1 text-xs font-normal text-gray-200">Pontos e recompensas →</span>
+      </a>
+    </nav>
+  </details>
+}
+
 function App() {
   const heroDesktopVideoRef = useRef(null)
   const heroMobileVideoRef = useRef(null)
@@ -693,15 +715,8 @@ useEffect(() => {
         </svg>
       </button>
 
-      {/* DIREITA (botão) — só MOBILE */}
-      <a
-        href="https://sso.hotmart.com/login?service=https%3A%2F%2Fsso.hotmart.com%2Foauth2.0%2FcallbackAuthorize%3Fclient_id%3Db432cdd3-eb60-46bd-892b-5b450a65153e%26redirect_uri%3Dhttps%253A%252F%252Fhotmart.com%252Fen%252Fclub%252Fnaopensevai%252Fauth%252Flogin%253Frealm%253Dclub%26response_type%3Dcode%26response_mode%3Dquery%26client_name%3DCasOAuthClient"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="md:hidden justify-self-end inline-flex items-center whitespace-nowrap rounded-md bg-[#AFCB21] px-2 sm:px-3 py-1.5 text-black font-semibold text-[10px] sm:text-xs hover:brightness-110 transition"
-      >
-        ÁREA DE ALUNOS
-      </a>
+      {/* Área do aluno: escolha entre treinos e Clube NPV (mobile). */}
+      <StudentAccessMenu mobile />
 
       {/* DESKTOP: nav central + dropdown contato + botão à direita */}
       <div className="hidden md:flex items-center w-full">
@@ -759,15 +774,8 @@ useEffect(() => {
           </div>
         </nav>
 
-        {/* Botão ÁREA DE ALUNOS (só DESKTOP) */}
-        <a 
-          href="https://sso.hotmart.com/login?service=https%3A%2F%2Fsso.hotmart.com%2Foauth2.0%2FcallbackAuthorize%3Fclient_id%3Db432cdd3-eb60-46bd-892b-5b450a65153e%26redirect_uri%3Dhttps%253A%252F%252Fhotmart.com%252Fen%252Fclub%252Fnaopensevai%252Fauth%252Flogin%253Frealm%253Dclub%26response_type%3Dcode%26response_mode%3Dquery%26client_name%3DCasOAuthClient"
-          target="_blank" 
-          rel="noopener noreferrer"
-          className="ml-4 hidden md:inline-flex items-center rounded-md bg-[#AFCB21] px-4 py-2 text-black font-semibold hover:brightness-110 transition"
-        >
-          ÁREA DE ALUNOS
-        </a>
+        {/* Área do aluno: preserva a Hotmart e oferece Clube NPV (desktop). */}
+        <StudentAccessMenu />
       </div>
     </div>
   </div>
