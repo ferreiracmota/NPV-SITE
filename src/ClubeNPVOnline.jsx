@@ -181,7 +181,7 @@ export default function ClubeNPVOnline() {
       const queries=[
         isAdmin ? fetchAllClubeRows('clube_profiles','id,full_name,email,approved,created_at') : Promise.resolve({data:[],error:null}),
         fetchAllClubeRows('clube_point_events','id,student_id,event_type,points,note,created_at'),
-        fetchAllClubeRows('clube_rewards','id,name,category,description,points,stock,icon,theme,active,showcase,image_path,created_at',true),
+        fetchAllClubeRows('clube_rewards','id,name,category,description,points,stock,icon,theme,active,test_only,showcase,image_path,created_at',true),
         fetchAllClubeRows('clube_redemptions','id,student_id,reward_id,reward_name,points,status,is_test,created_at,resolved_at'),
         supabase.from('clube_point_rules').select('event_type,points,position').order('position',{ascending:true})
       ]
