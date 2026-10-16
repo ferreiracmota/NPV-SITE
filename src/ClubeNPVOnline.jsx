@@ -127,6 +127,7 @@ export default function ClubeNPVOnline() {
   const [initializing,setInitializing]=useState(true)
   const [profile,setProfile]=useState(null)
   const [isAdmin,setIsAdmin]=useState(false)
+  const [isTester,setIsTester]=useState(false)
   const [data,setData]=useState(emptyState)
   const [tab,setTab]=useState('inicio')
   const [notice,setNotice]=useState('')
@@ -136,6 +137,7 @@ export default function ClubeNPVOnline() {
   const [search,setSearch]=useState('')
   const [award,setAward]=useState(null)
   const [rewardDraft,setRewardDraft]=useState(null)
+  const [redeemDraft,setRedeemDraft]=useState(null)
   const [rewardImageFile,setRewardImageFile]=useState(null)
   const [imagePreviewUrl,setImagePreviewUrl]=useState('')
   const [ruleDraft,setRuleDraft]=useState(null)
@@ -158,16 +160,17 @@ export default function ClubeNPVOnline() {
   },[])
   useEffect(()=>{
     let active=true
-    setProfile(null);setIsAdmin(false);setData(emptyState);setTab('inicio');setError('')
+    setProfile(null);setIsAdmin(false);setIsTester(false);setData(emptyState);setTab('inicio');setError('')
     if(!user?.id) return
     ;(async()=>{
-      const [role,owner]=await Promise.all([
+      const [role,owner,tester]=await Promise.all([
         supabase.from('clube_admins').select('user_id').eq('user_id',user.id).maybeSingle(),
-        supabase.from('clube_profiles').select('*').eq('id',user.id).maybeSingle()
+        supabase.from('clube_profiles').select('*').eq('id',user.id).maybeSingle(),
+        supabase.from('clube_pilot_testers').select('user_id').eq('user_id',user.id).maybeSingle()
       ])
       if(!active)return
-      if(role.error||owner.error||!owner.data){setError('Não foi possível carregar o seu cadastro. O banco de dados pode estar em configuração.');return}
-      setIsAdmin(Boolean(role.data));setProfile(owner.data)
+      if(role.error||owner.error||tester.error||!owner.data){setError('Não foi possível carregar o seu cadastro. O banco de dados pode estar em configuração.');return}
+      setIsAdmin(Boolean(role.data));setIsTester(Boolean(tester.data));setProfile(owner.data)
     })()
     return ()=>{active=false}
   },[user?.id])
@@ -179,7 +182,7 @@ export default function ClubeNPVOnline() {
         isAdmin ? fetchAllClubeRows('clube_profiles','id,full_name,email,approved,created_at') : Promise.resolve({data:[],error:null}),
         fetchAllClubeRows('clube_point_events','id,student_id,event_type,points,note,created_at'),
         fetchAllClubeRows('clube_rewards','id,name,category,description,points,stock,icon,theme,active,showcase,image_path,created_at',true),
-        fetchAllClubeRows('clube_redemptions','id,student_id,reward_id,reward_name,points,status,created_at,resolved_at'),
+        fetchAllClubeRows('clube_redemptions','id,student_id,reward_id,reward_name,points,status,is_test,created_at,resolved_at'),
         supabase.from('clube_point_rules').select('event_type,points,position').order('position',{ascending:true})
       ]
       const results=await Promise.all(queries)
@@ -232,12 +235,27 @@ export default function ClubeNPVOnline() {
       setAward(null)
     },'Pontos lançados e salvos no banco de dados.')
   }
-  async function requestReward(reward){
-    if(!approved||isAdmin||!reward.active||!window.confirm(`Solicitar ${reward.name} por ${format(reward.points)} pontos? O pedido aguardará aprovação.`))return
-    await run(async()=>{
-      const {error}=await supabase.rpc('clube_request_redemption',{p_reward_id:reward.id})
+  function openRedeem(reward){
+    if(!approved||isAdmin||busy||!reward.active||reward.stock<1||(reward.test_only&&!isTester))return
+    if(balance(user?.id)-reserved(user?.id)<reward.points)return
+    setRedeemDraft(reward)
+  }
+  async function confirmRedeem(e){
+    e.preventDefault()
+    if(!redeemDraft||busy)return
+    const selected={...redeemDraft}
+    setBusy(true);setNotice('')
+    try{
+      const {error}=await supabase.rpc('clube_request_redemption',{p_reward_id:selected.id})
       if(error)throw error
-    },'Solicitação enviada ao administrador. Seus pontos estão reservados até a resposta.')
+      setRedeemDraft(null)
+      setTab('recompensas')
+      setNotice(selected.test_only?
+        'Pedido de TESTE registrado! A administração pode aprovar ou recusar. Não há entrega real.':
+        'Solicitação enviada! Seus pontos ficam reservados até a aprovação do administrador.')
+      await refresh()
+    }catch(err){setNotice(formatError(err));setRedeemDraft(null)}
+    finally{setBusy(false)}
   }
   async function resolve(req,approve){
     if(!isAdmin||!window.confirm(`${approve?'Aprovar':'Recusar'} solicitação de ${memberName(req.student_id)}?`)) return
@@ -250,7 +268,7 @@ export default function ClubeNPVOnline() {
   async function saveReward(e){
     e.preventDefault();if(!isAdmin||!rewardDraft)return
     const item={...rewardDraft}
-    const payload={name:item.name.trim(),category:item.category.trim()||'Benefícios',description:item.description.trim(),points:Number(item.points),stock:Number(item.stock),icon:item.icon,theme:item.theme,active:Boolean(item.active),showcase:Boolean(item.showcase||item.active),image_path:item.image_path||''}
+    const payload={name:item.name.trim(),category:item.category.trim()||'Benefícios',description:item.description.trim(),points:Number(item.points),stock:Number(item.stock),icon:item.icon,theme:item.theme,active:Boolean(item.active),test_only:Boolean(item.test_only),showcase:Boolean(item.showcase||item.active),image_path:item.image_path||''}
     if(payload.name.length<3||!Number.isSafeInteger(payload.points)||payload.points<1||!Number.isSafeInteger(payload.stock)||payload.stock<0){setNotice('Confira nome, pontos e estoque.');return}
     await run(async()=>{
       if(rewardImageFile){
@@ -296,7 +314,7 @@ export default function ClubeNPVOnline() {
       const availablePoints=Math.max(0,balance(user?.id)-reserved(user?.id))
       const missingPoints=Math.max(0,item.points-availablePoints)
       const enough=missingPoints===0
-      const available=item.active&&item.stock>0
+      const available=item.active&&item.stock>0&&(!item.test_only||isTester)
       const canRedeem=available&&enough&&!isAdmin
       const progress=item.points>0?Math.min(100,Math.round(availablePoints/item.points*100)):0
       return <article className={`npv-shop-card ${!isAdmin&&enough?'npv-shop-card-milestone':''}`} key={item.id}>
@@ -312,10 +330,10 @@ export default function ClubeNPVOnline() {
             <span className={`npv-shop-progress-label ${enough?'npv-shop-progress-met':''}`}>{enough?<><Check size={13}/> Pontos suficientes!</>:`Faltam ${format(missingPoints)} pts`}</span>
           </div>}
           <div className="npv-shop-foot">
-            <span className={`npv-shop-stock ${!available?'npv-shop-stock-off':''}`}>{!item.active?'Prêmio demonstrativo · resgate não liberado':item.stock<1?'Prêmio esgotado':isAdmin?`${item.stock} em estoque`:enough?'Pronto para resgatar agora':`Acumule mais ${format(missingPoints)} pontos`}</span>
+            <span className={`npv-shop-stock ${!available?'npv-shop-stock-off':''}`}>{!item.active?'Prêmio demonstrativo · resgate não liberado':item.test_only?(isTester?'Modo teste · sem entrega real':'Disponível somente para testes internos'):item.stock<1?'Prêmio esgotado':isAdmin?`${item.stock} em estoque`:enough?'Pronto para resgatar agora':`Acumule mais ${format(missingPoints)} pontos`}</span>
             {isAdmin?<button className="npv-shop-edit" onClick={()=>editReward(item)}><Pencil size={15}/> Editar prêmio e foto</button>
-            :<button className={`npv-shop-request ${enough&&!available?'npv-shop-request-met':''}`} disabled={busy||!canRedeem} onClick={()=>requestReward(item)}>
-              {canRedeem?'Resgatar agora':!available?(enough?'Meta atingida ✓':item.stock<1&&item.active?'Esgotado':'Continue acumulando'):'Acumule pontos'}
+            :<button className={`npv-shop-request ${enough&&!available?'npv-shop-request-met':''}`} disabled={busy||!canRedeem} onClick={()=>openRedeem(item)}>
+              {canRedeem?(item.test_only?'Testar resgate':'Resgatar agora'):!available?(enough?'Meta atingida ✓':item.stock<1&&item.active?'Esgotado':'Continue acumulando'):'Acumule pontos'}
               {canRedeem&&<ArrowRight size={14}/>}
             </button>}
           </div>
@@ -361,8 +379,8 @@ export default function ClubeNPVOnline() {
       </>}
       {tab==='alunos'&&isAdmin&&<><div className="clube-toolbar"><label className="clube-search"><Search size={18}/><input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Buscar aluno ou e-mail"/></label></div><div className="clube-card clube-students">{studentMembers.filter(x=>`${x.full_name} ${x.email}`.toLowerCase().includes(search.toLowerCase())).map(x=><div className="clube-student-row" key={x.id}><span className="clube-avatar">{x.full_name?.charAt(0)||'A'}</span><div><strong>{x.full_name||x.email}</strong><small>{x.email} · {x.approved?'Aprovado':'Aguardando aprovação'}</small></div><span className="clube-student-saldo">{format(balance(x.id))} pts</span>{x.approved?<button className="clube-btn clube-btn-outline" onClick={()=>newAward(x.id)}><Plus size={15}/> Pontos</button>:<button disabled={busy} className="clube-btn clube-btn-primary" onClick={()=>approve(x.id)}><Check size={15}/> Aprovar</button>}</div>)}</div></>}
       {tab==='historico'&&<div className="clube-card"><div className="clube-card-head"><div><h2>{isAdmin?'Extrato do Clube':'Meu extrato'}</h2><p>Lançamentos com data e motivo</p></div></div>{activityList(isAdmin?data.events:mine,isAdmin)}</div>}
-      {tab==='recompensas'&&<section className="npv-shop"><div className="npv-shop-heading"><div><div className="npv-shop-eyebrow"><Gift size={15}/> CLUBE NPV</div><h2>Vitrine de recompensas ✦</h2><p>Prêmios, benefícios e pedidos de resgate.</p></div>{isAdmin?<button className="clube-btn clube-btn-primary" onClick={()=>editReward({name:'',category:'Benefícios',description:'',points:500,stock:1,icon:'gift',theme:'lime',active:false,showcase:true,image_path:''})}><Plus size={16}/> Novo prêmio</button>:<div className="npv-shop-balance">Saldo disponível<strong>{format(Math.max(0,balance(user.id)-reserved(user.id)))} pts</strong></div>}</div>{rewardsGrid()}
-        <div className="npv-shop-requests"><div className="npv-shop-requests-head"><div><h3>{isAdmin?'Solicitações para aprovação':'Meus resgates'}</h3><p>{isAdmin?'Pedidos feitos pelos alunos':'Histórico e andamento dos pedidos'}</p></div>{isAdmin&&<span className="npv-shop-pending-count">{pendingCount} pendentes</span>}</div>{(isAdmin?data.requests:mineRequests).length===0&&<p className="npv-shop-no-requests">Nenhum pedido por enquanto.</p>}{(isAdmin?data.requests:mineRequests).map(req=><div className="npv-shop-request-row" key={req.id}><span className="npv-shop-request-icon"><Gift size={19}/></span><div className="npv-shop-request-text"><strong>{req.reward_name}</strong>{isAdmin&&<span>{memberName(req.student_id)}</span>}<small>{date(req.created_at)} · {format(req.points)} pts</small></div><span className={`npv-shop-status npv-shop-status-${req.status}`}>{req.status==='pending'?'Aguardando':req.status==='approved'?'Aprovado':'Recusado'}</span>{isAdmin&&req.status==='pending'&&<div className="npv-shop-resolve"><button disabled={busy} onClick={()=>resolve(req,true)}>Aprovar</button><button disabled={busy} onClick={()=>resolve(req,false)}>Recusar</button></div>}</div>)}</div>
+      {tab==='recompensas'&&<section className="npv-shop"><div className="npv-shop-heading"><div><div className="npv-shop-eyebrow"><Gift size={15}/> CLUBE NPV</div><h2>Vitrine de recompensas ✦</h2><p>Prêmios, benefícios e pedidos de resgate.</p></div>{isAdmin?<button className="clube-btn clube-btn-primary" onClick={()=>editReward({name:'',category:'Benefícios',description:'',points:500,stock:1,icon:'gift',theme:'lime',active:false,showcase:true,test_only:true,image_path:''})}><Plus size={16}/> Novo prêmio</button>:<div className="npv-shop-balance">Saldo disponível<strong>{format(Math.max(0,balance(user.id)-reserved(user.id)))} pts</strong></div>}</div>{rewardsGrid()}
+        <div className="npv-shop-requests"><div className="npv-shop-requests-head"><div><h3>{isAdmin?'Solicitações para aprovação':'Meus resgates'}</h3><p>{isAdmin?'Pedidos feitos pelos alunos':'Histórico e andamento dos pedidos'}</p></div>{isAdmin&&<span className="npv-shop-pending-count">{pendingCount} pendentes</span>}</div>{(isAdmin?data.requests:mineRequests).length===0&&<p className="npv-shop-no-requests">Nenhum pedido por enquanto.</p>}{(isAdmin?data.requests:mineRequests).map(req=><div className="npv-shop-request-row" key={req.id}><span className="npv-shop-request-icon"><Gift size={19}/></span><div className="npv-shop-request-text"><strong>{req.reward_name}</strong>{isAdmin&&<span>{memberName(req.student_id)}</span>}<small>{date(req.created_at)} · {format(req.points)} pts</small></div>{req.is_test&&<span className="npv-shop-test-tag">TESTE</span>}<span className={`npv-shop-status npv-shop-status-${req.status}`}>{req.status==='pending'?'Aguardando':req.status==='approved'?'Aprovado':'Recusado'}</span>{isAdmin&&req.status==='pending'&&<div className="npv-shop-resolve"><button disabled={busy} onClick={()=>resolve(req,true)}>Aprovar</button><button disabled={busy} onClick={()=>resolve(req,false)}>Recusar</button></div>}</div>)}</div>
       </section>}
       <footer className="clube-main-footer"><span>© {YEAR} Não Pense, Vai! — Clube NPV</span><span>Conta e histórico individual protegidos por autenticação.</span></footer>
     </main></div>
@@ -387,8 +405,15 @@ export default function ClubeNPVOnline() {
         <small>JPG, PNG ou WebP, máximo 4 MB. A foto do catálogo será pública.</small>
       </div>
       <label className="npv-shop-check"><input type="checkbox" checked={Boolean(rewardDraft.showcase)} onChange={e=>setRewardDraft(d=>({...d,showcase:e.target.checked}))}/> Exibir na lojinha, mesmo sem resgate</label>
-      <label className="npv-shop-check"><input type="checkbox" checked={rewardDraft.active} onChange={e=>setRewardDraft(d=>({...d,active:e.target.checked,showcase:e.target.checked?true:d.showcase}))}/> Habilitar pedidos de resgate real (somente com prêmio confirmado)</label>
+      <label className="npv-shop-check"><input type="checkbox" checked={Boolean(rewardDraft.test_only)} onChange={e=>setRewardDraft(d=>({...d,test_only:e.target.checked}))}/> Produto somente para teste (sem entrega)</label>
+      <label className="npv-shop-check"><input type="checkbox" checked={rewardDraft.active} onChange={e=>setRewardDraft(d=>({...d,active:e.target.checked,showcase:e.target.checked?true:d.showcase}))}/> Habilitar solicitações {rewardDraft.test_only?'apenas de contas de teste':'de alunos aprovados (prêmio real)'}</label>
       <button className="clube-btn clube-btn-primary clube-btn-full" type="submit" disabled={busy}>{busy?'Salvando...':'Salvar prêmio'} <Check size={16}/></button>
+    </form></section></div>}
+    {redeemDraft&&!isAdmin&&<div className="clube-modal-backdrop" onMouseDown={e=>{if(e.target===e.currentTarget&&!busy)setRedeemDraft(null)}}><section className="clube-modal" role="dialog" aria-modal="true" aria-labelledby="redeem-title"><div className="clube-modal-top"><div><small>{redeemDraft.test_only?'MODO DE TESTE · SEM ENTREGA':'CLUBE NPV · RECOMPENSA'}</small><h2 id="redeem-title">Confirmar troca de pontos</h2></div><button type="button" onClick={()=>setRedeemDraft(null)} disabled={busy} aria-label="Fechar"><X size={20}/></button></div><form className="clube-form" onSubmit={confirmRedeem}>
+      <div className="npv-redeem-review"><strong>{redeemDraft.name}</strong><span>{format(redeemDraft.points)} pontos</span><small>Saldo disponível: {format(Math.max(0,balance(user?.id)-reserved(user?.id)))} pts</small></div>
+      {redeemDraft.test_only?<p>Este pedido é uma simulação para testar o Clube NPV. Ele não gera direito à entrega de um produto. Os pontos de teste serão reservados até a decisão da administração e descontados se o teste for aprovado.</p>:<p>Seu pedido será enviado à administração. Os pontos ficarão reservados até a análise; se aprovado, serão descontados do saldo.</p>}
+      <button className="clube-btn clube-btn-primary clube-btn-full" type="submit" disabled={busy}>{busy?'Enviando...':redeemDraft.test_only?'Confirmar teste de resgate':'Confirmar solicitação'} <ArrowRight size={16}/></button>
+      <button className="clube-btn clube-btn-outline clube-btn-full" type="button" onClick={()=>setRedeemDraft(null)} disabled={busy}>Cancelar</button>
     </form></section></div>}
     {ruleDraft&&isAdmin&&<div className="clube-modal-backdrop" onMouseDown={e=>{if(e.target===e.currentTarget)setRuleDraft(null)}}><section className="clube-modal" role="dialog" aria-modal="true" aria-labelledby="rules-title"><div className="clube-modal-top"><div><small>CLUBE NPV</small><h2 id="rules-title">Editar pontuação</h2></div><button type="button" onClick={()=>setRuleDraft(null)} aria-label="Fechar"><X size={20}/></button></div><form className="clube-form" onSubmit={saveRules}>
       <p>Defina quantos pontos cada atividade vale. Esses valores aparecem na área do aluno e servem de referência para lançamentos manuais.</p>
