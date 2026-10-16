@@ -1,0 +1,32 @@
+name: Sync Clube NPV dependency lockfile
+on:
+  push:
+    branches: [feat/clube-npv-piloto-2026-10]
+    paths:
+      - package.json
+      - .github/workflows/clube-lockfile.yml
+permissions:
+  contents: write
+jobs:
+  sync-lockfile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: pnpm
+      - name: Refresh dependency lockfile
+        run: pnpm install --lockfile-only --ignore-scripts --no-frozen-lockfile
+      - name: Commit dependency lockfile to testing branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add pnpm-lock.yaml
+          if ! git diff --cached --quiet; then
+            git commit -m "build(clube): atualizar pnpm-lock.yaml do Supabase"
+            git push origin HEAD:feat/clube-npv-piloto-2026-10
+          fi

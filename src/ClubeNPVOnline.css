@@ -1,0 +1,41 @@
+
+/* Clube NPV: área conectada à autenticação Supabase. */
+.clube-online-badge{color:#dceea4;border-color:#58703e}
+.clube-auth-wrap{max-width:1240px;margin:52px auto;padding:0 32px;display:grid;grid-template-columns:1.1fr minmax(340px,.8fr);gap:7%;align-items:center;min-height:calc(100svh - 195px)}
+.clube-auth-hero>span{font-size:12px;letter-spacing:.15em;color:#7e9a2b;font-weight:950}
+.clube-auth-hero h1{font-weight:950;color:#1b281a;font-size:clamp(38px,4.5vw,70px);line-height:1.02;letter-spacing:-.062em;margin:21px 0}
+.clube-auth-hero h1 em{font-style:normal;color:#8ba32e}
+.clube-auth-hero>p{font-size:15px;line-height:1.7;color:#707d6d;max-width:550px;margin:0 0 34px}
+.clube-auth-hero>div{display:flex;align-items:center;gap:12px;font-size:13px;font-weight:750;color:#455842;margin:14px 0}
+.clube-auth-hero>div svg{color:#779327}
+.clube-auth-panel{background:#fff;border-radius:20px;border:1px solid #e5ebdf;padding:32px;box-shadow:0 24px 70px #263f1815}
+.clube-auth-icon{display:flex;align-items:center;justify-content:center;width:53px;height:53px;border-radius:13px;background:#ebf5d1;color:#6f8b28;margin-bottom:19px}
+.clube-auth-panel h2{font-size:25px;line-height:1.17;letter-spacing:-.03em;font-weight:900;color:#263224;margin:0 0 8px}
+.clube-auth-panel>p{font-size:13px;line-height:1.6;color:#8a9486;margin:0 0 18px}
+.clube-auth-form{padding:0;gap:15px}
+.clube-auth-form label{font-size:12px}
+.clube-auth-form input{padding:13px}
+.clube-auth-panel .clube-btn{min-height:48px;font-size:13px!important}
+.clube-auth-links{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;margin:18px 0}
+.clube-auth-links button{display:flex;align-items:center;gap:5px;border:0;background:transparent;color:#6c8c2d;font-size:12px;font-weight:800;padding:0}
+.clube-auth-links button:hover{text-decoration:underline}
+.clube-auth-panel>small{display:block;border-top:1px solid #e8ede3;padding-top:15px;font-size:10px;line-height:1.7;color:#a0a99b}
+.clube-auth-message{padding:12px;border:1px solid #cfdbaa;background:#edf5da;color:#456424;border-radius:9px;font-size:12px;line-height:1.5}
+.clube-auth-loading{min-height:55svh;max-width:550px;margin:auto;padding:75px 25px;text-align:center;color:#647360;display:flex;flex-direction:column;gap:13px;justify-content:center;align-items:center}
+.clube-auth-loading h1{font-size:30px;color:#23321e;font-weight:900;margin:0}
+.clube-auth-loading p{line-height:1.7;font-size:14px}
+.clube-waiting svg{color:#859e37}
+.clube-online-email{font-size:11px;overflow-wrap:anywhere;color:#5a6654;padding:0 10px}
+.clube-online-logout{display:flex;align-items:center;gap:10px;border:0;background:transparent;color:#65735a;font-size:11px;text-align:left;padding:10px;cursor:pointer}
+.clube-online-logout:hover{color:#7c9629}
+.clube-online-mobile-account{display:none}
+.clube-online-member{display:flex;align-items:center;gap:12px;padding:13px 0;border-top:1px solid #ebf1e8}
+.clube-online-member>div{display:flex;flex-direction:column;gap:5px;flex:1;min-width:0}
+.clube-online-member strong{font-size:12px;overflow-wrap:anywhere}
+.clube-online-member small{font-size:10px;color:#889782;overflow-wrap:anywhere}
+.clube-online-alert{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:14px 17px;margin-bottom:20px;border:1px solid #edc7c7;border-radius:10px;background:#faebeb;color:#9c3535;font-size:12px;line-height:1.5}
+.clube-online-alert button{border:1px solid currentColor;border-radius:7px;background:transparent;padding:7px 10px;color:#9c3535;font-weight:850}
+.clube-online-loading{font-size:11px;color:#7a9270;margin:0 0 12px}
+.clube-shell .clube-nav button{font-weight:750}
+@media(max-width:960px){.clube-auth-wrap{grid-template-columns:1fr 1fr;gap:24px}.clube-auth-hero h1{font-size:45px}.clube-auth-panel{padding:23px}}
+@media(max-width:760px){.clube-auth-wrap{grid-template-columns:1fr;min-height:unset;padding:0 16px;margin:26px auto 45px;gap:20px}.clube-auth-hero h1{font-size:39px;margin:13px 0}.clube-auth-hero>p{font-size:13px;margin-bottom:15px}.clube-auth-hero>div{display:none}.clube-auth-panel{padding:24px 18px}.clube-online-mobile-account{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:11px 14px;background:#fff;border:1px solid #e6eae1;border-radius:10px;margin-bottom:22px;font-size:10px;color:#758170}.clube-online-mobile-account span{overflow-wrap:anywhere}.clube-online-mobile-account button{display:flex;align-items:center;gap:5px;background:transparent;border:0;color:#547b24;white-space:nowrap}.clube-auth-loading{padding:60px 18px}.clube-online-member{flex-wrap:wrap}.clube-online-member .clube-btn{min-height:35px}}
