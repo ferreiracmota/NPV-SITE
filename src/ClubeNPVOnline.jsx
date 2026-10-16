@@ -97,7 +97,7 @@ function AuthPage({onLoggedIn,onResetDone,defaultMode='login'}) {
         <button className="clube-btn clube-btn-primary clube-btn-full" type="submit" disabled={busy}>{busy?'Aguarde...':mode==='signup'?'Solicitar cadastro':mode==='forgot'?'Enviar recuperação':mode==='reset'?'Salvar nova senha':'Entrar no Clube'}<ArrowRight size={17}/></button>
       </form>
       <div className="clube-auth-links">{mode==='login'?<><button onClick={()=>{setMode('forgot');setShow('')}}>Esqueci minha senha</button><button onClick={()=>{setMode('signup');setShow('')}}>Criar uma conta</button></>:<button onClick={()=>{setMode('login');setShow('')}}><ArrowLeft size={15}/> Voltar para login</button>}</div>
-      <small>Seus pontos ficam vinculados exclusivamente à sua conta. Esta área não substitui o acesso aos treinos pela Hotmart.</small>
+      <small>Seus pontos ficam vinculados exclusivamente à sua conta. Esta área não substitui o acesso aos treinos pela Hotmart. Consulte nossa <a href="/politica-de-privacidade.html" target="_blank" rel="noopener noreferrer">Política de Privacidade</a> e os <a href="/termos-de-uso.html" target="_blank" rel="noopener noreferrer">Termos de Uso</a>.</small>
     </section>
   </div></div>
 }
