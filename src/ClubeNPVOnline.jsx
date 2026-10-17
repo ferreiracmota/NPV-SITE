@@ -8,6 +8,7 @@ import { clubeSupabase as supabase } from './clubeSupabase.js'
 import './ClubeNPV.css'
 import './ClubeRecompensas.css'
 import './ClubeNPVOnline.css'
+import { BenefitNotice, PartnerCards, PartnerEditor, safePartnerUrl } from './ClubeExtras.jsx'
 
 const format = value => Number(value||0).toLocaleString('pt-BR')
 const date = value => new Date(value).toLocaleDateString('pt-BR',{day:'2-digit',month:'short',year:'numeric'})
@@ -101,7 +102,7 @@ function AuthPage({onLoggedIn,onResetDone,defaultMode='login'}) {
     </section>
   </div></div>
 }
-const emptyState={members:[],events:[],rewards:[],requests:[],rules:[]}
+const emptyState={members:[],events:[],rewards:[],requests:[],rules:[],partners:[]}
 const REWARD_IMAGE_BUCKET='clube-npv-recompensas'
 const rewardImageUrl = path => /^images\/[a-f0-9-]{36}\.(?:jpg|png|webp)$/.test(path||'') ? supabase.storage.from(REWARD_IMAGE_BUCKET).getPublicUrl(path).data.publicUrl : ''
 const ruleDefaultPoints=(rules,type)=>rules.find(x=>x.event_type===type)?.points ?? 0
@@ -141,6 +142,7 @@ export default function ClubeNPVOnline() {
   const [rewardImageFile,setRewardImageFile]=useState(null)
   const [imagePreviewUrl,setImagePreviewUrl]=useState('')
   const [ruleDraft,setRuleDraft]=useState(null)
+  const [partnerDraft,setPartnerDraft]=useState(null)
   useEffect(()=>{
     if(!rewardImageFile){setImagePreviewUrl('');return}
     const objectUrl=URL.createObjectURL(rewardImageFile)
@@ -183,13 +185,14 @@ export default function ClubeNPVOnline() {
         fetchAllClubeRows('clube_point_events','id,student_id,event_type,points,note,created_at'),
         fetchAllClubeRows('clube_rewards','id,name,category,description,points,stock,icon,theme,active,test_only,showcase,image_path,created_at',true),
         fetchAllClubeRows('clube_redemptions','id,student_id,reward_id,reward_name,points,status,is_test,created_at,resolved_at'),
-        supabase.from('clube_point_rules').select('event_type,points,position').order('position',{ascending:true})
+        supabase.from('clube_point_rules').select('event_type,points,position').order('position',{ascending:true}),
+        fetchAllClubeRows('clube_partners','id,name,logo_key,logo_url,link_url,discount_percent,coupon_code,details,active,position,created_at',true)
       ]
       const results=await Promise.all(queries)
       if(results.some(x=>x.error)){
         setError('Não foi possível carregar o Clube NPV. Confira a estrutura do banco e as permissões.')
       } else {
-        setData({members:results[0].data||[],events:results[1].data||[],rewards:results[2].data||[],requests:results[3].data||[],rules:results[4].data||[]})
+        setData({members:results[0].data||[],events:results[1].data||[],rewards:results[2].data||[],requests:results[3].data||[],rules:results[4].data||[],partners:results[5].data||[]})
         setError('')
       }
     } catch {
@@ -286,6 +289,29 @@ export default function ClubeNPVOnline() {
       setRewardImageFile(null);setRewardDraft(null)
     },'Recompensa e imagem salvas no banco de dados.')
   }
+  async function savePartner(e){
+    e.preventDefault();if(!isAdmin||!partnerDraft)return
+    const item={...partnerDraft}
+    const url=safePartnerUrl(item.link_url)
+    const logo=item.logo_url.trim()
+    const imageOk=!logo || logo==='/parceiros/logo-liquidz.svg' || Boolean(safePartnerUrl(logo))
+    const discount=item.discount_percent===''||item.discount_percent==null ? null : Number(item.discount_percent)
+    const position=Number(item.position)
+    if(item.name.trim().length<2||!url||!imageOk){setNotice('Confira o nome, o link HTTPS e a imagem do parceiro.');return}
+    if(discount!==null&&(!Number.isSafeInteger(discount)||discount<1||discount>100)){setNotice('Informe um desconto inteiro entre 1 e 100%, ou deixe vazio.');return}
+    if(!Number.isSafeInteger(position)||position<0||position>10000){setNotice('Informe uma ordem entre 0 e 10.000.');return}
+    const payload={
+      name:item.name.trim(),logo_key:item.logo_key||'',logo_url:logo,
+      link_url:url,discount_percent:discount,coupon_code:item.coupon_code.trim(),
+      details:item.details.trim(),active:Boolean(item.active),position
+    }
+    await run(async()=>{
+      const query=item.id?supabase.from('clube_partners').update(payload).eq('id',item.id):supabase.from('clube_partners').insert(payload)
+      const {error}=await query
+      if(error)throw error
+      setPartnerDraft(null)
+    },'Parceiro atualizado no Clube NPV.')
+  }
   async function saveRules(e){
     e.preventDefault();if(!isAdmin||!ruleDraft)return
     if(ruleDraft.some(x=>!Number.isSafeInteger(Number(x.points))||Number(x.points)<0||Number(x.points)>100000)){setNotice('Informe pontos entre 0 e 100.000 para cada atividade.');return}
@@ -355,6 +381,7 @@ export default function ClubeNPVOnline() {
         {isAdmin&&<button className={tab==='alunos'?'active':''} onClick={()=>setTab('alunos')}><Users size={18}/>Alunos</button>}
         <button className={tab==='historico'?'active':''} onClick={()=>setTab('historico')}><History size={18}/>Histórico</button>
         <button className={tab==='recompensas'?'active':''} onClick={()=>setTab('recompensas')}><Gift size={18}/>Recompensas</button>
+        <button className={tab==='parceiros'?'active':''} onClick={()=>setTab('parceiros')}><Award size={18}/>Parceiros</button>
       </nav>
       <div className="clube-side-bottom"><span className="clube-side-label">CONTA SEGURA</span><div className="clube-online-email">{user.email}</div><button className="clube-online-logout" onClick={signOut}><LogOut size={15}/>Sair da conta</button></div>
     </aside>
@@ -362,8 +389,8 @@ export default function ClubeNPVOnline() {
       <div className="clube-online-mobile-account"><span>{isAdmin?'Administrador':'Aluno'} · {user.email}</span><button onClick={signOut}><LogOut size={15}/> Sair</button></div>
       {error&&<div className="clube-online-alert" role="alert">{error} <button onClick={refresh}>Tentar novamente</button></div>}
       {notice&&<div className="clube-feedback" role="status"><Check size={17}/>{notice}<button onClick={()=>setNotice('')}><X size={16}/></button></div>}
-      <div className="clube-intro"><div><div className="clube-eyebrow"><span/> {isAdmin?'PAINEL DE GESTÃO':'MINHA CONTA NPV'}</div><h1>{tab==='inicio'?(isAdmin?'Seu clube, sob controle.':'Sua evolução vale pontos.'):tab==='alunos'?'Alunos do Clube NPV':tab==='historico'?'Histórico de pontos':'Benefícios e recompensas'}</h1><p>{isAdmin?'Gerencie os cadastros, lançamentos e solicitações com segurança.':'Seu extrato de pontos e benefícios em um só lugar.'}</p></div>
-        {isAdmin&&tab!=='recompensas'&&<button className="clube-btn clube-btn-primary" onClick={()=>newAward()}><Plus size={17}/> Lançar pontos</button>}
+      <div className="clube-intro"><div><div className="clube-eyebrow"><span/> {isAdmin?'PAINEL DE GESTÃO':'MINHA CONTA NPV'}</div><h1>{tab==='inicio'?(isAdmin?'Seu clube, sob controle.':'Sua evolução vale pontos.'):tab==='alunos'?'Alunos do Clube NPV':tab==='historico'?'Histórico de pontos':tab==='parceiros'?'Parceiros e descontos':'Benefícios e recompensas'}</h1><p>{isAdmin?'Gerencie os cadastros, lançamentos e solicitações com segurança.':'Seu extrato de pontos e benefícios em um só lugar.'}</p></div>
+        {isAdmin&&tab!=='recompensas'&&tab!=='parceiros'&&<button className="clube-btn clube-btn-primary" onClick={()=>newAward()}><Plus size={17}/> Lançar pontos</button>}
       </div>
       {loading&&<p className="clube-online-loading">Atualizando dados do clube...</p>}
       {tab==='inicio'&&isAdmin&&<>
@@ -374,9 +401,22 @@ export default function ClubeNPVOnline() {
       </>}
       {tab==='inicio'&&!isAdmin&&<>
         <div className="clube-student-summary"><div><div className="clube-student-hello">OLÁ, {profile?.full_name?.split(' ')[0]?.toUpperCase()||'ALUNO'}! ✦</div><p>SEUS PONTOS EM {YEAR}</p><strong>{format(balance(user.id))} <small>pontos</small></strong><span className="clube-summary-caption">Disponíveis para solicitar: {format(Math.max(0,balance(user.id)-reserved(user.id)))} pontos</span></div><Award size={90}/></div>
+        <BenefitNotice rewards={data.rewards} points={Math.max(0,balance(user.id)-reserved(user.id))} onOpen={()=>setTab('recompensas')}/>
         <div className="clube-columns"><section className="clube-card"><div className="clube-card-head"><div><h2>Minhas atividades</h2><p>Meu extrato de pontos</p></div><button className="clube-text-button" onClick={()=>setTab('historico')}>Ver tudo <ArrowRight size={16}/></button></div>{activityList(mine.slice(0,6))}</section><section className="clube-card clube-next"><div className="clube-card-head"><div><h2>Continue acumulando</h2><p>Atividades que podem render pontos</p></div></div><div className="clube-how">{data.rules.map(rule=><div key={rule.event_type}><span>✦</span><strong>{ruleNames[rule.event_type]||rule.event_type}</strong><b>+{format(rule.points)} pts</b></div>)}</div><p className="clube-micro">Pontuação de referência em testes. As atividades precisam ser confirmadas pela administração; os pontos não são adicionados automaticamente.</p></section></div>
         <section className="npv-shop npv-shop-featured"><div className="npv-shop-heading"><div><div className="npv-shop-eyebrow"><Gift size={15}/>LOJINHA DO CLUBE NPV</div><h2>Troque seus pontos ✦</h2><p>Seu próximo objetivo pode estar aqui.</p></div><button className="npv-shop-view-all" onClick={()=>setTab('recompensas')}>Ver catálogo <ArrowRight size={16}/></button></div>{rewardsGrid(4)}<p className="npv-shop-demo-note">A disponibilidade real será confirmada após a aprovação do prêmio e dos parceiros.</p></section>
+        {data.partners.some(x=>x.active)&&<section className="npv-partners-section">
+          <div className="npv-shop-heading"><div><div className="npv-shop-eyebrow"><Award size={15}/> PARCERIAS NPV</div><h2>Benefícios de parceiros ✦</h2><p>Explore os parceiros e consulte os descontos disponíveis.</p></div>
+            <button className="npv-shop-view-all" onClick={()=>setTab('parceiros')}>Ver parceiros <ArrowRight size={16}/></button></div>
+          <PartnerCards partners={data.partners} limit={4}/>
+        </section>}
       </>}
+      {tab==='parceiros'&&<section className="npv-partners-section">
+        <div className="npv-shop-heading">
+          <div><div className="npv-shop-eyebrow"><Award size={15}/> PARCEIROS NPV</div><h2>Parceiros e descontos ✦</h2><p>{isAdmin?'Cadastre, edite, ordene e ative benefícios de parceiros.':'Clique na logo para conhecer o benefício no site ou Instagram do parceiro.'}</p></div>
+          {isAdmin&&<button className="clube-btn clube-btn-primary" onClick={()=>setPartnerDraft({name:'',logo_key:'',logo_url:'',link_url:'',discount_percent:'',coupon_code:'',details:'',active:false,position:100})}><Plus size={16}/> Novo parceiro</button>}
+        </div>
+        <PartnerCards partners={data.partners} admin={isAdmin} onEdit={setPartnerDraft}/>
+      </section>}
       {tab==='alunos'&&isAdmin&&<><div className="clube-toolbar"><label className="clube-search"><Search size={18}/><input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Buscar aluno ou e-mail"/></label></div><div className="clube-card clube-students">{studentMembers.filter(x=>`${x.full_name} ${x.email}`.toLowerCase().includes(search.toLowerCase())).map(x=><div className="clube-student-row" key={x.id}><span className="clube-avatar">{x.full_name?.charAt(0)||'A'}</span><div><strong>{x.full_name||x.email}</strong><small>{x.email} · {x.approved?'Aprovado':'Aguardando aprovação'}</small></div><span className="clube-student-saldo">{format(balance(x.id))} pts</span>{x.approved?<button className="clube-btn clube-btn-outline" onClick={()=>newAward(x.id)}><Plus size={15}/> Pontos</button>:<button disabled={busy} className="clube-btn clube-btn-primary" onClick={()=>approve(x.id)}><Check size={15}/> Aprovar</button>}</div>)}</div></>}
       {tab==='historico'&&<div className="clube-card"><div className="clube-card-head"><div><h2>{isAdmin?'Extrato do Clube':'Meu extrato'}</h2><p>Lançamentos com data e motivo</p></div></div>{activityList(isAdmin?data.events:mine,isAdmin)}</div>}
       {tab==='recompensas'&&<section className="npv-shop"><div className="npv-shop-heading"><div><div className="npv-shop-eyebrow"><Gift size={15}/> CLUBE NPV</div><h2>Vitrine de recompensas ✦</h2><p>Prêmios, benefícios e pedidos de resgate.</p></div>{isAdmin?<button className="clube-btn clube-btn-primary" onClick={()=>editReward({name:'',category:'Benefícios',description:'',points:500,stock:1,icon:'gift',theme:'lime',active:false,showcase:true,test_only:true,image_path:''})}><Plus size={16}/> Novo prêmio</button>:<div className="npv-shop-balance">Saldo disponível<strong>{format(Math.max(0,balance(user.id)-reserved(user.id)))} pts</strong></div>}</div>{rewardsGrid()}
@@ -415,6 +455,7 @@ export default function ClubeNPVOnline() {
       <button className="clube-btn clube-btn-primary clube-btn-full" type="submit" disabled={busy}>{busy?'Enviando...':redeemDraft.test_only?'Confirmar teste de resgate':'Confirmar solicitação'} <ArrowRight size={16}/></button>
       <button className="clube-btn clube-btn-outline clube-btn-full" type="button" onClick={()=>setRedeemDraft(null)} disabled={busy}>Cancelar</button>
     </form></section></div>}
+    {partnerDraft&&isAdmin&&<PartnerEditor draft={partnerDraft} setDraft={setPartnerDraft} onSave={savePartner} onClose={()=>setPartnerDraft(null)} busy={busy}/>} 
     {ruleDraft&&isAdmin&&<div className="clube-modal-backdrop" onMouseDown={e=>{if(e.target===e.currentTarget)setRuleDraft(null)}}><section className="clube-modal" role="dialog" aria-modal="true" aria-labelledby="rules-title"><div className="clube-modal-top"><div><small>CLUBE NPV</small><h2 id="rules-title">Editar pontuação</h2></div><button type="button" onClick={()=>setRuleDraft(null)} aria-label="Fechar"><X size={20}/></button></div><form className="clube-form" onSubmit={saveRules}>
       <p>Defina quantos pontos cada atividade vale. Esses valores aparecem na área do aluno e servem de referência para lançamentos manuais.</p>
       {ruleDraft.map((rule,i)=><label key={rule.event_type}>{ruleNames[rule.event_type]||rule.event_type}<input type="number" min="0" max="100000" step="1" required value={rule.points} onChange={e=>setRuleDraft(d=>d.map((x,j)=>j===i?{...x,points:e.target.value}:x))}/></label>)}
