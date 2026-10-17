@@ -44,7 +44,9 @@ export function PartnerCards({partners=[],admin=false,limit=null,onEdit}) {
       const logo=partnerLogo(item)
       const url=safePartnerUrl(item.link_url)
       return <article key={item.id} className={`npv-partner-card ${!item.active?'npv-partner-inactive':''}`}>
-        <div className="npv-partner-logo">{logo?<img src={logo} alt={`Logo ${item.name}`} loading="lazy"/>:<strong>{item.name?.slice(0,2).toUpperCase()}</strong>}</div>
+        {!admin&&url?<a className="npv-partner-logo npv-partner-logo-link" href={url} target="_blank" rel="noopener noreferrer" aria-label={`Abrir página de ${item.name}`}>
+          {logo?<img src={logo} alt={item.name} loading="lazy"/>:<strong>{item.name?.slice(0,2).toUpperCase()}</strong>}
+        </a>:<div className="npv-partner-logo">{logo?<img src={logo} alt={`Logo ${item.name}`} loading="lazy"/>:<strong>{item.name?.slice(0,2).toUpperCase()}</strong>}</div>}
         <div className="npv-partner-info">
           <strong>{item.name}</strong>
           {item.discount_percent!=null ? <b className="npv-partner-discount">{item.discount_percent}% de desconto</b>:
