@@ -76,3 +76,22 @@
  .clube-layout-preview .clube-activities-chevron{width:30px;height:30px}
  .clube-layout-preview .npv-shop-featured{margin-top:19px}
 }
+
+/* Terceira prévia: cartão sem atividades internas, botão Sair no cabeçalho e quatro abas sem rolagem. */
+.clube-layout-preview .clube-preview-header-logout{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:1px solid #455642;border-radius:9px;background:#233024;color:#edf4e5;padding:9px 13px;font-size:12px;font-weight:800;white-space:nowrap;flex:none}
+.clube-layout-preview .clube-preview-header-logout:hover{background:#344936}
+.clube-layout-preview .clube-layout-preview-nav{justify-content:flex-start}
+.clube-layout-preview .clube-score-refined{padding-bottom:22px}
+@media(max-width:760px){
+ .clube-layout-preview .clube-preview-header-logout{font-size:11px;gap:5px;padding:8px 10px}
+ .clube-layout-preview .clube-preview-header-logout svg{width:15px;height:15px}
+ .clube-layout-preview .clube-layout-preview-nav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:2px;overflow:visible;flex-wrap:nowrap;padding:6px 5px}
+ .clube-layout-preview .clube-layout-preview-nav>button{width:100%;min-width:0;justify-content:center;padding:0 2px;gap:3px;height:37px;font-size:clamp(9px,2.5vw,11px);letter-spacing:-.025em;white-space:nowrap}
+ .clube-layout-preview .clube-layout-preview-nav>button svg{width:13px;height:13px;flex:none}
+ .clube-layout-preview .clube-score-refined{padding-bottom:21px}
+}
+@media(max-width:360px){
+ .clube-layout-preview .clube-layout-preview-nav>button{font-size:9px;gap:2px}
+ .clube-layout-preview .clube-layout-preview-nav>button svg{width:12px;height:12px}
+ .clube-layout-preview .clube-preview-header-logout{padding:8px}
+}
