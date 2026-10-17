@@ -1,0 +1,39 @@
+/* Prévia clicável isolada da produção e de dados reais */
+.clube-layout-preview{min-height:100vh}
+.clube-layout-preview-note{max-width:100%;display:flex;align-items:center;justify-content:center;gap:8px;background:#eff5df;padding:11px 14px;color:#4c6627;font-size:11px;font-weight:800;letter-spacing:.015em;text-align:center}
+.clube-layout-frame{max-width:1340px;margin:0 auto}
+.clube-layout-preview-nav{display:flex;flex-wrap:wrap;align-items:center;gap:7px;background:#fff;border:1px solid #e6eae3;border-radius:0 0 14px 14px;margin:0 22px;padding:12px}
+.clube-layout-preview-nav>button{width:auto;height:43px;padding:0 15px;flex:none;font-size:12px}
+.clube-layout-preview-nav>.clube-nav-logout{margin-left:auto;color:#8c5248}
+.clube-layout-preview-main{padding:35px 30px 45px;max-width:1290px;margin:0 auto}
+.clube-layout-preview .clube-student-summary{margin-bottom:18px}
+.clube-layout-preview .clube-activities-card{padding:0!important;margin-bottom:15px;overflow:hidden}
+.clube-layout-preview .clube-activities-toggle{display:flex;width:100%;align-items:center;justify-content:space-between;border:0;background:#fff;padding:20px 24px;text-align:left}
+.clube-layout-preview .clube-activities-toggle>span:first-child{display:flex;flex-direction:column;gap:4px}
+.clube-layout-preview .clube-activities-toggle strong{font-size:17px;font-weight:850;color:#243023}
+.clube-layout-preview .clube-activities-toggle small{font-size:11px;color:#8f9989}
+.clube-layout-preview .clube-activities-chevron{background:#eff5e3;display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:9px;color:#627f29}
+.clube-layout-preview .clube-activities-expanded{padding:0 24px 17px}
+.clube-layout-preview .clube-activities-view-all{margin-top:11px}
+.clube-layout-preview .npv-shop-featured{margin-top:28px}
+.clube-layout-preview .clube-earn-bottom{margin-top:30px}
+.clube-layout-preview .clube-earn-bottom .clube-how{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:24px}
+.clube-layout-preview-signed-out{display:flex;flex-direction:column;align-items:center;gap:14px;margin:45px auto;background:#fff;border-radius:15px;border:1px solid #e8ede4;padding:50px 24px;text-align:center;max-width:500px}
+.clube-layout-preview-signed-out svg{color:#6a8a2c}
+.clube-layout-preview-signed-out h2{font-size:24px;margin:0}
+.clube-layout-preview-signed-out p{font-size:13px;color:#64745f;margin:0 0 10px;line-height:1.6}
+.clube-layout-preview-detail{display:flex;flex-direction:column;gap:15px;align-items:center;padding:30px}
+.clube-layout-preview-detail>svg{color:#779632}
+.clube-layout-preview-detail>strong{font-size:23px;color:#304421}
+.clube-layout-preview-detail p{text-align:center;font-size:13px;line-height:1.6;color:#62735d;margin:0}
+.clube-layout-preview .npv-shop-request{cursor:pointer}
+@media(max-width:760px){
+ .clube-layout-preview-nav{margin:0;border-radius:0;padding:8px 11px;flex-wrap:nowrap;overflow-x:auto;gap:5px}
+ .clube-layout-preview-nav>button{height:38px;font-size:11px;padding:0 11px;gap:6px}
+ .clube-layout-preview-nav>.clube-nav-logout{margin-left:4px}
+ .clube-layout-preview-main{padding:26px 14px 32px}
+ .clube-layout-preview .clube-activities-toggle{padding:16px}
+ .clube-layout-preview .clube-activities-expanded{padding:0 16px 15px}
+ .clube-layout-preview .clube-earn-bottom .clube-how{grid-template-columns:1fr}
+ .clube-layout-preview-note{font-size:10px;line-height:1.45}
+}
