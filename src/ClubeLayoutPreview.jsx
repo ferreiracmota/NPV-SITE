@@ -73,13 +73,12 @@ export default function ClubeLayoutPreview(){
   return <div className="clube-shell clube-layout-preview">
     <header className="clube-header"><div className="clube-header-inner">
       <div className="clube-logo"><div className="clube-logo-mark">NPV<span>!</span></div><div className="clube-logo-label"><strong>NÃO PENSE, VAI!</strong><span>CLUBE DE BENEFÍCIOS</span></div></div>
-      <a className="clube-back" href="https://www.naopensevai.com/clube"><ArrowLeft size={16}/> <span>Voltar ao clube oficial</span></a>
+      {previewActive&&<button className="clube-preview-header-logout" type="button" onClick={()=>setPreviewActive(false)} aria-label="Sair da conta (simulação)"><LogOut size={17}/> Sair</button>}
     </div></header>
     <div className="clube-layout-preview-note"><ShieldCheck size={16}/> PRÉVIA INTERATIVA DO LAYOUT · Dados ilustrativos · Nenhuma movimentação real</div>
     <div className="clube-layout-frame">
       {previewActive?<><nav className="clube-nav clube-layout-preview-nav" aria-label="Menu do Clube NPV">
         {nav.map(([key,label,Icon])=><button key={key} type="button" className={tab===key?'active':''} onClick={()=>setTab(key)}><Icon size={17}/>{label}</button>)}
-        <button type="button" className="clube-nav-logout" onClick={()=>setPreviewActive(false)}><LogOut size={17}/>Sair</button>
       </nav>
       <main className="clube-layout-preview-main">
         <div className="clube-intro"><div><h1>{tab==='inicio'?'Sua evolução vale pontos.':tab==='historico'?'Histórico de pontos':tab==='recompensas'?'Benefícios e recompensas':'Parceiros e descontos'}</h1><p>Seu extrato de pontos e benefícios em um só lugar.</p></div></div>
@@ -92,10 +91,6 @@ export default function ClubeLayoutPreview(){
                 {previewAvailable!==previewTotal&&<span className="clube-summary-caption">Disponíveis para solicitar: {fmt(previewAvailable)} pontos</span>}
               </div>
               <Award size={88} aria-hidden="true"/>
-            </div>
-            <div className="clube-score-tips">
-              <span>FORMAS DE ACUMULAR</span>
-              <p>Renovação <i/> Indicação <i/> Foto <i/> Desafio <i/> Aniversário</p>
             </div>
           </div>
           <section className="clube-card clube-activities-card">
