@@ -37,3 +37,42 @@
  .clube-layout-preview .clube-earn-bottom .clube-how{grid-template-columns:1fr}
  .clube-layout-preview-note{font-size:10px;line-height:1.45}
 }
+
+/* Segunda prévia: ganho de espaço no topo, sem comprimir a hierarquia visual. */
+.clube-layout-preview .clube-layout-preview-nav{padding:8px 11px;gap:5px}
+.clube-layout-preview .clube-layout-preview-nav>button{height:38px;padding:0 12px}
+.clube-layout-preview .clube-layout-preview-main{padding-top:19px}
+.clube-layout-preview .clube-intro{margin-bottom:16px;gap:10px}
+.clube-layout-preview .clube-intro h1{margin-bottom:5px}
+.clube-layout-preview .clube-score-refined{display:block;min-height:0;padding:22px 28px 17px;margin-bottom:12px}
+.clube-layout-preview .clube-score-refined-top{display:flex;align-items:center;justify-content:space-between;gap:18px}
+.clube-layout-preview .clube-score-refined-top>div{min-width:0}
+.clube-layout-preview .clube-score-refined-top>svg{flex:none;color:#c2dc66;opacity:.68}
+.clube-layout-preview .clube-score-refined .clube-student-hello{margin:0 0 10px}
+.clube-layout-preview .clube-score-refined strong{line-height:1.1}
+.clube-layout-preview .clube-score-tips{display:flex;align-items:center;flex-wrap:wrap;gap:7px 12px;border-top:1px solid #c8dbad25;margin-top:14px;padding-top:11px}
+.clube-layout-preview .clube-score-tips>span{font-size:9px;font-weight:900;letter-spacing:.10em;color:#bdd49a;white-space:nowrap}
+.clube-layout-preview .clube-score-tips p{display:flex;flex-wrap:wrap;align-items:center;gap:4px 7px;font-size:10px;font-weight:550;line-height:1.4;color:#bacbb1;margin:0;letter-spacing:0}
+.clube-layout-preview .clube-score-tips i{display:block;flex:none;width:2px;height:2px;background:#849d6c;border-radius:50%}
+.clube-layout-preview .clube-activities-card{margin-bottom:11px}
+.clube-layout-preview .clube-activities-toggle{padding:13px 20px}
+.clube-layout-preview .clube-activities-toggle>span:first-child{gap:2px}
+.clube-layout-preview .clube-activities-chevron{width:32px;height:32px}
+.clube-layout-preview .npv-shop-featured{margin-top:20px}
+@media(max-width:760px){
+ .clube-layout-preview .clube-layout-preview-nav{padding:6px 9px}
+ .clube-layout-preview .clube-layout-preview-nav>button{height:36px;padding:0 10px}
+ .clube-layout-preview .clube-layout-preview-main{padding-top:17px}
+ .clube-layout-preview .clube-intro{margin-bottom:14px}
+ .clube-layout-preview .clube-intro h1{margin-bottom:5px}
+ .clube-layout-preview .clube-score-refined{padding:21px 21px 15px;min-height:0;margin-bottom:12px}
+ .clube-layout-preview .clube-score-refined-top{gap:10px}
+ .clube-layout-preview .clube-score-refined-top>svg{width:62px;height:62px}
+ .clube-layout-preview .clube-score-refined .clube-student-hello{margin-bottom:10px}
+ .clube-layout-preview .clube-score-tips{margin-top:12px;padding-top:10px;gap:6px}
+ .clube-layout-preview .clube-score-tips>span{font-size:8px}
+ .clube-layout-preview .clube-score-tips p{font-size:9px;gap:4px 6px}
+ .clube-layout-preview .clube-activities-toggle{padding:12px 14px}
+ .clube-layout-preview .clube-activities-chevron{width:30px;height:30px}
+ .clube-layout-preview .npv-shop-featured{margin-top:19px}
+}
