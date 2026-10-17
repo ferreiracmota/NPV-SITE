@@ -1,0 +1,30 @@
+/* Clube NPV: novidades do painel e parcerias. */
+.npv-benefit-alert{display:flex;align-items:center;gap:16px;background:#eef6dc;border:1px solid #c6dda0;border-radius:14px;padding:19px 20px;margin-bottom:22px;color:#25391b}
+.npv-benefit-alert-icon{display:flex;flex:none;align-items:center;justify-content:center;width:48px;height:48px;border-radius:13px;color:#4b7019;background:#dceebd}
+.npv-benefit-alert>div{flex:1;min-width:0}
+.npv-benefit-alert strong{display:block;font-size:15px;font-weight:900;letter-spacing:-.02em}
+.npv-benefit-alert p{font-size:12px;line-height:1.5;margin:5px 0 0;color:#546748}
+.npv-benefit-alert button{display:inline-flex;align-items:center;justify-content:center;gap:8px;flex:none;min-height:42px;padding:10px 15px;border:0;border-radius:9px;background:#b6d638;color:#23310f;font-size:12px;font-weight:850}
+.npv-benefit-alert button:hover{background:#c9e36b}
+.npv-partners-section{margin-top:32px}
+.npv-partners-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:15px}
+.npv-partner-card{display:flex;flex-direction:column;min-width:0;overflow:hidden;background:#fff;border:1px solid #e4e9e0;border-radius:13px;box-shadow:0 6px 18px #1521100a}
+.npv-partner-inactive{opacity:.72}
+.npv-partner-logo{height:113px;display:flex;align-items:center;justify-content:center;padding:20px 17px;background:#f8faf5}
+.npv-partner-logo img{max-width:100%;width:auto;height:auto;max-height:78px;object-fit:contain}
+.npv-partner-logo>strong{font-size:34px;color:#86a73e;letter-spacing:-.08em}
+.npv-partner-info{padding:14px 15px 12px;display:flex;flex-direction:column;align-items:flex-start;gap:7px;flex:1}
+.npv-partner-info>strong{font-size:13px;line-height:1.3;font-weight:900;color:#283626}
+.npv-partner-discount{font-size:17px;line-height:1.2;color:#668b25}
+.npv-partner-detail{font-size:11px;color:#879580}
+.npv-partner-coupon{font-size:10px;color:#5b6955;background:#f0f4e9;padding:6px 9px;border-radius:6px;overflow-wrap:anywhere}
+.npv-partner-info>p{font-size:11px;line-height:1.5;margin:0;color:#757f71}
+.npv-partner-off{font-size:10px;color:#a14e4e}
+.npv-partner-action{min-height:39px;margin:0 14px 14px;display:flex;gap:7px;align-items:center;justify-content:center;border-radius:9px;border:1px solid #dce6d2;color:#49672d!important;background:#f7faef;font-size:11px!important;font-weight:850}
+.npv-partner-action:hover{background:#eaf5d6}
+.npv-partners-empty{grid-column:1/-1;text-align:center;border-radius:12px;border:1px dashed #d1dec7;padding:30px 20px;color:#76866f;font-size:12px}
+.npv-partner-hint{font-size:11px;color:#7c8a74;line-height:1.55;margin:0}
+@media(max-width:1130px){.npv-partners-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:960px){.npv-partners-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:680px){.npv-benefit-alert{align-items:flex-start;flex-wrap:wrap;padding:16px;gap:12px}.npv-benefit-alert-icon{width:39px;height:39px}.npv-benefit-alert>div{flex-basis:calc(100% - 55px)}.npv-benefit-alert button{width:100%}.npv-partners-grid{gap:10px}.npv-partner-logo{height:100px;padding:15px}.npv-partner-info{padding:12px 11px}.npv-partner-discount{font-size:15px}.npv-partner-action{margin:0 10px 10px}}
+@media(max-width:390px){.npv-partners-grid{grid-template-columns:1fr}}
