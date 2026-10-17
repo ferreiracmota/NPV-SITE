@@ -35,6 +35,8 @@ const rules=[
   ['Participação em desafio',50]
 ]
 const fmt=n=>Number(n).toLocaleString('pt-BR')
+const previewTotal=1170
+const previewAvailable=1170
 function Movements({items}){
   return <div className="clube-activities">
     {items.map(a=><div className="clube-activity" key={a.id}>
@@ -62,7 +64,7 @@ export default function ClubeLayoutPreview(){
         <div className={`npv-shop-art npv-shop-art-${item.theme}`}><Icon size={76} strokeWidth={1.25}/><span className="npv-shop-art-stamp">CLUBE NPV ✦</span></div>
         <div className="npv-shop-info"><span className="npv-shop-category">{item.category}</span><h3>{item.name}</h3>
           <div className="npv-shop-price"><strong>{fmt(item.points)}</strong><span>pontos</span></div>
-          <div className="npv-shop-progress"><div className="npv-shop-progress-track"><span style={{width:`${Math.round(Math.min(100,60/item.points*100))}%`}}/></div><span className="npv-shop-progress-label">Faltam {fmt(item.points-60)} pts</span></div>
+          <div className="npv-shop-progress"><div className="npv-shop-progress-track"><span style={{width:`${Math.round(Math.min(100,previewAvailable/item.points*100))}%`}}/></div><span className="npv-shop-progress-label">{previewAvailable>=item.points?'Pontos suficientes!':`Faltam ${fmt(item.points-previewAvailable)} pts`}</span></div>
           <div className="npv-shop-foot"><span className="npv-shop-stock">Prévia demonstrativa</span><button className="npv-shop-request" type="button" onClick={()=>setSelectedReward(item)}>Ver detalhes <ArrowRight size={15}/></button></div>
         </div>
       </article>
@@ -80,9 +82,22 @@ export default function ClubeLayoutPreview(){
         <button type="button" className="clube-nav-logout" onClick={()=>setPreviewActive(false)}><LogOut size={17}/>Sair</button>
       </nav>
       <main className="clube-layout-preview-main">
-        <div className="clube-intro"><div><div className="clube-eyebrow"><span/> MEU CLUBE NPV</div><h1>{tab==='inicio'?'Sua evolução vale pontos.':tab==='historico'?'Histórico de pontos':tab==='recompensas'?'Benefícios e recompensas':'Parceiros e descontos'}</h1><p>Seu extrato de pontos e benefícios em um só lugar.</p></div></div>
+        <div className="clube-intro"><div><h1>{tab==='inicio'?'Sua evolução vale pontos.':tab==='historico'?'Histórico de pontos':tab==='recompensas'?'Benefícios e recompensas':'Parceiros e descontos'}</h1><p>Seu extrato de pontos e benefícios em um só lugar.</p></div></div>
         {tab==='inicio'&&<>
-          <div className="clube-student-summary"><div><div className="clube-student-hello">OLÁ, NPV! ✦</div><p>SEUS PONTOS EM 2026</p><strong>510 <small>pontos</small></strong><span className="clube-summary-caption">Disponíveis para solicitar: 60 pontos</span></div><Award size={90}/></div>
+          <div className="clube-student-summary clube-score-refined">
+            <div className="clube-score-refined-top">
+              <div><div className="clube-student-hello">OLÁ, NPV! ✦</div>
+                <p>SEUS PONTOS EM 2026</p>
+                <strong>{fmt(previewTotal)} <small>pontos</small></strong>
+                {previewAvailable!==previewTotal&&<span className="clube-summary-caption">Disponíveis para solicitar: {fmt(previewAvailable)} pontos</span>}
+              </div>
+              <Award size={88} aria-hidden="true"/>
+            </div>
+            <div className="clube-score-tips">
+              <span>FORMAS DE ACUMULAR</span>
+              <p>Renovação <i/> Indicação <i/> Foto <i/> Desafio <i/> Aniversário</p>
+            </div>
+          </div>
           <section className="clube-card clube-activities-card">
             <button className="clube-activities-toggle" aria-expanded={activitiesOpen} aria-controls="preview-activities" type="button" onClick={()=>setActivitiesOpen(v=>!v)}>
               <span><strong>Minhas atividades</strong><small>Meu extrato de pontos</small></span>
