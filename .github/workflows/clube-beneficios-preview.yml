@@ -1,0 +1,31 @@
+name: Clube NPV - avisos e parceiros (pre-visualizacao)
+on:
+  push:
+    branches:
+      - feat/clube-avisos-parceiros-20261017
+    paths:
+      - src/**
+      - package.json
+      - pnpm-lock.yaml
+      - .github/workflows/clube-beneficios-preview.yml
+  pull_request:
+    paths:
+      - src/**
+      - package.json
+      - pnpm-lock.yaml
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: pnpm
+      - name: Install dependencies from lockfile
+        run: pnpm install --frozen-lockfile --ignore-scripts
+      - name: Build React/Vite app
+        run: pnpm run build
