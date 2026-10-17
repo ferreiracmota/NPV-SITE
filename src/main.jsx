@@ -4,6 +4,7 @@ import './index.css'
 import App from './App.jsx'
 import ClubeNPV from './ClubeNPV.jsx'
 import ClubeNPVOnline from './ClubeNPVOnline.jsx'
+import ClubeLayoutPreview from './ClubeLayoutPreview.jsx'
 import { clubeReady } from './clubeSupabase.js'
 
 const params = new URLSearchParams(window.location.search)
@@ -34,8 +35,11 @@ function ClubeIndisponivel() {
   </main>
 }
 
+// O layout_preview é exclusivo desta branch de prévia, sem acesso ao banco.
+// Permite ao proprietário clicar e avaliar a reorganização sem credenciais.
 const page = isClubeRoute
-  ? (params.get('demo') === '1' ? <ClubeNPV /> :
+  ? (params.get('layout_preview') === '1' ? <ClubeLayoutPreview /> :
+    params.get('demo') === '1' ? <ClubeNPV /> :
     clubeReady ? <ClubeNPVOnline /> : <ClubeIndisponivel />)
   : <App />
 
