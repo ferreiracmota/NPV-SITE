@@ -1,5 +1,6 @@
 // Somente o aluno autenticado consegue consultar a própria conexão / atividade.
 import { sanitizeActivityList } from './pilot-core.mjs'
+import { activityWindow, monthlyActivitySummary, recentActivities } from '../../clube/strava/challengeProgress.mjs'
 import {
   settings,clubUser,seal,unseal,readCookie,cookie,COOKIE_LINK,
   checkOrigin,privateHeaders,writeJson,stravaToken
@@ -51,27 +52,41 @@ export default async function handler(req,res){
       credential={...credential,access:refreshed.access_token,refresh:refreshed.refresh_token,expires:refreshed.expires_at}
       res.setHeader('Set-Cookie',cookie(COOKIE_LINK,seal(credential,cfg.secret),2592000))
     }
-    const now=Math.floor(Date.now()/1000)
-    const endpoint=new URL('https://www.strava.com/api/v3/athlete/activities')
-    endpoint.searchParams.set('after',String(now-7*86400))
-    endpoint.searchParams.set('before',String(now))
-    endpoint.searchParams.set('per_page','30')
-    endpoint.searchParams.set('page','1')
-    const result=await fetch(endpoint,{
-      headers:{Authorization:'Bearer '+credential.access},
-      signal:AbortSignal.timeout(14000)
-    })
-    if(result.status===401){
-      res.setHeader('Set-Cookie',cookie(COOKIE_LINK,'',0))
-      return writeJson(res,200,{connected:false,activities:[],error:'A autorização do Strava expirou ou foi revogada.'})
+    // Uma consulta cobre o mês inteiro e os últimos 7 dias; paginação evita perder
+    // quilômetros dos alunos mais ativos. O resultado não é armazenado.
+    const now=new Date();
+    const window=activityWindow(now);
+    const all=[];
+    const PER_PAGE=200,MAX_PAGES=6;
+    for(let page=1;page<=MAX_PAGES;page++){
+      const endpoint=new URL('https://www.strava.com/api/v3/athlete/activities')
+      endpoint.searchParams.set('after',String(window.after))
+      endpoint.searchParams.set('before',String(window.before))
+      endpoint.searchParams.set('per_page',String(PER_PAGE))
+      endpoint.searchParams.set('page',String(page))
+      const result=await fetch(endpoint,{
+        headers:{Authorization:'Bearer '+credential.access},
+        signal:AbortSignal.timeout(14000)
+      })
+      if(result.status===401){
+        res.setHeader('Set-Cookie',cookie(COOKIE_LINK,'',0))
+        return writeJson(res,200,{connected:false,activities:[],error:'A autorização do Strava expirou ou foi revogada.'})
+      }
+      if(!result.ok)throw new Error('strava request failed')
+      const part=await result.json()
+      if(!Array.isArray(part))throw new Error('invalid activities response')
+      all.push(...part)
+      if(part.length<PER_PAGE)break
+      if(page===MAX_PAGES)throw new Error('incomplete Strava pagination')
     }
-    if(!result.ok) throw new Error('strava request failed')
-    const activities=sanitizeActivityList(await result.json())
+    const activities=sanitizeActivityList(recentActivities(all,now))
+    const monthly=monthlyActivitySummary(all,window.monthKey)
     return writeJson(res,200,{
       connected:true,
       activities,
       rangeDays:7,
-      note:'Apenas consulta individual: não há crédito automático de pontos nem arquivo de atividades.'
+      monthly,
+      note:'Consulta individual. Sem créditos de pontos, armazenamento de treinos ou aprovação automática.'
     })
   }catch{
     return writeJson(res,200,{connected:true,activities:[],error:'Conectado, mas a consulta de atividades está temporariamente indisponível.'})
