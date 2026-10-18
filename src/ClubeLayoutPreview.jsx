@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { ArrowLeft, ArrowRight, Award, Check, ChevronDown, ChevronUp, ExternalLink, Gift, History, LogOut, Package, ShieldCheck, Sparkles, Ticket, Users, Wallet, X } from 'lucide-react'
 import { PartnerCards } from './ClubeExtras.jsx'
+import npvLogoBranca from './assets/logo-branca-npv.PNG'
 import './ClubeNPV.css'
 import './ClubeRecompensas.css'
 import './ClubeExtras.css'
@@ -72,7 +73,7 @@ export default function ClubeLayoutPreview(){
   }
   return <div className="clube-shell clube-layout-preview">
     <header className="clube-header"><div className="clube-header-inner">
-      <div className="clube-logo"><div className="clube-logo-mark">NPV<span>!</span></div><div className="clube-logo-label"><strong>NÃO PENSE, VAI!</strong><span>CLUBE DE BENEFÍCIOS</span></div></div>
+      <div className="clube-logo clube-preview-brand"><img className="clube-preview-brand-image" src={npvLogoBranca} alt="Não Pense, Vai!" /></div>
       {previewActive&&<button className="clube-preview-header-logout" type="button" onClick={()=>setPreviewActive(false)} aria-label="Sair da conta (simulação)"><LogOut size={17}/> Sair</button>}
     </div></header>
     <div className="clube-layout-preview-note"><ShieldCheck size={16}/> PRÉVIA INTERATIVA DO LAYOUT · Dados ilustrativos · Nenhuma movimentação real</div>

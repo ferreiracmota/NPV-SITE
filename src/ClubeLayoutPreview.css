@@ -95,3 +95,13 @@
  .clube-layout-preview .clube-layout-preview-nav>button svg{width:12px;height:12px}
  .clube-layout-preview .clube-preview-header-logout{padding:8px}
 }
+
+/* Marca NPV oficial branca no cabeçalho exclusivo da prévia. */
+.clube-layout-preview .clube-preview-brand{flex:none;min-width:0}
+.clube-layout-preview .clube-preview-brand-image{display:block;width:145px;height:72px;object-fit:cover;object-position:center;filter:brightness(0) invert(1)}
+@media(max-width:760px){
+ .clube-layout-preview .clube-preview-brand-image{width:118px;height:59px}
+}
+@media(max-width:360px){
+ .clube-layout-preview .clube-preview-brand-image{width:108px;height:54px}
+}
