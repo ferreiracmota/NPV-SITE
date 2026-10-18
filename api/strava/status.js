@@ -8,7 +8,9 @@ import {
 
 export default async function handler(req,res){
   const cfg=settings()
-  if(!cfg)return writeJson(res,503,{connected:false,error:'Conexão indisponível.'})
+  // Sem credenciais no ambiente oficial: a interface informa a indisponibilidade
+  // sem aparentar uma conexão real e sem enviar dados ao Strava.
+  if(!cfg)return writeJson(res,200,{connected:false,disabled:true,activities:[]})
   if(req.method!=='GET'&&req.method!=='POST'){
     res.writeHead(405,{...privateHeaders,Allow:'GET, POST'});return res.end()
   }
