@@ -19,3 +19,8 @@
 .npv-strava-example-row>b{font-size:12px;color:#567d30;white-space:nowrap}
 .npv-strava-example>p{font-size:10px;line-height:1.5;color:#81907b;margin:13px 0 2px}
 @media(max-width:760px){.npv-strava-detail{padding-bottom:16px}.npv-strava-example{padding:12px}}
+
+.npv-strava-connect-button{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;background:#a4ca57;color:#19341a;padding:12px 15px;min-height:40px;border-radius:10px;font-weight:850;font-size:12px;margin:0 0 7px;max-width:100%}
+.npv-strava-connect-button:hover{background:#b6db70;color:#19341a}
+.npv-strava-connect-button:focus-visible{outline:2px solid #63852c;outline-offset:3px}
+.npv-strava-pilot-note{font-size:11px;line-height:1.5;color:#798974;margin:0 0 16px}
