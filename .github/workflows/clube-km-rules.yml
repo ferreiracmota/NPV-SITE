@@ -31,4 +31,4 @@ jobs:
         with:
           node-version: '22'
       - name: Testar quilometragem, periodo, duplicidade e vinculo
-        run: node --test clube/strava/monthlyCandidate.test.mjs api/strava/pilot.test.mjs api/strava/link.test.mjs
+        run: node --test clube/strava/monthlyCandidate.test.mjs api/strava/pilot.test.mjs api/strava/link.test.mjs clube/strava/challengeProgress.test.mjs
