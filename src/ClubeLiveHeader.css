@@ -176,3 +176,41 @@
     padding:20px 20px;
   }
 }
+
+/* Ajuste aprovado de espacamentos do clube. Somente no painel do aluno. */
+.clube-live-student .clube-intro{
+  margin-bottom:16px;
+}
+.clube-live-student .clube-intro h1{
+  margin-bottom:5px;
+}
+.clube-live-student .clube-student-summary{
+  min-height:151px;
+  padding:15px 25px;
+  margin-bottom:15px;
+}
+.clube-live-student .clube-activities-toggle{
+  padding:13px 18px;
+}
+.clube-live-student .clube-activities-toggle>span:first-child{
+  gap:3px;
+}
+@media(max-width:760px){
+  .clube-live-student .clube-main{
+    padding-top:17px;
+  }
+  .clube-live-student .clube-intro{
+    margin-bottom:14px;
+  }
+  .clube-live-student .clube-intro h1{
+    margin-bottom:5px;
+  }
+  .clube-live-student .clube-student-summary{
+    min-height:145px;
+    padding:14px 18px;
+    margin-bottom:14px;
+  }
+  .clube-live-student .clube-activities-toggle{
+    padding:11px 16px;
+  }
+}
