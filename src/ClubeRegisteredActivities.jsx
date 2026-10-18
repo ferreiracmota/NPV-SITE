@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { ChevronDown, ChevronUp, Footprints, LockKeyhole, Eye, EyeOff, CheckCircle2, RefreshCw } from 'lucide-react'
+import { ChevronDown, ChevronUp, Footprints, LockKeyhole, Eye, EyeOff, CheckCircle2, RefreshCw, Trophy } from 'lucide-react'
 import { clubeSupabase as supabase } from './clubeSupabase.js'
 import { currentNpvMonth, challengeBar } from '../clube/strava/challengeProgress.mjs'
 import './ClubeRegisteredActivities.css'
@@ -123,29 +123,37 @@ export default function ClubeRegisteredActivities({session}) {
             ?<span className="npv-strava-hero-metric"><b>{format(totalKm)} km</b><span>nos últimos 7 dias</span></span>
             :<span className="npv-strava-hero-sports">Corrida · caminhada · bicicleta</span>}
         </span>
-        <span className="npv-strava-challenge" role="group" aria-label="Desafio do mês">
-          <span className="npv-strava-challenge-top">
-            <span className="npv-strava-challenge-title">DESAFIO DO MÊS</span>
-            <span className="npv-strava-challenge-status">{progress.valid
-              ?(progress.completed?'Meta alcançada ✦':format(monthKm)+' de '+format(monthlyGoal)+' km')
-              :(monthKm!==null?format(monthKm)+' km percorridos':status.connected?'Consultando quilômetros...':'Conecte seu Strava')}</span>
+        <span className="npv-strava-challenge npv-premium-challenge" role="group" aria-label="Desafio do mês">
+          <span className="npv-premium-challenge-head">
+            <span className="npv-premium-challenge-icon" aria-hidden="true"><Trophy size={21}/></span>
+            <span className="npv-premium-challenge-labels">
+              <span className="npv-strava-challenge-title">DESAFIO DO MÊS</span>
+              <strong className="npv-premium-challenge-goal">{monthlyGoal!==null?format(monthlyGoal)+' km':'Meta a definir'}</strong>
+            </span>
+            {monthlyGoal!==null&&<span className="npv-premium-challenge-prize">
+              <span>AO COMPLETAR</span><strong>+{format(goal.reward)} pts</strong>
+            </span>}
+          </span>
+          <span className="npv-premium-challenge-numbers">
+            <span>{progress.valid?format(monthKm)+' de '+format(monthlyGoal)+' km':monthKm!==null?format(monthKm)+' km registrados':status.connected?'Consultando o Strava...':'Conecte o Strava para participar'}</span>
+            {progress.valid&&<strong>{progress.percentage}%</strong>}
           </span>
           <span className={'npv-strava-challenge-track'+(progress.completed?' is-complete':'')}
             role="progressbar" aria-label="Progresso do desafio do mês"
             aria-valuemin={0} aria-valuemax={100} aria-valuenow={progress.valid?progress.percentage:undefined}
-            aria-valuetext={progress.valid?format(monthKm)+' de '+format(monthlyGoal)+' quilômetros':'Meta do desafio ainda não disponível'}>
+            aria-valuetext={progress.valid?format(monthKm)+' de '+format(monthlyGoal)+' quilômetros':'Meta ou quilômetros ainda não disponíveis'}>
             <span className="npv-strava-challenge-fill" style={{width:(progress.valid?progress.percentage:0)+'%'}}/>
           </span>
           <span className="npv-strava-challenge-caption">
             {progress.valid?(progress.completed
-              ?'Meta alcançada! Recompensa prevista: '+goal.reward+' pontos (crédito ainda não automático).'
-              :format(monthlyGoal-monthKm>0?Math.max(0,monthlyGoal-monthKm):0)+' km para completar o desafio')
-              :(!goal.loaded?'Carregando meta do desafio...':monthlyGoal===null?'Meta mensal a definir pelo clube':!status.connected?'Conecte-se para acompanhar sua evolução':monthKm===null?'Aguardando dados reais do Strava':'Atualize as atividades para conferir o progresso')}
+              ?'Meta alcançada! Você conquistou o desafio. O crédito dos pontos ainda está em preparação.'
+              :format(Math.max(0,monthlyGoal-monthKm))+' km para sua conquista de '+format(goal.reward)+' pontos.')
+              :(!goal.loaded?'Carregando desafio...':monthlyGoal===null?'O clube ainda vai definir a meta deste mês.':!status.connected?'Seu progresso começa quando você conecta o Strava.':monthKm===null?'Aguardando quilômetros reais do Strava.':'Confira suas atividades para acompanhar o desafio.')}
           </span>
         </span>
       </span>
       <span className="npv-strava-hero-action" aria-hidden="true">
-        <span>{expanded?'Recolher':'Ver detalhes'}</span>
+        <span>{expanded?'Recolher':'Ver atividades'}</span>
         <span className="npv-strava-hero-arrow">{expanded?<ChevronUp size={20}/>:<ChevronDown size={20}/>}</span>
       </span>
     </button>
