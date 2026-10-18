@@ -8,6 +8,7 @@ import { clubeSupabase as supabase } from './clubeSupabase.js'
 import './ClubeNPV.css'
 import './ClubeRecompensas.css'
 import './ClubeNPVOnline.css'
+import './ClubeLiveHeader.css'
 import { BenefitNotice, PartnerCards, PartnerEditor, safePartnerUrl } from './ClubeExtras.jsx'
 
 const format = value => Number(value||0).toLocaleString('pt-BR')
@@ -374,7 +375,19 @@ export default function ClubeNPVOnline() {
   if(!profile&&!error)return <div className="clube-shell"><ShellHeader/><div className="clube-auth-loading">Consultando seu cadastro...</div></div>
   if(!profile&&error)return <div className="clube-shell"><ShellHeader/><div className="clube-auth-loading clube-waiting"><ShieldCheck size={40}/><h1>Seu acesso ainda não está disponível</h1><p>{error}</p><button className="clube-btn clube-btn-outline" onClick={signOut}>Voltar ao login</button></div></div>
   if(!approved&&!error)return <div className="clube-shell"><ShellHeader/><div className="clube-auth-loading clube-waiting"><Clock3 size={44}/><h1>Cadastro recebido!</h1><p>Seu e-mail foi confirmado. Agora falta a aprovação do administrador para você visualizar seus pontos e as recompensas.</p><button className="clube-btn clube-btn-outline" onClick={signOut}>Sair da conta</button></div></div>
-  return <div className="clube-shell"><ShellHeader/>
+  return <div className={`clube-shell ${isAdmin?'':'clube-live-student'}`}>
+    {isAdmin?<ShellHeader/>:<section className="clube-live-banner" aria-label="Cabeçalho do Clube de Benefícios NPV">
+      <div className="clube-live-banner-top">
+        <div className="clube-live-title"><span>Clube de</span><strong>Benefícios</strong></div>
+        <button type="button" className="clube-live-signout" onClick={signOut}><LogOut size={16}/> Sair</button>
+      </div>
+      <nav className="clube-live-tabs" aria-label="Navegação do Clube NPV">
+        <button type="button" className={tab==='inicio'?'active':''} onClick={()=>setTab('inicio')}><Wallet size={17}/>Visão geral</button>
+        <button type="button" className={tab==='historico'?'active':''} onClick={()=>setTab('historico')}><History size={17}/>Histórico</button>
+        <button type="button" className={tab==='recompensas'?'active':''} onClick={()=>setTab('recompensas')}><Gift size={17}/>Recompensas</button>
+        <button type="button" className={tab==='parceiros'?'active':''} onClick={()=>setTab('parceiros')}><Award size={17}/>Parceiros</button>
+      </nav>
+    </section>}
     <div className="clube-container"><aside className="clube-sidebar">
       <div className="clube-person"><span className="clube-avatar">{(profile?.full_name||user?.email||'A').charAt(0).toUpperCase()}</span><div><strong>{profile?.full_name||user?.email}</strong><span>{isAdmin?'Administração':'Minha conta'}</span></div></div>
       <div className="clube-side-label">MINHA NAVEGAÇÃO</div>
