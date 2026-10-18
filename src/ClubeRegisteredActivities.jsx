@@ -3,6 +3,7 @@ import { ChevronDown, ChevronUp, Footprints, LockKeyhole, Eye, EyeOff, CheckCirc
 import { clubeSupabase as supabase } from './clubeSupabase.js'
 import { currentNpvMonth, challengeBar } from '../clube/strava/challengeProgress.mjs'
 import './ClubeRegisteredActivities.css'
+import './ClubeMonthlyChallengeBar.css'
 
 const SAMPLE = [
   { id: 1, label: 'Corrida', when: '04 de outubro', km: 8.0, symbol: '🏃' },
