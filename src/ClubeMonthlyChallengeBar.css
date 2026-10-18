@@ -1,0 +1,10 @@
+.npv-strava-challenge{display:flex;flex-direction:column;gap:7px;width:min(100%,500px);margin-top:17px;padding-top:13px;border-top:1px solid rgba(221,243,197,.22)}
+.npv-strava-challenge-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+.npv-strava-challenge-title{color:#eac987;font-size:10px;font-weight:900;letter-spacing:.12em}
+.npv-strava-challenge-status{color:#ebedda;font-size:11px;font-weight:800;font-variant-numeric:tabular-nums}
+.npv-strava-challenge-track{display:block;width:100%;height:8px;overflow:hidden;border-radius:100px;border:1px solid rgba(230,201,143,.19);background:rgba(255,255,255,.15)}
+.npv-strava-challenge-fill{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#c9a260,#f4d08d);box-shadow:0 0 13px rgba(242,201,126,.26);transition:width .45s ease}
+.npv-strava-challenge-track.is-complete .npv-strava-challenge-fill{background:linear-gradient(90deg,#d7af67,#ffe3a4)}
+.npv-strava-challenge-caption{color:#c4d4bc;font-size:10px;line-height:1.35}
+@media(max-width:640px){.npv-strava-challenge{margin-top:14px;padding-top:12px;gap:6px}.npv-strava-challenge-title{font-size:9px}.npv-strava-challenge-status,.npv-strava-challenge-caption{font-size:10px}}
+@media(prefers-reduced-motion:reduce){.npv-strava-challenge-fill{transition:none}}

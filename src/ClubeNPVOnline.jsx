@@ -10,7 +10,11 @@ import './ClubeNPV.css'
 import './ClubeRecompensas.css'
 import './ClubeNPVOnline.css'
 import './ClubeLiveHeader.css'
+import './ClubeNPVPremium.css'
 import { BenefitNotice, PartnerCards, PartnerEditor, safePartnerUrl } from './ClubeExtras.jsx'
+import ClubeKmSetup from './ClubeKmSetup.jsx'
+import ClubeRegisteredActivities from './ClubeRegisteredActivities.jsx'
+import ClubeMonthlyChallengeAdmin from './ClubeMonthlyChallengeAdmin.jsx'
 
 const format = value => Number(value||0).toLocaleString('pt-BR')
 const date = value => new Date(value).toLocaleDateString('pt-BR',{day:'2-digit',month:'short',year:'numeric'})
@@ -389,11 +393,19 @@ export default function ClubeNPVOnline() {
   if(!profile&&!error)return <div className="clube-shell"><ShellHeader/><div className="clube-auth-loading">Consultando seu cadastro...</div></div>
   if(!profile&&error)return <div className="clube-shell"><ShellHeader/><div className="clube-auth-loading clube-waiting"><ShieldCheck size={40}/><h1>Seu acesso ainda não está disponível</h1><p>{error}</p><button className="clube-btn clube-btn-outline" onClick={signOut}>Voltar ao login</button></div></div>
   if(!approved&&!error)return <div className="clube-shell"><ShellHeader/><div className="clube-auth-loading clube-waiting"><Clock3 size={44}/><h1>Cadastro recebido!</h1><p>Seu e-mail foi confirmado. Agora falta a aprovação do administrador para você visualizar seus pontos e as recompensas.</p><button className="clube-btn clube-btn-outline" onClick={signOut}>Sair da conta</button></div></div>
-  return <div className={`clube-shell ${isAdmin?'':'clube-live-student'}`}>
+  return <div className={`clube-shell ${isAdmin?'':'clube-live-student npv-clube-premium'}`}>
     {isAdmin?<ShellHeader/>:<section className="clube-live-banner" aria-label="Cabeçalho do Clube de Benefícios NPV">
       <div className="clube-live-banner-top">
-        <div className="clube-live-title"><span>Clube de</span><strong>Benefícios</strong></div>
+        <div className="clube-live-title">
+          <span className="npv-premium-brand"><img src={logoVaiCirculo} alt="" aria-hidden="true"/> NÃO PENSE, VAI!</span>
+          <span>CLUBE DE</span><strong>BENEFÍCIOS</strong>
+          <em>MOVIMENTO QUE TE RECOMPENSA</em>
+        </div>
         <button type="button" className="clube-live-signout" onClick={signOut}><LogOut size={16}/> Sair</button>
+      </div>
+      <div className="npv-premium-hero-copy" aria-hidden="true">
+        <span>BENEFÍCIOS REAIS PARA QUEM VIVE EM MOVIMENTO.</span>
+        <strong>MAIS MOVIMENTO.<br/> MAIS CONQUISTAS.<br/><b>MAIS VAI!</b></strong>
       </div>
       <nav className="clube-live-tabs" aria-label="Navegação do Clube NPV">
         <button type="button" className={tab==='inicio'?'active':''} onClick={()=>setTab('inicio')}><Wallet size={17}/>Visão geral</button>
@@ -428,22 +440,44 @@ export default function ClubeNPVOnline() {
         {pendingCount>0&&<button className="npv-shop-pending-banner" onClick={()=>setTab('recompensas')}><Gift size={20}/><span><strong>{pendingCount} pedido(s) aguardando aprovação</strong><small>Ver a fila de resgates</small></span><ArrowRight size={17}/></button>}
         <div className="clube-columns"><section className="clube-card"><div className="clube-card-head"><div><h2>Últimas movimentações</h2><p>Histórico do clube</p></div></div>{activityList(data.events.slice(0,6),true)}</section><section className="clube-card"><div className="clube-card-head"><div><h2>Novos cadastros</h2><p>Alunos aguardando aprovação</p></div></div>{studentMembers.filter(x=>!x.approved).slice(0,6).map(x=><div className="clube-online-member" key={x.id}><div><strong>{x.full_name}</strong><small>{x.email}</small></div><button disabled={busy} className="clube-btn clube-btn-outline" onClick={()=>approve(x.id)}><Check size={15}/> Aprovar</button></div>)}{studentMembers.every(x=>x.approved)&&<p className="clube-empty">Nenhum cadastro pendente.</p>}<button className="clube-btn clube-btn-outline clube-btn-full" onClick={()=>setTab('alunos')}>Gerenciar alunos</button></section></div>
       </>}
+      {tab==='inicio'&&isAdmin&&<><ClubeKmSetup/><ClubeMonthlyChallengeAdmin/><ClubeRegisteredActivities session={session}/></>}
       {tab==='inicio'&&!isAdmin&&<>
-        <div className="clube-student-summary"><div><div className="clube-student-hello">OLÁ, {profile?.full_name?.split(' ')[0]?.toUpperCase()||'ALUNO'}! ✦</div><p>SEUS PONTOS EM {YEAR}</p><strong>{format(balance(user.id))} <small>pontos</small></strong></div><Award size={90}/></div>
-        <BenefitNotice rewards={data.rewards} points={Math.max(0,balance(user.id)-reserved(user.id))} onOpen={()=>setTab('recompensas')}/>
-        <section className="clube-card clube-activities-card">
-          <button type="button" className="clube-activities-toggle" aria-expanded={activitiesOpen} aria-controls="clube-activities-content" onClick={()=>setActivitiesOpen(open=>!open)}>
-            <span><strong>Minhas atividades</strong><small>Meu extrato de pontos</small></span>
-            <span className="clube-activities-chevron">{activitiesOpen?<ChevronUp size={21}/>:<ChevronDown size={21}/>}</span>
+        <section className={`clube-student-summary clube-student-summary-statement npv-premium-wallet${activitiesOpen?' is-open':''}`} aria-label="Seus pontos e extrato">
+          <button type="button" className="clube-student-summary-trigger"
+            aria-expanded={activitiesOpen} aria-controls="clube-points-statement-content"
+            onClick={()=>setActivitiesOpen(open=>!open)}>
+            <span className="npv-premium-points-seal" aria-hidden="true"><Award size={27}/></span>
+            <span className="clube-student-balance-group">
+              <span className="clube-student-hello">OLÁ, {profile?.full_name?.split(' ')[0]?.toUpperCase()||'ALUNO'}! ✦</span>
+              <span className="clube-student-balance-label">SEUS PONTOS EM {YEAR}</span>
+              <strong className="clube-student-balance-value">{format(balance(user.id))} <small>pts</small></strong>
+              <span className="clube-student-statement-cta">Extrato de pontos {activitiesOpen?<ChevronUp size={18}/>:<ChevronDown size={18}/>}</span>
+            </span>
+            <span className="npv-premium-coins" aria-hidden="true">
+              <span className="npv-premium-coin npv-premium-coin-back">VAI!</span>
+              <span className="npv-premium-coin npv-premium-coin-front">VAI!</span>
+              <span className="npv-premium-coins-caption">MOVIMENTO É VALOR.</span>
+            </span>
           </button>
-          {activitiesOpen&&<div id="clube-activities-content" className="clube-activities-expanded">
+          {activitiesOpen&&<div id="clube-points-statement-content" className="clube-student-statement-body">
+            <div className="clube-student-statement-heading"><strong>Seu extrato de pontos</strong><span>Movimentações reais, entradas e resgates</span></div>
             {activityList(mine.slice(0,6))}
-            {mine.length>0&&<button type="button" className="clube-text-button clube-activities-view-all" onClick={()=>setTab('historico')}>Ver todas as atividades <ArrowRight size={16}/></button>}
+            {mine.length>0&&<button type="button" className="clube-student-statement-see-all" onClick={()=>setTab('historico')}>Ver extrato completo <ArrowRight size={16}/></button>}
           </div>}
         </section>
-        <section className="npv-shop npv-shop-featured"><div className="npv-shop-heading"><div><div className="npv-shop-eyebrow"><Gift size={15}/>LOJINHA DO CLUBE NPV</div><h2>Troque seus pontos ✦</h2><p>Seu próximo objetivo pode estar aqui.</p></div><button className="npv-shop-view-all" onClick={()=>setTab('recompensas')}>Ver catálogo <ArrowRight size={16}/></button></div>{rewardsGrid(4)}<p className="npv-shop-demo-note">A disponibilidade real será confirmada após a aprovação do prêmio e dos parceiros.</p></section>
+        <BenefitNotice rewards={data.rewards} points={Math.max(0,balance(user.id)-reserved(user.id))} onOpen={()=>setTab('recompensas')}/>
+        <ClubeRegisteredActivities session={session}/>
+        <section className="npv-shop npv-shop-featured">
+          <div className="npv-shop-heading"><div>
+            <div className="npv-shop-eyebrow"><Gift size={16}/> SEU ESFORÇO TEM RECOMPENSA</div>
+            <h2>Lojinha <span>✦</span></h2>
+            <p>Transforme seus pontos em conquistas de verdade.</p>
+          </div><button className="npv-shop-view-all" onClick={()=>setTab('recompensas')}>Ver todos os prêmios <ArrowRight size={16}/></button></div>
+          {rewardsGrid(4)}
+          <p className="npv-shop-demo-note">Resgates sujeitos à disponibilidade e à aprovação do Clube NPV.</p>
+        </section>
         {data.partners.some(x=>x.active)&&<section className="npv-partners-section">
-          <div className="npv-shop-heading"><div><div className="npv-shop-eyebrow"><Award size={15}/> PARCERIAS NPV</div><h2>Benefícios de parceiros ✦</h2><p>Explore os parceiros e consulte os descontos disponíveis.</p></div>
+          <div className="npv-shop-heading"><div><div className="npv-shop-eyebrow"><Award size={15}/> MAIS VANTAGENS PARA VOCÊ</div><h2>Parceiros e descontos <span>✦</span></h2><p>Faça parte do clube e aproveite benefícios dos nossos parceiros.</p></div>
             <button className="npv-shop-view-all" onClick={()=>setTab('parceiros')}>Ver parceiros <ArrowRight size={16}/></button></div>
           <PartnerCards partners={data.partners} limit={4}/>
         </section>}

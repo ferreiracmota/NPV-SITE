@@ -75,3 +75,96 @@
     max-width:100%;
   }
 }
+
+/* Extrato de pontos integrado ao card de saldo — não altera as movimentações. */
+.clube-student-summary.clube-student-summary-statement{
+  display:block;min-height:0;padding:0;overflow:hidden;
+}
+.clube-student-summary-trigger{
+  width:100%;display:flex;align-items:center;justify-content:space-between;gap:22px;
+  min-height:204px;padding:30px 36px;text-align:left;color:inherit;border:0;
+  background:transparent;cursor:pointer;
+}
+.clube-student-summary-trigger:hover{background:rgba(255,255,255,.025)}
+.clube-student-summary-trigger:focus-visible{outline:3px solid #d2ed80;outline-offset:-5px;border-radius:13px}
+.clube-student-balance-group{display:flex;flex-direction:column;align-items:flex-start;min-width:0;flex:1}
+.clube-student-summary-statement .clube-student-hello{display:block;margin:0 0 22px;color:#fff}
+.clube-student-balance-label{font-size:11px;letter-spacing:.14em;color:#b4c5a9;font-weight:750;margin-bottom:4px}
+.clube-student-summary-statement .clube-student-balance-value{display:block;color:#c4e451;font-size:clamp(42px,7vw,63px);letter-spacing:-.05em;line-height:1.2;white-space:normal;overflow-wrap:anywhere}
+.clube-student-summary-statement .clube-student-balance-value small{font-size:17px;font-weight:650;letter-spacing:normal}
+.clube-student-statement-action{display:flex;flex-direction:column;gap:19px;align-items:center;flex:none;max-width:165px}
+.clube-student-statement-action>svg{color:#c2dc66;opacity:.85}
+.clube-student-statement-cta{display:inline-flex;align-items:center;justify-content:center;gap:8px;color:#e5f1d6;font-weight:750;font-size:12px;line-height:1.35;text-align:center}
+.clube-student-statement-cta svg{color:#d7ef8f;flex:none}
+.clube-student-statement-body{
+  padding:22px 36px 24px;border-top:1px solid rgba(209,234,170,.21);
+  background:rgba(8,17,11,.18)
+}
+.clube-student-statement-heading{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:4px 14px;padding-bottom:10px}
+.clube-student-summary-statement .clube-student-statement-heading strong{display:block;font-size:13px;letter-spacing:0;color:#e9f4e4;line-height:1.4}
+.clube-student-statement-heading span{font-size:10px;color:#a9bda0}
+.clube-student-summary-statement .clube-activity{border-top-color:rgba(220,238,201,.15)}
+.clube-student-summary-statement .clube-activity-description strong{display:block;font-size:11px;line-height:1.4;letter-spacing:normal;color:#edf6e8}
+.clube-student-summary-statement .clube-activity-description>span{color:#cfddc7}
+.clube-student-summary-statement .clube-activity-description small{color:#aebfa7}
+.clube-student-summary-statement .clube-activity-points{display:block;font-size:12px;letter-spacing:normal;line-height:1.4;color:#c4e451;flex:none}
+.clube-student-summary-statement .clube-activity-points.clube-negative{color:#fbb1aa}
+.clube-student-summary-statement .clube-empty{color:#b7c7ad}
+.clube-student-statement-see-all{display:inline-flex;align-items:center;gap:7px;margin-top:13px;padding:9px 0;border:0;background:transparent;color:#d3ef8b;font-size:11px;font-weight:800;cursor:pointer}
+.clube-student-statement-see-all:hover{text-decoration:underline}
+.clube-student-statement-see-all:focus-visible{outline:2px solid #d3ef8b;outline-offset:4px}
+@media(max-width:760px){
+  .clube-student-summary-statement .clube-student-summary-trigger{min-height:190px;padding:25px 20px;gap:12px}
+  .clube-student-statement-action{gap:14px;max-width:130px}
+  .clube-student-statement-action>svg{width:66px;height:66px}
+  .clube-student-statement-cta{font-size:11px;gap:5px}
+  .clube-student-statement-body{padding:18px 20px 20px}
+}
+@media(max-width:380px){
+  .clube-student-summary-statement .clube-student-summary-trigger{padding:23px 16px;gap:9px}
+  .clube-student-statement-action{max-width:105px}
+  .clube-student-statement-action>svg{width:54px;height:54px}
+  .clube-student-summary-statement .clube-student-balance-value{font-size:40px}
+  .clube-student-statement-cta{font-size:10px}
+  .clube-student-statement-body{padding:17px 16px 18px}
+}
+
+/* Card principal mais baixo: mantém os pontos em destaque e o extrato expansível. */
+.clube-student-summary-statement .clube-student-summary-trigger{
+  min-height:138px;padding:16px 27px;gap:16px;
+}
+.clube-student-summary-statement .clube-student-hello{
+  margin:0 0 8px;font-size:12px;line-height:1.2;
+}
+.clube-student-summary-statement .clube-student-balance-label{
+  font-size:10px;line-height:1.3;letter-spacing:.13em;
+}
+.clube-student-summary-statement .clube-student-balance-value{
+  font-size:clamp(41px,5.6vw,51px);line-height:1.1;margin-top:3px;
+}
+.clube-student-summary-statement .clube-student-balance-value small{font-size:14px}
+.clube-student-summary-statement .clube-student-statement-action{gap:5px;max-width:148px}
+.clube-student-summary-statement .clube-student-statement-action>svg{width:48px;height:48px}
+.clube-student-summary-statement .clube-student-statement-cta{font-size:11px}
+@media(max-width:760px){
+  .clube-student-summary-statement .clube-student-summary-trigger{
+    min-height:130px;padding:16px 20px;gap:12px;
+  }
+  .clube-student-summary-statement .clube-student-hello{
+    margin:0 0 7px;font-size:11px;
+  }
+  .clube-student-summary-statement .clube-student-balance-value{
+    font-size:clamp(40px,10vw,48px);
+  }
+  .clube-student-summary-statement .clube-student-statement-action{gap:5px;max-width:127px}
+  .clube-student-summary-statement .clube-student-statement-action>svg{width:46px;height:46px}
+}
+@media(max-width:380px){
+  .clube-student-summary-statement .clube-student-summary-trigger{
+    min-height:125px;padding:14px 16px;gap:9px;
+  }
+  .clube-student-summary-statement .clube-student-statement-action{max-width:105px}
+  .clube-student-summary-statement .clube-student-statement-action>svg{width:41px;height:41px}
+  .clube-student-summary-statement .clube-student-balance-value{font-size:39px}
+  .clube-student-summary-statement .clube-student-statement-cta{font-size:10px}
+}

@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Clube NPV — Prévia da Conexão Strava</title>
+<style>
+:root{font-family:Inter,system-ui,-apple-system,sans-serif;color:#eff5ea;background:#0c1610}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 82% -8%,#3b5a31 0%,transparent 42%),#0c1610}
+button,a{font:inherit}button{cursor:pointer}
+.page{max-width:1060px;margin:auto;padding:24px 18px 58px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:20px;border-bottom:1px solid #ffffff22;padding:7px 2px 22px}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{display:grid;place-items:center;width:48px;height:48px;border:2px solid #c1e47c;border-radius:14px;color:#d6ff9a;font-weight:950;font-size:22px;font-style:italic;letter-spacing:-.09em}
+.brand b{display:block;font-weight:900;letter-spacing:.035em;font-size:15px}
+.brand small{display:block;font-size:10px;letter-spacing:.15em;color:#bcd18a;margin-top:3px}
+.return{font-size:12px;text-decoration:none;color:#b8cbb0}
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:36px;align-items:center;padding:46px 5px 28px}
+.kicker{font-size:11px;letter-spacing:.17em;font-weight:850;color:#c5e67f}
+h1{font-size:clamp(33px,5vw,56px);letter-spacing:-.065em;line-height:1.05;margin:17px 0}
+.hero p{color:#b9cdb6;line-height:1.65;font-size:15px;max-width:510px}
+.demo-note{font-size:12px;color:#d6e2d3;background:#253a29;border:1px solid #45623f;border-radius:999px;padding:10px 14px;display:inline-flex;gap:7px;align-items:center;max-width:100%}
+.illustration{background:linear-gradient(160deg,#cdea90,#91b350);border-radius:28px;padding:26px;color:#1c351c;box-shadow:0 30px 100px #0005;transform:rotate(2deg)}
+.illustration .round{border:2px solid #355a32;padding:18px;border-radius:20px}
+.illustration .distance{font-size:65px;letter-spacing:-.07em;font-weight:950;line-height:1.05}
+.illustration p{color:#41623a;font-weight:750;font-size:13px;margin:10px 0}
+.illustration .bottom{display:flex;justify-content:space-between;gap:15px;align-items:end}
+.illustration strong{font-size:23px}
+.content{display:grid;grid-template-columns:1.3fr .7fr;gap:20px}
+.card{background:#f8faf4;color:#20341f;border-radius:24px;padding:25px;border:1px solid #e3ecd9}
+.card h2{font-size:21px;letter-spacing:-.035em;margin:6px 0 6px}
+.card .muted{font-size:13px;color:#75836d;line-height:1.5;margin:0 0 22px}
+.section-tag{font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:#729432;font-weight:900}
+.status{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:800;color:#946c2e;background:#fbf4df;padding:10px 12px;border-radius:10px;margin:18px 0}
+.dot{width:9px;height:9px;border-radius:999px;background:#d6a349;flex-shrink:0}
+.status.active{background:#e8f3d8;color:#4b7826}
+.status.active .dot{background:#72a732}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+.btn{border:0;border-radius:12px;padding:14px 20px;font-weight:850;font-size:13px}
+.btn.primary{background:#a8d653;color:#1c3817}
+.btn.secondary{background:#e6eddd;color:#3b5831}
+.btn:focus-visible,a:focus-visible{outline:3px solid #f19e50;outline-offset:3px}
+blockquote{margin:14px 0 0;font-size:11px;line-height:1.55;color:#71816b;border-left:3px solid #b6d08e;padding-left:11px}
+.results{margin-top:22px;display:none}
+.results.visible{display:block}
+.summary{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.summary>div{border-radius:14px;background:#eff5e5;padding:16px}
+.summary small{display:block;color:#75826c;font-size:11px}
+.summary strong{font-size:27px;letter-spacing:-.045em}
+.item{display:flex;align-items:center;justify-content:space-between;padding:15px 0;border-bottom:1px solid #e6eee0;font-size:13px;gap:12px}
+.item .icon{font-size:17px;margin-right:6px}
+.item small{display:block;color:#889784;font-size:11px;margin-top:3px}
+.points{font-size:13px;color:#537e25;font-weight:900;white-space:nowrap}
+.card-side{background:#182b1d;color:#f3faeb;border:1px solid #38533a}
+.card-side h2{color:#ecf9e0}
+.card-side .muted{color:#b6cab2}
+.steps{display:flex;flex-direction:column;gap:18px;margin-top:22px}
+.step{display:flex;gap:12px;align-items:flex-start}
+.number{background:#a9d25a;color:#233d23;border-radius:10px;min-width:30px;height:30px;display:grid;place-items:center;font-weight:950}
+.step b{font-size:13px;display:block}
+.step span:last-child{font-size:12px;color:#bdcfb6;line-height:1.55}
+.footer{margin-top:24px;font-size:11px;color:#a9bbab;line-height:1.55;text-align:center}
+@media(max-width:740px){.hero,.content{grid-template-columns:1fr}.hero{gap:16px;padding:27px 0}.illustration{transform:none}.page{padding:14px 12px 38px}.card{padding:20px}.return{white-space:nowrap;font-size:10px}.brand b{font-size:12px}.logo{height:43px;width:43px}.demo-note{border-radius:12px}.hero h1{font-size:40px}.illustration .distance{font-size:54px}}
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="top">
+    <div class="brand"><span class="logo">Vai</span><div><b>NÃO PENSE, VAI!</b><small>CLUBE DE BENEFÍCIOS</small></div></div>
+    <a class="return" href="/clube">Voltar ao Clube ↗</a>
+  </header>
+  <div class="hero">
+    <section>
+      <span class="kicker">NOVIDADE DO CLUBE NPV</span>
+      <h1>Seu esforço vira<br><span style="color:#c6ec7f">recompensas.</span></h1>
+      <p>Conecte suas atividades e acompanhe os quilômetros elegíveis. No sistema completo, o NPV calculará os pontos conforme as regras do clube.</p>
+      <div class="demo-note">ⓘ Prévia ilustrativa — sem acesso à sua conta ou pontos reais</div>
+    </section>
+    <div class="illustration" aria-hidden="true"><div class="round"><div style="font-weight:900;font-size:11px;letter-spacing:.13em">SUA EVOLUÇÃO</div><div class="distance">29,5 <span style="font-size:20px">km</span></div><p>Exemplo fictício do mês</p><div class="bottom"><span>Seu ritmo, sua conquista</span><strong>+59 pts</strong></div></div></div>
+  </div>
+  <section class="content">
+    <div class="card">
+      <span class="section-tag">MINHA CONTA</span>
+      <h2>Atividades & quilômetros</h2>
+      <p class="muted">Veja abaixo uma demonstração do resultado para um aluno do clube.</p>
+      <div class="status" id="status"><span class="dot"></span><span>Conta ainda não conectada nesta demonstração</span></div>
+      <div class="actions">
+        <button class="btn primary" type="button" id="simulate">Visualizar exemplo conectado</button>
+        <button class="btn secondary" type="button" id="reset">Reiniciar prévia</button>
+      </div>
+      <div id="results" class="results" aria-live="polite">
+        <div class="summary"><div><small>Distância do exemplo</small><strong>29,5 km</strong></div><div><small>Pontos simulados (2 por km)</small><strong>+59 pts</strong></div></div>
+        <div style="margin-top:20px"><div class="item"><div><span class="icon">🏃</span><b>Corrida</b><small>04 de outubro · atividade fictícia</small></div><span class="points">8,0 km</span></div>
+        <div class="item"><div><span class="icon">🚴</span><b>Pedalada</b><small>09 de outubro · atividade fictícia</small></div><span class="points">13,5 km</span></div>
+        <div class="item"><div><span class="icon">🚶</span><b>Caminhada</b><small>14 de outubro · atividade fictícia</small></div><span class="points">8,0 km</span></div></div>
+      </div>
+      <blockquote>O teste real será feito com a sua conta após o registro do aplicativo de acesso no Strava. Nenhuma atividade ou pontuação real foi usada aqui.</blockquote>
+    </div>
+    <aside class="card card-side">
+      <span class="section-tag" style="color:#c9e990">COMO VAI FUNCIONAR</span>
+      <h2>Uma vez conectado,<br>mais praticidade.</h2>
+      <p class="muted">Nosso objetivo para a versão final:</p>
+      <div class="steps">
+        <div class="step"><span class="number">1</span><span><b>Autorizar o Strava</b>O aluno entra na própria conta e aceita a conexão.</span></div>
+        <div class="step"><span class="number">2</span><span><b>Conferir atividades</b>O NPV consulta as modalidades e distâncias permitidas.</span></div>
+        <div class="step"><span class="number">3</span><span><b>Calcular os pontos</b>O clube aplica a regra de pontos por quilômetro definida pelo administrador.</span></div>
+      </div>
+    </aside>
+  </section>
+  <div class="footer">Protótipo demonstrativo NPV · Não se conecta ao Strava · Não grava dados · Não altera saldos</div>
+</div>
+<script>
+(function(){
+  const btn=document.getElementById('simulate');
+  const reset=document.getElementById('reset');
+  const status=document.getElementById('status');
+  const results=document.getElementById('results');
+  btn.addEventListener('click',function(){
+    results.classList.add('visible');status.classList.add('active');
+    status.lastElementChild.textContent='Exemplo simulado — não é sua conta real';
+    btn.textContent='Exemplo carregado';btn.disabled=true;
+  });
+  reset.addEventListener('click',function(){
+    results.classList.remove('visible');status.classList.remove('active');
+    status.lastElementChild.textContent='Conta ainda não conectada nesta demonstração';
+    btn.textContent='Visualizar exemplo conectado';btn.disabled=false;
+  });
+})();
+</script>
+</body></html>

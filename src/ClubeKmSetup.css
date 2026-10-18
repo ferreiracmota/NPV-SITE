@@ -1,0 +1,26 @@
+.npv-km-card{background:#fff;border:1px solid #e4eadc;border-radius:17px;padding:23px;margin:0 0 23px;box-shadow:0 14px 36px #1c351309}
+.npv-km-head{display:flex;align-items:flex-start;gap:13px;margin-bottom:19px}
+.npv-km-icon{display:grid;place-items:center;width:42px;height:42px;flex-shrink:0;border-radius:12px;background:#eaf3d8;color:#6d8729}
+.npv-km-overline{font-size:10px;letter-spacing:.12em;color:#809733;font-weight:850}
+.npv-km-head h2{margin:4px 0 5px;font-weight:850;font-size:20px;letter-spacing:-.04em;color:#24331c}
+.npv-km-head p{margin:0;color:#77856e;font-size:12px;line-height:1.5}
+.npv-km-form{display:grid;grid-template-columns:minmax(160px,1fr) minmax(210px,1.5fr);gap:17px}
+.npv-km-rate,.npv-km-sports{display:flex;flex-direction:column;gap:10px}
+.npv-km-rate>span,.npv-km-sports legend{color:#34422c;font-size:12px;font-weight:850}
+.npv-km-rate input{max-width:170px;padding:10px 12px;border:1px solid #ced9c4;border-radius:9px;color:#21351d;font-size:16px;background:#fff}
+.npv-km-sports{border:0;padding:0;margin:0;display:flex;flex-flow:row wrap;gap:10px 18px}
+.npv-km-sports legend{margin-bottom:10px}
+.npv-km-sports label{display:flex;align-items:center;gap:6px;font-size:12px;color:#415439;font-weight:700}
+.npv-km-sports input{accent-color:#7a9a32}
+.npv-km-preview{grid-column:1/-1;padding:14px 17px;border-radius:12px;background:#f6f8f1;border:1px solid #e5ebdb}
+.npv-km-preview>div:first-child{display:flex;align-items:center;gap:8px;font-size:12px;color:#526941}
+.npv-km-preview>p{font-size:11px;color:#77846f;margin:9px 0}
+.npv-km-result{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.npv-km-result>span{font-size:15px;font-weight:800;color:#405331}
+.npv-km-result>strong{font-size:23px;letter-spacing:-.04em;color:#6f9225}
+.npv-km-preview>small{display:block;font-size:10px;color:#798771;line-height:1.5;margin-top:9px}
+.npv-km-foot{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.npv-km-foot>span{display:flex;align-items:center;gap:7px;font-size:11px;color:#687764}
+.npv-km-error,.npv-km-success{grid-column:1/-1;font-size:12px;line-height:1.5;margin:0}
+.npv-km-error{color:#a03434}.npv-km-success{color:#437320;display:flex;gap:6px;align-items:center}
+@media(max-width:620px){.npv-km-card{padding:17px}.npv-km-form{grid-template-columns:1fr}.npv-km-rate input{max-width:100%}.npv-km-foot .clube-btn{width:100%;justify-content:center}}

@@ -1,0 +1,486 @@
+/*
+ * Clube de Benefícios NPV — projeto visual premium em PREVIEW.
+ * Regras restritas à interface autenticada do aluno. Dados, auth, loja,
+ * Strava, extrato e aprovações permanecem implementados nos componentes reais.
+ */
+.npv-clube-premium{
+  --npv-night:#061a13;--npv-deep:#09251a;--npv-pine:#153e2b;
+  --npv-lime:#c6fa53;--npv-lime-2:#a8e839;--npv-gold:#f0cb7c;
+  --npv-sand:#fffaf0;
+  background:linear-gradient(180deg,#041710 0%,#082118 38%,#071811 100%);
+  color:#f4f8ef;
+  position:relative;
+}
+.npv-clube-premium::before{
+  content:"";position:absolute;pointer-events:none;inset:250px 0 0;
+  background:
+    radial-gradient(ellipse at 4% 14%,rgba(131,196,53,.12),transparent 36%),
+    radial-gradient(ellipse at 97% 56%,rgba(122,173,72,.11),transparent 42%);
+}
+.npv-clube-premium .clube-container{position:relative;z-index:1;max-width:1400px}
+.npv-clube-premium .clube-main{max-width:1240px;padding:0 28px 90px}
+.npv-clube-premium .clube-live-banner{
+  min-height:340px;
+  background-position:50% 47%;
+  border-bottom:1px solid rgba(190,241,135,.21);
+}
+.npv-clube-premium .clube-live-banner::before{
+  background:linear-gradient(90deg,rgba(2,15,8,.92) 0%,rgba(2,19,11,.62) 38%,rgba(4,20,12,.12) 76%,rgba(2,19,12,.35) 100%),
+             linear-gradient(0deg,#061a13 0%,transparent 33%,rgba(2,15,8,.22) 100%);
+}
+.npv-clube-premium .clube-live-banner::after{
+  content:"";position:absolute;inset:0;pointer-events:none;z-index:0;
+  background:linear-gradient(130deg,transparent 35%,rgba(174,243,91,.11) 52%,transparent 56%);
+  background-size:220% 100%;
+  animation:npv-premium-shimmer 14s ease-in-out infinite;
+  opacity:.5;
+}
+.npv-clube-premium .clube-live-banner-top{padding:25px 35px 10px;max-width:1285px}
+.npv-clube-premium .clube-live-title{gap:2px;padding:0;background:none;border-radius:0;text-shadow:0 3px 15px rgba(0,0,0,.75)}
+.npv-clube-premium .npv-premium-brand{
+  display:flex;align-items:center;gap:8px;margin-bottom:13px;
+  color:#f8fff0;font-size:10px;letter-spacing:.18em;font-weight:900;
+}
+.npv-clube-premium .npv-premium-brand img{
+  width:39px;height:39px;object-fit:contain;filter:drop-shadow(0 2px 9px rgba(193,255,94,.26));
+}
+.npv-clube-premium .clube-live-title>span:not(.npv-premium-brand){font-weight:950;font-size:14px;letter-spacing:.18em}
+.npv-clube-premium .clube-live-title>strong{
+  font-size:clamp(30px,4vw,48px);
+  color:#f3d48d;
+  line-height:1.06;
+  letter-spacing:-.035em;
+  text-shadow:0 4px 22px #000a,0 0 28px rgba(240,203,124,.27);
+}
+.npv-clube-premium .clube-live-title>em{
+  margin-top:5px;font-size:9px;font-weight:850;font-style:normal;
+  letter-spacing:.24em;color:#cff58a;
+}
+.npv-clube-premium .clube-live-signout{
+  border-color:rgba(228,253,206,.32);background:rgba(4,27,17,.73);
+  border-radius:999px;backdrop-filter:blur(12px);
+}
+.npv-clube-premium .npv-premium-hero-copy{
+  position:relative;z-index:1;
+  max-width:1270px;width:100%;margin:auto;
+  padding:0 35px 28px;
+  display:flex;align-items:end;justify-content:space-between;gap:18px;
+}
+.npv-clube-premium .npv-premium-hero-copy>span{
+  width:260px;font-size:13px;line-height:1.65;font-weight:750;
+  letter-spacing:.16em;color:#f3f9ef;
+  text-shadow:0 3px 13px #000c;
+}
+.npv-clube-premium .npv-premium-hero-copy>span::after{
+  content:"";display:block;width:71px;height:3px;background:var(--npv-lime);
+  margin-top:13px;box-shadow:0 0 15px rgba(187,255,83,.46);
+}
+.npv-clube-premium .npv-premium-hero-copy>strong{
+  line-height:1.6;font-size:10px;letter-spacing:.16em;font-weight:850;text-align:right;
+  text-shadow:0 2px 11px #0009;
+}
+.npv-clube-premium .npv-premium-hero-copy>strong b{color:var(--npv-lime);font-size:17px}
+.npv-clube-premium .clube-live-tabs{
+  width:min(100%,1184px);margin:0 auto;justify-content:center;
+  padding:9px 12px 12px;border:1px solid rgba(216,247,178,.2);
+  border-bottom:0;border-radius:17px 17px 0 0;
+  background:rgba(3,22,15,.74);
+  backdrop-filter:blur(18px);box-shadow:0 -7px 35px #0002;
+}
+.npv-clube-premium .clube-live-tabs>button{
+  border-radius:999px;padding:0 19px;min-height:40px;
+  transition:color .18s ease,background .18s ease,transform .18s ease;
+}
+.npv-clube-premium .clube-live-tabs>button:hover{transform:translateY(-1px);background:rgba(255,255,255,.08)}
+.npv-clube-premium .clube-live-tabs>button.active{
+  color:#142318;text-shadow:none;border-color:rgba(220,255,146,.75);
+  background:linear-gradient(130deg,#dcfa9c,#bffc5b);
+  box-shadow:0 4px 18px rgba(183,245,83,.2);
+}
+.npv-clube-premium .clube-intro{
+  margin:22px 2px 21px;align-items:start;
+}
+.npv-clube-premium .clube-intro h1{color:#f7fbf3;letter-spacing:-.045em;font-size:clamp(24px,3vw,34px);line-height:1.14}
+.npv-clube-premium .clube-intro p{color:#afc1b0;font-size:12px}
+.npv-clube-premium .clube-student-summary-statement.npv-premium-wallet{
+  position:relative;isolation:isolate;border-radius:21px;
+  border:1px solid rgba(244,209,132,.85);
+  background:
+    radial-gradient(circle at 78% 0%,rgba(243,189,80,.19),transparent 45%),
+    repeating-linear-gradient(125deg,transparent 0 90px,rgba(209,246,112,.055) 92px 93px,transparent 95px 167px),
+    linear-gradient(118deg,#071910 5%,#163a22 52%,#071e12 100%);
+  box-shadow:0 4px 0 rgba(255,214,133,.11),0 18px 55px rgba(0,0,0,.24),inset 0 1px rgba(250,241,201,.2);
+  margin:0 0 20px;padding:0;overflow:hidden;
+  animation:npv-premium-enter .6s ease both;
+}
+.npv-clube-premium .npv-premium-wallet::before{
+  content:"";position:absolute;right:-40px;top:-150px;width:480px;height:350px;
+  background:radial-gradient(circle,rgba(227,183,85,.15),transparent 64%);
+  pointer-events:none;
+}
+.npv-clube-premium .npv-premium-wallet .clube-student-summary-trigger{
+  display:flex;justify-content:flex-start;align-items:center;
+  gap:22px;min-height:161px;padding:22px 30px;position:relative;z-index:1;
+  color:#fff;text-align:left;
+}
+.npv-clube-premium .npv-premium-wallet .clube-student-summary-trigger:hover{background:rgba(250,244,193,.035)}
+.npv-clube-premium .npv-premium-points-seal{
+  width:61px;height:61px;flex:none;border-radius:50%;
+  display:grid;place-items:center;color:#ffe49e;
+  border:2px solid #f2c76d;
+  background:radial-gradient(circle at 34% 23%,#836633,#493619 55%,#172713 96%);
+  box-shadow:0 0 0 5px rgba(235,187,95,.09),0 3px 20px rgba(250,198,88,.26),inset 0 1px #fff5;
+}
+.npv-clube-premium .npv-premium-wallet .clube-student-balance-group{gap:0;align-items:flex-start;z-index:1}
+.npv-clube-premium .npv-premium-wallet .clube-student-hello{
+  margin:0 0 6px;font-size:10px;letter-spacing:.13em;font-weight:850;color:#e5eddc;
+}
+.npv-clube-premium .npv-premium-wallet .clube-student-balance-label{
+  font-size:12px;letter-spacing:.03em;color:#f5fbf0;
+}
+.npv-clube-premium .npv-premium-wallet .clube-student-balance-value{
+  margin:4px 0 7px;color:#f4ce78;
+  line-height:1;letter-spacing:-.055em;font-size:clamp(43px,5vw,64px);
+  font-variant-numeric:tabular-nums;text-shadow:0 0 25px rgba(244,197,111,.19);
+}
+.npv-clube-premium .npv-premium-wallet .clube-student-balance-value small{
+  color:#f1d08a;font-size:clamp(19px,2.2vw,29px);font-weight:850;
+}
+.npv-clube-premium .npv-premium-wallet .clube-student-statement-cta{
+  display:inline-flex;justify-content:flex-start;align-items:center;
+  color:#fff2d5;font-size:12px;font-weight:700;gap:9px;
+}
+.npv-clube-premium .npv-premium-wallet .clube-student-statement-cta svg{color:#f8d995}
+.npv-clube-premium .npv-premium-coins{
+  position:relative;display:block;flex:none;width:210px;height:117px;
+  margin:0 30px 0 auto;
+}
+.npv-clube-premium .npv-premium-coin{
+  position:absolute;display:grid;place-items:center;
+  width:95px;height:95px;border-radius:50%;
+  border:7px ridge #f3c55c;
+  color:#513614;font-size:18px;font-weight:1000;font-style:italic;letter-spacing:-.04em;
+  background:radial-gradient(circle at 30% 27%,#ffefae,#e3a72c 52%,#94601d 85%);
+  box-shadow:inset 0 0 0 3px rgba(99,60,11,.44),inset 0 0 0 7px rgba(255,251,213,.38),4px 16px 22px #0007,0 0 24px rgba(245,198,76,.26);
+  text-shadow:0 1px #ffe6a7;transform:rotate(-22deg) skewY(4deg);
+}
+.npv-clube-premium .npv-premium-coin-back{top:4px;left:68px;transform:rotate(19deg) scale(.9);opacity:.86}
+.npv-clube-premium .npv-premium-coin-front{top:15px;left:25px;z-index:2}
+.npv-clube-premium .npv-premium-coins-caption{
+  position:absolute;top:95px;left:10px;right:0;
+  color:#d8c18b;font-size:9px;letter-spacing:.13em;font-weight:850;text-align:center;
+}
+.npv-clube-premium .npv-premium-wallet .clube-student-statement-body{
+  background:linear-gradient(180deg,rgba(5,20,14,.45),rgba(5,20,14,.66));
+  border-top:1px solid rgba(246,214,148,.3);
+  padding:20px 30px 24px;
+}
+.npv-clube-premium .npv-premium-wallet .clube-student-statement-heading strong{color:#fff6e4}
+.npv-clube-premium .npv-premium-wallet .clube-student-statement-heading span{color:#c6d6c0}
+.npv-clube-premium .npv-benefit-alert{
+  border-radius:15px;border:1px solid rgba(202,243,135,.38);
+  background:linear-gradient(110deg,#163625,#233c23);
+  color:#efffdc;box-shadow:0 10px 20px rgba(0,0,0,.1);
+}
+.npv-clube-premium .npv-benefit-alert strong{color:#f4ffdf}
+.npv-clube-premium .npv-benefit-alert p{color:#cedfc6}
+.npv-clube-premium .npv-benefit-alert button{background:#cafa69;color:#15301a;border-radius:10px}
+/* Registered activities card: immersive athletic dashboard */
+.npv-clube-premium .npv-strava-activities.clube-activities-card{
+  margin:0 0 21px!important;border:1px solid rgba(145,240,135,.5);
+  border-radius:20px;box-shadow:0 17px 44px rgba(0,0,0,.22);
+  animation:npv-premium-enter .7s .1s ease both;
+}
+.npv-clube-premium .npv-strava-activities .npv-strava-hero-trigger{
+  min-height:270px;
+  gap:16px;
+  padding:26px 27px;
+  align-items:flex-start;
+  background:
+    linear-gradient(90deg,rgba(3,27,20,.99) 0%,rgba(4,30,19,.95) 57%,rgba(12,54,31,.75) 100%),
+    url('./assets/clube-npv-fundo-esportes.avif') center 47%/cover no-repeat;
+}
+.npv-clube-premium .npv-strava-activities .npv-strava-hero-trigger:hover{
+  background:
+    linear-gradient(90deg,rgba(3,31,21,.98) 0%,rgba(5,37,22,.93) 57%,rgba(15,61,34,.72) 100%),
+    url('./assets/clube-npv-fundo-esportes.avif') center 47%/cover no-repeat;
+}
+.npv-clube-premium .npv-strava-activities .npv-strava-hero-trigger::after{
+  inset:auto -40px -100px auto;width:310px;height:310px;
+  border-color:rgba(189,248,145,.21);
+}
+.npv-clube-premium .npv-strava-activities .clube-activities-toggle>.npv-strava-hero-icon{
+  background:rgba(194,255,122,.12);width:52px;height:52px;
+  border-color:rgba(207,251,161,.54);color:#d5fba5;
+}
+.npv-clube-premium .npv-strava-activities .npv-strava-hero-copy>strong{
+  color:#fff;font-size:clamp(22px,2.7vw,29px);line-height:1.1;letter-spacing:-.04em;
+}
+.npv-clube-premium .npv-strava-hero-eyebrow{
+  color:#c9f0ab;font-size:9px;letter-spacing:.17em;margin-bottom:9px;
+}
+.npv-clube-premium .npv-strava-activities .npv-strava-hero-copy>small{
+  margin-top:7px;font-size:12px;color:#ccddc8;
+}
+.npv-clube-premium .npv-strava-hero-meta{
+  margin-top:11px;gap:9px;color:#efffe4;
+}
+.npv-clube-premium .npv-strava-hero-indicator.is-active{background:#b4ff67;box-shadow:0 0 0 4px rgba(185,255,115,.14)}
+.npv-clube-premium .npv-strava-hero-metric b{color:#d9fe9a}
+.npv-clube-premium .npv-strava-hero-arrow{
+  background:rgba(222,253,190,.12);border-color:rgba(219,255,190,.36);
+  border-radius:50%;width:44px;height:44px;box-shadow:0 4px 15px #0003;
+}
+.npv-clube-premium .npv-strava-hero-action{color:#e5f1d5}
+.npv-clube-premium .npv-strava-challenge.npv-premium-challenge{
+  width:min(100%,590px);gap:10px;margin-top:18px;padding:17px 19px 15px;
+  border:1px solid rgba(201,243,169,.32);border-radius:17px;
+  background:linear-gradient(115deg,rgba(13,42,24,.94),rgba(30,63,33,.78));
+  box-shadow:0 9px 28px rgba(0,0,0,.22),inset 0 1px rgba(255,255,255,.07);
+  position:relative;overflow:hidden;
+}
+.npv-clube-premium .npv-premium-challenge::after{
+  content:"";position:absolute;right:-45px;bottom:-100px;width:210px;height:210px;border-radius:50%;
+  border:1px solid rgba(240,217,149,.1);box-shadow:0 0 0 28px rgba(240,217,149,.035);pointer-events:none;
+}
+.npv-clube-premium .npv-premium-challenge-head{display:flex;align-items:center;gap:12px;width:100%;position:relative;z-index:1}
+.npv-clube-premium .npv-premium-challenge-icon{
+  width:43px;height:43px;border-radius:50%;display:grid;place-items:center;flex:none;
+  border:1px solid rgba(243,215,148,.56);background:rgba(238,193,104,.16);color:#f7cf81;
+}
+.npv-clube-premium .npv-premium-challenge-labels{
+  display:flex;flex-direction:column;gap:2px;align-items:flex-start;flex:1;
+}
+.npv-clube-premium .npv-strava-challenge-title{color:#f6d99f;font-size:10px}
+.npv-clube-premium .npv-premium-challenge-goal{color:#f7fff0;font-size:clamp(22px,3vw,30px);letter-spacing:-.04em;font-weight:900;line-height:1.1}
+.npv-clube-premium .npv-premium-challenge-prize{
+  display:flex;flex-direction:column;align-items:center;gap:1px;flex:none;
+  padding:7px 12px;border-radius:12px;
+  background:linear-gradient(140deg,#fff1b7,#f1c96e);
+  border:1px solid #ffecb2;color:#604013;
+  box-shadow:0 5px 17px rgba(235,176,70,.19);
+}
+.npv-clube-premium .npv-premium-challenge-prize>span{font-weight:900;font-size:8px;letter-spacing:.09em}
+.npv-clube-premium .npv-premium-challenge-prize>strong{font-weight:950;font-size:19px;line-height:1.3}
+.npv-clube-premium .npv-premium-challenge-numbers{
+  display:flex;justify-content:space-between;align-items:baseline;gap:12px;
+  font-weight:750;font-size:12px;color:#e0f1d3;position:relative;z-index:1;
+}
+.npv-clube-premium .npv-premium-challenge-numbers strong{font-size:13px;color:#d2f995;letter-spacing:.02em}
+.npv-clube-premium .npv-strava-challenge-track{
+  height:11px;box-shadow:inset 0 2px 4px #0004;
+  border:1px solid rgba(194,239,138,.22);
+  background:rgba(238,246,228,.18);
+  position:relative;z-index:1;
+}
+.npv-clube-premium .npv-strava-challenge-fill{
+  background:linear-gradient(90deg,#9eef4b,#d8fe7a);
+  box-shadow:0 0 13px rgba(196,255,103,.45);
+}
+.npv-clube-premium .npv-strava-challenge-caption{color:#d5e6c8;font-size:11px;position:relative;z-index:1}
+.npv-clube-premium .npv-strava-detail{
+  background:#f9fcf6;
+  padding:22px 27px 24px;
+}
+.npv-clube-premium .npv-strava-connection{border-color:#dbeacb}
+.npv-clube-premium .npv-strava-example-row{background:#fff;border:1px solid #e6edde;border-radius:12px;margin-bottom:8px;padding:12px 14px}
+.npv-clube-premium .npv-strava-actions{margin-top:13px}
+/* Commerce: actual products and real redeem state. */
+.npv-clube-premium .npv-shop-featured,
+.npv-clube-premium .npv-partners-section{
+  position:relative;
+  margin:0 0 20px;padding:26px 25px 23px;
+  background:linear-gradient(150deg,#fdfdf8,#f3f6ec);
+  color:#152319;border:1px solid rgba(234,242,222,.82);
+  border-radius:21px;box-shadow:0 15px 45px rgba(0,0,0,.19);
+  animation:npv-premium-enter .8s .15s ease both;
+}
+.npv-clube-premium .npv-shop-featured{margin-top:0}
+.npv-clube-premium .npv-partners-section{margin-bottom:23px}
+.npv-clube-premium .npv-shop-heading{
+  display:flex;align-items:end;gap:12px;margin-bottom:17px;
+}
+.npv-clube-premium .npv-shop-eyebrow{
+  color:#568322;font-size:9px;letter-spacing:.15em;margin-bottom:7px;
+}
+.npv-clube-premium .npv-shop-heading h2{
+  color:#14251a;font-size:clamp(23px,3vw,31px);letter-spacing:-.045em;
+}
+.npv-clube-premium .npv-shop-heading h2 span{color:#7fad23}
+.npv-clube-premium .npv-shop-heading p{color:#778674;font-size:12px}
+.npv-clube-premium .npv-shop-view-all{
+  color:#4f7a22;border:1px solid #dfebcd;border-radius:999px;
+  padding:8px 13px;background:#fff;white-space:normal;text-align:center;
+  min-height:38px;
+}
+.npv-clube-premium .npv-shop-view-all:hover{background:#e9f5d4;text-decoration:none}
+.npv-clube-premium .npv-shop-grid{gap:13px}
+.npv-clube-premium .npv-shop-card{
+  border-radius:15px;border-color:#e7ecd9;box-shadow:0 8px 18px rgba(28,48,19,.07);
+  transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease;
+}
+.npv-clube-premium .npv-shop-card:hover{
+  transform:translateY(-5px);box-shadow:0 16px 30px rgba(36,66,22,.14);
+  border-color:#bdda91;
+}
+.npv-clube-premium .npv-shop-art{height:clamp(145px,17vw,205px)}
+.npv-clube-premium .npv-shop-photo{transition:transform .4s ease}
+.npv-clube-premium .npv-shop-card:hover .npv-shop-photo{transform:scale(1.055)}
+.npv-clube-premium .npv-shop-info{padding:14px 14px 16px}
+.npv-clube-premium .npv-shop-info h3{font-size:13px;line-height:1.35;font-weight:900;min-height:35px}
+.npv-clube-premium .npv-shop-price strong{color:#243e17;font-size:22px}
+.npv-clube-premium .npv-shop-progress-track{height:7px}
+.npv-clube-premium .npv-shop-progress-track span{background:linear-gradient(90deg,#a6dc37,#c7ef66)}
+.npv-clube-premium .npv-shop-request:not(:disabled){
+  color:#18311b;background:linear-gradient(125deg,#c7fb6c,#aefa37);
+  border-radius:9px;box-shadow:0 3px 0 rgba(77,125,24,.14);
+}
+.npv-clube-premium .npv-shop-request:hover:not(:disabled){background:linear-gradient(125deg,#d7ffa2,#bafe66)}
+.npv-clube-premium .npv-shop-demo-note{color:#7b8879}
+.npv-clube-premium .npv-partners-grid{gap:12px}
+.npv-clube-premium .npv-partner-card{
+  border:1px solid #e9eddf;border-radius:13px;
+  box-shadow:0 7px 18px rgba(22,38,20,.06);
+  transition:transform .2s ease,box-shadow .2s ease;
+}
+.npv-clube-premium .npv-partner-card:hover{transform:translateY(-3px);box-shadow:0 12px 25px rgba(22,38,20,.1)}
+.npv-clube-premium .npv-partner-discount{color:#1b561d}
+.npv-clube-premium .clube-earn-bottom{
+  border:1px solid rgba(199,234,170,.2);border-radius:19px;
+  background:linear-gradient(125deg,#10291b,#173c27);
+  color:#effee2;padding:22px 24px;
+}
+.npv-clube-premium .clube-earn-bottom .clube-card-head h2{color:#eef8e2}
+.npv-clube-premium .clube-earn-bottom .clube-card-head p{color:#bad0ac}
+.npv-clube-premium .clube-earn-bottom .clube-how strong{color:#f1f8e9}
+.npv-clube-premium .clube-earn-bottom .clube-how b{color:#e3d18b}
+.npv-clube-premium .clube-earn-bottom .clube-micro{color:#b3c8a8}
+.npv-clube-premium .clube-main-footer{color:#9db09b}
+.npv-clube-premium .clube-main>.clube-card:not(.clube-next),
+.npv-clube-premium .npv-shop:not(.npv-shop-featured),
+.npv-clube-premium .npv-partners-section{min-width:0}
+@keyframes npv-premium-enter{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes npv-premium-shimmer{0%,100%{background-position:0% 0%}50%{background-position:100% 0%}}
+@media(max-width:880px){
+  .npv-clube-premium .npv-premium-coins{width:143px;margin-right:5px}
+  .npv-clube-premium .npv-premium-coin{width:78px;height:78px;font-size:14px}
+  .npv-clube-premium .npv-premium-coin-back{left:45px}
+  .npv-clube-premium .npv-premium-coin-front{left:5px}
+  .npv-clube-premium .npv-premium-coins-caption{left:0;top:85px;font-size:7px}
+}
+@media(max-width:760px){
+  .npv-clube-premium .clube-live-banner{min-height:302px;background-position:57% center}
+  .npv-clube-premium .clube-live-banner-top{padding:20px 18px 8px}
+  .npv-clube-premium .clube-live-title>strong{font-size:29px}
+  .npv-clube-premium .clube-live-title>span:not(.npv-premium-brand){font-size:10px}
+  .npv-clube-premium .npv-premium-brand{font-size:8px;margin-bottom:7px}
+  .npv-clube-premium .npv-premium-brand img{width:33px;height:33px}
+  .npv-clube-premium .clube-live-title>em{font-size:8px;letter-spacing:.12em}
+  .npv-clube-premium .npv-premium-hero-copy{padding:5px 19px 22px}
+  .npv-clube-premium .npv-premium-hero-copy>span{max-width:210px;font-size:10px;line-height:1.5}
+  .npv-clube-premium .npv-premium-hero-copy>strong{font-size:8px;letter-spacing:.07em}
+  .npv-clube-premium .npv-premium-hero-copy>strong b{font-size:12px}
+  .npv-clube-premium .clube-main{padding:20px 13px calc(92px + env(safe-area-inset-bottom))}
+  .npv-clube-premium .clube-intro{margin:4px 2px 17px}
+  .npv-clube-premium .clube-intro h1{font-size:25px}
+  .npv-clube-premium .clube-intro p{font-size:11px}
+  .npv-clube-premium .clube-live-tabs{
+    position:fixed;z-index:45;bottom:0;left:0;right:0;
+    width:100%;padding:8px 10px calc(9px + env(safe-area-inset-bottom));
+    border-radius:19px 19px 0 0;border:1px solid rgba(203,241,164,.26);
+    border-bottom:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
+    background:rgba(5,25,17,.96);
+    box-shadow:0 -10px 38px #0008;
+    backdrop-filter:blur(22px);gap:4px;
+  }
+  .npv-clube-premium .clube-live-tabs>button{
+    display:flex;flex-direction:column;gap:3px;min-height:52px;height:auto;
+    border-radius:11px;padding:6px 3px;font-size:10px;line-height:1.1;
+    text-shadow:none;white-space:normal;
+  }
+  .npv-clube-premium .clube-live-tabs>button svg{width:20px;height:20px}
+  .npv-clube-premium .npv-premium-wallet{border-radius:17px}
+  .npv-clube-premium .npv-premium-wallet .clube-student-summary-trigger{
+    min-height:148px;padding:18px 19px;gap:13px;
+  }
+  .npv-clube-premium .npv-premium-points-seal{width:42px;height:42px;border-width:2px}
+  .npv-clube-premium .npv-premium-points-seal svg{width:22px;height:22px}
+  .npv-clube-premium .npv-premium-wallet .clube-student-hello{font-size:9px}
+  .npv-clube-premium .npv-premium-wallet .clube-student-balance-label{font-size:10px}
+  .npv-clube-premium .npv-premium-wallet .clube-student-balance-value{font-size:clamp(40px,9vw,54px)}
+  .npv-clube-premium .npv-premium-wallet .clube-student-balance-value small{font-size:20px}
+  .npv-clube-premium .npv-premium-wallet .clube-student-statement-cta{font-size:11px}
+  .npv-clube-premium .npv-premium-coins{width:94px;height:91px;margin:0 0 0 auto}
+  .npv-clube-premium .npv-premium-coin{width:67px;height:67px;font-size:12px;border-width:5px}
+  .npv-clube-premium .npv-premium-coin-back{left:31px;top:0}
+  .npv-clube-premium .npv-premium-coin-front{left:0;top:13px}
+  .npv-clube-premium .npv-premium-coins-caption{top:82px;font-size:6px}
+  .npv-clube-premium .npv-premium-wallet .clube-student-statement-body{padding:16px 18px 22px}
+  .npv-clube-premium .npv-strava-activities .npv-strava-hero-trigger{
+    padding:19px 17px;gap:11px;min-height:275px;
+  }
+  .npv-clube-premium .npv-strava-activities .clube-activities-toggle>.npv-strava-hero-icon{
+    width:42px;height:42px;border-radius:11px;
+  }
+  .npv-clube-premium .npv-strava-activities .npv-strava-hero-copy>strong{font-size:21px}
+  .npv-clube-premium .npv-strava-activities .npv-strava-hero-copy>small{font-size:10px}
+  .npv-clube-premium .npv-strava-challenge.npv-premium-challenge{
+    padding:13px 12px;gap:9px;margin-top:15px;
+  }
+  .npv-clube-premium .npv-premium-challenge-icon{width:33px;height:33px}
+  .npv-clube-premium .npv-premium-challenge-icon svg{width:17px;height:17px}
+  .npv-clube-premium .npv-premium-challenge-prize{padding:6px 9px}
+  .npv-clube-premium .npv-premium-challenge-prize>strong{font-size:17px}
+  .npv-clube-premium .npv-premium-challenge-prize>span{font-size:7px}
+  .npv-clube-premium .npv-premium-challenge-goal{font-size:24px}
+  .npv-clube-premium .npv-strava-challenge-caption{font-size:10px}
+  .npv-clube-premium .npv-strava-detail{padding:16px 16px 20px}
+  .npv-clube-premium .npv-shop-featured,.npv-clube-premium .npv-partners-section{padding:19px 16px 20px;border-radius:18px}
+  .npv-clube-premium .npv-shop-heading{align-items:start;gap:9px;flex-wrap:wrap}
+  .npv-clube-premium .npv-shop-heading h2{font-size:25px}
+  .npv-clube-premium .npv-shop-view-all{margin-left:auto;font-size:11px;padding:7px 11px}
+  .npv-clube-premium .npv-shop-featured .npv-shop-grid{
+    display:flex;gap:11px;overflow-x:auto;scroll-snap-type:x mandatory;
+    scrollbar-width:thin;scrollbar-color:#b6d67e transparent;
+    padding:2px 3px 15px;margin:0 -3px -3px;
+    -webkit-overflow-scrolling:touch;
+  }
+  .npv-clube-premium .npv-shop-featured .npv-shop-card{
+    flex:0 0 min(67vw,236px);scroll-snap-align:start;
+  }
+  .npv-clube-premium .npv-shop-art{height:170px}
+  .npv-clube-premium .npv-partners-grid{
+    display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;
+    -webkit-overflow-scrolling:touch;padding:2px 2px 12px;
+  }
+  .npv-clube-premium .npv-partner-card{flex:0 0 min(55vw,205px);scroll-snap-align:start}
+  .npv-clube-premium .clube-earn-bottom{padding:20px 17px}
+}
+@media(max-width:410px){
+  .npv-clube-premium .clube-live-banner{min-height:284px}
+  .npv-clube-premium .clube-live-title>strong{font-size:25px}
+  .npv-clube-premium .clube-live-signout{padding:8px 10px;font-size:10px}
+  .npv-clube-premium .npv-premium-wallet .clube-student-summary-trigger{gap:10px;padding:14px 13px;min-height:136px}
+  .npv-clube-premium .npv-premium-points-seal{width:34px;height:34px}
+  .npv-clube-premium .npv-premium-wallet .clube-student-balance-value{font-size:39px}
+  .npv-clube-premium .npv-premium-wallet .clube-student-balance-value small{font-size:17px}
+  .npv-clube-premium .npv-premium-coins{width:59px;margin:0 0 0 auto}
+  .npv-clube-premium .npv-premium-coin{width:48px;height:48px;font-size:9px;border-width:4px}
+  .npv-clube-premium .npv-premium-coin-back{left:17px;top:3px}
+  .npv-clube-premium .npv-premium-coin-front{left:0;top:20px}
+  .npv-clube-premium .npv-premium-coins-caption{display:none}
+  .npv-clube-premium .npv-strava-activities .clube-activities-toggle>.npv-strava-hero-icon{width:34px;height:34px}
+  .npv-clube-premium .npv-strava-activities .clube-activities-toggle>.npv-strava-hero-icon svg{width:18px}
+  .npv-clube-premium .npv-strava-activities .npv-strava-hero-copy>strong{font-size:18px}
+  .npv-clube-premium .npv-strava-hero-eyebrow{font-size:8px}
+  .npv-clube-premium .npv-strava-activities .clube-activities-toggle>.npv-strava-hero-action{min-width:30px}
+  .npv-clube-premium .npv-strava-hero-arrow{width:31px;height:31px}
+  .npv-clube-premium .npv-premium-challenge-head{gap:7px}
+  .npv-clube-premium .npv-premium-challenge-prize{padding:5px 7px}
+  .npv-clube-premium .npv-premium-challenge-prize>strong{font-size:15px}
+}
+@media(prefers-reduced-motion:reduce){
+  .npv-clube-premium *, .npv-clube-premium *::before,.npv-clube-premium *::after{
+    animation-duration:.01ms!important;transition-duration:.01ms!important;
+  }
+}
