@@ -70,3 +70,17 @@ O Strava exige um **aplicativo desenvolvedor** registrado na conta, gerando Clie
 - Strava Developers: `https://developers.strava.com/docs/authentication/`
 - Strava Developers: `https://developers.strava.com/docs/getting-started/`
 - Strava Developers: `https://developers.strava.com/docs/reference/#api-Activities-getLoggedInAthleteActivities`
+
+## Prévia pronta para o proprietário — 18/10/2026
+- Página ilustrativa com dados fictícios para testar no celular: `/strava-preview.html` da branch `feat/npv-strava-foundation-20261018`.
+- Alias **estável** da Vercel na prévia: `npv-site1-git-feat-npv-strava-fo-26f354-ferreiracmotas-projects.vercel.app`. A hospedagem usa autenticação Vercel na prévia; não publicar dados reais nessa página.
+- Variável de ambiente `STRAVA_PILOT_CALLBACK_URL` já criada na **Vercel npv-site1**, somente no target Preview e limitada a esta branch, com URL `https://npv-site1-git-feat-npv-strava-fo-26f354-ferreiracmotas-projects.vercel.app/api/strava/pilot`.
+- Preenchimento previsto na conta desenvolvedora Strava:
+  - Nome: `Clube de Benefícios NPV`
+  - Categoria: `Training` (Treinamento)
+  - Website: `https://www.naopensevai.com`
+  - Authorization Callback Domain: `npv-site1-git-feat-npv-strava-fo-26f354-ferreiracmotas-projects.vercel.app` (apenas domínio, sem protocolo/path)
+  - Clube: opcional, `Não Pense, Vai!`, se disponível.
+- O cadastro da aplicação Strava só pode ser feito na conta Strava autenticada do titular em `https://www.strava.com/settings/api`. Necessita assinatura Strava.
+- Duas variáveis ainda pendentes: `STRAVA_CLIENT_ID` e `STRAVA_CLIENT_SECRET` em Vercel **somente Preview e a branch**. Secret jamais no chat, GitHub ou browser bundle. Reimplantar após configurar variáveis.
+- Para transição a domínio público e inclusão dos demais alunos, revisar callback domínio e limites da API, segredos e política; não implantar em produção com as credenciais da prévia.
