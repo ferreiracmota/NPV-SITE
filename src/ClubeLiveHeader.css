@@ -214,3 +214,24 @@
     padding:11px 16px;
   }
 }
+
+/* Defesa responsiva: os quatro menus não devem alargar o viewport
+   em iPhones menores. Preserva a faixa horizontal e o layout maior. */
+.clube-live-student .clube-student-summary>div{min-width:0}
+.clube-live-student .clube-student-hello{overflow-wrap:anywhere}
+@media(max-width:380px){
+  .clube-live-student .clube-live-tabs>button{
+    flex-direction:column;
+    min-height:47px;
+    height:47px;
+    gap:2px;
+    text-align:center;
+    white-space:normal;
+    line-height:1.05;
+    padding:3px 1px;
+  }
+  .clube-live-student .clube-live-tabs>button svg{width:13px;height:13px}
+  .clube-live-student .clube-student-summary{gap:10px}
+  .clube-live-student .clube-student-summary>svg{width:55px;height:55px}
+  .clube-live-student .clube-student-summary strong{font-size:clamp(33px,10vw,44px)}
+}
