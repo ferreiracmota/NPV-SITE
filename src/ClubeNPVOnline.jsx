@@ -430,7 +430,7 @@ export default function ClubeNPVOnline() {
         {pendingCount>0&&<button className="npv-shop-pending-banner" onClick={()=>setTab('recompensas')}><Gift size={20}/><span><strong>{pendingCount} pedido(s) aguardando aprovação</strong><small>Ver a fila de resgates</small></span><ArrowRight size={17}/></button>}
         <div className="clube-columns"><section className="clube-card"><div className="clube-card-head"><div><h2>Últimas movimentações</h2><p>Histórico do clube</p></div></div>{activityList(data.events.slice(0,6),true)}</section><section className="clube-card"><div className="clube-card-head"><div><h2>Novos cadastros</h2><p>Alunos aguardando aprovação</p></div></div>{studentMembers.filter(x=>!x.approved).slice(0,6).map(x=><div className="clube-online-member" key={x.id}><div><strong>{x.full_name}</strong><small>{x.email}</small></div><button disabled={busy} className="clube-btn clube-btn-outline" onClick={()=>approve(x.id)}><Check size={15}/> Aprovar</button></div>)}{studentMembers.every(x=>x.approved)&&<p className="clube-empty">Nenhum cadastro pendente.</p>}<button className="clube-btn clube-btn-outline clube-btn-full" onClick={()=>setTab('alunos')}>Gerenciar alunos</button></section></div>
       </>}
-      {tab==='inicio'&&isAdmin&&<ClubeKmSetup/>}
+      {tab==='inicio'&&isAdmin&&<><ClubeKmSetup/><ClubeRegisteredActivities session={session}/></>}
       {tab==='inicio'&&!isAdmin&&<>
         <div className="clube-student-summary"><div><div className="clube-student-hello">OLÁ, {profile?.full_name?.split(' ')[0]?.toUpperCase()||'ALUNO'}! ✦</div><p>SEUS PONTOS EM {YEAR}</p><strong>{format(balance(user.id))} <small>pontos</small></strong></div><Award size={90}/></div>
         <BenefitNotice rewards={data.rewards} points={Math.max(0,balance(user.id)-reserved(user.id))} onOpen={()=>setTab('recompensas')}/>
@@ -444,7 +444,7 @@ export default function ClubeNPVOnline() {
             {mine.length>0&&<button type="button" className="clube-text-button clube-activities-view-all" onClick={()=>setTab('historico')}>Ver todas as atividades <ArrowRight size={16}/></button>}
           </div>}
         </section>
-        <ClubeRegisteredActivities/>
+        <ClubeRegisteredActivities session={session}/>
         <section className="npv-shop npv-shop-featured"><div className="npv-shop-heading"><div><div className="npv-shop-eyebrow"><Gift size={15}/>LOJINHA DO CLUBE NPV</div><h2>Troque seus pontos ✦</h2><p>Seu próximo objetivo pode estar aqui.</p></div><button className="npv-shop-view-all" onClick={()=>setTab('recompensas')}>Ver catálogo <ArrowRight size={16}/></button></div>{rewardsGrid(4)}<p className="npv-shop-demo-note">A disponibilidade real será confirmada após a aprovação do prêmio e dos parceiros.</p></section>
         {data.partners.some(x=>x.active)&&<section className="npv-partners-section">
           <div className="npv-shop-heading"><div><div className="npv-shop-eyebrow"><Award size={15}/> PARCERIAS NPV</div><h2>Benefícios de parceiros ✦</h2><p>Explore os parceiros e consulte os descontos disponíveis.</p></div>
