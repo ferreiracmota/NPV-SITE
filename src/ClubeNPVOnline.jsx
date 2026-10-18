@@ -79,6 +79,9 @@ function AuthPage({onLoggedIn,onResetDone,defaultMode='login'}) {
       }
       const {data,error}=await supabase.auth.signInWithPassword({email:email.trim(),password})
       if(error) throw error
+      // Ao concluir o login, solte o foco do campo para o iOS fechar o teclado
+      // antes de montar a nova tela (sem interferir na autenticação).
+      if(document.activeElement instanceof HTMLElement) document.activeElement.blur()
       setPassword('')
       if(data?.session) onLoggedIn?.(data.session)
     } catch(err){setShow(err?.message||'Não foi possível concluir. Tente novamente.')}
@@ -153,6 +156,12 @@ export default function ClubeNPVOnline() {
     return ()=>URL.revokeObjectURL(objectUrl)
   },[rewardImageFile])
   const user=session?.user
+  // O formulário pode estar rolado até o campo Senha quando o painel abre.
+  // Após carregar o perfil autenticado, mostre o painel a partir do início.
+  useEffect(()=>{
+    if(!user?.id || !profile?.id || (!profile.approved && !isAdmin)) return
+    window.scrollTo({top:0,left:0,behavior:'auto'})
+  },[user?.id,profile?.id,profile?.approved,isAdmin])
   useEffect(()=>{
     let live=true
     supabase.auth.getSession().then(({data})=>{
@@ -326,7 +335,11 @@ export default function ClubeNPVOnline() {
       setRuleDraft(null)
     },'Valores de referência atualizados. Os pontos continuam sendo lançados pela administração.')
   }
-  async function signOut(){await supabase.auth.signOut();setSession(null)}
+  async function signOut(){
+    await supabase.auth.signOut()
+    setSession(null)
+    window.scrollTo({top:0,left:0,behavior:'auto'})
+  }
   function newAward(id){setAward({studentId:id||studentMembers.find(x=>x.approved)?.id||'',type:'renovacao',points:ruleDefaultPoints(data.rules,'renovacao'),note:''})}
   const activityList=(rows,showMember=false)=><div className="clube-activities">
     {!rows.length&&<p className="clube-empty">Nenhuma movimentação registrada ainda.</p>}

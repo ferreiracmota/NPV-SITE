@@ -62,3 +62,16 @@
   .clube-earn-bottom .clube-how{grid-template-columns:1fr}
   .clube-nav .clube-nav-logout{margin-left:3px;padding-right:18px}
 }
+
+/* Correção para WebKit/iOS e navegadores internos (Instagram):
+   inputs com fonte inferior a 16px disparam zoom automático ao receber foco.
+   O layout desktop permanece sem alterações e o zoom manual continua liberado. */
+@media (max-width:1024px){
+  .clube-shell input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+  .clube-shell select,
+  .clube-shell textarea{
+    font-size:16px;
+    min-width:0;
+    max-width:100%;
+  }
+}
