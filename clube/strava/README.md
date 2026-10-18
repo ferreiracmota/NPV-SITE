@@ -49,3 +49,24 @@ Pontos que demandam confirmação *por escrito*: combinação de km com dados de
 - Conferidos os números do banco após a migração: 19 eventos de pontos, 4 registros de resgate e 2 perfis (migração não os modificou).
 - `.github/workflows/clube-km-rules.yml`: `node --test` rodando a cada alteração na branch/PR.
 - **Situação de liberação:** apenas preview da Vercel e migração aditiva Supabase; PR #6 continua como rascunho, sem publicação no site oficial.
+
+## Teste oficial de conta individual — rota preparada em 18/10/2026
+
+Existe agora a função Vercel `GET /api/strava/pilot`, com o seguinte fluxo:
+- Sem configuração, responde **503**, com mensagem clara, sem contatar Strava e sem modificar nada.
+- Após configurar apenas no ambiente do servidor `STRAVA_CLIENT_ID`, `STRAVA_CLIENT_SECRET` e `STRAVA_PILOT_CALLBACK_URL` (uma URL HTTPS terminando em `/api/strava/pilot`), redireciona o atleta para OAuth oficial do Strava pedindo somente `activity:read`.
+- Callback exige `state` HMAC válido + cookie HttpOnly Secure SameSite=Lax com validade de 10 min, e verifica escopo concedido.
+- Troca código diretamente no servidor. Consulta exclusivamente a conta que autorizou via `GET /api/v3/athlete/activities` com janela de 7 dias, 1 página de até 30 atividades.
+- Exibe apenas data, esporte e quilômetros ao próprio atleta, em HTML com CSP restritiva; não retorna mapas, fotos, ID, token, nome, GPS ou outros dados de atleta.
+- Não salva token nem atividade, não faz agregação mensal, não converte quilômetros em pontos e não chama nenhuma função do banco NPV.
+- Testes em `api/strava/pilot.test.mjs` comprovam assinatura, expiração do state, cookie, seleção mínima dos campos, escape de HTML e falha segura sem as credenciais.
+
+**Este teste não implementa a sincronização mensal de vários alunos**, que é outra fase e ainda depende do uso permitido de dados e armazenamento no programa de recompensas. Não requer o navegador TinyFish.
+
+### Requisito externo inevitável
+O Strava exige um **aplicativo desenvolvedor** registrado na conta, gerando Client ID e Client Secret; a sessão pessoal do site, isoladamente, não disponibiliza essas credenciais para a API. A configuração é feita em `https://www.strava.com/settings/api`; o segredo deve ser salvo somente no cofre/variáveis de servidor da Vercel, nunca no GitHub ou nesta conversa. O perfil de navegador criado no TinyFish não equivale à autenticação do app OAuth.
+
+### Fontes
+- Strava Developers: `https://developers.strava.com/docs/authentication/`
+- Strava Developers: `https://developers.strava.com/docs/getting-started/`
+- Strava Developers: `https://developers.strava.com/docs/reference/#api-Activities-getLoggedInAthleteActivities`
