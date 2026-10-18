@@ -22,7 +22,7 @@ export default function ClubeRegisteredActivities({session}) {
   const [status,setStatus]=useState({connected:false,activities:[]})
   const [busy,setBusy]=useState(false)
   const [loading,setLoading]=useState(false)
-  const [goal,setGoal]=useState({loaded:false,km:null,active:false})
+  const [goal,setGoal]=useState({loaded:false,km:null,active:false,reward:300})
   const [error,setError]=useState('')
   const token=session?.access_token
   const activities=Array.isArray(status.activities)?status.activities:[]
@@ -34,15 +34,15 @@ export default function ClubeRegisteredActivities({session}) {
   const progress=monthKm!==null&&monthlyGoal!==null?challengeBar(monthKm,monthlyGoal):{valid:false,percentage:0,completed:false}
   useEffect(()=>{
     let live=true
-    setGoal({loaded:false,km:null,active:false})
-    supabase.from('clube_monthly_challenges').select('goal_km,active')
+    setGoal({loaded:false,km:null,active:false,reward:300})
+    supabase.from('clube_monthly_challenges').select('goal_km,active,reward_points')
       .eq('month_key',monthKey).maybeSingle()
       .then(({data,error:dbError})=>{
         if(!live)return
-        if(dbError||!data)setGoal({loaded:true,km:null,active:false})
-        else setGoal({loaded:true,km:Number(data.goal_km),active:!!data.active})
+        if(dbError||!data)setGoal({loaded:true,km:null,active:false,reward:300})
+        else setGoal({loaded:true,km:Number(data.goal_km),active:!!data.active,reward:Number(data.reward_points)||300})
       })
-      .catch(()=>{if(live)setGoal({loaded:true,km:null,active:false})})
+      .catch(()=>{if(live)setGoal({loaded:true,km:null,active:false,reward:300})})
     return()=>{live=false}
   },[monthKey,token])
 
@@ -138,7 +138,7 @@ export default function ClubeRegisteredActivities({session}) {
           </span>
           <span className="npv-strava-challenge-caption">
             {progress.valid?(progress.completed
-              ?'Parabéns! Você atingiu a meta mensal.'
+              ?'Meta alcançada! Recompensa prevista: '+goal.reward+' pontos (crédito ainda não automático).'
               :format(monthlyGoal-monthKm>0?Math.max(0,monthlyGoal-monthKm):0)+' km para completar o desafio')
               :(!goal.loaded?'Carregando meta do desafio...':monthlyGoal===null?'Meta mensal a definir pelo clube':!status.connected?'Conecte-se para acompanhar sua evolução':monthKm===null?'Aguardando dados reais do Strava':'Atualize as atividades para conferir o progresso')}
           </span>
