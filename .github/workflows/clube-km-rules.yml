@@ -6,6 +6,7 @@ on:
       - clube/strava/**
       - api/strava/**
       - src/ClubeKmSetup.*
+      - src/ClubeRegisteredActivities.*
       - src/ClubeNPVOnline.jsx
       - clube/migrations/20261018_clube_km_settings.sql
       - .github/workflows/clube-km-rules.yml
@@ -15,6 +16,7 @@ on:
       - clube/strava/**
       - api/strava/**
       - src/ClubeKmSetup.*
+      - src/ClubeRegisteredActivities.*
       - src/ClubeNPVOnline.jsx
       - clube/migrations/20261018_clube_km_settings.sql
       - .github/workflows/clube-km-rules.yml
@@ -29,4 +31,4 @@ jobs:
         with:
           node-version: '22'
       - name: Testar quilometragem, periodo, duplicidade e vinculo
-        run: node --test clube/strava/monthlyCandidate.test.mjs api/strava/pilot.test.mjs
+        run: node --test clube/strava/monthlyCandidate.test.mjs api/strava/pilot.test.mjs api/strava/link.test.mjs
