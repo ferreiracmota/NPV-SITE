@@ -12,6 +12,7 @@ import './ClubeNPVOnline.css'
 import './ClubeLiveHeader.css'
 import { BenefitNotice, PartnerCards, PartnerEditor, safePartnerUrl } from './ClubeExtras.jsx'
 import ClubeKmSetup from './ClubeKmSetup.jsx'
+import ClubeRegisteredActivities from './ClubeRegisteredActivities.jsx'
 
 const format = value => Number(value||0).toLocaleString('pt-BR')
 const date = value => new Date(value).toLocaleDateString('pt-BR',{day:'2-digit',month:'short',year:'numeric'})
@@ -443,6 +444,7 @@ export default function ClubeNPVOnline() {
             {mine.length>0&&<button type="button" className="clube-text-button clube-activities-view-all" onClick={()=>setTab('historico')}>Ver todas as atividades <ArrowRight size={16}/></button>}
           </div>}
         </section>
+        <ClubeRegisteredActivities/>
         <section className="npv-shop npv-shop-featured"><div className="npv-shop-heading"><div><div className="npv-shop-eyebrow"><Gift size={15}/>LOJINHA DO CLUBE NPV</div><h2>Troque seus pontos ✦</h2><p>Seu próximo objetivo pode estar aqui.</p></div><button className="npv-shop-view-all" onClick={()=>setTab('recompensas')}>Ver catálogo <ArrowRight size={16}/></button></div>{rewardsGrid(4)}<p className="npv-shop-demo-note">A disponibilidade real será confirmada após a aprovação do prêmio e dos parceiros.</p></section>
         {data.partners.some(x=>x.active)&&<section className="npv-partners-section">
           <div className="npv-shop-heading"><div><div className="npv-shop-eyebrow"><Award size={15}/> PARCERIAS NPV</div><h2>Benefícios de parceiros ✦</h2><p>Explore os parceiros e consulte os descontos disponíveis.</p></div>
