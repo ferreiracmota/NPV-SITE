@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
 import ClubeNPV from './ClubeNPV.jsx'
-import ClubeNPVOnline from './ClubeNPVOnline.jsx'
+import ClubeNPVOnline, { ClubeLoginVisualPreview } from './ClubeNPVOnline.jsx'
 import { clubeReady } from './clubeSupabase.js'
 
 const params = new URLSearchParams(window.location.search)
@@ -35,7 +35,8 @@ function ClubeIndisponivel() {
 }
 
 const page = isClubeRoute
-  ? (params.get('demo') === '1' ? <ClubeNPV /> :
+  ? (params.get('login_preview') === '1' ? <ClubeLoginVisualPreview /> :
+    params.get('demo') === '1' ? <ClubeNPV /> :
     clubeReady ? <ClubeNPVOnline /> : <ClubeIndisponivel />)
   : <App />
 

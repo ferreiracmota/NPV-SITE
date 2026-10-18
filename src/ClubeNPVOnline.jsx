@@ -22,13 +22,19 @@ const ruleNames={
   desafio:'Participação em desafio',aniversario:'Aniversário como assinante',
   ajuste:'Ajuste administrativo',resgate:'Resgate de recompensa'
 }
-function ShellHeader() {
+function ShellHeader({authVariant=false}) {
+  if(authVariant) return <header className="clube-login-art-header" aria-label="Cabeçalho do Clube de Benefícios NPV">
+    <div className="clube-login-art-inner">
+      <div className="clube-login-art-title"><span>Clube de</span><strong>Benefícios</strong></div>
+      <a className="clube-login-art-back" href="/"><ArrowLeft size={16}/> Voltar ao site</a>
+    </div>
+  </header>
   return <header className="clube-header"><div className="clube-header-inner">
     <div className="clube-logo"><div className="clube-logo-mark">NPV<span>!</span></div><div className="clube-logo-label"><strong>NÃO PENSE, VAI!</strong><span>CLUBE DE BENEFÍCIOS</span></div></div>
     <div className="clube-header-actions"><a className="clube-back" href="/"><ArrowLeft size={16}/><span>Voltar ao site</span></a><span className="clube-demo-badge clube-online-badge"><span className="clube-demo-dot"/> CLUBE NPV</span></div>
   </div></header>
 }
-function AuthPage({onLoggedIn,onResetDone,defaultMode='login'}) {
+function AuthPage({onLoggedIn,onResetDone,defaultMode='login',previewOnly=false}) {
   const [mode,setMode]=useState(defaultMode)
   const [fullName,setFullName]=useState('')
   const [email,setEmail]=useState('')
@@ -36,18 +42,22 @@ function AuthPage({onLoggedIn,onResetDone,defaultMode='login'}) {
   const [show,setShow]=useState('')
   const [busy,setBusy]=useState(false)
   useEffect(()=>{
+    if(previewOnly) return
     const {data:{subscription}}=supabase.auth.onAuthStateChange((event)=>{
       if(event==='PASSWORD_RECOVERY') setMode('reset')
     })
     return ()=>subscription.unsubscribe()
   },[])
   useEffect(()=>{
+    if(previewOnly) return
     supabase.auth.getSession().then(({data})=>{
       if(data.session && new URLSearchParams(window.location.search).has('type')) setMode('reset')
     })
   },[])
   async function submit(e){
-    e.preventDefault();setBusy(true);setShow('')
+    e.preventDefault()
+    if(previewOnly){setShow('Este é apenas um teste visual. Nenhuma informação foi enviada.');return}
+    setBusy(true);setShow('')
     try{
       if(mode==='forgot'){
         const {error}=await supabase.auth.resetPasswordForEmail(email.trim(),{
@@ -83,7 +93,7 @@ function AuthPage({onLoggedIn,onResetDone,defaultMode='login'}) {
     } catch(err){setShow(err?.message||'Não foi possível concluir. Tente novamente.')}
     finally{setBusy(false)}
   }
-  return <div className="clube-shell"><ShellHeader/><div className="clube-auth-wrap">
+  return <div className="clube-shell"><ShellHeader authVariant/><div className="clube-auth-wrap">
     <div className="clube-auth-hero"><span>SEU CLUBE COMEÇA AQUI ✦</span><h1>Sua evolução merece <em>recompensas.</em></h1><p>Acumule pontos ao longo do ano, acompanhe suas conquistas e descubra os benefícios do Clube Não Pense, Vai!.</p>
       <div><ShieldCheck size={18}/> Conta individual e extrato protegido</div><div><Gift size={18}/> Pontos e recompensas em um só lugar</div>
     </div>
@@ -98,11 +108,13 @@ function AuthPage({onLoggedIn,onResetDone,defaultMode='login'}) {
         {show&&<div className="clube-auth-message" role="status">{show}</div>}
         <button className="clube-btn clube-btn-primary clube-btn-full" type="submit" disabled={busy}>{busy?'Aguarde...':mode==='signup'?'Solicitar cadastro':mode==='forgot'?'Enviar recuperação':mode==='reset'?'Salvar nova senha':'Entrar no Clube'}<ArrowRight size={17}/></button>
       </form>
+      {previewOnly&&<div className="clube-login-preview-label">PRÉVIA VISUAL · Sem autenticação e sem movimentações reais</div>}
       <div className="clube-auth-links">{mode==='login'?<><button onClick={()=>{setMode('forgot');setShow('')}}>Esqueci minha senha</button><button onClick={()=>{setMode('signup');setShow('')}}>Criar uma conta</button></>:<button onClick={()=>{setMode('login');setShow('')}}><ArrowLeft size={15}/> Voltar para login</button>}</div>
       <small>Seus pontos ficam vinculados exclusivamente à sua conta. Esta área não substitui o acesso aos treinos pela Hotmart. Consulte nossa <a href="/politica-de-privacidade.html" target="_blank" rel="noopener noreferrer">Política de Privacidade</a> e os <a href="/termos-de-uso.html" target="_blank" rel="noopener noreferrer">Termos de Uso</a>.</small>
     </section>
   </div></div>
 }
+export function ClubeLoginVisualPreview(){return <AuthPage previewOnly/>}
 const emptyState={members:[],events:[],rewards:[],requests:[],rules:[],partners:[]}
 const REWARD_IMAGE_BUCKET='clube-npv-recompensas'
 const rewardImageUrl = path => /^images\/[a-f0-9-]{36}\.(?:jpg|png|webp)$/.test(path||'') ? supabase.storage.from(REWARD_IMAGE_BUCKET).getPublicUrl(path).data.publicUrl : ''
