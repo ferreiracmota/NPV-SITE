@@ -28,6 +28,8 @@ export default function ClubeRegisteredActivities() {
         <div className="npv-strava-status-icon"><LockKeyhole size={19}/></div>
         <div><strong>Strava ainda não conectado</strong><p>A conexão automática está sendo preparada. Nenhuma atividade sua foi consultada ou pontuada.</p></div>
       </div>
+      <a className="npv-strava-connect-button" href="/api/strava/pilot" target="_blank" rel="noopener noreferrer" aria-label="Testar conexão e conferir minhas atividades no Strava (abre em uma nova aba)">Conectar ao Strava — testar meus quilômetros ↗</a>
+      <p className="npv-strava-pilot-note">Primeiro teste: somente leitura das atividades da própria conta. Nenhum ponto é creditado.</p>
       <button type="button" className="npv-strava-example-button" onClick={() => setPreview(v => !v)}>
         {preview ? <EyeOff size={16}/> : <Eye size={16}/>}
         {preview ? 'Ocultar exemplo' : 'Visualizar exemplo de atividades'}
