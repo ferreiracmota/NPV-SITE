@@ -13,6 +13,7 @@ import './ClubeLiveHeader.css'
 import { BenefitNotice, PartnerCards, PartnerEditor, safePartnerUrl } from './ClubeExtras.jsx'
 import ClubeKmSetup from './ClubeKmSetup.jsx'
 import ClubeRegisteredActivities from './ClubeRegisteredActivities.jsx'
+import ClubeMonthlyChallengeAdmin from './ClubeMonthlyChallengeAdmin.jsx'
 
 const format = value => Number(value||0).toLocaleString('pt-BR')
 const date = value => new Date(value).toLocaleDateString('pt-BR',{day:'2-digit',month:'short',year:'numeric'})
@@ -430,7 +431,7 @@ export default function ClubeNPVOnline() {
         {pendingCount>0&&<button className="npv-shop-pending-banner" onClick={()=>setTab('recompensas')}><Gift size={20}/><span><strong>{pendingCount} pedido(s) aguardando aprovação</strong><small>Ver a fila de resgates</small></span><ArrowRight size={17}/></button>}
         <div className="clube-columns"><section className="clube-card"><div className="clube-card-head"><div><h2>Últimas movimentações</h2><p>Histórico do clube</p></div></div>{activityList(data.events.slice(0,6),true)}</section><section className="clube-card"><div className="clube-card-head"><div><h2>Novos cadastros</h2><p>Alunos aguardando aprovação</p></div></div>{studentMembers.filter(x=>!x.approved).slice(0,6).map(x=><div className="clube-online-member" key={x.id}><div><strong>{x.full_name}</strong><small>{x.email}</small></div><button disabled={busy} className="clube-btn clube-btn-outline" onClick={()=>approve(x.id)}><Check size={15}/> Aprovar</button></div>)}{studentMembers.every(x=>x.approved)&&<p className="clube-empty">Nenhum cadastro pendente.</p>}<button className="clube-btn clube-btn-outline clube-btn-full" onClick={()=>setTab('alunos')}>Gerenciar alunos</button></section></div>
       </>}
-      {tab==='inicio'&&isAdmin&&<><ClubeKmSetup/><ClubeRegisteredActivities session={session}/></>}
+      {tab==='inicio'&&isAdmin&&<><ClubeKmSetup/><ClubeMonthlyChallengeAdmin/><ClubeRegisteredActivities session={session}/></>}
       {tab==='inicio'&&!isAdmin&&<>
         <section className={`clube-student-summary clube-student-summary-statement${activitiesOpen?' is-open':''}`} aria-label="Seus pontos e extrato">
           <button type="button" className="clube-student-summary-trigger"
