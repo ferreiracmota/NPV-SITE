@@ -11,6 +11,7 @@ const SAMPLE = [
   { id: 3, label: 'Caminhada', when: '14 de outubro', km: 8.0, symbol: '🚶' }
 ]
 const format=v=>Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:2})
+const formatPoints=v=>Number(v||0).toLocaleString('pt-BR',{maximumFractionDigits:0})
 const sportName={Run:'Corrida',Walk:'Caminhada',Ride:'Bicicleta',VirtualRun:'Corrida virtual',VirtualRide:'Bicicleta virtual',Hike:'Trilha'}
 const sportIcon={Run:'🏃',Walk:'🚶',Ride:'🚴',VirtualRun:'🏃',VirtualRide:'🚴',Hike:'🥾'}
 const readableDate=v=>/^\d{4}-\d{2}-\d{2}$/.test(v||'')
@@ -127,7 +128,7 @@ export default function ClubeRegisteredActivities({session}) {
           <span className="npv-strava-challenge-top">
             <span className="npv-strava-challenge-title">DESAFIO DO MÊS</span>
             {monthlyGoal!==null&&<span className="npv-strava-challenge-reward" aria-label={`Recompensa prevista de ${goal.reward} pontos ao completar a meta`}>
-              <span aria-hidden="true">✦</span> +{format(goal.reward)} pts
+              <span aria-hidden="true">✦</span> +{formatPoints(goal.reward)} pts
             </span>}
           </span>
           <span className="npv-strava-challenge-status">{progress.valid
