@@ -44,8 +44,13 @@ export default function ClubeRegisteredActivities({session}) {
     }finally{if(!signal?.aborted)setLoading(false)}
   }
 
+  // A primeira consulta também acontece com o card fechado: o resumo usa apenas
+  // quilômetros reais já retornados pela própria conta, nunca dados fictícios.
+  const checkedOnce=React.useRef(false)
   useEffect(()=>{
-    if(!expanded||!token)return
+    if(!token){checkedOnce.current=false;return}
+    if(!expanded&&checkedOnce.current)return
+    checkedOnce.current=true
     const controller=new AbortController()
     readStatus(controller.signal)
     return()=>controller.abort()
@@ -82,10 +87,25 @@ export default function ClubeRegisteredActivities({session}) {
   }
 
   return <section className="clube-card clube-activities-card npv-strava-activities" aria-label="Atividades registradas">
-    <button type="button" className="clube-activities-toggle" aria-expanded={expanded}
+    <button type="button" className="clube-activities-toggle npv-strava-hero-trigger" aria-expanded={expanded}
       aria-controls="npv-registered-activity-content" onClick={()=>setExpanded(v=>!v)}>
-      <span><strong>Atividades registradas</strong><small>Seus quilômetros de corrida, caminhada e bicicleta</small></span>
-      <span className="clube-activities-chevron">{expanded?<ChevronUp size={21}/>:<ChevronDown size={21}/>}</span>
+      <span className="npv-strava-hero-icon" aria-hidden="true"><Footprints size={25} strokeWidth={2.15}/></span>
+      <span className="npv-strava-hero-copy">
+        <span className="npv-strava-hero-eyebrow">SEU ESPAÇO DE PERFORMANCE <span aria-hidden="true">✦</span></span>
+        <strong>Atividades registradas</strong>
+        <small>Seus treinos, quilômetros e evolução em um só lugar.</small>
+        <span className="npv-strava-hero-meta" aria-live="polite">
+          <span className={'npv-strava-hero-indicator'+(status.connected?' is-active':'')} aria-hidden="true"/>
+          <span>{loading?'Atualizando conexão...':status.connected?'Strava conectado':'Seu Strava, suas conquistas'}</span>
+          {status.connected
+            ?<span className="npv-strava-hero-metric"><b>{format(totalKm)} km</b><span>nos últimos 7 dias</span></span>
+            :<span className="npv-strava-hero-sports">Corrida · caminhada · bicicleta</span>}
+        </span>
+      </span>
+      <span className="npv-strava-hero-action" aria-hidden="true">
+        <span>{expanded?'Recolher':'Ver detalhes'}</span>
+        <span className="npv-strava-hero-arrow">{expanded?<ChevronUp size={20}/>:<ChevronDown size={20}/>}</span>
+      </span>
     </button>
     {expanded&&<div id="npv-registered-activity-content" className="clube-activities-expanded npv-strava-detail">
       <div className={'npv-strava-connection'+(status.connected?' npv-strava-connected':'')} role="status">
