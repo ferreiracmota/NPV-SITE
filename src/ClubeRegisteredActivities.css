@@ -24,3 +24,15 @@
 .npv-strava-connect-button:hover{background:#b6db70;color:#19341a}
 .npv-strava-connect-button:focus-visible{outline:2px solid #63852c;outline-offset:3px}
 .npv-strava-pilot-note{font-size:11px;line-height:1.5;color:#798974;margin:0 0 16px}
+
+.npv-strava-connected{background:#f0f9e8;border-color:#cfe7b7}
+.npv-strava-connected .npv-strava-status-icon{background:#dbeac7;color:#567f28}
+.npv-strava-live-heading{border-bottom:1px solid #e4ecdb;padding:10px 0 12px}
+.npv-strava-live-heading>span{font-size:11px;color:#698d3e}
+.npv-strava-feedback{font-size:11px;line-height:1.5;color:#9a4b24;background:#fff6e9;border-radius:8px;padding:9px 12px;margin:5px 0 13px}
+.npv-strava-actions{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:18px}
+.npv-strava-disconnect{border:0;background:transparent;color:#77866f;font-size:11px;padding:12px 2px;text-decoration:underline;cursor:pointer}
+.npv-strava-privacy{font-size:10px;line-height:1.6;color:#84937e;margin:17px 0 0}
+.npv-strava-privacy a{color:#557c3a;text-decoration:underline}
+.npv-strava-connect-button{border:0;cursor:pointer}
+.npv-strava-connect-button:disabled,.npv-strava-example-button:disabled,.npv-strava-disconnect:disabled{opacity:.6;cursor:wait}
