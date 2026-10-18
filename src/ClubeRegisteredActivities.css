@@ -1,0 +1,21 @@
+/* Seção Strava no Clube NPV existente, com o mesmo padrão de caixas expansíveis. */
+.npv-strava-activities{margin-top:0!important}
+.npv-strava-detail{padding-bottom:20px}
+.npv-strava-connection{display:flex;align-items:flex-start;gap:12px;border:1px solid #e2ebd8;background:#f7faf4;border-radius:12px;padding:14px;margin-bottom:13px}
+.npv-strava-status-icon{display:grid;place-items:center;background:#eaf1df;color:#66813d;width:37px;height:37px;border-radius:10px;flex:none}
+.npv-strava-connection strong{font-size:13px;color:#33492c;font-weight:850}
+.npv-strava-connection p{font-size:11px;color:#788974;line-height:1.55;margin:5px 0 0}
+.npv-strava-example-button{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid #d5e4c8;border-radius:10px;background:#fff;color:#61802d;padding:10px 14px;min-height:38px;font-size:12px;font-weight:850;cursor:pointer}
+.npv-strava-example-button:focus-visible{outline:2px solid #628a35;outline-offset:3px}
+.npv-strava-example{background:#f7f9f3;border:1px solid #e4ecda;border-radius:12px;padding:14px 16px;margin-top:12px}
+.npv-strava-example-head{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:5px}
+.npv-strava-example-head span{display:flex;align-items:center;gap:6px;font-size:10px;letter-spacing:.08em;color:#738a53;font-weight:900}
+.npv-strava-example-head strong{font-size:23px;color:#4c7725;letter-spacing:-.04em}
+.npv-strava-example-row{display:flex;align-items:center;gap:11px;padding:13px 0;border-bottom:1px solid #e3eadd}
+.npv-strava-example-row>span{font-size:20px}
+.npv-strava-example-row>div{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.npv-strava-example-row>div strong{font-size:12px;color:#324a2b}
+.npv-strava-example-row small{font-size:10px;color:#84947d}
+.npv-strava-example-row>b{font-size:12px;color:#567d30;white-space:nowrap}
+.npv-strava-example>p{font-size:10px;line-height:1.5;color:#81907b;margin:13px 0 2px}
+@media(max-width:760px){.npv-strava-detail{padding-bottom:16px}.npv-strava-example{padding:12px}}
