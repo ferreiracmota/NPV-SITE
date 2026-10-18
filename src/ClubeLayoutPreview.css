@@ -114,3 +114,58 @@
  .clube-layout-preview .clube-preview-brand-text span{font-size:10px}
  .clube-layout-preview .clube-preview-brand-text strong{font-size:16px}
 }
+
+
+/* Prévia: foto esportiva original como fundo atmosférico, sem fixar dados de pontuação. */
+.clube-layout-preview .clube-score-refined{
+  position:relative;
+  isolation:isolate;
+  background:#091911;
+  overflow:hidden;
+  border:1px solid rgba(174,221,120,.24);
+  box-shadow:0 15px 30px rgba(4,24,12,.12),inset 0 0 0 1px rgba(255,255,255,.04);
+}
+.clube-layout-preview .clube-score-refined::before{
+  content:"";
+  position:absolute;
+  z-index:0;
+  inset:-7px;
+  background:url('./assets/clube-npv-fundo-esportes.avif') center 45% / cover no-repeat;
+  filter:blur(2.5px) saturate(.8);
+  opacity:.95;
+  pointer-events:none;
+}
+.clube-layout-preview .clube-score-refined::after{
+  content:"";
+  position:absolute;
+  z-index:0;
+  inset:0;
+  background:
+    radial-gradient(ellipse at 7% 110%,rgba(85,157,19,.45),transparent 54%),
+    linear-gradient(100deg,rgba(3,16,10,.91) 0%,rgba(5,19,12,.76) 48%,rgba(3,19,15,.67) 100%);
+  pointer-events:none;
+}
+.clube-layout-preview .clube-score-refined-top{position:relative;z-index:1;}
+.clube-layout-preview .clube-score-refined .clube-student-hello{color:#f6fff0;}
+.clube-layout-preview .clube-score-refined .clube-student-hello span{color:#c4ed65;}
+.clube-layout-preview .clube-score-refined p{color:rgba(241,249,233,.82);}
+.clube-layout-preview .clube-score-refined-top strong{color:#fff;text-shadow:0 2px 16px rgba(0,0,0,.2);}
+.clube-layout-preview .clube-score-refined-top strong small{color:#f5faef;}
+.clube-layout-preview .clube-score-refined-top>svg.clube-score-trophy{
+  width:88px;height:88px;padding:21px;box-sizing:border-box;border-radius:50%;
+  color:#b6ee64;opacity:1;background:rgba(18,70,29,.58);
+  border:2px solid rgba(180,233,106,.3);
+  box-shadow:0 0 0 6px rgba(156,225,88,.06);
+  backdrop-filter:blur(4px);
+}
+@media(max-width:760px){
+ .clube-layout-preview .clube-score-refined::before{background-position:52% center;}
+ .clube-layout-preview .clube-score-refined::after{
+   background:radial-gradient(ellipse at 5% 108%,rgba(79,159,30,.35),transparent 64%),
+   linear-gradient(100deg,rgba(2,14,9,.91),rgba(5,18,12,.71) 68%,rgba(7,26,18,.67));
+ }
+ .clube-layout-preview .clube-score-refined-top>svg.clube-score-trophy{
+   width:62px;height:62px;padding:13px;border-width:1.5px;
+   box-shadow:0 0 0 4px rgba(156,225,88,.07);
+ }
+}

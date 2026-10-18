@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { ArrowLeft, ArrowRight, Award, Check, ChevronDown, ChevronUp, ExternalLink, Gift, History, LogOut, Package, ShieldCheck, Sparkles, Ticket, Users, Wallet, X } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Award, Check, ChevronDown, ChevronUp, ExternalLink, Gift, History, LogOut, Package, ShieldCheck, Sparkles, Ticket, Trophy, Users, Wallet, X } from 'lucide-react'
 import { PartnerCards } from './ClubeExtras.jsx'
 import npvLogoBranca from './assets/logo-branca-npv.PNG'
 import './ClubeNPV.css'
@@ -86,12 +86,12 @@ export default function ClubeLayoutPreview(){
         {tab==='inicio'&&<>
           <div className="clube-student-summary clube-score-refined">
             <div className="clube-score-refined-top">
-              <div><div className="clube-student-hello">OLÁ, NPV! ✦</div>
+              <div><div className="clube-student-hello">OLÁ, <span>NPV! ✦</span></div>
                 <p>SEUS PONTOS EM 2026</p>
                 <strong>{fmt(previewTotal)} <small>pontos</small></strong>
                 {previewAvailable!==previewTotal&&<span className="clube-summary-caption">Disponíveis para solicitar: {fmt(previewAvailable)} pontos</span>}
               </div>
-              <Award size={88} aria-hidden="true"/>
+              <Trophy size={88} aria-hidden="true" className="clube-score-trophy"/>
             </div>
           </div>
           <section className="clube-card clube-activities-card">
