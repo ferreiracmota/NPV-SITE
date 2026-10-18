@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Award, ChevronDown, ChevronUp, Gift, History, LogOut, Wallet, ArrowRight, Tag } from 'lucide-react'
+import { Award, ChevronDown, ChevronUp, Gift, History, LogOut, Wallet, ArrowRight } from 'lucide-react'
 import { BenefitNotice } from './ClubeExtras.jsx'
 import './ClubeNPV.css'
 import './ClubeRecompensas.css'
@@ -57,3 +57,4 @@ export default function ClubeSpacingPreview(){
       <footer className="clube-main-footer"><span>PRÉVIA VISUAL • Pontuação ilustrativa • Nenhuma movimentação real</span><span>Site oficial preservado.</span></footer>
     </main></div>
   </div>
+}
