@@ -21,3 +21,7 @@ create policy clube_challenge_month_admin_update on public.clube_monthly_challen
   with check ((select public.clube_is_admin()));
 comment on table public.clube_monthly_challenges is
   'Meta de distancia mensal configurada pelo administrador. Progresso calculado em tempo real no Strava; sem dados de atividades armazenados ou pontos creditados.';
+
+-- Recompensa única definida por mês (o crédito automático exige validação independente).
+alter table public.clube_monthly_challenges add column if not exists reward_points integer not null default 300 check (reward_points between 1 and 100000);
+grant update(reward_points) on public.clube_monthly_challenges to authenticated;
