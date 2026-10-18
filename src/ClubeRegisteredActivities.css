@@ -1,0 +1,241 @@
+/* Seção Strava no Clube NPV existente, com o mesmo padrão de caixas expansíveis. */
+.npv-strava-activities{margin-top:0!important}
+.npv-strava-detail{padding-bottom:20px}
+.npv-strava-connection{display:flex;align-items:flex-start;gap:12px;border:1px solid #e2ebd8;background:#f7faf4;border-radius:12px;padding:14px;margin-bottom:13px}
+.npv-strava-status-icon{display:grid;place-items:center;background:#eaf1df;color:#66813d;width:37px;height:37px;border-radius:10px;flex:none}
+.npv-strava-connection strong{font-size:13px;color:#33492c;font-weight:850}
+.npv-strava-connection p{font-size:11px;color:#788974;line-height:1.55;margin:5px 0 0}
+.npv-strava-example-button{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid #d5e4c8;border-radius:10px;background:#fff;color:#61802d;padding:10px 14px;min-height:38px;font-size:12px;font-weight:850;cursor:pointer}
+.npv-strava-example-button:focus-visible{outline:2px solid #628a35;outline-offset:3px}
+.npv-strava-example{background:#f7f9f3;border:1px solid #e4ecda;border-radius:12px;padding:14px 16px;margin-top:12px}
+.npv-strava-example-head{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:5px}
+.npv-strava-example-head span{display:flex;align-items:center;gap:6px;font-size:10px;letter-spacing:.08em;color:#738a53;font-weight:900}
+.npv-strava-example-head strong{font-size:23px;color:#4c7725;letter-spacing:-.04em}
+.npv-strava-example-row{display:flex;align-items:center;gap:11px;padding:13px 0;border-bottom:1px solid #e3eadd}
+.npv-strava-example-row>span{font-size:20px}
+.npv-strava-example-row>div{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.npv-strava-example-row>div strong{font-size:12px;color:#324a2b}
+.npv-strava-example-row small{font-size:10px;color:#84947d}
+.npv-strava-example-row>b{font-size:12px;color:#567d30;white-space:nowrap}
+.npv-strava-example>p{font-size:10px;line-height:1.5;color:#81907b;margin:13px 0 2px}
+@media(max-width:760px){.npv-strava-detail{padding-bottom:16px}.npv-strava-example{padding:12px}}
+
+.npv-strava-connect-button{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;background:#a4ca57;color:#19341a;padding:12px 15px;min-height:40px;border-radius:10px;font-weight:850;font-size:12px;margin:0 0 7px;max-width:100%}
+.npv-strava-connect-button:hover{background:#b6db70;color:#19341a}
+.npv-strava-connect-button:focus-visible{outline:2px solid #63852c;outline-offset:3px}
+.npv-strava-pilot-note{font-size:11px;line-height:1.5;color:#798974;margin:0 0 16px}
+
+.npv-strava-connected{background:#f0f9e8;border-color:#cfe7b7}
+.npv-strava-connected .npv-strava-status-icon{background:#dbeac7;color:#567f28}
+.npv-strava-live-heading{border-bottom:1px solid #e4ecdb;padding:10px 0 12px}
+.npv-strava-live-heading>span{font-size:11px;color:#698d3e}
+.npv-strava-feedback{font-size:11px;line-height:1.5;color:#9a4b24;background:#fff6e9;border-radius:8px;padding:9px 12px;margin:5px 0 13px}
+.npv-strava-actions{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:18px}
+.npv-strava-disconnect{border:0;background:transparent;color:#77866f;font-size:11px;padding:12px 2px;text-decoration:underline;cursor:pointer}
+.npv-strava-privacy{font-size:10px;line-height:1.6;color:#84937e;margin:17px 0 0}
+.npv-strava-privacy a{color:#557c3a;text-decoration:underline}
+.npv-strava-connect-button{border:0;cursor:pointer}
+.npv-strava-connect-button:disabled,.npv-strava-example-button:disabled,.npv-strava-disconnect:disabled{opacity:.6;cursor:wait}
+
+/* Cabeçalho esportivo premium: somente o gatilho expansível muda.
+   O conteúdo de atividades e a autenticação Strava permanecem preservados. */
+.npv-strava-activities.clube-activities-card{
+  border:1px solid #dce7d2;
+  border-radius:17px;
+  box-shadow:0 12px 30px rgba(23,40,22,.085);
+}
+.npv-strava-activities .npv-strava-hero-trigger{
+  position:relative;
+  isolation:isolate;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:18px;
+  width:100%;
+  min-height:160px;
+  padding:25px 26px;
+  overflow:hidden;
+  border:0;
+  border-radius:0;
+  color:#f8fff1;
+  text-align:left;
+  cursor:pointer;
+  background:
+    radial-gradient(ellipse at 95% -15%,rgba(138,188,89,.33) 0,transparent 49%),
+    linear-gradient(115deg,#12221b 0%,#1c3427 55%,#294634 100%);
+  transition:filter .2s ease;
+}
+.npv-strava-activities .npv-strava-hero-trigger::before{
+  content:"";position:absolute;left:0;top:0;bottom:0;width:4px;
+  background:linear-gradient(#d6f69b,#81ba59);pointer-events:none;z-index:1;
+}
+.npv-strava-activities .npv-strava-hero-trigger::after{
+  content:"";position:absolute;right:-40px;top:-105px;
+  width:310px;height:310px;border:1px solid rgba(197,232,176,.12);
+  border-radius:50%;box-shadow:0 0 0 32px rgba(197,232,176,.038),0 0 0 68px rgba(197,232,176,.025);
+  pointer-events:none;z-index:0;
+}
+.npv-strava-activities .npv-strava-hero-trigger:hover{
+  background:
+    radial-gradient(ellipse at 95% -15%,rgba(153,203,104,.41) 0,transparent 49%),
+    linear-gradient(115deg,#15281d 0%,#213d2c 55%,#315139 100%);
+}
+.npv-strava-activities .npv-strava-hero-trigger:focus-visible{
+  outline:3px solid #d1f395;
+  outline-offset:-5px;
+}
+.npv-strava-activities .npv-strava-hero-trigger>span{position:relative;z-index:1}
+.npv-strava-activities .clube-activities-toggle>.npv-strava-hero-icon{
+  flex:none;
+  display:grid;
+  place-items:center;
+  width:54px;
+  height:54px;
+  border:1px solid rgba(214,245,159,.36);
+  border-radius:15px;
+  background:linear-gradient(145deg,rgba(185,233,134,.21),rgba(185,233,134,.07));
+  color:#d2f28f;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.15);
+}
+.npv-strava-activities .clube-activities-toggle>.npv-strava-hero-copy{
+  flex:1;
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:0;
+}
+.npv-strava-hero-eyebrow{
+  display:inline-flex;
+  align-items:center;
+  gap:9px;
+  margin-bottom:7px;
+  color:#b9db91;
+  font-size:9px;
+  font-weight:850;
+  letter-spacing:.13em;
+}
+.npv-strava-hero-eyebrow>span{font-size:10px;color:#d5ef96}
+.npv-strava-activities .npv-strava-hero-copy>strong{
+  color:#fafff6;
+  font-size:clamp(18px,2vw,22px);
+  font-weight:850;
+  line-height:1.19;
+  letter-spacing:-.036em;
+}
+.npv-strava-activities .npv-strava-hero-copy>small{
+  display:block;
+  max-width:460px;
+  margin-top:6px;
+  font-size:11.5px;
+  font-weight:500;
+  line-height:1.55;
+  color:#d0dfc9;
+}
+.npv-strava-hero-meta{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:7px;
+  margin-top:13px;
+  font-size:10px;
+  font-weight:650;
+  color:#d4e8c7;
+}
+.npv-strava-hero-indicator{
+  display:block;
+  width:7px;
+  height:7px;
+  flex:none;
+  border-radius:50%;
+  background:#d7b785;
+  box-shadow:0 0 0 3px rgba(215,183,133,.12);
+}
+.npv-strava-hero-indicator.is-active{
+  background:#b4e884;
+  box-shadow:0 0 0 3px rgba(180,232,132,.18);
+}
+.npv-strava-hero-sports{
+  padding-left:9px;
+  border-left:1px solid rgba(221,243,197,.31);
+  color:#b0c9a9;
+  font-size:10px;
+  font-weight:500;
+}
+.npv-strava-hero-metric{
+  display:inline-flex;align-items:baseline;gap:6px;flex-wrap:wrap;
+  padding-left:9px;
+  border-left:1px solid rgba(221,243,197,.31);
+  color:#b9d3b1;
+}
+.npv-strava-hero-metric b{
+  font-size:12px;
+  color:#d7f9a2;
+  font-variant-numeric:tabular-nums;
+}
+.npv-strava-activities .clube-activities-toggle>.npv-strava-hero-action{
+  flex:none;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:11px;
+  min-width:81px;
+  color:#dcead5;
+  font-size:10px;
+  font-weight:750;
+  white-space:nowrap;
+}
+.npv-strava-hero-arrow{
+  display:grid;
+  place-items:center;
+  width:38px;height:38px;
+  border-radius:11px;
+  border:1px solid rgba(209,240,168,.24);
+  background:rgba(223,245,188,.11);
+  color:#d9f6a2;
+  transition:background .2s ease,transform .2s ease;
+}
+.npv-strava-hero-trigger:hover .npv-strava-hero-arrow{
+  background:rgba(223,245,188,.19);
+  transform:translateY(2px);
+}
+.npv-strava-hero-trigger[aria-expanded="true"] .npv-strava-hero-arrow{
+  background:rgba(223,245,188,.2);
+}
+.npv-strava-activities .npv-strava-detail{
+  padding-top:19px;
+  background:#fff;
+}
+@media(max-width:640px){
+  .npv-strava-activities .npv-strava-hero-trigger{
+    min-height:151px;
+    padding:20px 17px;
+    gap:12px;
+  }
+  .npv-strava-activities .clube-activities-toggle>.npv-strava-hero-icon{
+    width:47px;height:47px;border-radius:13px;
+  }
+  .npv-strava-activities .npv-strava-hero-copy>strong{font-size:19px}
+  .npv-strava-hero-eyebrow{font-size:8px;letter-spacing:.09em}
+  .npv-strava-activities .npv-strava-hero-copy>small{font-size:10.5px}
+  .npv-strava-activities .clube-activities-toggle>.npv-strava-hero-action{
+    min-width:37px;
+    gap:0;
+  }
+  .npv-strava-activities .npv-strava-hero-action>span:first-child{display:none}
+  .npv-strava-hero-arrow{width:35px;height:35px}
+  .npv-strava-hero-meta{margin-top:11px}
+}
+@media(max-width:390px){
+  .npv-strava-activities .npv-strava-hero-trigger{gap:9px;padding:18px 14px}
+  .npv-strava-activities .clube-activities-toggle>.npv-strava-hero-icon{width:40px;height:40px}
+  .npv-strava-activities .npv-strava-hero-icon svg{width:21px;height:21px}
+  .npv-strava-activities .npv-strava-hero-copy>strong{font-size:17.5px}
+  .npv-strava-hero-eyebrow{font-size:7px}
+  .npv-strava-hero-sports{display:none}
+  .npv-strava-hero-metric{padding-left:7px}
+}
+@media(prefers-reduced-motion:reduce){
+  .npv-strava-activities .npv-strava-hero-trigger,.npv-strava-hero-arrow{transition:none}
+}

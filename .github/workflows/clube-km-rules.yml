@@ -1,0 +1,34 @@
+name: Clube NPV — testes da regra de quilômetros
+on:
+  push:
+    branches: [feat/npv-strava-foundation-20261018]
+    paths:
+      - clube/strava/**
+      - api/strava/**
+      - src/ClubeKmSetup.*
+      - src/ClubeRegisteredActivities.*
+      - src/ClubeNPVOnline.jsx
+      - clube/migrations/20261018_clube_km_settings.sql
+      - .github/workflows/clube-km-rules.yml
+  pull_request:
+    branches: [main]
+    paths:
+      - clube/strava/**
+      - api/strava/**
+      - src/ClubeKmSetup.*
+      - src/ClubeRegisteredActivities.*
+      - src/ClubeNPVOnline.jsx
+      - clube/migrations/20261018_clube_km_settings.sql
+      - .github/workflows/clube-km-rules.yml
+permissions:
+  contents: read
+jobs:
+  km-unit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Testar quilometragem, periodo, duplicidade e vinculo
+        run: node --test clube/strava/monthlyCandidate.test.mjs api/strava/pilot.test.mjs api/strava/link.test.mjs clube/strava/challengeProgress.test.mjs
