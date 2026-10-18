@@ -432,18 +432,27 @@ export default function ClubeNPVOnline() {
       </>}
       {tab==='inicio'&&isAdmin&&<><ClubeKmSetup/><ClubeRegisteredActivities session={session}/></>}
       {tab==='inicio'&&!isAdmin&&<>
-        <div className="clube-student-summary"><div><div className="clube-student-hello">OLÁ, {profile?.full_name?.split(' ')[0]?.toUpperCase()||'ALUNO'}! ✦</div><p>SEUS PONTOS EM {YEAR}</p><strong>{format(balance(user.id))} <small>pontos</small></strong></div><Award size={90}/></div>
-        <BenefitNotice rewards={data.rewards} points={Math.max(0,balance(user.id)-reserved(user.id))} onOpen={()=>setTab('recompensas')}/>
-        <section className="clube-card clube-activities-card">
-          <button type="button" className="clube-activities-toggle" aria-expanded={activitiesOpen} aria-controls="clube-activities-content" onClick={()=>setActivitiesOpen(open=>!open)}>
-            <span><strong>Minhas atividades</strong><small>Meu extrato de pontos</small></span>
-            <span className="clube-activities-chevron">{activitiesOpen?<ChevronUp size={21}/>:<ChevronDown size={21}/>}</span>
+        <section className={`clube-student-summary clube-student-summary-statement${activitiesOpen?' is-open':''}`} aria-label="Seus pontos e extrato">
+          <button type="button" className="clube-student-summary-trigger"
+            aria-expanded={activitiesOpen} aria-controls="clube-points-statement-content"
+            onClick={()=>setActivitiesOpen(open=>!open)}>
+            <span className="clube-student-balance-group">
+              <span className="clube-student-hello">OLÁ, {profile?.full_name?.split(' ')[0]?.toUpperCase()||'ALUNO'}! ✦</span>
+              <span className="clube-student-balance-label">SEUS PONTOS EM {YEAR}</span>
+              <strong className="clube-student-balance-value">{format(balance(user.id))} <small>pontos</small></strong>
+            </span>
+            <span className="clube-student-statement-action">
+              <Award size={72} aria-hidden="true"/>
+              <span className="clube-student-statement-cta">Extrato de pontos {activitiesOpen?<ChevronUp size={18}/>:<ChevronDown size={18}/>}</span>
+            </span>
           </button>
-          {activitiesOpen&&<div id="clube-activities-content" className="clube-activities-expanded">
+          {activitiesOpen&&<div id="clube-points-statement-content" className="clube-student-statement-body">
+            <div className="clube-student-statement-heading"><strong>Últimas movimentações</strong><span>Entradas e saídas do seu saldo</span></div>
             {activityList(mine.slice(0,6))}
-            {mine.length>0&&<button type="button" className="clube-text-button clube-activities-view-all" onClick={()=>setTab('historico')}>Ver todas as atividades <ArrowRight size={16}/></button>}
+            {mine.length>0&&<button type="button" className="clube-student-statement-see-all" onClick={()=>setTab('historico')}>Ver extrato completo <ArrowRight size={16}/></button>}
           </div>}
         </section>
+        <BenefitNotice rewards={data.rewards} points={Math.max(0,balance(user.id)-reserved(user.id))} onOpen={()=>setTab('recompensas')}/>
         <ClubeRegisteredActivities session={session}/>
         <section className="npv-shop npv-shop-featured"><div className="npv-shop-heading"><div><div className="npv-shop-eyebrow"><Gift size={15}/>LOJINHA DO CLUBE NPV</div><h2>Troque seus pontos ✦</h2><p>Seu próximo objetivo pode estar aqui.</p></div><button className="npv-shop-view-all" onClick={()=>setTab('recompensas')}>Ver catálogo <ArrowRight size={16}/></button></div>{rewardsGrid(4)}<p className="npv-shop-demo-note">A disponibilidade real será confirmada após a aprovação do prêmio e dos parceiros.</p></section>
         {data.partners.some(x=>x.active)&&<section className="npv-partners-section">
