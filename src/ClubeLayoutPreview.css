@@ -131,8 +131,8 @@
   z-index:0;
   inset:-7px;
   background:url('./assets/clube-npv-fundo-esportes.avif') center 45% / cover no-repeat;
-  filter:blur(2.5px) saturate(.8);
-  opacity:.95;
+  filter:blur(.35px) saturate(1.03) contrast(1.05);
+  opacity:1;
   pointer-events:none;
 }
 .clube-layout-preview .clube-score-refined::after{
@@ -141,8 +141,8 @@
   z-index:0;
   inset:0;
   background:
-    radial-gradient(ellipse at 7% 110%,rgba(85,157,19,.45),transparent 54%),
-    linear-gradient(100deg,rgba(3,16,10,.91) 0%,rgba(5,19,12,.76) 48%,rgba(3,19,15,.67) 100%);
+    radial-gradient(ellipse at 7% 110%,rgba(85,157,19,.32),transparent 54%),
+    linear-gradient(100deg,rgba(3,16,10,.62) 0%,rgba(5,19,12,.33) 48%,rgba(3,19,15,.24) 100%);
   pointer-events:none;
 }
 .clube-layout-preview .clube-score-refined-top{position:relative;z-index:1;}
@@ -161,8 +161,8 @@
 @media(max-width:760px){
  .clube-layout-preview .clube-score-refined::before{background-position:52% center;}
  .clube-layout-preview .clube-score-refined::after{
-   background:radial-gradient(ellipse at 5% 108%,rgba(79,159,30,.35),transparent 64%),
-   linear-gradient(100deg,rgba(2,14,9,.91),rgba(5,18,12,.71) 68%,rgba(7,26,18,.67));
+   background:radial-gradient(ellipse at 5% 108%,rgba(79,159,30,.28),transparent 64%),
+   linear-gradient(100deg,rgba(2,14,9,.65),rgba(5,18,12,.32) 68%,rgba(7,26,18,.22));
  }
  .clube-layout-preview .clube-score-refined-top>svg.clube-score-trophy{
    width:62px;height:62px;padding:13px;border-width:1.5px;
