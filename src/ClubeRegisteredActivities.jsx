@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { ChevronDown, ChevronUp, Footprints, LockKeyhole, Eye, EyeOff, CheckCircle2, RefreshCw } from 'lucide-react'
+import { clubeSupabase as supabase } from './clubeSupabase.js'
+import { currentNpvMonth, challengeBar } from '../clube/strava/challengeProgress.mjs'
 import './ClubeRegisteredActivities.css'
 
 const SAMPLE = [
@@ -19,10 +21,29 @@ export default function ClubeRegisteredActivities({session}) {
   const [status,setStatus]=useState({connected:false,activities:[]})
   const [busy,setBusy]=useState(false)
   const [loading,setLoading]=useState(false)
+  const [goal,setGoal]=useState({loaded:false,km:null,active:false})
   const [error,setError]=useState('')
   const token=session?.access_token
   const activities=Array.isArray(status.activities)?status.activities:[]
   const totalKm=activities.reduce((sum,a)=>sum+Number(a.km||0),0)
+  const monthKey=currentNpvMonth()
+  const monthData=status.connected&&status.monthly?.monthKey===monthKey?status.monthly:null
+  const monthKm=monthData&&Number.isFinite(Number(monthData.km))?Number(monthData.km):null
+  const monthlyGoal=goal.active&&Number.isFinite(Number(goal.km))&&Number(goal.km)>0?Number(goal.km):null
+  const progress=monthKm!==null&&monthlyGoal!==null?challengeBar(monthKm,monthlyGoal):{valid:false,percentage:0,completed:false}
+  useEffect(()=>{
+    let live=true
+    setGoal({loaded:false,km:null,active:false})
+    supabase.from('clube_monthly_challenges').select('goal_km,active')
+      .eq('month_key',monthKey).maybeSingle()
+      .then(({data,error:dbError})=>{
+        if(!live)return
+        if(dbError||!data)setGoal({loaded:true,km:null,active:false})
+        else setGoal({loaded:true,km:Number(data.goal_km),active:!!data.active})
+      })
+      .catch(()=>{if(live)setGoal({loaded:true,km:null,active:false})})
+    return()=>{live=false}
+  },[monthKey,token])
 
   async function readStatus(signal) {
     if(!token)return
@@ -36,7 +57,7 @@ export default function ClubeRegisteredActivities({session}) {
       if(!response.ok)throw new Error('Falha ao consultar conexão')
       const data=await response.json()
       if(!signal?.aborted){
-        setStatus({connected:!!data.connected,activities:data.activities||[]})
+        setStatus({connected:!!data.connected,activities:data.activities||[],monthly:data.monthly||null})
         if(data.error)setError(data.error)
       }
     }catch(e){
@@ -100,6 +121,26 @@ export default function ClubeRegisteredActivities({session}) {
           {status.connected
             ?<span className="npv-strava-hero-metric"><b>{format(totalKm)} km</b><span>nos últimos 7 dias</span></span>
             :<span className="npv-strava-hero-sports">Corrida · caminhada · bicicleta</span>}
+        </span>
+        <span className="npv-strava-challenge" role="group" aria-label="Desafio do mês">
+          <span className="npv-strava-challenge-top">
+            <span className="npv-strava-challenge-title">DESAFIO DO MÊS</span>
+            <span className="npv-strava-challenge-status">{progress.valid
+              ?(progress.completed?'Meta alcançada ✦':format(monthKm)+' de '+format(monthlyGoal)+' km')
+              :(monthKm!==null?format(monthKm)+' km percorridos':status.connected?'Consultando quilômetros...':'Conecte seu Strava')}</span>
+          </span>
+          <span className={'npv-strava-challenge-track'+(progress.completed?' is-complete':'')}
+            role="progressbar" aria-label="Progresso do desafio do mês"
+            aria-valuemin={0} aria-valuemax={100} aria-valuenow={progress.valid?progress.percentage:undefined}
+            aria-valuetext={progress.valid?format(monthKm)+' de '+format(monthlyGoal)+' quilômetros':'Meta do desafio ainda não disponível'}>
+            <span className="npv-strava-challenge-fill" style={{width:(progress.valid?progress.percentage:0)+'%'}}/>
+          </span>
+          <span className="npv-strava-challenge-caption">
+            {progress.valid?(progress.completed
+              ?'Parabéns! Você atingiu a meta mensal.'
+              :format(monthlyGoal-monthKm>0?Math.max(0,monthlyGoal-monthKm):0)+' km para completar o desafio')
+              :(!goal.loaded?'Carregando meta do desafio...':monthlyGoal===null?'Meta mensal a definir pelo clube':!status.connected?'Conecte-se para acompanhar sua evolução':monthKm===null?'Aguardando dados reais do Strava':'Atualize as atividades para conferir o progresso')}
+          </span>
         </span>
       </span>
       <span className="npv-strava-hero-action" aria-hidden="true">
