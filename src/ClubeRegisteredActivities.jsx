@@ -19,7 +19,7 @@ const readableDate=v=>/^\d{4}-\d{2}-\d{2}$/.test(v||'')
 export default function ClubeRegisteredActivities({session}) {
   const [expanded,setExpanded]=useState(()=>new URLSearchParams(window.location.search).has('strava'))
   const [preview,setPreview]=useState(false)
-  const [status,setStatus]=useState({connected:false,activities:[]})
+  const [status,setStatus]=useState({connected:false,disabled:false,activities:[]})
   const [busy,setBusy]=useState(false)
   const [loading,setLoading]=useState(false)
   const [goal,setGoal]=useState({loaded:false,km:null,active:false,reward:300})
@@ -58,7 +58,7 @@ export default function ClubeRegisteredActivities({session}) {
       if(!response.ok)throw new Error('Falha ao consultar conexão')
       const data=await response.json()
       if(!signal?.aborted){
-        setStatus({connected:!!data.connected,activities:data.activities||[],monthly:data.monthly||null})
+        setStatus({connected:!!data.connected,disabled:!!data.disabled,activities:data.activities||[],monthly:data.monthly||null})
         if(data.error)setError(data.error)
       }
     }catch(e){
@@ -79,7 +79,7 @@ export default function ClubeRegisteredActivities({session}) {
   },[expanded,token])
 
   async function connect(){
-    if(!token||busy)return
+    if(!token||busy||status.disabled)return
     setBusy(true);setError('')
     try{
       const response=await fetch('/api/strava/connect',{
@@ -118,7 +118,7 @@ export default function ClubeRegisteredActivities({session}) {
         <small>Seus treinos, quilômetros e evolução em um só lugar.</small>
         <span className="npv-strava-hero-meta" aria-live="polite">
           <span className={'npv-strava-hero-indicator'+(status.connected?' is-active':'')} aria-hidden="true"/>
-          <span>{loading?'Atualizando conexão...':status.connected?'Strava conectado':'Seu Strava, suas conquistas'}</span>
+          <span>{loading?'Atualizando conexão...':status.connected?'Strava conectado':status.disabled?'Strava em preparação':'Seu Strava, suas conquistas'}</span>
           {status.connected
             ?<span className="npv-strava-hero-metric"><b>{format(totalKm)} km</b><span>nos últimos 7 dias</span></span>
             :<span className="npv-strava-hero-sports">Corrida · caminhada · bicicleta</span>}
@@ -126,10 +126,13 @@ export default function ClubeRegisteredActivities({session}) {
         <span className="npv-strava-challenge" role="group" aria-label="Desafio do mês">
           <span className="npv-strava-challenge-top">
             <span className="npv-strava-challenge-title">DESAFIO DO MÊS</span>
-            <span className="npv-strava-challenge-status">{progress.valid
-              ?(progress.completed?'Meta alcançada ✦':format(monthKm)+' de '+format(monthlyGoal)+' km')
-              :(monthKm!==null?format(monthKm)+' km percorridos':status.connected?'Consultando quilômetros...':'Conecte seu Strava')}</span>
+            {monthlyGoal!==null&&<span className="npv-strava-challenge-reward" aria-label={`Recompensa prevista de ${goal.reward} pontos ao completar a meta`}>
+              <span aria-hidden="true">✦</span> +{format(goal.reward)} pts
+            </span>}
           </span>
+          <span className="npv-strava-challenge-status">{progress.valid
+              ?(progress.completed?'Meta alcançada ✦':format(monthKm)+' de '+format(monthlyGoal)+' km')
+              :(monthKm!==null?format(monthKm)+' km percorridos':status.connected?'Consultando quilômetros...':status.disabled?'Integração Strava em preparação':'Conecte seu Strava')}</span>
           <span className={'npv-strava-challenge-track'+(progress.completed?' is-complete':'')}
             role="progressbar" aria-label="Progresso do desafio do mês"
             aria-valuemin={0} aria-valuemax={100} aria-valuenow={progress.valid?progress.percentage:undefined}
@@ -140,7 +143,7 @@ export default function ClubeRegisteredActivities({session}) {
             {progress.valid?(progress.completed
               ?'Meta alcançada! Recompensa prevista: '+goal.reward+' pontos (crédito ainda não automático).'
               :format(monthlyGoal-monthKm>0?Math.max(0,monthlyGoal-monthKm):0)+' km para completar o desafio')
-              :(!goal.loaded?'Carregando meta do desafio...':monthlyGoal===null?'Meta mensal a definir pelo clube':!status.connected?'Conecte-se para acompanhar sua evolução':monthKm===null?'Aguardando dados reais do Strava':'Atualize as atividades para conferir o progresso')}
+              :(!goal.loaded?'Carregando meta do desafio...':monthlyGoal===null?'Meta mensal a definir pelo clube':!status.connected?status.disabled?'A conexão com o Strava ainda será liberada nesta versão.': 'Conecte-se para acompanhar sua evolução':monthKm===null?'Aguardando dados reais do Strava':'Atualize as atividades para conferir o progresso')}
           </span>
         </span>
       </span>
@@ -152,8 +155,8 @@ export default function ClubeRegisteredActivities({session}) {
     {expanded&&<div id="npv-registered-activity-content" className="clube-activities-expanded npv-strava-detail">
       <div className={'npv-strava-connection'+(status.connected?' npv-strava-connected':'')} role="status">
         <div className="npv-strava-status-icon">{status.connected?<CheckCircle2 size={19}/>:<LockKeyhole size={19}/>}</div>
-        <div><strong>{loading?'Verificando suas atividades...':status.connected?'Sua conta Strava está conectada':'Strava ainda não conectado'}</strong>
-          <p>{status.connected?'Atividades consultadas diretamente da sua conta. Nenhum ponto é gerado automaticamente nesta fase.':'Você pode conectar sua conta para consultar suas atividades reais nesta área.'}</p>
+        <div><strong>{loading?'Verificando suas atividades...':status.connected?'Sua conta Strava está conectada':status.disabled?'Strava ainda não disponível nesta versão':'Strava ainda não conectado'}</strong>
+          <p>{status.connected?'Atividades consultadas diretamente da sua conta. Nenhum ponto é gerado automaticamente nesta fase.':status.disabled?'O painel do desafio está ativo; a leitura automática do Strava será habilitada após configurar e homologar a integração oficial.':'Você pode conectar sua conta para consultar suas atividades reais nesta área.'}</p>
         </div>
       </div>
       {error&&<p className="npv-strava-feedback" role="alert">{error}</p>}
@@ -169,7 +172,7 @@ export default function ClubeRegisteredActivities({session}) {
           <button type="button" className="npv-strava-disconnect" disabled={busy} onClick={disconnect}>Desconectar</button>
         </div>
       </>:<>
-        <button type="button" className="npv-strava-connect-button" disabled={busy||loading||!token} onClick={connect}>{busy?'Abrindo Strava...':'Conectar minha conta Strava ↗'}</button>
+        <button type="button" className="npv-strava-connect-button" disabled={busy||loading||!token||status.disabled} onClick={connect}>{status.disabled?'Conexão Strava em preparação':busy?'Abrindo Strava...':'Conectar minha conta Strava ↗'}</button>
         <p className="npv-strava-pilot-note">Ao conectar, você autoriza a leitura de data, modalidade e distância das suas atividades. O NPV não armazena o histórico nesta etapa. Você pode desconectar quando quiser.</p>
         <button type="button" className="npv-strava-example-button" onClick={()=>setPreview(v=>!v)}>
           {preview?<EyeOff size={16}/>:<Eye size={16}/>}
