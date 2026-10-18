@@ -155,3 +155,17 @@
   .clube-mobile-mode label{display:flex;flex:1;flex-direction:column;gap:4px;min-width:110px;font-weight:750;font-size:10px;color:#727d70}
   .clube-mobile-mode select{width:100%;background:#fff;border:1px solid #dde5d5;border-radius:7px;padding:8px 7px;color:#2a3727;font-size:12px}
 }
+
+/* Logo oficial Vai! no cabeçalho padrão: marca original sem fundo,
+   exibida em branco. Não altera tamanhos nem conteúdo do login. */
+.clube-logo-vai{
+  display:block;
+  flex:none;
+  width:52px;
+  height:48px;
+  object-fit:contain;
+  filter:brightness(0) invert(1);
+}
+@media(max-width:760px){
+  .clube-logo-vai{width:42px;height:40px}
+}

@@ -5,6 +5,7 @@ import {
   UserRound, Users, Wallet, X, Shirt, CupSoda, Droplets, Ticket, Pencil, ImagePlus, SlidersHorizontal, ChevronDown, ChevronUp
 } from 'lucide-react'
 import { clubeSupabase as supabase } from './clubeSupabase.js'
+import logoVaiCirculo from './assets/logo-vai-circular.webp'
 import './ClubeNPV.css'
 import './ClubeRecompensas.css'
 import './ClubeNPVOnline.css'
@@ -24,7 +25,7 @@ const ruleNames={
 }
 function ShellHeader() {
   return <header className="clube-header"><div className="clube-header-inner">
-    <div className="clube-logo"><div className="clube-logo-mark">NPV<span>!</span></div><div className="clube-logo-label"><strong>NÃO PENSE, VAI!</strong><span>CLUBE DE BENEFÍCIOS</span></div></div>
+    <div className="clube-logo"><img className="clube-logo-vai" src={logoVaiCirculo} alt="" aria-hidden="true"/><div className="clube-logo-label"><strong>NÃO PENSE, VAI!</strong><span>CLUBE DE BENEFÍCIOS</span></div></div>
     <div className="clube-header-actions"><a className="clube-back" href="/"><ArrowLeft size={16}/><span>Voltar ao site</span></a><span className="clube-demo-badge clube-online-badge"><span className="clube-demo-dot"/> CLUBE NPV</span></div>
   </div></header>
 }
