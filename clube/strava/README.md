@@ -39,3 +39,13 @@ Pontos que demandam confirmação *por escrito*: combinação de km com dados de
 - Conferir integração Hotmart/condição de assinatura sem violar a política de cobrança de funcionalidades Strava.
 
 **Não contornar as restrições por scraping, extração de páginas, credenciais dos alunos, exportação automática informal ou API de terceiros não autorizada.** Se o caso de uso for negado, estudar fonte de atividades própria e consentida do NPV, independente dos dados Strava.
+
+## Execução complementar — 18/10/2026 (configuração independente)
+- Criado componente de administração `src/ClubeKmSetup.jsx` com edição de **pontos por km** e modalidades (corrida, caminhada, bicicleta), mais prévia calculada exclusivamente com quilômetros fictícios.
+- Integrado à visão geral **somente do administrador** na branch `feat/npv-strava-foundation-20261018`. Site principal (`main`) permanece intocado.
+- Criada e aplicada no projeto **Clube NPV** (ref `dnlyfwcrfocgafgfoyna`) a migração aditiva `clube_km_settings_preview_rules_20261018`, versionada em `clube/migrations/20261018_clube_km_settings.sql`.
+- Confirmado `RLS ENABLED`, 2 políticas (leitura e edição pelo admin), `anon` sem privilégio, e sessão autenticada sem identidade de administrador retornando 0 linhas.
+- Valor inicial: 1 ponto/km; corrida, caminhada e bicicleta. **Somente regra NPV**: nenhum crédito automático ou acesso a Strava é habilitado.
+- Conferidos os números do banco após a migração: 19 eventos de pontos, 4 registros de resgate e 2 perfis (migração não os modificou).
+- `.github/workflows/clube-km-rules.yml`: `node --test` rodando a cada alteração na branch/PR.
+- **Situação de liberação:** apenas preview da Vercel e migração aditiva Supabase; PR #6 continua como rascunho, sem publicação no site oficial.
