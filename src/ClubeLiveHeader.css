@@ -164,3 +164,15 @@
   .clube-live-student .clube-live-tabs>button{font-size:9px;gap:2px}
   .clube-live-student .clube-live-tabs>button svg{width:12px;height:12px}
 }
+
+/* Ajuste final do cartão real do aluno: compacto, mantendo saldo dinâmico e selo. */
+.clube-live-student .clube-student-summary{
+  min-height:174px;
+  padding:22px 32px;
+}
+@media(max-width:760px){
+  .clube-live-student .clube-student-summary{
+    min-height:168px;
+    padding:20px 20px;
+  }
+}
