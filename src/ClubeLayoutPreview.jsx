@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
-import { ArrowLeft, ArrowRight, Award, Check, ChevronDown, ChevronUp, ExternalLink, Gift, History, LogOut, Package, ShieldCheck, Sparkles, Ticket, Trophy, Users, Wallet, X } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Award, Check, ChevronDown, ChevronUp, ExternalLink, Gift, History, LogOut, Package, ShieldCheck, Sparkles, Ticket, Users, Wallet, X } from 'lucide-react'
 import { PartnerCards } from './ClubeExtras.jsx'
-import npvLogoBranca from './assets/logo-branca-npv.PNG'
 import './ClubeNPV.css'
 import './ClubeRecompensas.css'
 import './ClubeExtras.css'
@@ -72,26 +71,31 @@ export default function ClubeLayoutPreview(){
     })}</div>
   }
   return <div className="clube-shell clube-layout-preview">
-    <header className="clube-header"><div className="clube-header-inner">
-      <div className="clube-logo clube-preview-brand"><img className="clube-preview-brand-image" src={npvLogoBranca} alt="Não Pense, Vai!" /><div className="clube-preview-brand-text"><span>Clube de</span><strong>Benefícios</strong></div></div>
-      {previewActive&&<button className="clube-preview-header-logout" type="button" onClick={()=>setPreviewActive(false)} aria-label="Sair da conta (simulação)"><LogOut size={17}/> Sair</button>}
-    </div></header>
+    <div className="clube-preview-top-scene">
+      <header className="clube-header clube-preview-photo-header"><div className="clube-header-inner">
+        <div className="clube-preview-hero-title" aria-label="Clube de Benefícios"><span>Clube de</span><strong>Benefícios</strong></div>
+        {previewActive&&<button className="clube-preview-header-logout" type="button" onClick={()=>setPreviewActive(false)} aria-label="Sair da conta (simulação)"><LogOut size={17}/> Sair</button>}
+      </div></header>
+      {previewActive&&<div className="clube-layout-frame clube-preview-hero-frame">
+        <nav className="clube-nav clube-layout-preview-nav" aria-label="Menu do Clube NPV">
+          {nav.map(([key,label,Icon])=><button key={key} type="button" className={tab===key?'active':''} onClick={()=>setTab(key)}><Icon size={17}/>{label}</button>)}
+        </nav>
+      </div>}
+    </div>
     <div className="clube-layout-preview-note"><ShieldCheck size={16}/> PRÉVIA INTERATIVA DO LAYOUT · Dados ilustrativos · Nenhuma movimentação real</div>
     <div className="clube-layout-frame">
-      {previewActive?<><nav className="clube-nav clube-layout-preview-nav" aria-label="Menu do Clube NPV">
-        {nav.map(([key,label,Icon])=><button key={key} type="button" className={tab===key?'active':''} onClick={()=>setTab(key)}><Icon size={17}/>{label}</button>)}
-      </nav>
+      {previewActive?<>
       <main className="clube-layout-preview-main">
         <div className="clube-intro"><div><h1>{tab==='inicio'?'Sua evolução vale pontos.':tab==='historico'?'Histórico de pontos':tab==='recompensas'?'Benefícios e recompensas':'Parceiros e descontos'}</h1><p>Seu extrato de pontos e benefícios em um só lugar.</p></div></div>
         {tab==='inicio'&&<>
           <div className="clube-student-summary clube-score-refined">
             <div className="clube-score-refined-top">
-              <div><div className="clube-student-hello">OLÁ, <span>NPV! ✦</span></div>
+              <div><div className="clube-student-hello">OLÁ, NPV! ✦</div>
                 <p>SEUS PONTOS EM 2026</p>
                 <strong>{fmt(previewTotal)} <small>pontos</small></strong>
                 {previewAvailable!==previewTotal&&<span className="clube-summary-caption">Disponíveis para solicitar: {fmt(previewAvailable)} pontos</span>}
               </div>
-              <Trophy size={88} aria-hidden="true" className="clube-score-trophy"/>
+              <Award size={88} aria-hidden="true"/>
             </div>
           </div>
           <section className="clube-card clube-activities-card">

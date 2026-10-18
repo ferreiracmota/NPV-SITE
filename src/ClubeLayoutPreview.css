@@ -116,56 +116,90 @@
 }
 
 
-/* Prévia: foto esportiva original como fundo atmosférico, sem fixar dados de pontuação. */
-.clube-layout-preview .clube-score-refined{
+
+/* Quarta prévia: imagem esportiva no cabeçalho, menus sobre a fotografia. O cartão de pontos volta ao gradiente NPV. */
+.clube-layout-preview .clube-preview-top-scene{
   position:relative;
   isolation:isolate;
-  background:#091911;
+  background:#16241b url('./assets/clube-npv-fundo-esportes.avif') center 50% / cover no-repeat;
   overflow:hidden;
-  border:1px solid rgba(174,221,120,.24);
-  box-shadow:0 15px 30px rgba(4,24,12,.12),inset 0 0 0 1px rgba(255,255,255,.04);
+  color:#fff;
 }
-.clube-layout-preview .clube-score-refined::before{
-  content:"";
-  position:absolute;
-  z-index:0;
-  inset:-7px;
-  background:url('./assets/clube-npv-fundo-esportes.avif') center 45% / cover no-repeat;
-  filter:saturate(1.06) contrast(1.05);
-  opacity:1;
-  pointer-events:none;
+.clube-layout-preview .clube-preview-top-scene::before{
+  content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:linear-gradient(180deg,rgba(3,13,10,.39) 0%,rgba(3,13,10,.10) 42%,rgba(3,13,10,.25) 65%,rgba(2,13,9,.70) 100%);
 }
-.clube-layout-preview .clube-score-refined::after{
-  content:"";
-  position:absolute;
-  z-index:0;
-  inset:0;
-  background:
-    radial-gradient(ellipse at 7% 110%,rgba(85,157,19,.32),transparent 54%),
-    linear-gradient(100deg,rgba(3,16,10,.57) 0%,rgba(5,19,12,.29) 48%,rgba(3,19,15,.20) 100%);
-  pointer-events:none;
+.clube-layout-preview .clube-preview-photo-header{
+  position:relative;z-index:1;top:auto;
+  background:transparent;border-bottom:0;
 }
-.clube-layout-preview .clube-score-refined-top{position:relative;z-index:1;}
-.clube-layout-preview .clube-score-refined .clube-student-hello{color:#f6fff0;}
-.clube-layout-preview .clube-score-refined .clube-student-hello span{color:#c4ed65;}
-.clube-layout-preview .clube-score-refined p{color:rgba(241,249,233,.82);}
-.clube-layout-preview .clube-score-refined-top strong{color:#fff;text-shadow:0 2px 16px rgba(0,0,0,.2);}
-.clube-layout-preview .clube-score-refined-top strong small{color:#f5faef;}
-.clube-layout-preview .clube-score-refined-top>svg.clube-score-trophy{
-  width:88px;height:88px;padding:21px;box-sizing:border-box;border-radius:50%;
-  color:#b6ee64;opacity:1;background:rgba(18,70,29,.58);
-  border:2px solid rgba(180,233,106,.3);
-  box-shadow:0 0 0 6px rgba(156,225,88,.06);
-  backdrop-filter:blur(4px);
+.clube-layout-preview .clube-preview-photo-header .clube-header-inner{
+  min-height:192px;padding:25px 32px 12px;align-items:flex-start;
+}
+.clube-layout-preview .clube-preview-hero-title{
+  display:flex;flex-direction:column;gap:1px;
+  padding:8px 11px 10px;border-radius:12px;
+  background:linear-gradient(100deg,rgba(0,13,9,.34),rgba(0,13,9,0));
+  text-shadow:0 2px 10px rgba(0,0,0,.53);
+}
+.clube-layout-preview .clube-preview-hero-title span{font-size:13px;font-weight:700;line-height:1.1;color:#fff}
+.clube-layout-preview .clube-preview-hero-title strong{font-size:25px;font-weight:900;letter-spacing:-.025em;line-height:1.05;color:#c5e852}
+.clube-layout-preview .clube-preview-hero-frame{position:relative;z-index:1;max-width:none;}
+.clube-layout-preview .clube-layout-preview-nav{
+  margin:0;padding:9px max(20px,calc((100vw - 1290px)/2 + 20px));
+  border:0;border-radius:0;justify-content:flex-start;
+  background:rgba(5,24,19,.29);box-shadow:0 -1px 0 rgba(255,255,255,.12);
+  backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);
+}
+.clube-layout-preview .clube-layout-preview-nav>button{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  color:#fff;background:transparent;font-weight:750;
+  text-shadow:0 1px 5px rgba(0,0,0,.55);
+  transition:background .2s,border-color .2s;
+  border:1px solid transparent;
+}
+.clube-layout-preview .clube-layout-preview-nav>button svg{color:inherit}
+.clube-layout-preview .clube-layout-preview-nav>button:hover{
+  color:#fff;background:rgba(255,255,255,.14);
+}
+.clube-layout-preview .clube-layout-preview-nav>button.active{
+  color:#fff;background:rgba(255,255,255,.18);
+  border-color:rgba(255,255,255,.37);
+  box-shadow:0 2px 10px rgba(0,0,0,.08);
+}
+.clube-layout-preview .clube-layout-preview-nav>button.active svg{color:#fff}
+.clube-layout-preview .clube-preview-header-logout{
+  background:rgba(11,29,21,.65);
+  border-color:rgba(255,255,255,.42);
+  backdrop-filter:blur(5px);
+}
+.clube-layout-preview .clube-score-refined{
+  background:radial-gradient(circle at 80% -10%,#3c5233 0%,transparent 45%),linear-gradient(115deg,#0f1710,#243321);
+  border:0;box-shadow:none;
 }
 @media(max-width:760px){
- .clube-layout-preview .clube-score-refined::before{background-position:52% center;}
- .clube-layout-preview .clube-score-refined::after{
-   background:radial-gradient(ellipse at 5% 108%,rgba(79,159,30,.28),transparent 64%),
-   linear-gradient(100deg,rgba(2,14,9,.59),rgba(5,18,12,.27) 68%,rgba(7,26,18,.18));
- }
- .clube-layout-preview .clube-score-refined-top>svg.clube-score-trophy{
-   width:62px;height:62px;padding:13px;border-width:1.5px;
-   box-shadow:0 0 0 4px rgba(156,225,88,.07);
- }
+  .clube-layout-preview .clube-preview-top-scene{
+    background-position:50% 50%;
+  }
+  .clube-layout-preview .clube-preview-photo-header .clube-header-inner{
+    min-height:159px;padding:17px 14px 10px;
+  }
+  .clube-layout-preview .clube-preview-hero-title{padding:5px 8px 7px}
+  .clube-layout-preview .clube-preview-hero-title span{font-size:11px}
+  .clube-layout-preview .clube-preview-hero-title strong{font-size:20px}
+  .clube-layout-preview .clube-layout-preview-nav{
+    display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
+    margin:0;padding:6px 5px;gap:3px;overflow:visible;
+  }
+  .clube-layout-preview .clube-layout-preview-nav>button{
+    height:43px;width:100%;min-width:0;
+    font-size:clamp(9px,2.5vw,11px);gap:4px;padding:0 2px;
+    line-height:1.1;letter-spacing:-.025em;white-space:nowrap;
+  }
+  .clube-layout-preview .clube-layout-preview-nav>button svg{width:14px;height:14px;flex:none}
+}
+@media(max-width:360px){
+  .clube-layout-preview .clube-preview-hero-title strong{font-size:18px}
+  .clube-layout-preview .clube-layout-preview-nav>button{font-size:9px;gap:2px}
+  .clube-layout-preview .clube-layout-preview-nav>button svg{width:12px;height:12px}
 }
