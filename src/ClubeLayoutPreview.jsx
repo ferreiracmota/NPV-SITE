@@ -73,7 +73,7 @@ export default function ClubeLayoutPreview(){
   }
   return <div className="clube-shell clube-layout-preview">
     <header className="clube-header"><div className="clube-header-inner">
-      <div className="clube-logo clube-preview-brand"><img className="clube-preview-brand-image" src={npvLogoBranca} alt="Não Pense, Vai!" /></div>
+      <div className="clube-logo clube-preview-brand"><img className="clube-preview-brand-image" src={npvLogoBranca} alt="Não Pense, Vai!" /><div className="clube-preview-brand-text"><span>Clube de</span><strong>Benefícios</strong></div></div>
       {previewActive&&<button className="clube-preview-header-logout" type="button" onClick={()=>setPreviewActive(false)} aria-label="Sair da conta (simulação)"><LogOut size={17}/> Sair</button>}
     </div></header>
     <div className="clube-layout-preview-note"><ShieldCheck size={16}/> PRÉVIA INTERATIVA DO LAYOUT · Dados ilustrativos · Nenhuma movimentação real</div>

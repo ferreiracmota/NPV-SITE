@@ -97,11 +97,20 @@
 }
 
 /* Marca NPV oficial branca no cabeçalho exclusivo da prévia. */
-.clube-layout-preview .clube-preview-brand{flex:none;min-width:0}
-.clube-layout-preview .clube-preview-brand-image{display:block;width:145px;height:72px;object-fit:cover;object-position:center;filter:brightness(0) invert(1)}
+.clube-layout-preview .clube-preview-brand{display:flex;align-items:center;gap:10px;flex:none;min-width:0}
+.clube-layout-preview .clube-preview-brand-image{display:block;width:110px;height:55px;object-fit:cover;object-position:center;filter:brightness(0) invert(1);flex:none}
+.clube-layout-preview .clube-preview-brand-text{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;min-width:0;gap:2px;line-height:1.04}
+.clube-layout-preview .clube-preview-brand-text span{display:block;color:#e8efe2;text-transform:uppercase;letter-spacing:.10em;font-size:11px;font-weight:750;white-space:nowrap}
+.clube-layout-preview .clube-preview-brand-text strong{display:block;color:#c0db54;letter-spacing:-.025em;font-size:20px;font-weight:900;white-space:nowrap}
 @media(max-width:760px){
- .clube-layout-preview .clube-preview-brand-image{width:118px;height:59px}
+ .clube-layout-preview .clube-preview-brand{gap:7px}
+ .clube-layout-preview .clube-preview-brand-image{width:92px;height:46px}
+ .clube-layout-preview .clube-preview-brand-text span{font-size:9px;letter-spacing:.075em}
+ .clube-layout-preview .clube-preview-brand-text strong{font-size:16px}
 }
 @media(max-width:360px){
- .clube-layout-preview .clube-preview-brand-image{width:108px;height:54px}
+ .clube-layout-preview .clube-preview-brand{gap:5px}
+ .clube-layout-preview .clube-preview-brand-image{width:82px;height:41px}
+ .clube-layout-preview .clube-preview-brand-text span{font-size:8px}
+ .clube-layout-preview .clube-preview-brand-text strong{font-size:14px}
 }
