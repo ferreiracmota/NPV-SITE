@@ -1,51 +1,127 @@
-import React, { useState } from 'react'
-import { ChevronDown, ChevronUp, Footprints, LockKeyhole, Eye, EyeOff } from 'lucide-react'
+import React, { useEffect, useState } from 'react'
+import { ChevronDown, ChevronUp, Footprints, LockKeyhole, Eye, EyeOff, CheckCircle2, RefreshCw } from 'lucide-react'
 import './ClubeRegisteredActivities.css'
 
-// Prévia de interface no Clube NPV: nenhum dado fictício entra no banco ou nos pontos.
 const SAMPLE = [
   { id: 1, label: 'Corrida', when: '04 de outubro', km: 8.0, symbol: '🏃' },
   { id: 2, label: 'Pedalada', when: '09 de outubro', km: 13.5, symbol: '🚴' },
   { id: 3, label: 'Caminhada', when: '14 de outubro', km: 8.0, symbol: '🚶' }
 ]
+const format=v=>Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:2})
+const sportName={Run:'Corrida',Walk:'Caminhada',Ride:'Bicicleta',VirtualRun:'Corrida virtual',VirtualRide:'Bicicleta virtual',Hike:'Trilha'}
+const sportIcon={Run:'🏃',Walk:'🚶',Ride:'🚴',VirtualRun:'🏃',VirtualRide:'🚴',Hike:'🥾'}
+const readableDate=v=>/^\d{4}-\d{2}-\d{2}$/.test(v||'')
+  ? v.split('-').reverse().join('/') : 'Data indisponível'
 
-const format = v => v.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })
+export default function ClubeRegisteredActivities({session}) {
+  const [expanded,setExpanded]=useState(()=>new URLSearchParams(window.location.search).has('strava'))
+  const [preview,setPreview]=useState(false)
+  const [status,setStatus]=useState({connected:false,activities:[]})
+  const [busy,setBusy]=useState(false)
+  const [loading,setLoading]=useState(false)
+  const [error,setError]=useState('')
+  const token=session?.access_token
+  const activities=Array.isArray(status.activities)?status.activities:[]
+  const totalKm=activities.reduce((sum,a)=>sum+Number(a.km||0),0)
 
-export default function ClubeRegisteredActivities() {
-  const [expanded, setExpanded] = useState(false)
-  const [preview, setPreview] = useState(false)
+  async function readStatus(signal) {
+    if(!token)return
+    setLoading(true)
+    setError('')
+    try{
+      const response=await fetch('/api/strava/status',{
+        headers:{Authorization:'Bearer '+token},
+        credentials:'same-origin',signal
+      })
+      if(!response.ok)throw new Error('Falha ao consultar conexão')
+      const data=await response.json()
+      if(!signal?.aborted){
+        setStatus({connected:!!data.connected,activities:data.activities||[]})
+        if(data.error)setError(data.error)
+      }
+    }catch(e){
+      if(e?.name!=='AbortError'&&!signal?.aborted)setError('Não foi possível verificar a conexão. Tente atualizar.')
+    }finally{if(!signal?.aborted)setLoading(false)}
+  }
+
+  useEffect(()=>{
+    if(!expanded||!token)return
+    const controller=new AbortController()
+    readStatus(controller.signal)
+    return()=>controller.abort()
+  },[expanded,token])
+
+  async function connect(){
+    if(!token||busy)return
+    setBusy(true);setError('')
+    try{
+      const response=await fetch('/api/strava/connect',{
+        method:'POST',
+        headers:{Authorization:'Bearer '+token},
+        credentials:'same-origin'
+      })
+      const data=await response.json()
+      if(!response.ok||!data.authorize_url)throw new Error(data.error||'Não foi possível iniciar a conexão')
+      // No mesmo navegador: a autorização do Strava devolve o aluno ao Clube NPV.
+      window.location.assign(data.authorize_url)
+    }catch(e){setError(e.message||'Falha ao iniciar o Strava.');setBusy(false)}
+  }
+
+  async function disconnect(){
+    if(!token||busy)return
+    setBusy(true);setError('')
+    try{
+      const response=await fetch('/api/strava/status',{
+        method:'POST',headers:{Authorization:'Bearer '+token},credentials:'same-origin'
+      })
+      const data=await response.json()
+      if(!response.ok)throw new Error('Não foi possível desconectar')
+      setStatus({connected:false,activities:[]})
+      if(!data.revoked)setError('Desconectado deste navegador. Você também pode revogar o acesso em strava.com/settings/apps.')
+    }catch(e){setError(e.message||'Erro ao desconectar.')}finally{setBusy(false)}
+  }
+
   return <section className="clube-card clube-activities-card npv-strava-activities" aria-label="Atividades registradas">
     <button type="button" className="clube-activities-toggle" aria-expanded={expanded}
-      aria-controls="npv-registered-activity-content" onClick={() => setExpanded(v => !v)}>
-      <span>
-        <strong>Atividades registradas</strong>
-        <small>Seus quilômetros de corrida, caminhada e bicicleta</small>
-      </span>
-      <span className="clube-activities-chevron">{expanded ? <ChevronUp size={21}/> : <ChevronDown size={21}/>}</span>
+      aria-controls="npv-registered-activity-content" onClick={()=>setExpanded(v=>!v)}>
+      <span><strong>Atividades registradas</strong><small>Seus quilômetros de corrida, caminhada e bicicleta</small></span>
+      <span className="clube-activities-chevron">{expanded?<ChevronUp size={21}/>:<ChevronDown size={21}/>}</span>
     </button>
-    {expanded && <div id="npv-registered-activity-content" className="clube-activities-expanded npv-strava-detail">
-      <div className="npv-strava-connection" role="status">
-        <div className="npv-strava-status-icon"><LockKeyhole size={19}/></div>
-        <div><strong>Strava ainda não conectado</strong><p>A conexão automática está sendo preparada. Nenhuma atividade sua foi consultada ou pontuada.</p></div>
-      </div>
-      <a className="npv-strava-connect-button" href="/api/strava/pilot" target="_blank" rel="noopener noreferrer" aria-label="Testar conexão e conferir minhas atividades no Strava (abre em uma nova aba)">Conectar ao Strava — testar meus quilômetros ↗</a>
-      <p className="npv-strava-pilot-note">Primeiro teste: somente leitura das atividades da própria conta. Nenhum ponto é creditado.</p>
-      <button type="button" className="npv-strava-example-button" onClick={() => setPreview(v => !v)}>
-        {preview ? <EyeOff size={16}/> : <Eye size={16}/>}
-        {preview ? 'Ocultar exemplo' : 'Visualizar exemplo de atividades'}
-      </button>
-      {preview && <div className="npv-strava-example" aria-label="Exemplo fictício de atividades">
-        <div className="npv-strava-example-head">
-          <span><Footprints size={17}/> EXEMPLO FICTÍCIO — OUTUBRO</span>
-          <strong>{format(29.5)} km</strong>
+    {expanded&&<div id="npv-registered-activity-content" className="clube-activities-expanded npv-strava-detail">
+      <div className={'npv-strava-connection'+(status.connected?' npv-strava-connected':'')} role="status">
+        <div className="npv-strava-status-icon">{status.connected?<CheckCircle2 size={19}/>:<LockKeyhole size={19}/>}</div>
+        <div><strong>{loading?'Verificando suas atividades...':status.connected?'Sua conta Strava está conectada':'Strava ainda não conectado'}</strong>
+          <p>{status.connected?'Atividades consultadas diretamente da sua conta. Nenhum ponto é gerado automaticamente nesta fase.':'Você pode conectar sua conta para consultar suas atividades reais nesta área.'}</p>
         </div>
-        {SAMPLE.map(item => <div className="npv-strava-example-row" key={item.id}>
-          <span aria-hidden="true">{item.symbol}</span>
-          <div><strong>{item.label}</strong><small>{item.when} · somente demonstração</small></div>
+      </div>
+      {error&&<p className="npv-strava-feedback" role="alert">{error}</p>}
+      {status.connected?<>
+        <div className="npv-strava-example-head npv-strava-live-heading"><span><Footprints size={17}/> ÚLTIMOS 7 DIAS</span><strong>{format(totalKm)} km</strong></div>
+        {activities.length?activities.map((item,i)=><div className="npv-strava-example-row" key={i}>
+          <span aria-hidden="true">{sportIcon[item.sport]||'🏅'}</span>
+          <div><strong>{sportName[item.sport]||item.sport||'Atividade'}</strong><small>{readableDate(item.date)} · Strava</small></div>
           <b>{format(item.km)} km</b>
-        </div>)}
-        <p>Estes registros são apenas uma demonstração de como ficará a área do aluno. Não são atividades reais e não geram pontos.</p>
-      </div>}
+        </div>):<p className="npv-strava-pilot-note">Nenhuma atividade disponível nos últimos sete dias para a permissão concedida.</p>}
+        <div className="npv-strava-actions">
+          <button type="button" className="npv-strava-example-button" disabled={busy||loading} onClick={()=>readStatus()}><RefreshCw size={16}/> Atualizar atividades</button>
+          <button type="button" className="npv-strava-disconnect" disabled={busy} onClick={disconnect}>Desconectar</button>
+        </div>
+      </>:<>
+        <button type="button" className="npv-strava-connect-button" disabled={busy||loading||!token} onClick={connect}>{busy?'Abrindo Strava...':'Conectar minha conta Strava ↗'}</button>
+        <p className="npv-strava-pilot-note">Ao conectar, você autoriza a leitura de data, modalidade e distância das suas atividades. O NPV não armazena o histórico nesta etapa. Você pode desconectar quando quiser.</p>
+        <button type="button" className="npv-strava-example-button" onClick={()=>setPreview(v=>!v)}>
+          {preview?<EyeOff size={16}/>:<Eye size={16}/>}
+          {preview?'Ocultar exemplo':'Visualizar exemplo fictício'}
+        </button>
+        {preview&&<div className="npv-strava-example">
+          <div className="npv-strava-example-head"><span><Footprints size={17}/> EXEMPLO FICTÍCIO — OUTUBRO</span><strong>{format(29.5)} km</strong></div>
+          {SAMPLE.map(item=><div className="npv-strava-example-row" key={item.id}>
+            <span aria-hidden="true">{item.symbol}</span><div><strong>{item.label}</strong><small>{item.when} · demonstração</small></div><b>{format(item.km)} km</b>
+          </div>)}
+          <p>Somente demonstração, sem dados reais ou créditos.</p>
+        </div>}
+      </>}
+      <p className="npv-strava-privacy"><a href="https://www.strava.com/settings/apps" target="_blank" rel="noopener noreferrer">Gerenciar permissões no Strava ↗</a> · A conexão de teste fica salva somente neste navegador por até 30 dias. Seus pontos e resgates não são alterados.</p>
     </div>}
   </section>
 }
