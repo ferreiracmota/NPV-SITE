@@ -247,40 +247,59 @@
   .npv-strava-activities .npv-strava-challenge-caption{font-size:8.8px}
 }
 
-/* Desafios adicionais: aparecem somente quando o administrador cadastrar outros.
-   O card principal e sua fotografia mantêm dimensões e regras anteriores. */
-.npv-strava-activities .npv-strava-challenge-more{
-  display:block;margin:5px 0 0;color:#e7cf98;font-size:10px;font-weight:750;letter-spacing:.01em
+/* Desafios adicionais usam exatamente o mesmo componente visual e a mesma
+   fotografia do desafio principal. Sem desafios extras, nada muda no card. */
+.npv-strava-activities .npv-strava-hero-trigger.has-extra-challenges,
+.npv-strava-activities .npv-strava-hero-trigger.has-extra-challenges:hover{
+  /* O card cresce com o conteúdo sem deixar o desafio fora da imagem. */
+  aspect-ratio:auto;
+  min-height:clamp(390px,48vw,650px);
+  height:auto;
+  max-height:none;
+  background-size:cover,cover;
+  background-position:center center,center center;
 }
-.npv-strava-activities .npv-strava-challenge-title{overflow-wrap:anywhere}
-.npv-strava-other-challenges{
-  display:grid;gap:9px;padding:12px 16px 16px;background:#f7faf4;
-  border-top:1px solid #dfe9d4
+.npv-strava-activities .has-extra-challenges .npv-strava-challenge{
+  flex:none;
+  width:min(100%,440px);
 }
-.npv-strava-other-challenge{
-  min-width:0;background:#123022;color:#eef6e9;border:1px solid #294b36;
-  padding:12px 14px;border-radius:12px
+.npv-strava-activities .has-extra-challenges .npv-strava-challenge-secondary{
+  margin-top:10px;
 }
-.npv-strava-other-challenge-head{
-  display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap
-}
-.npv-strava-other-challenge-head strong{font-size:12px;font-weight:850;overflow-wrap:anywhere}
-.npv-strava-other-challenge-head>span{color:#f4d99b;font-size:11px;font-weight:850}
-.npv-strava-other-challenge-meta{
-  display:flex;justify-content:space-between;gap:10px;margin:8px 0 6px;
-  color:#d9e7d7;font-size:11px
-}
-.npv-strava-other-challenge-meta small{color:#f3daa2;font-weight:750}
-.npv-strava-other-challenge-track{
-  height:7px;border-radius:20px;background:#0b1f16;overflow:hidden
-}
-.npv-strava-other-challenge-track>span{
-  display:block;height:100%;border-radius:20px;background:linear-gradient(90deg,#d7ad64,#ffe1a4)
+.npv-strava-activities .has-extra-challenges .npv-strava-challenge-title{
+  overflow-wrap:anywhere;
+  min-width:0;
 }
 @media(max-width:640px){
-  .npv-strava-other-challenges{padding:9px 11px 11px;gap:8px}
-  .npv-strava-other-challenge{padding:10px}
-  .npv-strava-other-challenge-head strong{font-size:11px}
-  .npv-strava-other-challenge-head>span{font-size:10px}
-  .npv-strava-activities .npv-strava-challenge-more{font-size:9px}
+  .npv-strava-activities .npv-strava-hero-trigger.has-extra-challenges,
+  .npv-strava-activities .npv-strava-hero-trigger.has-extra-challenges:hover{
+    aspect-ratio:auto;
+    min-height:290px;
+    height:auto;
+    padding:11px 12px;
+    align-items:flex-start;
+    background-size:cover,cover;
+  }
+  .npv-strava-activities .clube-activities-toggle.has-extra-challenges>.npv-strava-hero-copy{
+    width:100%;
+    max-width:100%;
+    padding-right:31px;
+  }
+  .npv-strava-activities .has-extra-challenges .npv-strava-challenge{
+    width:100%;
+    max-width:310px;
+  }
+  .npv-strava-activities .has-extra-challenges .npv-strava-challenge-secondary{
+    margin-top:7px;
+  }
+}
+@media(max-width:380px){
+  .npv-strava-activities .npv-strava-hero-trigger.has-extra-challenges,
+  .npv-strava-activities .npv-strava-hero-trigger.has-extra-challenges:hover{
+    min-height:275px;
+    padding:8px 9px;
+  }
+  .npv-strava-activities .clube-activities-toggle.has-extra-challenges>.npv-strava-hero-copy{
+    padding-right:30px;
+  }
 }
