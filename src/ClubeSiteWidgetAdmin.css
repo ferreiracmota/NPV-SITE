@@ -1,0 +1,57 @@
+/* Painel administrativo isolado — nenhuma regra desta folha altera a home. */
+.npv-widget-admin{margin:18px 0 30px;padding:23px;border:1px solid #dce6d6;border-radius:22px;background:#f7f9f5;color:#20332a}
+.npv-widget-admin *{box-sizing:border-box}
+.npv-widget-admin-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:20px}
+.npv-widget-admin-eyebrow{font-size:10px;font-weight:900;letter-spacing:.14em;color:#668147}
+.npv-widget-admin-head h2{margin:5px 0 6px;font-size:27px;line-height:1.15;color:#1c3625}
+.npv-widget-admin-head p{max-width:600px;margin:0;font-size:13px;line-height:1.6;color:#657a65}
+.npv-widget-admin-mode{white-space:nowrap;padding:7px 11px;border-radius:99px;background:#e0efda;color:#426f2b;font-size:10px;font-weight:900;letter-spacing:.06em}
+.npv-widget-admin-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(290px,390px);gap:16px;align-items:start}
+.npv-widget-admin-controls{min-width:0;display:flex;flex-direction:column;gap:13px}
+.npv-widget-admin-panel{padding:17px;border:1px solid #dde7d8;border-radius:15px;background:#fff;min-width:0;box-shadow:0 3px 13px rgba(24,54,26,.035)}
+.npv-widget-admin-panel h3{display:flex;align-items:center;gap:8px;margin:0 0 8px;font-size:15px;line-height:1.3;color:#1e3828}
+.npv-widget-admin-panel p,.npv-widget-admin-panel>small{display:block;margin:0 0 12px;color:#6a7c6c;font-size:11px;line-height:1.55}
+.npv-widget-admin-switch{display:flex;align-items:center;gap:9px;font-weight:800;font-size:13px;margin:10px 0}
+.npv-widget-admin input[type=checkbox]{accent-color:#456e32;width:16px;height:16px;flex:none}
+.npv-widget-admin-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:8px 0}
+.npv-widget-admin-fields label{display:flex;flex-direction:column;gap:5px;font-size:11px;font-weight:800;color:#596e59;min-width:0}
+.npv-widget-admin-fields input:not([type=range]):not([type=color]){width:100%;min-width:0;min-height:35px;padding:8px 9px;border:1px solid #dbe3d7;border-radius:8px;background:#fff;color:#273c2a;font:inherit}
+.npv-widget-admin-fields input[type=color]{height:35px;width:100%;padding:4px;border:1px solid #dbe3d7;border-radius:8px;background:#fff;cursor:pointer}
+.npv-widget-admin-fields input[type=range]{width:100%;accent-color:#668b40}
+.npv-widget-rank-editor{border-top:1px solid #ebf0e8;padding-top:11px;margin-top:11px}
+.npv-widget-rank-editor>strong{font-size:12px;color:#38543b}
+.npv-widget-upload-line{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:7px}
+.npv-widget-thumb{width:37px;height:37px;border-radius:9px;object-fit:contain;background:#eff2ec;border:1px solid #e0e7db;flex:none}
+.npv-widget-file,.npv-widget-upload-line>button,.npv-widget-admin-reset{
+display:inline-flex;align-items:center;justify-content:center;gap:6px;border:1px solid #dce5d9;border-radius:8px;background:#f7faf6;padding:7px 10px;color:#416344;font-size:11px;font-weight:800;cursor:pointer}
+.npv-widget-file input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+.npv-widget-choice{display:flex;align-items:center;gap:10px;padding:8px;border-radius:9px;cursor:pointer}
+.npv-widget-choice:hover{background:#f2f7ef}
+.npv-widget-choice span{min-width:0;display:flex;flex-direction:column;gap:3px}
+.npv-widget-choice strong{font-size:12px;color:#2c4433;overflow-wrap:anywhere}
+.npv-widget-choice small{font-size:10px;color:#728170}
+.npv-widget-admin-preview-area{position:sticky;top:18px;min-width:0}
+.npv-widget-admin-preview-panel{padding:15px}
+.npv-widget-admin-preview-surface{
+ display:flex;align-items:center;justify-content:center;min-width:0;min-height:280px;
+ padding:20px 10px;border-radius:13px;
+ background:linear-gradient(140deg,#3c5846,#192f3b 60%,#91a64b);overflow:visible
+}
+.npv-widget-admin-preview-surface .npv-floating-club{
+ position:relative!important;right:auto!important;bottom:auto!important;transform:none!important;
+ width:min(100%,368px)!important;z-index:1;
+}
+.npv-widget-admin-preview-surface .npv-floating-club .npv-fw-shell{max-width:100%}
+.npv-widget-admin-off,.npv-widget-admin-published{margin-top:12px!important}
+.npv-widget-admin-off{display:flex;align-items:center;gap:7px;color:#b3523d!important}
+.npv-widget-admin-error,.npv-widget-admin-success{display:flex;align-items:center;gap:8px;padding:11px;border-radius:9px;font-size:12px;line-height:1.5}
+.npv-widget-admin-error{background:#fff0ed;color:#af4937}
+.npv-widget-admin-success{background:#eaf6e8;color:#3b7b39}
+.npv-widget-admin-footer{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin-top:16px}
+.npv-widget-admin-footer button{display:inline-flex;align-items:center;gap:8px;padding:12px 15px;border-radius:10px;font-weight:900;font-size:12px;cursor:pointer}
+.npv-widget-admin-save{border:1px solid #cbdcca;background:#fff;color:#376039}
+.npv-widget-admin-publish{border:1px solid #294a2e;background:#274b2d;color:#fff}
+.npv-widget-admin-footer button:disabled{cursor:not-allowed;opacity:.6}
+.npv-widget-admin-footer small{flex-basis:100%;font-size:10px;line-height:1.5;color:#667a64}
+@media(max-width:1040px){.npv-widget-admin-grid{grid-template-columns:1fr}.npv-widget-admin-preview-area{position:relative;top:auto;order:-1}}
+@media(max-width:560px){.npv-widget-admin{padding:11px;margin:12px 0;border-radius:15px}.npv-widget-admin-panel{padding:12px}.npv-widget-admin-fields{grid-template-columns:1fr}.npv-widget-admin-preview-surface{padding:12px 5px}.npv-widget-admin-mode{white-space:normal}}
