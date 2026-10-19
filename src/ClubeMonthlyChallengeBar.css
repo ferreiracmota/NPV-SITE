@@ -72,3 +72,177 @@
     height:8px;
   }
 }
+
+
+/* CLUBE DE BENEFICIOS V2.1 - 19/10/2026
+   Hierarquia e legibilidade do desafio, sem alterar fotografia,
+   meta, recompensa, estado ou funcionamento do Strava.
+   Restauracao V2.0: backup/clube-beneficios-v2.0-20261019 */
+.npv-strava-activities .npv-strava-challenge{
+  width:min(100%,440px);
+  margin-top:15px;
+  padding:12px 14px;
+  gap:7px;
+  border:1px solid rgba(255,229,176,.25);
+  border-radius:14px;
+  background:linear-gradient(110deg,rgba(5,24,18,.74),rgba(7,28,20,.43) 75%,rgba(10,32,24,.26));
+  box-shadow:0 8px 24px rgba(2,14,9,.19),inset 0 1px 0 rgba(255,255,255,.07);
+}
+.npv-strava-activities .npv-strava-challenge-top{
+  align-items:center;
+  gap:10px;
+  margin-bottom:1px;
+}
+.npv-strava-activities .npv-strava-challenge-title{
+  color:#ffe1a9;
+  font-size:11px;
+  line-height:1.2;
+  font-weight:900;
+  letter-spacing:.085em;
+}
+.npv-strava-activities .npv-strava-challenge-reward{
+  background:linear-gradient(115deg,rgba(244,207,127,.26),rgba(227,183,85,.13));
+  box-shadow:0 2px 10px rgba(255,209,115,.11);
+}
+.npv-strava-activities .npv-strava-challenge-status{
+  display:flex;
+  align-items:baseline;
+  flex-wrap:wrap;
+  gap:7px;
+  color:#f5f6ed;
+  font-size:12px;
+  line-height:1.22;
+  font-weight:650;
+}
+.npv-strava-activities .npv-strava-challenge-number{
+  font-size:clamp(16px,1.7vw,21px);
+  line-height:1.15;
+  font-weight:900;
+  letter-spacing:-.035em;
+  color:#fffdf5;
+  font-variant-numeric:tabular-nums;
+  text-shadow:0 1px 8px rgba(0,0,0,.23);
+}
+.npv-strava-activities .npv-strava-challenge-target{
+  color:#d6e3cd;
+  font-size:12px;
+  font-weight:650;
+  letter-spacing:0;
+}
+.npv-strava-activities .npv-strava-challenge-placeholder{
+  font-size:12px;
+  font-weight:800;
+  color:#fffdf5;
+}
+.npv-strava-activities .npv-strava-challenge-caption{
+  color:#dfe9d7;
+  font-size:11px;
+  line-height:1.27;
+  font-weight:550;
+}
+.npv-strava-activities .npv-strava-challenge-track{
+  /* Preserva a barra curta e dourada aprovada na versao 2.0. */
+  width:min(76%,315px);
+  height:11px;
+}
+@media(max-width:640px){
+  .npv-strava-activities .npv-strava-challenge{
+    width:min(100%,310px);
+    margin-top:6px;
+    padding:7px 9px 8px;
+    gap:4px;
+    border-radius:10px;
+  }
+  .npv-strava-activities .npv-strava-challenge-top{
+    flex-wrap:nowrap;
+    gap:5px;
+    margin-bottom:0;
+  }
+  .npv-strava-activities .npv-strava-challenge-title{
+    font-size:10px;
+    line-height:1.15;
+    letter-spacing:.055em;
+  }
+  .npv-strava-activities .npv-strava-challenge-reward{
+    gap:3px;
+    padding:3px 7px;
+    font-size:9px;
+    line-height:1.1;
+  }
+  .npv-strava-activities .npv-strava-challenge-reward>span{font-size:10px}
+  .npv-strava-activities .npv-strava-challenge-status{
+    gap:5px;
+    font-size:11px;
+    line-height:1.15;
+  }
+  .npv-strava-activities .npv-strava-challenge-number{
+    font-size:15px;
+    line-height:1.1;
+  }
+  .npv-strava-activities .npv-strava-challenge-target{
+    font-size:10.5px;
+  }
+  .npv-strava-activities .npv-strava-challenge-placeholder{
+    font-size:10.5px;
+  }
+  .npv-strava-activities .npv-strava-challenge-track{
+    width:74%;
+    max-width:252px;
+    height:8px;
+  }
+  .npv-strava-activities .npv-strava-challenge-caption{
+    font-size:9.5px;
+    line-height:1.17;
+    font-weight:550;
+  }
+}
+/* Celular estreito: prioriza leitura e abre espaco acima do desafio. */
+@media(max-width:640px){
+  .npv-strava-activities .npv-strava-hero-eyebrow{
+    font-size:8.5px;
+    margin-bottom:3px;
+    line-height:1.12;
+  }
+  .npv-strava-activities .npv-strava-hero-copy>strong{
+    font-size:18px;
+    line-height:1.08;
+  }
+  .npv-strava-activities .npv-strava-hero-copy>small{
+    font-size:10.5px;
+    line-height:1.16;
+    margin-top:3px;
+  }
+  .npv-strava-activities .npv-strava-hero-meta{
+    font-size:9.5px;
+    line-height:1.15;
+    margin-top:5px;
+    gap:4px;
+  }
+  .npv-strava-activities .npv-strava-hero-sports{display:none}
+  .npv-strava-activities .npv-strava-hero-indicator{
+    width:6px;height:6px;
+  }
+}
+@media(max-width:380px){
+  .npv-strava-activities .npv-strava-hero-eyebrow{
+    font-size:7.7px;
+    margin-bottom:2px;
+  }
+  .npv-strava-activities .npv-strava-hero-copy>strong{font-size:16.5px}
+  .npv-strava-activities .npv-strava-hero-copy>small{font-size:9.5px}
+  .npv-strava-activities .npv-strava-hero-meta{font-size:9px;margin-top:4px}
+  .npv-strava-activities .npv-strava-challenge{
+    margin-top:5px;
+    padding:6px 8px 7px;
+    gap:3px;
+  }
+  .npv-strava-activities .npv-strava-challenge-title{font-size:9.5px}
+  .npv-strava-activities .npv-strava-challenge-reward{
+    font-size:8.5px;
+    padding:2px 6px;
+  }
+  .npv-strava-activities .npv-strava-challenge-number{font-size:14px}
+  .npv-strava-activities .npv-strava-challenge-target{font-size:10px}
+  .npv-strava-activities .npv-strava-challenge-track{width:72%;height:8px}
+  .npv-strava-activities .npv-strava-challenge-caption{font-size:8.8px}
+}
