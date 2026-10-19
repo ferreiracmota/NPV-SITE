@@ -1,4 +1,5 @@
 import './App.css'
+import ClubeFloatingWidget from './ClubeFloatingWidget.jsx'
 /* Vídeos versionados pelo Vite: urls produzidas junto com a compilação,
    sem depender de /public/videos, que pode não existir na implantação. */
 import fundoDesktopVideo from './assets/videofundo1.MP4?url'
@@ -918,6 +919,9 @@ useEffect(() => {
     </a>
   </div>
 </section>
+{/* Widget fora da hero com overflow-hidden, para acompanhar a viewport em toda a página.
+    O vídeo, os títulos e os botões da hero permanecem intactos. */}
+<ClubeFloatingWidget />
 
       {/* Antes e Depois Section */}
 <section className="pt-12 pb-6 bg-white">

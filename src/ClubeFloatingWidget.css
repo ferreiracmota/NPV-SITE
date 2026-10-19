@@ -1,0 +1,249 @@
+/* Clube NPV — widget fixo na viewport, fora da hero. Não altera elementos do site. */
+.npv-floating-club{
+  position:fixed;
+  right:clamp(18px,3.6vw,68px);
+  bottom:clamp(18px,4.5vh,54px);
+  z-index:30;
+  width:264px;
+  color:#203029;
+  font-family:Inter,ui-sans-serif,system-ui,sans-serif;
+  text-align:left;
+  transition:width .34s cubic-bezier(.2,.8,.2,1);
+}
+.npv-floating-club--expanded{width:min(368px,calc(100vw - 30px))}
+.npv-fw-shell{
+  overflow:hidden;
+  border:1px solid rgba(160,160,160,.35);
+  border-radius:23px;
+  background:linear-gradient(137deg,rgba(17,17,17,.40),rgba(17,17,17,.40) 60%,rgba(17,17,17,.40));
+  -webkit-backdrop-filter:blur(5px);
+  backdrop-filter:blur(5px);
+  box-shadow:0 19px 65px rgba(4,19,13,.22),0 3px 14px rgba(10,32,15,.12),inset 0 1px 0 rgba(160,160,160,.16);
+}
+.npv-fw-toggle{
+  display:flex;align-items:center;gap:11px;width:100%;
+  min-height:69px;padding:13px 14px 10px;
+  border:0;background:transparent;color:inherit;text-align:left;
+  cursor:pointer;
+}
+.npv-fw-toggle:focus-visible{outline:2px solid #567d21;outline-offset:-4px;border-radius:17px}
+.npv-fw-emblem{
+  display:grid;place-items:center;flex:none;width:36px;height:36px;
+  border-radius:13px;
+  color:#345c2c;
+  background:linear-gradient(145deg,#d9ebc8,#f7fbed);
+  box-shadow:inset 0 1px 0 #fff,0 3px 8px rgba(37,65,33,.09)
+}
+.npv-fw-heading{min-width:0;flex:1;display:flex;flex-direction:column;gap:2px}
+.npv-fw-eyebrow{
+  color:#6c8465;font-size:8px;line-height:1.15;font-weight:900;
+  letter-spacing:.16em;white-space:nowrap
+}
+.npv-fw-eyebrow i{font-style:normal;color:#9db451;font-size:10px}
+.npv-fw-heading strong{color:#1b3426;font-size:13px;font-weight:900;line-height:1.25;letter-spacing:-.025em}
+.npv-fw-heading small{color:#758473;font-size:10px;font-weight:600;line-height:1.2}
+.npv-fw-toggle-icon{display:grid;place-items:center;color:#637b5b;flex:none;align-self:center}
+.npv-fw-rule{height:1px;margin:0 15px;background:linear-gradient(90deg,rgba(69,106,53,.18),rgba(69,106,53,.02))}
+.npv-fw-collapsed{padding:9px 14px 10px;min-height:88px}
+.npv-fw-compact-feature{display:flex;flex-direction:column;gap:6px;min-height:58px}
+.npv-fw-feature-title{display:flex;align-items:center;gap:6px;color:#385331;font-size:10px;font-weight:850;line-height:1.25}
+.npv-fw-feature-title svg{color:#6a9134}
+.npv-fw-feature-main{color:#263929;font-size:11px;font-weight:800;line-height:1.45}
+.npv-fw-feature-detail{display:flex;align-items:center;gap:4px;color:#6e8467;font-size:9px;line-height:1.4;font-weight:600}
+.npv-fw-footer{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:9px}
+.npv-fw-demo-chip{
+  display:inline-flex;align-items:center;border-radius:5px;padding:3px 5px;
+  background:rgba(206,221,193,.55);color:#5c7351;
+  font-size:8px;letter-spacing:.055em;font-weight:900
+}
+.npv-fw-dots{display:flex;align-items:center;gap:4px}
+.npv-fw-dots>span{display:block;width:4px;height:4px;border-radius:8px;background:#c0ceb7;transition:width .25s ease,background .25s ease}
+.npv-fw-dots>span.is-active{width:13px;background:#80a652}
+.npv-fw-ranking{display:flex;flex-direction:column;gap:8px}
+.npv-fw-rank{display:flex;align-items:center;gap:9px;min-width:0}
+.npv-fw-rank-position{width:16px;flex:none;color:#82927d;font-size:10px;font-weight:900;text-align:center}
+.npv-fw-avatar{
+  display:grid;place-items:center;flex:none;width:29px;height:29px;border-radius:50%;
+  background:linear-gradient(135deg,#ccdbc1,#eef5e7);color:#355638;
+  border:1px solid rgba(255,255,255,.9);font-size:12px;font-weight:900;
+  box-shadow:0 1px 5px rgba(37,64,29,.10)
+}
+.npv-fw-avatar-1{background:linear-gradient(135deg,#e1e1d7,#f4f3ea);color:#65766d}
+.npv-fw-avatar-2{background:linear-gradient(135deg,#e6dccd,#fbf1e4);color:#927a55}
+.npv-fw-rank-name{min-width:0;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#344437;font-size:11px;font-weight:750}
+.npv-fw-rank>strong{white-space:nowrap;color:#284933;font-size:12px;font-weight:900;font-variant-numeric:tabular-nums}
+.npv-fw-rank>strong small{font-size:9px;font-weight:700;color:#688565}
+.npv-fw-ranking-compact{gap:4px}
+.npv-fw-ranking-compact .npv-fw-rank{gap:6px}
+.npv-fw-ranking-compact .npv-fw-rank-position{font-size:9px;width:13px}
+.npv-fw-ranking-compact .npv-fw-avatar{width:20px;height:20px;font-size:9px}
+.npv-fw-ranking-compact .npv-fw-rank-name{font-size:9px}
+.npv-fw-ranking-compact .npv-fw-rank>strong{font-size:10px}
+.npv-fw-expanded-content{
+  max-height:0;overflow:hidden;opacity:0;visibility:hidden;pointer-events:none;
+  transition:max-height .4s cubic-bezier(.23,.8,.2,1),opacity .26s ease,visibility .26s ease
+}
+.npv-floating-club--expanded .npv-fw-expanded-content{
+  max-height:min(70svh,660px);opacity:1;visibility:visible;pointer-events:auto;overflow-y:auto;overscroll-behavior:contain
+}
+.npv-fw-expanded-inner{padding:11px 17px 17px}
+.npv-fw-section-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:4px 0 12px}
+.npv-fw-section-head>span{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:900;color:#283f2c}
+.npv-fw-section-head svg{color:#709948}
+.npv-fw-section-head em{font-size:8px;font-style:normal;font-weight:900;letter-spacing:.075em;color:#60794b;background:#e5efdb;padding:5px 7px;border-radius:20px}
+.npv-fw-disclaimer{margin:11px 0 1px;font-size:9px;color:#6e8068;line-height:1.45}
+.npv-fw-divider{height:1px;margin:13px 0;background:rgba(65,95,55,.16)}
+.npv-fw-rewards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.npv-fw-reward{
+  display:flex;flex-direction:column;gap:7px;padding:12px;
+  border:1px solid rgba(94,131,78,.15);border-radius:12px;
+  background:rgba(255,255,255,.58);
+}
+.npv-fw-reward-icon{display:grid;place-items:center;width:32px;height:32px;border-radius:10px;background:#eff5e9;color:#638746}
+.npv-fw-reward strong{display:block;color:#344235;font-size:10px;font-weight:900;line-height:1.35}
+.npv-fw-reward small{display:block;color:#819080;font-size:9px;line-height:1.4;margin-top:3px}
+.npv-fw-benefits{display:flex;align-items:flex-start;gap:9px;margin-top:11px;padding:11px;border-radius:12px;background:rgba(224,236,213,.73)}
+.npv-fw-benefits svg{flex:none;color:#668945}
+.npv-fw-benefits span{color:#4c6048;font-size:10px;font-weight:600;line-height:1.5}
+.npv-fw-about{font-size:10px;line-height:1.55;color:#60715b;margin:12px 1px}
+.npv-fw-primary{
+  display:flex;justify-content:center;align-items:center;gap:9px;width:100%;
+  background:#243f2d;color:#fff!important;border:1px solid #315638;border-radius:12px;
+  min-height:43px;padding:10px 13px;font-size:11px;font-weight:850;text-decoration:none;
+  box-shadow:0 5px 13px rgba(32,65,37,.16);
+  transition:background .2s ease,transform .2s ease
+}
+.npv-fw-primary:hover{background:#365b36;transform:translateY(-1px)}
+.npv-fw-secondary{display:flex;align-items:center;justify-content:center;gap:6px;text-decoration:none;color:#4f743b!important;font-size:10px;font-weight:850;padding:11px 4px 0}
+.npv-fw-account-note{display:flex;align-items:center;justify-content:center;gap:6px;font-size:9px;line-height:1.4;color:#6d8169;margin:10px 0 0}
+.npv-floating-club a:focus-visible{outline:2px solid #648d3d;outline-offset:3px}
+@media (min-width:768px) and (max-width:1099px){
+  .npv-floating-club{width:224px;right:15px;bottom:16px}
+  .npv-floating-club--expanded{width:min(344px,calc(100vw - 30px))}
+  .npv-fw-toggle{gap:7px;padding:11px 10px 9px}
+  .npv-fw-emblem{width:31px;height:31px}
+  .npv-fw-heading strong{font-size:12px}
+}
+@media(max-width:767px){
+  .npv-floating-club{
+    right:12px;bottom:12px;width:min(216px,calc(100vw - 24px));
+    z-index:30
+  }
+  .npv-floating-club--expanded{width:min(348px,calc(100vw - 24px))}
+  .npv-fw-shell{border-radius:17px;backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}
+  .npv-fw-toggle{min-height:51px;padding:9px 10px 8px;gap:7px}
+  .npv-fw-emblem{width:30px;height:30px;border-radius:10px}
+  .npv-fw-emblem svg{width:16px;height:16px}
+  .npv-fw-heading strong{font-size:11px}
+  .npv-fw-heading small{font-size:9px}
+  .npv-fw-eyebrow{font-size:7px}
+  .npv-fw-toggle-icon svg{width:14px;height:14px}
+  .npv-fw-collapsed{padding:6px 10px 8px;min-height:65px}
+  .npv-fw-compact-feature{min-height:47px;gap:4px}
+  .npv-fw-feature-title{font-size:9px}
+  .npv-fw-feature-main{font-size:10px}
+  .npv-fw-feature-detail{font-size:9px}
+  .npv-fw-footer{margin-top:5px}
+  .npv-fw-demo-chip{font-size:7px;padding:2px 4px}
+  .npv-floating-club--expanded .npv-fw-expanded-content{max-height:min(59svh,500px)}
+  .npv-fw-expanded-inner{padding:10px 13px 14px}
+  .npv-fw-section-head{margin-bottom:10px}
+  .npv-fw-rank{gap:6px}
+  .npv-fw-rank>strong{font-size:11px}
+}
+@media(max-width:359px){
+  .npv-floating-club{width:190px}
+  .npv-floating-club--expanded{width:calc(100vw - 24px)}
+  .npv-fw-heading small{display:none}
+}
+@media(prefers-reduced-motion:reduce){
+  .npv-floating-club,.npv-fw-expanded-content,.npv-fw-dots>span,.npv-fw-primary{transition:none!important}
+}
+
+/* A hero desktop começa depois do banner e do cabeçalho fixo; trazer
+   o card para dentro da primeira área visível sem afetar o mobile. */
+@media(min-width:768px){
+  .npv-floating-club{
+    transform:translateY(-clamp(85px,13svh,135px));
+  }
+}
+
+/* Preview: dark clear glass. O vidro usa somente preto neutro #111111;
+   blur moderado, sem mudança de posição, medidas, avatares ou comportamento.
+   Sombras nos glifos protegem a leitura sobre vídeo com frames claros. */
+.npv-floating-club{
+  color:#f7f8f7;
+}
+.npv-fw-shell{
+  border-color:rgba(160,160,160,.35);
+  text-shadow:0 1px 3px rgba(0,0,0,.87),0 0 8px rgba(0,0,0,.60);
+}
+.npv-floating-club .npv-fw-heading strong,
+.npv-floating-club .npv-fw-feature-main,
+.npv-floating-club .npv-fw-rank-name,
+.npv-floating-club .npv-fw-rank>strong,
+.npv-floating-club .npv-fw-section-head>span,
+.npv-floating-club .npv-fw-reward strong{
+  color:#fcfcfc;
+}
+.npv-floating-club .npv-fw-eyebrow,
+.npv-floating-club .npv-fw-heading small,
+.npv-floating-club .npv-fw-feature-title,
+.npv-floating-club .npv-fw-feature-detail,
+.npv-floating-club .npv-fw-rank-position,
+.npv-floating-club .npv-fw-rank>strong small,
+.npv-floating-club .npv-fw-disclaimer,
+.npv-floating-club .npv-fw-reward small,
+.npv-floating-club .npv-fw-benefits span,
+.npv-floating-club .npv-fw-about,
+.npv-floating-club .npv-fw-account-note{
+  color:#ecedec;
+}
+.npv-floating-club .npv-fw-toggle-icon,
+.npv-floating-club .npv-fw-feature-title svg,
+.npv-floating-club .npv-fw-section-head svg,
+.npv-floating-club .npv-fw-benefits svg{
+  color:#f0f2ef;
+}
+.npv-floating-club .npv-fw-rule,
+.npv-floating-club .npv-fw-divider{
+  background:rgba(255,255,255,.20);
+}
+.npv-floating-club .npv-fw-reward{
+  border-color:rgba(255,255,255,.20);
+  background:rgba(17,17,17,.17);
+}
+.npv-floating-club .npv-fw-benefits{
+  background:rgba(17,17,17,.19);
+}
+.npv-floating-club .npv-fw-secondary{
+  color:#f4f5f4!important;
+}
+.npv-floating-club .npv-fw-avatar,
+.npv-floating-club .npv-fw-demo-chip,
+.npv-floating-club .npv-fw-reward-icon,
+.npv-floating-club .npv-fw-primary{
+  text-shadow:none;
+}
+
+/* Elementos opcionais do widget gerenciados no Preview: sem efeito no modelo aprovado. */
+.npv-floating-club .npv-fw-avatar-photo{width:100%;height:100%;object-fit:cover;border-radius:50%;display:block}
+.npv-floating-club .npv-fw-logo-upload{width:100%;height:100%;object-fit:contain;display:block}
+.npv-floating-club .npv-fw-reward-photo{width:100%;height:100%;object-fit:cover;border-radius:inherit;display:block}
+.npv-floating-club .npv-fw-partner-logos{display:flex;gap:6px;align-items:center;margin-bottom:5px;flex-wrap:wrap}
+.npv-floating-club .npv-fw-partner-logos img{height:23px;max-width:80px;object-fit:contain;padding:2px 5px;border-radius:6px;background:rgba(255,255,255,.92)}
+/* Aplicado apenas quando o administrador modifica manualmente a cor dos textos. */
+.npv-floating-club .npv-fw-shell[style] .npv-fw-heading strong,
+.npv-floating-club .npv-fw-shell[style] .npv-fw-heading small,
+.npv-floating-club .npv-fw-shell[style] .npv-fw-eyebrow,
+.npv-floating-club .npv-fw-shell[style] .npv-fw-feature-title,
+.npv-floating-club .npv-fw-shell[style] .npv-fw-feature-main,
+.npv-floating-club .npv-fw-shell[style] .npv-fw-feature-detail,
+.npv-floating-club .npv-fw-shell[style] .npv-fw-rank-name,
+.npv-floating-club .npv-fw-shell[style] .npv-fw-rank>strong,
+.npv-floating-club .npv-fw-shell[style] .npv-fw-section-head>span,
+.npv-floating-club .npv-fw-shell[style] .npv-fw-reward strong,
+.npv-floating-club .npv-fw-shell[style] .npv-fw-reward small,
+.npv-floating-club .npv-fw-shell[style] .npv-fw-about{
+  color:var(--npv-widget-text,#fcfcfc);
+}

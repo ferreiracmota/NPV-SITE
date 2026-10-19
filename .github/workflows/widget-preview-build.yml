@@ -1,0 +1,20 @@
+name: Build Preview Widget NPV
+on:
+  push:
+    branches:
+      - preview/clube-npv-widget-glass-20261019
+      - release/widget-clube-oficial-20261019
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm install --legacy-peer-deps --no-audit --no-fund
+      - run: npm run build
