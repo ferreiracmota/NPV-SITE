@@ -59,6 +59,6 @@ export function widgetGlassStyle(visual){
  }
 }
 export function widgetPublicImage(supabase,path){
- if(!supabase||typeof path!=='string'||!/^site-widget-preview\/[a-zA-Z0-9/_-]+\.(png|jpe?g|webp)$/.test(path))return ''
+ if(!supabase||typeof path!=='string'||!(/^(site-widget-preview\/[a-zA-Z0-9/_-]+|images\/[a-f0-9-]{36})\.(png|jpe?g|webp)$/.test(path)))return ''
  return supabase.storage.from(WIDGET_BUCKET).getPublicUrl(path).data.publicUrl
 }
