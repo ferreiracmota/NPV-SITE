@@ -586,7 +586,7 @@
 
 /* CLUBE NPV DESKTOP PANORAMICO — 19/10/2026
    Card Atividades registradas: proporção baixa apenas no computador.
-   Usa a montagem esportiva em alta qualidade já presente no projeto, com recorte panorâmico equivalente ao arquivo 3:1 enviado pelo usuário. O mobile não muda.
+   Usa o arquivo panorâmico original (1536x512), reexportado em AVIF alta qualidade (113 KB, q70). Sem distorção: cover; regra apenas para desktop. O mobile não muda.
    Salvo: backup/clube-beneficios-v2.1.1-20261019 */
 @media (min-width:1024px){
   .clube-shell.clube-live-student .npv-strava-activities .npv-strava-hero-trigger,
@@ -598,16 +598,16 @@
     padding:16px clamp(18px,2vw,28px);
     gap:18px;
     background-image:
-      linear-gradient(90deg,rgba(4,20,13,.84) 0%,rgba(6,26,17,.68) 35%,rgba(7,26,17,.40) 69%,rgba(4,18,12,.37) 100%),
-      url('./assets/clube-npv-fundo-esportes.avif');
-    background-position:center center,center 20%;
-    background-size:100% 100%,100% auto;
+      linear-gradient(90deg,rgba(4,20,13,.78) 0%,rgba(6,26,17,.56) 35%,rgba(7,26,17,.25) 69%,rgba(4,18,12,.12) 100%),
+      url('./assets/clube-card-panoramico-desktop.avif');
+    background-position:center center,center center;
+    background-size:100% 100%,cover;
     background-repeat:no-repeat,no-repeat;
   }
   .clube-shell.clube-live-student .npv-strava-activities .npv-strava-hero-trigger:hover{
     background-image:
-      linear-gradient(90deg,rgba(4,20,13,.79) 0%,rgba(6,26,17,.62) 35%,rgba(7,26,17,.36) 69%,rgba(4,18,12,.33) 100%),
-      url('./assets/clube-npv-fundo-esportes.avif');
+      linear-gradient(90deg,rgba(4,20,13,.74) 0%,rgba(6,26,17,.51) 35%,rgba(7,26,17,.20) 69%,rgba(4,18,12,.08) 100%),
+      url('./assets/clube-card-panoramico-desktop.avif');
   }
   .clube-shell.clube-live-student .npv-strava-activities .npv-strava-hero-eyebrow{
     margin-bottom:5px;
