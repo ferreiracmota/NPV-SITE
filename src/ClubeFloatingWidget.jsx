@@ -17,7 +17,7 @@ function RankingPreview({compact=false,ranking=[]}){
   return <div className={'npv-fw-ranking'+(compact?' npv-fw-ranking-compact':'')}>
     {ranking.slice(0,compact?2:3).map((entry,index)=><div className="npv-fw-rank" key={entry.id}>
       <span className="npv-fw-rank-position">{index+1}º</span>
-      <span className={'npv-fw-avatar npv-fw-avatar-'+index} aria-hidden="true">{widgetPublicImage(clubeSupabase,entry.avatar_path)?<img src={widgetPublicImage(clubeSupabase,entry.avatar_path)} alt="" className="npv-fw-avatar-photo" loading="lazy"/>:entry.name?.trim()?.charAt(0)?.toUpperCase()||'A'}</span>
+      <span className={'npv-fw-avatar npv-fw-avatar-'+index} aria-hidden="true">{widgetPublicImage(clubeSupabase,entry.avatar_path)?<img src={widgetPublicImage(clubeSupabase,entry.avatar_path)} alt="" className="npv-fw-avatar-photo" loading="lazy"/>:(entry.id?.startsWith('exemplo-')?String.fromCharCode(65+index):entry.name?.trim()?.charAt(0)?.toUpperCase()||'A')}</span>
       <span className="npv-fw-rank-name">{entry.name}</span>
       <strong>{points(entry.pontos)} <small>pts</small></strong>
     </div>)}
