@@ -2,7 +2,7 @@ import React, {useEffect, useId, useState} from 'react'
 import {ArrowRight, Award, ChevronDown, ChevronUp, Crown, Gift, Sparkles, Tag, Trophy, UserRound} from 'lucide-react'
 import {clubeSupabase} from './clubeSupabase.js'
 import {partnerLogo} from './ClubeExtras.jsx'
-import {DEFAULT_WIDGET,normalizeWidget,widgetGlassStyle,widgetPublicImage} from './ClubeSiteWidgetConfig.js'
+import {DEFAULT_WIDGET,WIDGET_SCOPE,normalizeWidget,widgetGlassStyle,widgetPublicImage} from './ClubeSiteWidgetConfig.js'
 import './ClubeFloatingWidget.css'
 
 // Fallback aprovado quando nao ha configuracao publicada.
@@ -41,7 +41,7 @@ export default function ClubeFloatingWidget({configOverride=null,forceVisible=fa
     let alive=true
     async function load(){
       try{
-        const {data,error}=await clubeSupabase.rpc('clube_site_widget_public',{p_scope:'preview'})
+        const {data,error}=await clubeSupabase.rpc('clube_site_widget_public',{p_scope:WIDGET_SCOPE})
         if(error)throw error
         if(alive)setRemote(data||null)
       }catch{/* Falha de rede nao afeta o site: visual aprovado permanece. */}
