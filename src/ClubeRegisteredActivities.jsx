@@ -112,7 +112,7 @@ export default function ClubeRegisteredActivities({session}) {
   }
 
   return <section className="clube-card clube-activities-card npv-strava-activities" aria-label="Atividades registradas">
-    <button type="button" className="clube-activities-toggle npv-strava-hero-trigger" aria-expanded={expanded}
+    <button type="button" className={'clube-activities-toggle npv-strava-hero-trigger'+(extraGoals.length?' has-extra-challenges':'')} aria-expanded={expanded}
       aria-controls="npv-registered-activity-content" onClick={()=>setExpanded(v=>!v)}>
       <span className="npv-strava-hero-icon" aria-hidden="true"><Footprints size={25} strokeWidth={2.15}/></span>
       <span className="npv-strava-hero-copy">
@@ -151,26 +151,50 @@ export default function ClubeRegisteredActivities({session}) {
               :(!goalState.loaded?'Carregando meta do desafio...':monthlyGoal===null?'Meta mensal a definir pelo clube':!status.connected?status.disabled?'Integração com Strava em preparação.': 'Conecte-se para acompanhar sua evolução':monthKm===null?'Aguardando dados reais do Strava':'Atualize as atividades para conferir o progresso')}
           </span>
         </span>
-        {extraGoals.length>0&&<span className="npv-strava-challenge-more">+{extraGoals.length} outro{extraGoals.length===1?'':'s'} desafio{extraGoals.length===1?'':'s'} neste mês</span>}
+        {extraGoals.map(item=>{
+          const extraKmGoal=Number(item.goal_km)
+          const extraProgress=monthKm!==null?challengeBar(monthKm,extraKmGoal):{valid:false,percentage:0,completed:false}
+          return <span className="npv-strava-challenge npv-strava-challenge-secondary" role="group" aria-label={item.name} key={item.id}>
+            <span className="npv-strava-challenge-top">
+              <span className="npv-strava-challenge-title" title={item.name}>{item.name.toLocaleUpperCase('pt-BR')}</span>
+              <span className="npv-strava-challenge-reward" aria-label={`Recompensa prevista de ${item.reward_points} pontos ao completar a meta`}>
+                <span aria-hidden="true">✦</span> +{formatPoints(item.reward_points)} pts
+              </span>
+            </span>
+            <span className="npv-strava-challenge-status" aria-live="polite">
+              {extraProgress.valid
+                ?(extraProgress.completed
+                  ?<strong className="npv-strava-challenge-number">Meta concluída ✦</strong>
+                  :<><strong className="npv-strava-challenge-number">{format(monthKm)} km</strong>
+                     <span className="npv-strava-challenge-target">de {format(extraKmGoal)} km</span></>)
+                :<span className="npv-strava-challenge-placeholder">
+                  {monthKm!==null?format(monthKm)+' km percorridos':status.connected?'Consultando quilômetros...':status.disabled?'Strava em preparação':'Conecte seu Strava'}
+                </span>}
+            </span>
+            <span className={'npv-strava-challenge-track'+(extraProgress.completed?' is-complete':'')}
+              role="progressbar" aria-label={`Progresso de ${item.name}`}
+              aria-valuemin={0} aria-valuemax={100}
+              aria-valuenow={extraProgress.valid?extraProgress.percentage:undefined}
+              aria-valuetext={extraProgress.valid?format(monthKm)+' de '+format(extraKmGoal)+' quilômetros':'Meta do desafio ainda não disponível'}>
+              <span className="npv-strava-challenge-fill" style={{width:(extraProgress.valid?extraProgress.percentage:0)+'%'}}/>
+            </span>
+            <span className="npv-strava-challenge-caption">
+              {extraProgress.valid
+                ?(extraProgress.completed
+                   ?'Desafio concluído! +'+formatPoints(item.reward_points)+' pts previstos (crédito não automático).'
+                   :'Faltam '+format(Math.max(0,extraKmGoal-monthKm))+' km para sua meta')
+                :monthKm!==null
+                  ?'Acompanhe sua evolução com o Strava'
+                  :status.disabled?'Integração com Strava em preparação.':status.connected?'Aguardando dados reais do Strava':'Conecte-se para acompanhar sua evolução'}
+            </span>
+          </span>
+        })}
       </span>
       <span className="npv-strava-hero-action" aria-hidden="true">
         <span>{expanded?'Recolher':'Ver detalhes'}</span>
         <span className="npv-strava-hero-arrow">{expanded?<ChevronUp size={20}/>:<ChevronDown size={20}/>}</span>
       </span>
     </button>
-    {extraGoals.length>0&&<div className="npv-strava-other-challenges" aria-label="Outros desafios do mês">
-      {extraGoals.map(item=>{
-        const bar=monthKm===null?{valid:false,percentage:0,completed:false}:challengeBar(monthKm,item.goal_km)
-        return <div className="npv-strava-other-challenge" key={item.id}>
-          <div className="npv-strava-other-challenge-head"><strong>{item.name}</strong><span>+{formatPoints(item.reward_points)} pts previstos</span></div>
-          <div className="npv-strava-other-challenge-meta"><span>{bar.valid?(bar.completed?'Meta concluída ✦':format(monthKm)+' de '+format(item.goal_km)+' km'):'Meta: '+format(item.goal_km)+' km · conecte seu Strava'}</span><small>{bar.valid?bar.percentage+'%':''}</small></div>
-          <div className="npv-strava-other-challenge-track" role="progressbar" aria-label={'Progresso de '+item.name}
-            aria-valuemin={0} aria-valuemax={100} aria-valuenow={bar.valid?bar.percentage:undefined}>
-            <span style={{width:(bar.valid?bar.percentage:0)+'%'}}/>
-          </div>
-        </div>
-      })}
-    </div>}
     {expanded&&<div id="npv-registered-activity-content" className="clube-activities-expanded npv-strava-detail">
       <div className={'npv-strava-connection'+(status.connected?' npv-strava-connected':'')} role="status">
         <div className="npv-strava-status-icon">{status.connected?<CheckCircle2 size={19}/>:<LockKeyhole size={19}/>}</div>
