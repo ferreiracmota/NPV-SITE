@@ -23,7 +23,7 @@ export default function ClubeRegisteredActivities({session}) {
   const [status,setStatus]=useState({connected:false,disabled:false,activities:[]})
   const [busy,setBusy]=useState(false)
   const [loading,setLoading]=useState(false)
-  const [goal,setGoal]=useState({loaded:false,km:null,active:false,reward:300})
+  const [goalState,setGoalState]=useState({loaded:false,items:[]})
   const [error,setError]=useState('')
   const token=session?.access_token
   const activities=Array.isArray(status.activities)?status.activities:[]
@@ -31,19 +31,21 @@ export default function ClubeRegisteredActivities({session}) {
   const monthKey=currentNpvMonth()
   const monthData=status.connected&&status.monthly?.monthKey===monthKey?status.monthly:null
   const monthKm=monthData&&Number.isFinite(Number(monthData.km))?Number(monthData.km):null
-  const monthlyGoal=goal.active&&Number.isFinite(Number(goal.km))&&Number(goal.km)>0?Number(goal.km):null
+  const activeGoals=goalState.items.filter(item=>item.active&&Number(item.goal_km)>0)
+  const goal=activeGoals[0]||null
+  const extraGoals=activeGoals.slice(1)
+  const monthlyGoal=goal?Number(goal.goal_km):null
   const progress=monthKm!==null&&monthlyGoal!==null?challengeBar(monthKm,monthlyGoal):{valid:false,percentage:0,completed:false}
   useEffect(()=>{
     let live=true
-    setGoal({loaded:false,km:null,active:false,reward:300})
-    supabase.from('clube_monthly_challenges').select('goal_km,active,reward_points')
-      .eq('month_key',monthKey).maybeSingle()
+    setGoalState({loaded:false,items:[]})
+    supabase.from('clube_monthly_challenges').select('id,name,goal_km,active,reward_points,position')
+      .eq('month_key',monthKey).order('position',{ascending:true})
       .then(({data,error:dbError})=>{
         if(!live)return
-        if(dbError||!data)setGoal({loaded:true,km:null,active:false,reward:300})
-        else setGoal({loaded:true,km:Number(data.goal_km),active:!!data.active,reward:Number(data.reward_points)||300})
+        setGoalState({loaded:true,items:dbError?[]:(data||[])})
       })
-      .catch(()=>{if(live)setGoal({loaded:true,km:null,active:false,reward:300})})
+      .catch(()=>{if(live)setGoalState({loaded:true,items:[]})})
     return()=>{live=false}
   },[monthKey,token])
 
@@ -126,9 +128,9 @@ export default function ClubeRegisteredActivities({session}) {
         </span>
         <span className="npv-strava-challenge" role="group" aria-label="Desafio do mês">
           <span className="npv-strava-challenge-top">
-            <span className="npv-strava-challenge-title">DESAFIO DO MÊS</span>
-            {monthlyGoal!==null&&<span className="npv-strava-challenge-reward" aria-label={`Recompensa prevista de ${goal.reward} pontos ao completar a meta`}>
-              <span aria-hidden="true">✦</span> +{formatPoints(goal.reward)} pts
+            <span className="npv-strava-challenge-title" title={goal?.name||'Desafio do mês'}>{(goal?.name||'Desafio do mês').toLocaleUpperCase('pt-BR')}</span>
+            {monthlyGoal!==null&&<span className="npv-strava-challenge-reward" aria-label={`Recompensa prevista de ${goal.reward_points} pontos ao completar a meta`}>
+              <span aria-hidden="true">✦</span> +{formatPoints(goal.reward_points)} pts
             </span>}
           </span>
           <span className="npv-strava-challenge-status" aria-live="polite">{progress.valid
@@ -144,17 +146,31 @@ export default function ClubeRegisteredActivities({session}) {
           </span>
           <span className="npv-strava-challenge-caption">
             {progress.valid?(progress.completed
-              ?'Desafio concluído! +'+formatPoints(goal.reward)+' pts previstos (crédito não automático).'
+              ?'Desafio concluído! +'+formatPoints(goal.reward_points)+' pts previstos (crédito não automático).'
               :'Faltam '+format(monthlyGoal-monthKm>0?Math.max(0,monthlyGoal-monthKm):0)+' km para sua meta')
-              :(!goal.loaded?'Carregando meta do desafio...':monthlyGoal===null?'Meta mensal a definir pelo clube':!status.connected?status.disabled?'Integração com Strava em preparação.': 'Conecte-se para acompanhar sua evolução':monthKm===null?'Aguardando dados reais do Strava':'Atualize as atividades para conferir o progresso')}
+              :(!goalState.loaded?'Carregando meta do desafio...':monthlyGoal===null?'Meta mensal a definir pelo clube':!status.connected?status.disabled?'Integração com Strava em preparação.': 'Conecte-se para acompanhar sua evolução':monthKm===null?'Aguardando dados reais do Strava':'Atualize as atividades para conferir o progresso')}
           </span>
         </span>
+        {extraGoals.length>0&&<span className="npv-strava-challenge-more">+{extraGoals.length} outro{extraGoals.length===1?'':'s'} desafio{extraGoals.length===1?'':'s'} neste mês</span>}
       </span>
       <span className="npv-strava-hero-action" aria-hidden="true">
         <span>{expanded?'Recolher':'Ver detalhes'}</span>
         <span className="npv-strava-hero-arrow">{expanded?<ChevronUp size={20}/>:<ChevronDown size={20}/>}</span>
       </span>
     </button>
+    {extraGoals.length>0&&<div className="npv-strava-other-challenges" aria-label="Outros desafios do mês">
+      {extraGoals.map(item=>{
+        const bar=monthKm===null?{valid:false,percentage:0,completed:false}:challengeBar(monthKm,item.goal_km)
+        return <div className="npv-strava-other-challenge" key={item.id}>
+          <div className="npv-strava-other-challenge-head"><strong>{item.name}</strong><span>+{formatPoints(item.reward_points)} pts previstos</span></div>
+          <div className="npv-strava-other-challenge-meta"><span>{bar.valid?(bar.completed?'Meta concluída ✦':format(monthKm)+' de '+format(item.goal_km)+' km'):'Meta: '+format(item.goal_km)+' km · conecte seu Strava'}</span><small>{bar.valid?bar.percentage+'%':''}</small></div>
+          <div className="npv-strava-other-challenge-track" role="progressbar" aria-label={'Progresso de '+item.name}
+            aria-valuemin={0} aria-valuemax={100} aria-valuenow={bar.valid?bar.percentage:undefined}>
+            <span style={{width:(bar.valid?bar.percentage:0)+'%'}}/>
+          </div>
+        </div>
+      })}
+    </div>}
     {expanded&&<div id="npv-registered-activity-content" className="clube-activities-expanded npv-strava-detail">
       <div className={'npv-strava-connection'+(status.connected?' npv-strava-connected':'')} role="status">
         <div className="npv-strava-status-icon">{status.connected?<CheckCircle2 size={19}/>:<LockKeyhole size={19}/>}</div>
