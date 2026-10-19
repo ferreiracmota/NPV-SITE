@@ -1,5 +1,9 @@
 // Dados exclusivamente demonstrativos: nunca consultar perfis/placares reais.
-export const WIDGET_SCOPE='preview'
+// Falha fechada: em um eventual deploy no dominio oficial, nao ler jamais o rascunho de testes.
+// O escopo production so sera liberado depois de homologacao e migracao especifica.
+export const WIDGET_SCOPE=typeof window!=='undefined'
+  && /^(www\.)?naopensevai\.com$/i.test(window.location.hostname)
+  ? 'production' : 'preview'
 export const WIDGET_BUCKET='clube-npv-recompensas'
 export const DEFAULT_WIDGET={
  enabled:true,
