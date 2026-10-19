@@ -303,3 +303,60 @@
     padding-right:30px;
   }
 }
+
+/* Ajuste FINAL do card desktop: dois desafios no PRIMEIRO PLANO, sem
+   corte da segunda caixa. Exclusivo de telas maiores que mobile.
+   A versão mobile aprovada mantém integralmente o layout anterior. */
+@media (min-width:761px){
+  .npv-strava-activities .npv-strava-hero-trigger.has-extra-challenges,
+  .npv-strava-activities .npv-strava-hero-trigger.has-extra-challenges:hover{
+    aspect-ratio:auto;
+    height:auto;
+    max-height:none;
+    min-height:clamp(365px,35vw,510px);
+    overflow:hidden;
+    align-items:center;
+    background-size:cover,cover;
+    background-position:center center,center center;
+  }
+  .npv-strava-activities .clube-activities-toggle.has-extra-challenges>.npv-strava-hero-copy{
+    display:grid;
+    flex:1 1 auto;
+    width:100%;
+    min-width:0;
+    max-width:min(92%,840px);
+    grid-template-columns:repeat(auto-fit,minmax(min(100%,245px),1fr));
+    column-gap:13px;
+    align-content:center;
+    position:relative;
+    z-index:3;
+  }
+  .npv-strava-activities .has-extra-challenges .npv-strava-hero-copy>.npv-strava-hero-eyebrow,
+  .npv-strava-activities .has-extra-challenges .npv-strava-hero-copy>strong,
+  .npv-strava-activities .has-extra-challenges .npv-strava-hero-copy>small,
+  .npv-strava-activities .has-extra-challenges .npv-strava-hero-copy>.npv-strava-hero-meta{
+    grid-column:1 / -1;
+  }
+  .npv-strava-activities .has-extra-challenges .npv-strava-challenge,
+  .npv-strava-activities .has-extra-challenges .npv-strava-challenge-secondary{
+    width:100%;
+    max-width:none;
+    margin-top:13px;
+    align-self:stretch;
+    min-width:0;
+    position:relative;
+    z-index:3;
+  }
+  .npv-strava-activities .has-extra-challenges .npv-strava-challenge-top{
+    min-width:0;
+    flex-wrap:wrap;
+  }
+  .npv-strava-activities .has-extra-challenges .npv-strava-challenge-title{
+    min-width:0;
+    overflow-wrap:anywhere;
+  }
+  .npv-strava-activities .has-extra-challenges>.npv-strava-hero-action{
+    position:relative;
+    z-index:4;
+  }
+}
