@@ -1,55 +1,107 @@
 import React, {useEffect,useState} from 'react'
-import {Flag,Save,CheckCircle2} from 'lucide-react'
+import {Flag,Save,CheckCircle2,Plus} from 'lucide-react'
 import {clubeSupabase as supabase} from './clubeSupabase.js'
 import {currentNpvMonth} from '../clube/strava/challengeProgress.mjs'
 import './ClubeMonthlyChallengeAdmin.css'
 
+const newChallenge=()=>({
+  id:crypto.randomUUID(), name:'', goal_km:'50', reward_points:'300', active:true
+})
+const toDraft=row=>({
+  ...row, name:String(row.name||''), goal_km:String(row.goal_km),
+  reward_points:String(row.reward_points)
+})
+
 export default function ClubeMonthlyChallengeAdmin(){
   const monthKey=currentNpvMonth()
-  const [goal,setGoal]=useState('')
-  const [active,setActive]=useState(true)
-  const [reward,setReward]=useState('300')
+  const [items,setItems]=useState([])
   const [loading,setLoading]=useState(true)
   const [saving,setSaving]=useState(false)
   const [feedback,setFeedback]=useState('')
+  const [error,setError]=useState('')
   useEffect(()=>{
     let live=true
-    supabase.from('clube_monthly_challenges').select('goal_km,active,reward_points').eq('month_key',monthKey).maybeSingle()
-      .then(({data,error})=>{
+    setLoading(true);setError('');setFeedback('')
+    supabase.from('clube_monthly_challenges')
+      .select('id,name,goal_km,active,reward_points,position')
+      .eq('month_key',monthKey).order('position',{ascending:true})
+      .then(({data,error:dbError})=>{
         if(!live)return
-        if(error)setFeedback('Não foi possível consultar a meta do mês.')
-        else if(data){setGoal(String(data.goal_km));setActive(Boolean(data.active));setReward(String(data.reward_points||300))}
+        if(dbError)throw dbError
+        setItems((data||[]).map(toDraft))
       })
-      .catch(()=>{if(live)setFeedback('Erro ao consultar o desafio.')})
+      .catch(()=>{if(live)setError('Não foi possível consultar os desafios do mês.')})
       .finally(()=>{if(live)setLoading(false)})
     return()=>{live=false}
   },[monthKey])
-  async function submit(e){
-    e.preventDefault()
-    const amount=Number(goal)
-    if(saving||loading||goal.trim()===''||!Number.isFinite(amount)||amount<=0||amount>10000||!Number.isInteger(Number(reward))||Number(reward)<1||Number(reward)>100000)return
-    setSaving(true);setFeedback('')
+  function edit(id,field,value){
+    setFeedback('');setError('')
+    setItems(previous=>previous.map(item=>item.id===id?{...item,[field]:value}:item))
+  }
+  async function submit(event){
+    event.preventDefault()
+    if(loading||saving||!items.length)return
+    const names=items.map(item=>item.name.trim())
+    if(names.some(name=>name.length<2||name.length>75)){
+      setError('Dê a cada desafio um nome de 2 a 75 caracteres.');return
+    }
+    if(new Set(names.map(name=>name.toLocaleLowerCase('pt-BR'))).size!==names.length){
+      setError('Os desafios de um mesmo mês precisam ter nomes diferentes.');return
+    }
+    const payload=items.map((item,index)=>({
+      id:item.id,month_key:monthKey,name:names[index],
+      goal_km:Number(item.goal_km),reward_points:Number(item.reward_points),
+      active:item.active,position:index+1,updated_at:new Date().toISOString()
+    }))
+    if(payload.some(item=>!Number.isFinite(item.goal_km)||item.goal_km<=0||item.goal_km>10000
+      ||!Number.isInteger(item.reward_points)||item.reward_points<1||item.reward_points>100000)){
+      setError('Confira as metas (acima de 0 e até 10.000 km) e as recompensas (1 a 100.000 pontos).');return
+    }
+    setSaving(true);setError('');setFeedback('')
     try{
-      const {error}=await supabase.from('clube_monthly_challenges')
-        .upsert({month_key:monthKey,goal_km:amount,reward_points:Number(reward),active,updated_at:new Date().toISOString()},{onConflict:'month_key'})
-      if(error)throw error
-      setFeedback('Desafio e recompensa configurados. Nenhum ponto é lançado até a automação ser validada.')
+      const {data,error:dbError}=await supabase.from('clube_monthly_challenges')
+        .upsert(payload,{onConflict:'id'})
+        .select('id,name,goal_km,active,reward_points,position')
+      if(dbError)throw dbError
+      setItems((data||[]).sort((a,b)=>a.position-b.position).map(toDraft))
+      setFeedback('Desafios salvos! O histórico foi mantido e nenhum ponto foi lançado automaticamente.')
     }catch{
-      setFeedback('Não foi possível salvar a meta. Confira a conta de administrador.')
+      setError('Não foi possível salvar os desafios. Confira sua permissão de administrador e tente novamente.')
     }finally{setSaving(false)}
   }
   return <section className="npv-challenge-admin" aria-labelledby="npv-challenge-admin-title">
     <div className="npv-challenge-admin-heading"><Flag size={21}/>
-      <div><strong id="npv-challenge-admin-title">Desafio do mês</strong>
-        <small>Defina quantos quilômetros os alunos precisam atingir no mês. Nenhum ponto será lançado automaticamente.</small>
+      <div><strong id="npv-challenge-admin-title">Desafios do mês</strong>
+        <small>Crie, renomeie ou ajuste desafios de {monthKey}. Cada desafio tem nome, meta e recompensa próprios. O crédito de pontos não é automático.</small>
       </div>
     </div>
     <form onSubmit={submit} className="npv-challenge-admin-form">
-      <label><span>Meta de {monthKey}</span><span className="npv-challenge-input-row"><input inputMode="decimal" type="number" min="0.1" max="10000" step="0.1" placeholder="Ex.: 50" value={goal} disabled={loading||saving} onChange={e=>setGoal(e.target.value)}/> <b>km</b></span></label>
-      <label><span>Recompensa ao completar</span><span className="npv-challenge-input-row"><input inputMode="numeric" type="number" min="1" max="100000" step="1" value={reward} disabled={loading||saving} onChange={e=>setReward(e.target.value)}/><b>pts</b></span></label>
-      <label className="npv-challenge-admin-check"><input type="checkbox" checked={active} disabled={loading||saving} onChange={e=>setActive(e.target.checked)}/> Desafio ativo</label>
-      <button type="submit" disabled={loading||saving||goal.trim()===''||!Number.isFinite(Number(goal))||Number(goal)<=0||Number(goal)>10000||!Number.isInteger(Number(reward))||Number(reward)<1||Number(reward)>100000}><Save size={16}/>{saving?'Salvando...':'Salvar meta'}</button>
+      <div className="npv-challenge-admin-list">
+        {items.map((item,index)=><div className="npv-challenge-admin-item" key={item.id}>
+          <div className="npv-challenge-admin-item-head"><strong>Desafio {index+1}</strong><span>{item.active?'Ativo':'Inativo'}</span></div>
+          <label className="npv-challenge-name"><span>Nome do desafio</span>
+            <input required minLength={2} maxLength={75} placeholder="Ex.: Desafio 50 km" value={item.name}
+              disabled={loading||saving} onChange={e=>edit(item.id,'name',e.target.value)}/></label>
+          <div className="npv-challenge-admin-fields">
+            <label><span>Meta de distância</span><span className="npv-challenge-input-row">
+              <input inputMode="decimal" type="number" min="0.1" max="10000" step="0.01" placeholder="Ex.: 50" value={item.goal_km}
+                disabled={loading||saving} onChange={e=>edit(item.id,'goal_km',e.target.value)}/><b>km</b></span></label>
+            <label><span>Recompensa ao completar</span><span className="npv-challenge-input-row">
+              <input inputMode="numeric" type="number" min="1" max="100000" step="1" value={item.reward_points}
+                disabled={loading||saving} onChange={e=>edit(item.id,'reward_points',e.target.value)}/><b>pts</b></span></label>
+            <label className="npv-challenge-admin-check"><input type="checkbox" checked={item.active}
+              disabled={loading||saving} onChange={e=>edit(item.id,'active',e.target.checked)}/> Desafio ativo</label>
+          </div>
+        </div>)}
+        {!items.length&&!loading&&<p className="npv-challenge-admin-empty">Nenhum desafio cadastrado para este mês. Crie o primeiro abaixo.</p>}
+      </div>
+      <div className="npv-challenge-admin-actions">
+        <button type="button" className="npv-challenge-add" disabled={loading||saving||items.length>=25}
+          onClick={()=>{setItems(current=>[...current,newChallenge()]);setError('');setFeedback('')}}><Plus size={16}/> Adicionar desafio</button>
+        <button type="submit" disabled={loading||saving||!items.length}><Save size={16}/>{saving?'Salvando...':'Salvar desafios'}</button>
+      </div>
     </form>
+    {error&&<p className="npv-challenge-admin-error" role="alert">{error}</p>}
     {feedback&&<p className="npv-challenge-admin-feedback" role="status"><CheckCircle2 size={14}/>{feedback}</p>}
   </section>
 }
