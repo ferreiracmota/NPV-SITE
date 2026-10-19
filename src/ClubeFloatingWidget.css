@@ -15,7 +15,7 @@
   overflow:hidden;
   border:1px solid rgba(255,255,255,.84);
   border-radius:23px;
-  background:linear-gradient(137deg,rgba(255,255,255,.23),rgba(244,249,244,.16) 60%,rgba(220,231,224,.24));
+  background:linear-gradient(137deg,rgba(17,17,17,.32),rgba(17,17,17,.30) 60%,rgba(17,17,17,.32));
   -webkit-backdrop-filter:none;
   backdrop-filter:none;
   box-shadow:0 19px 65px rgba(4,19,13,.22),0 3px 14px rgba(10,32,15,.12),inset 0 1px 0 rgba(255,255,255,.90);
@@ -166,4 +166,62 @@
   .npv-floating-club{
     transform:translateY(-clamp(85px,13svh,135px));
   }
+}
+
+/* Preview: dark clear glass. O vidro usa somente preto neutro #111111;
+   sem blur, sem mudança de posição, medidas, avatares ou comportamento.
+   Sombras nos glifos protegem a leitura sobre vídeo com frames claros. */
+.npv-floating-club{
+  color:#f7f8f7;
+}
+.npv-fw-shell{
+  border-color:rgba(255,255,255,.72);
+  text-shadow:0 1px 3px rgba(0,0,0,.87),0 0 8px rgba(0,0,0,.60);
+}
+.npv-floating-club .npv-fw-heading strong,
+.npv-floating-club .npv-fw-feature-main,
+.npv-floating-club .npv-fw-rank-name,
+.npv-floating-club .npv-fw-rank>strong,
+.npv-floating-club .npv-fw-section-head>span,
+.npv-floating-club .npv-fw-reward strong{
+  color:#fcfcfc;
+}
+.npv-floating-club .npv-fw-eyebrow,
+.npv-floating-club .npv-fw-heading small,
+.npv-floating-club .npv-fw-feature-title,
+.npv-floating-club .npv-fw-feature-detail,
+.npv-floating-club .npv-fw-rank-position,
+.npv-floating-club .npv-fw-rank>strong small,
+.npv-floating-club .npv-fw-disclaimer,
+.npv-floating-club .npv-fw-reward small,
+.npv-floating-club .npv-fw-benefits span,
+.npv-floating-club .npv-fw-about,
+.npv-floating-club .npv-fw-account-note{
+  color:#ecedec;
+}
+.npv-floating-club .npv-fw-toggle-icon,
+.npv-floating-club .npv-fw-feature-title svg,
+.npv-floating-club .npv-fw-section-head svg,
+.npv-floating-club .npv-fw-benefits svg{
+  color:#f0f2ef;
+}
+.npv-floating-club .npv-fw-rule,
+.npv-floating-club .npv-fw-divider{
+  background:rgba(255,255,255,.20);
+}
+.npv-floating-club .npv-fw-reward{
+  border-color:rgba(255,255,255,.20);
+  background:rgba(17,17,17,.17);
+}
+.npv-floating-club .npv-fw-benefits{
+  background:rgba(17,17,17,.19);
+}
+.npv-floating-club .npv-fw-secondary{
+  color:#f4f5f4!important;
+}
+.npv-floating-club .npv-fw-avatar,
+.npv-floating-club .npv-fw-demo-chip,
+.npv-floating-club .npv-fw-reward-icon,
+.npv-floating-club .npv-fw-primary{
+  text-shadow:none;
 }
