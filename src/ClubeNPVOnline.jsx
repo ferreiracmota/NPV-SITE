@@ -201,7 +201,7 @@ export default function ClubeNPVOnline() {
         fetchAllClubeRows('clube_point_events','id,student_id,event_type,points,note,created_at'),
         fetchAllClubeRows('clube_rewards','id,name,category,description,points,stock,icon,theme,active,test_only,showcase,image_path,created_at',true),
         fetchAllClubeRows('clube_redemptions','id,student_id,reward_id,reward_name,points,status,is_test,created_at,resolved_at'),
-        supabase.from('clube_point_rules').select('event_type,points,position').order('position',{ascending:true}),
+        supabase.from('clube_point_rules').select('event_type,label,points,position').order('position',{ascending:true}),
         fetchAllClubeRows('clube_partners','id,name,logo_key,logo_url,link_url,discount_percent,coupon_code,details,active,position,created_at',true)
       ]
       const results=await Promise.all(queries)
@@ -228,6 +228,7 @@ export default function ClubeNPVOnline() {
   const totalPoints=data.events.filter(isThisYear).reduce((acc,x)=>acc+x.points,0)
   const pendingCount=data.requests.filter(x=>x.status==='pending').length
   const memberName=id=>data.members.find(x=>x.id===id)?.full_name||'Aluno'
+  const ruleLabel=type=>data.rules.find(x=>x.event_type===type)?.label||ruleNames[type]||'Atividade'
   const formatError=e=>e?.message?.includes('row-level security')?'Operação não permitida para esta conta.':e?.message||'Ocorreu um erro ao salvar.'
   async function run(action,success){
     setBusy(true);setNotice('')
@@ -329,15 +330,26 @@ export default function ClubeNPVOnline() {
     },'Parceiro atualizado no Clube NPV.')
   }
   async function saveRules(e){
-    e.preventDefault();if(!isAdmin||!ruleDraft)return
-    if(ruleDraft.some(x=>!Number.isSafeInteger(Number(x.points))||Number(x.points)<0||Number(x.points)>100000)){setNotice('Informe pontos entre 0 e 100.000 para cada atividade.');return}
+    e.preventDefault()
+    if(!isAdmin||!ruleDraft||busy)return
+    const rules=ruleDraft.map((r,i)=>({
+      event_type:r.event_type,label:r.label.trim(),
+      points:Number(r.points),position:i+1
+    }))
+    if(rules.some(r=>r.label.length<2||r.label.length>75)){
+      setNotice('Cada benefício precisa de um nome de 2 a 75 caracteres.');return
+    }
+    if(new Set(rules.map(r=>r.label.toLocaleLowerCase('pt-BR'))).size!==rules.length){
+      setNotice('Não é permitido cadastrar benefícios com nomes repetidos.');return
+    }
+    if(rules.some(r=>!Number.isSafeInteger(r.points)||r.points<0||r.points>100000)){
+      setNotice('Informe pontos inteiros entre 0 e 100.000.');return
+    }
     await run(async()=>{
-      for(const rule of ruleDraft){
-        const {error}=await supabase.from('clube_point_rules').update({points:Number(rule.points),updated_at:new Date().toISOString()}).eq('event_type',rule.event_type)
-        if(error)throw error
-      }
+      const {error}=await supabase.rpc('clube_save_point_rules',{p_rules:rules})
+      if(error)throw error
       setRuleDraft(null)
-    },'Valores de referência atualizados. Os pontos continuam sendo lançados pela administração.')
+    },'Benefícios e pontuações salvos. Seu histórico de pontos foi preservado.')
   }
   async function signOut(){
     await supabase.auth.signOut()
@@ -349,7 +361,7 @@ export default function ClubeNPVOnline() {
     {!rows.length&&<p className="clube-empty">Nenhuma movimentação registrada ainda.</p>}
     {rows.map(x=><div className="clube-activity" key={x.id}>
       <span className={`clube-activity-icon ${x.points<0?'clube-debit':''}`}><Sparkles size={18}/></span>
-      <div className="clube-activity-description"><strong>{ruleNames[x.event_type]||'Atividade'}</strong>{showMember&&<span>{memberName(x.student_id)}</span>}{x.note&&<span>{x.note}</span>}<small>{date(x.created_at)}</small></div>
+      <div className="clube-activity-description"><strong>{ruleLabel(x.event_type)}</strong>{showMember&&<span>{memberName(x.student_id)}</span>}{x.note&&<span>{x.note}</span>}<small>{date(x.created_at)}</small></div>
       <strong className={`clube-activity-points ${x.points<0?'clube-negative':''}`}>{x.points>0?'+':''}{format(x.points)} pts</strong>
     </div>)}
   </div>
@@ -427,7 +439,7 @@ export default function ClubeNPVOnline() {
       </div>
       {loading&&<p className="clube-online-loading">Atualizando dados do clube...</p>}
       {tab==='inicio'&&isAdmin&&<>
-        <div className="npv-admin-rules-bar"><div><strong>Regras de pontuação</strong><span>Valores informativos apresentados aos alunos. Editáveis por você.</span></div><button className="clube-btn clube-btn-outline" onClick={()=>setRuleDraft(data.rules.map(x=>({...x})))}><SlidersHorizontal size={16}/> Editar pontos</button></div>
+        <div className="npv-admin-rules-bar"><div><strong>Regras de pontuação</strong><span>Valores informativos apresentados aos alunos. Editáveis por você.</span></div><button className="clube-btn clube-btn-outline" onClick={()=>{setNotice('');setRuleDraft(data.rules.map(x=>({...x})))}}><SlidersHorizontal size={16}/> Gerenciar benefícios</button></div>
         <div className="clube-kpis"><div className="clube-kpi clube-kpi-dark"><span>PONTOS DISTRIBUÍDOS EM {YEAR}</span><strong>{format(totalPoints)}</strong><small><TrendingUp size={15}/> Saldo líquido dos lançamentos</small></div><div className="clube-kpi"><span>ALUNOS APROVADOS</span><strong>{studentMembers.filter(x=>x.approved).length}</strong><small>Perfis autorizados</small></div><div className="clube-kpi"><span>RESGATES PENDENTES</span><strong>{pendingCount}</strong><small>Aguardando decisão</small></div></div>
         {pendingCount>0&&<button className="npv-shop-pending-banner" onClick={()=>setTab('recompensas')}><Gift size={20}/><span><strong>{pendingCount} pedido(s) aguardando aprovação</strong><small>Ver a fila de resgates</small></span><ArrowRight size={17}/></button>}
         <div className="clube-columns"><section className="clube-card"><div className="clube-card-head"><div><h2>Últimas movimentações</h2><p>Histórico do clube</p></div></div>{activityList(data.events.slice(0,6),true)}</section><section className="clube-card"><div className="clube-card-head"><div><h2>Novos cadastros</h2><p>Alunos aguardando aprovação</p></div></div>{studentMembers.filter(x=>!x.approved).slice(0,6).map(x=><div className="clube-online-member" key={x.id}><div><strong>{x.full_name}</strong><small>{x.email}</small></div><button disabled={busy} className="clube-btn clube-btn-outline" onClick={()=>approve(x.id)}><Check size={15}/> Aprovar</button></div>)}{studentMembers.every(x=>x.approved)&&<p className="clube-empty">Nenhum cadastro pendente.</p>}<button className="clube-btn clube-btn-outline clube-btn-full" onClick={()=>setTab('alunos')}>Gerenciar alunos</button></section></div>
@@ -464,7 +476,7 @@ export default function ClubeNPVOnline() {
         </section>}
         <section className="clube-card clube-next clube-earn-bottom">
           <div className="clube-card-head"><div><h2>Continue acumulando ✦</h2><p>Mais maneiras de ganhar pontos no Clube NPV</p></div></div>
-          <div className="clube-how">{data.rules.map(rule=><div key={rule.event_type}><span>✦</span><strong>{ruleNames[rule.event_type]||rule.event_type}</strong><b>+{format(rule.points)} pts</b></div>)}</div>
+          <div className="clube-how">{data.rules.map(rule=><div key={rule.event_type}><span>✦</span><strong>{ruleLabel(rule.event_type)}</strong><b>+{format(rule.points)} pts</b></div>)}</div>
           <p className="clube-micro">Pontuação de referência em testes. As atividades precisam ser confirmadas pela administração; os pontos não são adicionados automaticamente.</p>
         </section>
       </>}
@@ -484,7 +496,7 @@ export default function ClubeNPVOnline() {
     </main></div>
     {award&&isAdmin&&<div className="clube-modal-backdrop" onMouseDown={e=>{if(e.target===e.currentTarget)setAward(null)}}><section className="clube-modal" role="dialog" aria-modal="true" aria-labelledby="award-title"><div className="clube-modal-top"><div><small>ADMINISTRAÇÃO</small><h2 id="award-title">Lançar pontos</h2></div><button onClick={()=>setAward(null)} aria-label="Fechar"><X size={20}/></button></div><form className="clube-form" onSubmit={submitAward}>
       <label>Aluno aprovado<select required value={award.studentId} onChange={e=>setAward(d=>({...d,studentId:e.target.value}))}><option value="">Selecione um aluno</option>{studentMembers.filter(x=>x.approved).map(x=><option value={x.id} key={x.id}>{x.full_name||x.email}</option>)}</select></label>
-      <label>Atividade<select value={award.type} onChange={e=>setAward(d=>({...d,type:e.target.value,points:ruleDefaultPoints(data.rules,e.target.value)}))}>{Object.entries(ruleNames).filter(([k])=>k!=='resgate').map(([k,v])=><option value={k} key={k}>{v}</option>)}</select></label>
+      <label>Atividade<select value={award.type} onChange={e=>setAward(d=>({...d,type:e.target.value,points:ruleDefaultPoints(data.rules,e.target.value)}))}>{data.rules.map(rule=><option value={rule.event_type} key={rule.event_type}>{ruleLabel(rule.event_type)}</option>)}<option value="ajuste">{ruleNames.ajuste}</option></select></label>
       <label>Pontos<input type="number" min="-100000" max="100000" step="1" value={award.points} onChange={e=>setAward(d=>({...d,points:e.target.value}))} required/></label>
       <label>Justificativa {award.type==='ajuste'?'(obrigatória)':'(opcional)'}<textarea rows={2} value={award.note} onChange={e=>setAward(d=>({...d,note:e.target.value}))} required={award.type==='ajuste'}/></label>
       <button className="clube-btn clube-btn-primary clube-btn-full" type="submit" disabled={busy}>{busy?'Salvando...':'Confirmar lançamento'} <Check size={17}/></button>
@@ -514,10 +526,16 @@ export default function ClubeNPVOnline() {
       <button className="clube-btn clube-btn-outline clube-btn-full" type="button" onClick={()=>setRedeemDraft(null)} disabled={busy}>Cancelar</button>
     </form></section></div>}
     {partnerDraft&&isAdmin&&<PartnerEditor draft={partnerDraft} setDraft={setPartnerDraft} onSave={savePartner} onClose={()=>setPartnerDraft(null)} busy={busy}/>} 
-    {ruleDraft&&isAdmin&&<div className="clube-modal-backdrop" onMouseDown={e=>{if(e.target===e.currentTarget)setRuleDraft(null)}}><section className="clube-modal" role="dialog" aria-modal="true" aria-labelledby="rules-title"><div className="clube-modal-top"><div><small>CLUBE NPV</small><h2 id="rules-title">Editar pontuação</h2></div><button type="button" onClick={()=>setRuleDraft(null)} aria-label="Fechar"><X size={20}/></button></div><form className="clube-form" onSubmit={saveRules}>
-      <p>Defina quantos pontos cada atividade vale. Esses valores aparecem na área do aluno e servem de referência para lançamentos manuais.</p>
-      {ruleDraft.map((rule,i)=><label key={rule.event_type}>{ruleNames[rule.event_type]||rule.event_type}<input type="number" min="0" max="100000" step="1" required value={rule.points} onChange={e=>setRuleDraft(d=>d.map((x,j)=>j===i?{...x,points:e.target.value}:x))}/></label>)}
-      <button type="submit" className="clube-btn clube-btn-primary clube-btn-full" disabled={busy}>{busy?'Salvando...':'Salvar pontuação'} <Check size={16}/></button>
+    {ruleDraft&&isAdmin&&<div className="clube-modal-backdrop" onMouseDown={e=>{if(e.target===e.currentTarget&&!busy)setRuleDraft(null)}}><section className="clube-modal npv-rule-editor-modal" role="dialog" aria-modal="true" aria-labelledby="rules-title"><div className="clube-modal-top"><div><small>CLUBE NPV</small><h2 id="rules-title">Gerenciar benefícios</h2></div><button type="button" disabled={busy} onClick={()=>setRuleDraft(null)} aria-label="Fechar"><X size={20}/></button></div><form className="clube-form" onSubmit={saveRules}>
+      <p>Edite os nomes e pontos ou adicione novas formas de acumular. Os lançamentos anteriores permanecem preservados.</p>
+      <div className="npv-rule-editor-list">{ruleDraft.map((rule,i)=><div className="npv-rule-editor-row" key={rule.event_type}>
+        <label>Nome do benefício<input required minLength={2} maxLength={75} placeholder="Ex.: Postar story marcando a NPV" value={rule.label} onChange={e=>setRuleDraft(d=>d.map((x,j)=>j===i?{...x,label:e.target.value}:x))}/></label>
+        <label>Pontos<input type="number" min="0" max="100000" step="1" required value={rule.points} onChange={e=>setRuleDraft(d=>d.map((x,j)=>j===i?{...x,points:e.target.value}:x))}/></label>
+      </div>)}</div>
+      <button type="button" className="clube-btn clube-btn-outline clube-btn-full npv-rule-add" disabled={busy||ruleDraft.length>=50} onClick={()=>setRuleDraft(d=>[...d,{event_type:'extra_'+crypto.randomUUID().replace(/-/g,''),label:'',points:0,position:d.length+1}])}><Plus size={17}/> Adicionar benefício</button>
+      <p className="npv-rule-editor-hint">Novos benefícios aparecem em “Continue acumulando” e em “Lançar pontos”. As categorias existentes não são excluídas.</p>
+      {notice&&<p className="npv-rule-editor-error" role="alert">{notice}</p>}
+      <button type="submit" className="clube-btn clube-btn-primary clube-btn-full" disabled={busy}>{busy?'Salvando...':'Salvar benefícios'} <Check size={16}/></button>
     </form></section></div>}
   </div>
 }
