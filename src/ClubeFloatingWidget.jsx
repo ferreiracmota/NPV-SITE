@@ -1,6 +1,7 @@
 import React, {useEffect, useId, useState} from 'react'
 import {ArrowRight, Award, ChevronDown, ChevronUp, Crown, Gift, Sparkles, Tag, Trophy, UserRound} from 'lucide-react'
 import {clubeSupabase} from './clubeSupabase.js'
+import {partnerLogo} from './ClubeExtras.jsx'
 import {DEFAULT_WIDGET,normalizeWidget,widgetGlassStyle,widgetPublicImage} from './ClubeSiteWidgetConfig.js'
 import './ClubeFloatingWidget.css'
 
@@ -83,12 +84,12 @@ export default function ClubeFloatingWidget({configOverride=null,forceVisible=fa
     </div>,
     <div className="npv-fw-compact-feature" key="rewards">
       <span className="npv-fw-feature-title"><Gift size={14}/> Recompensas do Clube</span>
-      <span className="npv-fw-feature-main">{rewardList.map(x=>x.name).join(' · ')}</span>
+      <span className="npv-fw-feature-main">{config.rewards.length?rewardList.map(x=>x.name).join(' · '):'Camisetas, brindes e vantagens'}</span>
       <span className="npv-fw-feature-detail">Veja os benefícios na lojinha <ArrowRight size={13}/></span>
     </div>,
     <div className="npv-fw-compact-feature" key="partners">
       <span className="npv-fw-feature-title"><Tag size={14}/> Parceiros e descontos</span>
-      <span className="npv-fw-feature-main">{partnerList.map(x=>x.name).join(' · ')}</span>
+      <span className="npv-fw-feature-main">{config.partners.length?partnerList.map(x=>x.name).join(' · '):'Cacow · Liquidz · parceiros NPV'}</span>
       <span className="npv-fw-feature-detail">Condições disponíveis no Clube <ArrowRight size={13}/></span>
     </div>
   ]
@@ -132,7 +133,7 @@ export default function ClubeFloatingWidget({configOverride=null,forceVisible=fa
               <span><strong>{item.name}</strong><small>{item.hint||((item.points||0).toLocaleString('pt-BR')+' pontos')}</small></span>
             </div>
           })}</div>
-          <div className="npv-fw-benefits"><Tag size={16}/><span>Descontos e benefícios em parceiros como {partnerList.map(item=>item.name+(item.discount_percent?' ('+item.discount_percent+'% de desconto)':'')).join(' e ')}. Consulte as condições no Clube.</span></div>
+          <div className="npv-fw-benefits"><Tag size={16}/><span>{config.partners.length>0&&<span className="npv-fw-partner-logos">{partnerList.map(item=>partnerLogo(item)&&<img src={partnerLogo(item)} alt={item.name} key={item.id} loading="lazy"/>)}</span>}Descontos e benefícios em parceiros como {partnerList.map(item=>item.name+(item.discount_percent?' ('+item.discount_percent+'% de desconto)':'')).join(' e ')}. Consulte as condições no Clube.</span></div>
           <p className="npv-fw-about">Transforme sua constância em conquistas: acompanhe atividades, acumule pontos e descubra recompensas.</p>
           <a className="npv-fw-primary" href="/clube">{authenticated?'Acessar meus pontos':'Conhecer o Clube NPV'} <ArrowRight size={16}/></a>
           {!authenticated&&<a className="npv-fw-secondary" href="#planos">Conhecer planos e assinar <ArrowRight size={13}/></a>}
