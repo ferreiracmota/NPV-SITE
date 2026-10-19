@@ -60,9 +60,11 @@
   color:#f8fff1;
   text-align:left;
   cursor:pointer;
+  /* Teste visual: mesma fotografia do cabeçalho do Clube NPV. A sobreposição
+     preserva contraste nos rótulos, no Strava e no desafio de 50 km. */
   background:
-    radial-gradient(ellipse at 95% -15%,rgba(138,188,89,.33) 0,transparent 49%),
-    linear-gradient(115deg,#12221b 0%,#1c3427 55%,#294634 100%);
+    linear-gradient(95deg,rgba(5,20,14,.90) 0%,rgba(6,22,16,.82) 40%,rgba(9,28,20,.64) 100%),
+    url('./assets/clube-npv-fundo-esportes.avif') 58% 43% / cover no-repeat;
   transition:filter .2s ease;
 }
 .npv-strava-activities .npv-strava-hero-trigger::before{
@@ -77,8 +79,8 @@
 }
 .npv-strava-activities .npv-strava-hero-trigger:hover{
   background:
-    radial-gradient(ellipse at 95% -15%,rgba(153,203,104,.41) 0,transparent 49%),
-    linear-gradient(115deg,#15281d 0%,#213d2c 55%,#315139 100%);
+    linear-gradient(95deg,rgba(6,25,17,.85) 0%,rgba(8,28,19,.76) 40%,rgba(12,39,26,.56) 100%),
+    url('./assets/clube-npv-fundo-esportes.avif') 58% 43% / cover no-repeat;
 }
 .npv-strava-activities .npv-strava-hero-trigger:focus-visible{
   outline:3px solid #d1f395;
