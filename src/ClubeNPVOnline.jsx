@@ -15,6 +15,7 @@ import { BenefitNotice, PartnerCards, PartnerEditor, safePartnerUrl } from './Cl
 import ClubeKmSetup from './ClubeKmSetup.jsx'
 import ClubeRegisteredActivities from './ClubeRegisteredActivities.jsx'
 import ClubeMonthlyChallengeAdmin from './ClubeMonthlyChallengeAdmin.jsx'
+import ClubeSiteWidgetAdmin from './ClubeSiteWidgetAdmin.jsx'
 
 const format = value => Number(value||0).toLocaleString('pt-BR')
 const date = value => new Date(value).toLocaleDateString('pt-BR',{day:'2-digit',month:'short',year:'numeric'})
@@ -426,6 +427,7 @@ export default function ClubeNPVOnline() {
         <button className={tab==='historico'?'active':''} onClick={()=>setTab('historico')}><History size={18}/>Histórico</button>
         <button className={tab==='recompensas'?'active':''} onClick={()=>setTab('recompensas')}><Gift size={18}/>Recompensas</button>
         <button className={tab==='parceiros'?'active':''} onClick={()=>setTab('parceiros')}><Award size={18}/>Parceiros</button>
+        {isAdmin&&<button className={tab==='widget'?'active':''} onClick={()=>setTab('widget')}><SlidersHorizontal size={18}/>Widget do site</button>}
         {!isAdmin&&<button className="clube-nav-logout" type="button" onClick={signOut}><LogOut size={18}/>Sair</button>}
       </nav>
       {isAdmin&&<div className="clube-side-bottom"><span className="clube-side-label">CONTA SEGURA</span><div className="clube-online-email">{user.email}</div><button className="clube-online-logout" onClick={signOut}><LogOut size={15}/>Sair da conta</button></div>}
@@ -434,8 +436,8 @@ export default function ClubeNPVOnline() {
       {isAdmin&&<div className="clube-online-mobile-account"><span>Administrador · {user.email}</span><button onClick={signOut}><LogOut size={15}/> Sair</button></div>}
       {error&&<div className="clube-online-alert" role="alert">{error} <button onClick={refresh}>Tentar novamente</button></div>}
       {notice&&<div className="clube-feedback" role="status"><Check size={17}/>{notice}<button onClick={()=>setNotice('')}><X size={16}/></button></div>}
-      <div className="clube-intro"><div><div className="clube-eyebrow"><span/> {isAdmin?'PAINEL DE GESTÃO':'MINHA CONTA NPV'}</div><h1>{tab==='inicio'?(isAdmin?'Seu clube, sob controle.':'Sua evolução vale pontos.'):tab==='alunos'?'Alunos do Clube NPV':tab==='historico'?'Histórico de pontos':tab==='parceiros'?'Parceiros e descontos':'Benefícios e recompensas'}</h1><p>{isAdmin?'Gerencie os cadastros, lançamentos e solicitações com segurança.':'Seu extrato de pontos e benefícios em um só lugar.'}</p></div>
-        {isAdmin&&tab!=='recompensas'&&tab!=='parceiros'&&<button className="clube-btn clube-btn-primary" onClick={()=>newAward()}><Plus size={17}/> Lançar pontos</button>}
+      <div className="clube-intro"><div><div className="clube-eyebrow"><span/> {isAdmin?'PAINEL DE GESTÃO':'MINHA CONTA NPV'}</div><h1>{tab==='inicio'?(isAdmin?'Seu clube, sob controle.':'Sua evolução vale pontos.'):tab==='alunos'?'Alunos do Clube NPV':tab==='historico'?'Histórico de pontos':tab==='parceiros'?'Parceiros e descontos':tab==='widget'?'Widget do site':'Benefícios e recompensas'}</h1><p>{isAdmin?'Gerencie os cadastros, lançamentos e solicitações com segurança.':'Seu extrato de pontos e benefícios em um só lugar.'}</p></div>
+        {isAdmin&&tab!=='recompensas'&&tab!=='parceiros'&&tab!=='widget'&&<button className="clube-btn clube-btn-primary" onClick={()=>newAward()}><Plus size={17}/> Lançar pontos</button>}
       </div>
       {loading&&<p className="clube-online-loading">Atualizando dados do clube...</p>}
       {tab==='inicio'&&isAdmin&&<>
@@ -445,6 +447,7 @@ export default function ClubeNPVOnline() {
         <div className="clube-columns"><section className="clube-card"><div className="clube-card-head"><div><h2>Últimas movimentações</h2><p>Histórico do clube</p></div></div>{activityList(data.events.slice(0,6),true)}</section><section className="clube-card"><div className="clube-card-head"><div><h2>Novos cadastros</h2><p>Alunos aguardando aprovação</p></div></div>{studentMembers.filter(x=>!x.approved).slice(0,6).map(x=><div className="clube-online-member" key={x.id}><div><strong>{x.full_name}</strong><small>{x.email}</small></div><button disabled={busy} className="clube-btn clube-btn-outline" onClick={()=>approve(x.id)}><Check size={15}/> Aprovar</button></div>)}{studentMembers.every(x=>x.approved)&&<p className="clube-empty">Nenhum cadastro pendente.</p>}<button className="clube-btn clube-btn-outline clube-btn-full" onClick={()=>setTab('alunos')}>Gerenciar alunos</button></section></div>
       </>}
       {tab==='inicio'&&isAdmin&&<><ClubeKmSetup/><ClubeMonthlyChallengeAdmin/><ClubeRegisteredActivities session={session}/></>}
+      {tab==='widget'&&isAdmin&&<ClubeSiteWidgetAdmin rewards={data.rewards} partners={data.partners}/>}
       {tab==='inicio'&&!isAdmin&&<>
         <section className={`clube-student-summary clube-student-summary-statement${activitiesOpen?' is-open':''}`} aria-label="Seus pontos e extrato">
           <button type="button" className="clube-student-summary-trigger"
