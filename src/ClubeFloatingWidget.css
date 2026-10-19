@@ -159,3 +159,11 @@
 @media(prefers-reduced-motion:reduce){
   .npv-floating-club,.npv-fw-expanded-content,.npv-fw-dots>span,.npv-fw-primary{transition:none!important}
 }
+
+/* A hero desktop começa depois do banner e do cabeçalho fixo; trazer
+   o card para dentro da primeira área visível sem afetar o mobile. */
+@media(min-width:768px){
+  .npv-floating-club{
+    transform:translateY(-clamp(85px,13svh,135px));
+  }
+}
