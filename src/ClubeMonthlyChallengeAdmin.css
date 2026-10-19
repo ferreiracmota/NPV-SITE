@@ -4,13 +4,32 @@
 .npv-challenge-admin-heading>div{display:flex;flex-direction:column;gap:4px}
 .npv-challenge-admin-heading strong{font-size:15px;font-weight:850;color:#23351d}
 .npv-challenge-admin-heading small{font-size:11px;line-height:1.5;color:#8a9982}
-.npv-challenge-admin-form{display:flex;align-items:flex-end;gap:15px;flex-wrap:wrap;margin:15px 0 0}
-.npv-challenge-admin-form label:first-child{display:flex;flex-direction:column;gap:6px;color:#61715b;font-weight:750;font-size:11px}
+.npv-challenge-admin-form{margin:15px 0 0}
+.npv-challenge-admin-list{display:flex;flex-direction:column;gap:12px}
+.npv-challenge-admin-item{padding:14px;border:1px solid #e3eadf;border-radius:11px;background:#fbfdf9}
+.npv-challenge-admin-item-head{display:flex;align-items:center;justify-content:space-between;gap:9px;margin-bottom:12px}
+.npv-challenge-admin-item-head strong{font-size:12px;color:#294525}
+.npv-challenge-admin-item-head span{font-size:10px;color:#79906c}
+.npv-challenge-admin-item label{display:flex;flex-direction:column;gap:6px;color:#61715b;font-weight:750;font-size:11px}
+.npv-challenge-admin-item .npv-challenge-name{max-width:560px;margin-bottom:13px}
+.npv-challenge-name>input{width:100%;min-width:0;min-height:38px;border:1px solid #d7e2cf;border-radius:8px;padding:8px 11px;color:#20371c;font-size:14px;background:#fff}
+.npv-challenge-admin-fields{display:flex;align-items:flex-end;gap:15px;flex-wrap:wrap}
 .npv-challenge-input-row{display:flex;align-items:center;gap:7px}
-.npv-challenge-input-row input{width:130px;min-height:38px;border:1px solid #d7e2cf;border-radius:8px;padding:8px 11px;color:#20371c;font-size:16px}
-.npv-challenge-admin-check{display:flex;align-items:center;gap:6px;color:#61715b;font-size:11px;margin-bottom:11px}
+.npv-challenge-input-row input{width:130px;min-height:38px;border:1px solid #d7e2cf;border-radius:8px;padding:8px 11px;color:#20371c;font-size:16px;background:#fff}
+.npv-challenge-admin-fields .npv-challenge-admin-check{display:flex;flex-direction:row;align-items:center;gap:6px;color:#61715b;font-size:11px;margin-bottom:11px}
 .npv-challenge-admin-check input{accent-color:#718f42}
-.npv-challenge-admin-form button{display:flex;align-items:center;gap:7px;border:0;border-radius:8px;padding:10px 15px;min-height:38px;background:#27472a;color:#fff;font-weight:750;font-size:11px;cursor:pointer}
-.npv-challenge-admin-form button:disabled{opacity:.55;cursor:not-allowed}
+.npv-challenge-admin-actions{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-top:13px}
+.npv-challenge-admin-actions button{display:flex;align-items:center;justify-content:center;gap:7px;border:0;border-radius:8px;padding:10px 15px;min-height:38px;background:#27472a;color:#fff;font-weight:750;font-size:11px;cursor:pointer}
+.npv-challenge-admin-actions .npv-challenge-add{color:#31532b;background:#f3f7ef;border:1px solid #cadcc1}
+.npv-challenge-admin-actions button:disabled{opacity:.55;cursor:not-allowed}
 .npv-challenge-admin-feedback{display:flex;gap:7px;align-items:center;color:#5f8438;font-size:11px;line-height:1.5;margin:12px 0 0}
-@media(max-width:480px){.npv-challenge-admin{padding:16px}.npv-challenge-admin-form{gap:10px}}
+.npv-challenge-admin-error{font-size:11px;line-height:1.5;color:#b33b2b;margin:12px 0 0}
+.npv-challenge-admin-empty{font-size:12px;color:#7b8b73;margin:0;padding:9px 0}
+@media(max-width:480px){
+ .npv-challenge-admin{padding:16px}
+ .npv-challenge-admin-item{padding:11px}
+ .npv-challenge-admin-fields{gap:12px}
+ .npv-challenge-admin-fields>label:not(.npv-challenge-admin-check){flex:1 1 120px;min-width:0}
+ .npv-challenge-input-row input{width:min(100%,130px);min-width:0}
+ .npv-challenge-admin-actions button{flex:1 1 auto}
+}
