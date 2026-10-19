@@ -918,9 +918,10 @@ useEffect(() => {
       QUERO DECOLAR ➜
     </a>
   </div>
-  {/* Prévia isolada: somente o widget. Vídeo, títulos e botões permanecem inalterados. */}
-  <ClubeFloatingWidget />
 </section>
+{/* Widget fora da hero com overflow-hidden, para acompanhar a viewport em toda a página.
+    O vídeo, os títulos e os botões da hero permanecem intactos. */}
+<ClubeFloatingWidget />
 
       {/* Antes e Depois Section */}
 <section className="pt-12 pb-6 bg-white">
