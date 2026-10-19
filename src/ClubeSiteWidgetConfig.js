@@ -1,6 +1,6 @@
 // Dados exclusivamente demonstrativos: nunca consultar perfis/placares reais.
 // Falha fechada: em um eventual deploy no dominio oficial, nao ler jamais o rascunho de testes.
-// O escopo production so sera liberado depois de homologacao e migracao especifica.
+// Preview e produção usam configurações separadas; publicar num escopo não altera o outro.
 export const WIDGET_SCOPE=typeof window!=='undefined'
   && /^(www\.)?naopensevai\.com$/i.test(window.location.hostname)
   ? 'production' : 'preview'
@@ -59,6 +59,6 @@ export function widgetGlassStyle(visual){
  }
 }
 export function widgetPublicImage(supabase,path){
- if(!supabase||typeof path!=='string'||!(/^(site-widget-preview\/[a-zA-Z0-9/_-]+|images\/[a-f0-9-]{36})\.(png|jpe?g|webp)$/.test(path)))return ''
+ if(!supabase||typeof path!=='string'||!(/^(site-widget-(preview|production)\/[a-zA-Z0-9/_-]+|images\/[a-f0-9-]{36})\.(png|jpe?g|webp)$/.test(path)))return ''
  return supabase.storage.from(WIDGET_BUCKET).getPublicUrl(path).data.publicUrl
 }
