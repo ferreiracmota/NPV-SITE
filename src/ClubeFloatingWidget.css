@@ -225,3 +225,25 @@
 .npv-floating-club .npv-fw-primary{
   text-shadow:none;
 }
+
+/* Elementos opcionais do widget gerenciados no Preview: sem efeito no modelo aprovado. */
+.npv-floating-club .npv-fw-avatar-photo{width:100%;height:100%;object-fit:cover;border-radius:50%;display:block}
+.npv-floating-club .npv-fw-logo-upload{width:100%;height:100%;object-fit:contain;display:block}
+.npv-floating-club .npv-fw-reward-photo{width:100%;height:100%;object-fit:cover;border-radius:inherit;display:block}
+.npv-floating-club .npv-fw-partner-logos{display:flex;gap:6px;align-items:center;margin-bottom:5px;flex-wrap:wrap}
+.npv-floating-club .npv-fw-partner-logos img{height:23px;max-width:80px;object-fit:contain;padding:2px 5px;border-radius:6px;background:rgba(255,255,255,.92)}
+/* Aplicado apenas quando o administrador modifica manualmente a cor dos textos. */
+.npv-floating-club .npv-fw-shell[style] .npv-fw-heading strong,
+.npv-floating-club .npv-fw-shell[style] .npv-fw-heading small,
+.npv-floating-club .npv-fw-shell[style] .npv-fw-eyebrow,
+.npv-floating-club .npv-fw-shell[style] .npv-fw-feature-title,
+.npv-floating-club .npv-fw-shell[style] .npv-fw-feature-main,
+.npv-floating-club .npv-fw-shell[style] .npv-fw-feature-detail,
+.npv-floating-club .npv-fw-shell[style] .npv-fw-rank-name,
+.npv-floating-club .npv-fw-shell[style] .npv-fw-rank>strong,
+.npv-floating-club .npv-fw-shell[style] .npv-fw-section-head>span,
+.npv-floating-club .npv-fw-shell[style] .npv-fw-reward strong,
+.npv-floating-club .npv-fw-shell[style] .npv-fw-reward small,
+.npv-floating-club .npv-fw-shell[style] .npv-fw-about{
+  color:var(--npv-widget-text,#fcfcfc);
+}
