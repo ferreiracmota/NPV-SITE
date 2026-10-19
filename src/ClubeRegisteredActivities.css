@@ -241,3 +241,158 @@
 @media(prefers-reduced-motion:reduce){
   .npv-strava-activities .npv-strava-hero-trigger,.npv-strava-hero-arrow{transition:none}
 }
+
+
+/* TESTE REAL DO CLUBE - 19/10/2026
+   Imagem inteira sem recortes, proporção original 1536x863.
+   Altera apenas o cartão expansível de atividades; status, Strava e
+   demais funcionalidades seguem os componentes originais. */
+.npv-strava-activities .npv-strava-hero-trigger,
+.npv-strava-activities .npv-strava-hero-trigger:hover{
+  aspect-ratio:1536 / 863;
+  min-height:0;
+  height:auto;
+  max-height:none;
+  background-position:center center,center center;
+  background-size:100% 100%,100% 100%;
+  background-repeat:no-repeat,no-repeat;
+}
+.npv-strava-activities .npv-strava-hero-trigger{
+  padding:clamp(18px,3vw,38px);
+  gap:clamp(12px,2vw,25px);
+}
+.npv-strava-activities .npv-strava-hero-copy{
+  max-width:min(66%,610px);
+}
+.npv-strava-activities .npv-strava-hero-trigger::after{
+  display:none;
+}
+/* Tela móvel: controles reorganizados dentro da proporção original.
+   A informação existe e permanece clicável; nenhuma seção foi apagada. */
+@media(max-width:640px){
+  .npv-strava-activities .npv-strava-hero-trigger,
+  .npv-strava-activities .npv-strava-hero-trigger:hover{
+    aspect-ratio:1536 / 863;
+    min-height:0;
+    padding:9px 11px 9px 12px;
+    gap:0;
+    align-items:center;
+    justify-content:flex-start;
+  }
+  .npv-strava-activities .clube-activities-toggle>.npv-strava-hero-icon{
+    display:none;
+  }
+  .npv-strava-activities .clube-activities-toggle>.npv-strava-hero-copy{
+    width:100%;
+    max-width:100%;
+    padding-right:0;
+    gap:0;
+    align-items:flex-start;
+    flex:1;
+  }
+  .npv-strava-activities .npv-strava-hero-eyebrow{
+    margin-bottom:2px;
+    font-size:7px;
+    line-height:1.1;
+    letter-spacing:.08em;
+  }
+  .npv-strava-activities .npv-strava-hero-copy>strong{
+    font-size:clamp(15px,4.25vw,18px);
+    line-height:1.12;
+    padding-right:33px;
+  }
+  .npv-strava-activities .npv-strava-hero-copy>small{
+    max-width:100%;
+    font-size:clamp(8px,2.2vw,9.5px);
+    line-height:1.25;
+    margin-top:2px;
+  }
+  .npv-strava-activities .npv-strava-hero-meta{
+    margin-top:4px;
+    font-size:8px;
+    line-height:1.2;
+    gap:4px;
+  }
+  .npv-strava-activities .npv-strava-hero-indicator{
+    width:5px;height:5px;
+  }
+  .npv-strava-activities .npv-strava-hero-sports{
+    display:inline;
+    font-size:8px;
+    padding-left:5px;
+  }
+  .npv-strava-activities .npv-strava-hero-metric{
+    font-size:8px;
+    padding-left:5px;
+    gap:3px;
+  }
+  .npv-strava-activities .npv-strava-hero-metric b{
+    font-size:9px;
+  }
+  .npv-strava-activities .npv-strava-challenge{
+    width:100%;
+    margin-top:6px;
+    padding-top:5px;
+    gap:3px;
+  }
+  .npv-strava-activities .npv-strava-challenge-top{
+    gap:4px;
+    margin-bottom:0;
+    flex-wrap:nowrap;
+  }
+  .npv-strava-activities .npv-strava-challenge-title{
+    font-size:8px;
+    line-height:1.15;
+    letter-spacing:.07em;
+  }
+  .npv-strava-activities .npv-strava-challenge-reward{
+    padding:2px 6px;
+    font-size:8px;
+    gap:3px;
+    line-height:1;
+  }
+  .npv-strava-activities .npv-strava-challenge-reward>span{
+    font-size:10px;
+  }
+  .npv-strava-activities .npv-strava-challenge-status{
+    font-size:8.5px;
+    line-height:1.2;
+  }
+  .npv-strava-activities .npv-strava-challenge-track{
+    height:5px;
+  }
+  .npv-strava-activities .npv-strava-challenge-caption{
+    font-size:8px;
+    line-height:1.2;
+  }
+  .npv-strava-activities .clube-activities-toggle>.npv-strava-hero-action{
+    position:absolute;
+    z-index:2;
+    top:9px;right:10px;
+    min-width:26px;
+    width:26px;height:26px;
+    gap:0;
+  }
+  .npv-strava-activities .npv-strava-hero-arrow{
+    width:26px;height:26px;
+    border-radius:8px;
+  }
+  .npv-strava-activities .npv-strava-hero-arrow svg{
+    width:15px;height:15px;
+  }
+}
+@media(max-width:380px){
+  .npv-strava-activities .npv-strava-hero-trigger,
+  .npv-strava-activities .npv-strava-hero-trigger:hover{
+    padding:7px 9px;
+    gap:0;
+  }
+  .npv-strava-activities .npv-strava-hero-copy>strong{font-size:15px}
+  .npv-strava-activities .npv-strava-hero-eyebrow{font-size:6.5px}
+  .npv-strava-activities .npv-strava-hero-copy>small{font-size:8px}
+  .npv-strava-activities .npv-strava-hero-meta{font-size:7.5px}
+  .npv-strava-activities .npv-strava-hero-sports{font-size:7.5px}
+  .npv-strava-activities .npv-strava-challenge{margin-top:4px;padding-top:4px;gap:2px}
+  .npv-strava-activities .npv-strava-challenge-caption{font-size:7.5px}
+  .npv-strava-activities .clube-activities-toggle>.npv-strava-hero-action{top:7px;right:8px}
+}
