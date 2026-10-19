@@ -33,3 +33,16 @@
  .npv-challenge-input-row input{width:min(100%,130px);min-width:0}
  .npv-challenge-admin-actions button{flex:1 1 auto}
 }
+
+/* Exclusão de desafios: controle exclusivo do painel administrativo. */
+.npv-challenge-admin-item-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+.npv-challenge-admin-item-actions>span{font-size:10px;color:#79906c}
+.npv-challenge-admin-item-actions .npv-challenge-delete{
+  display:inline-flex;align-items:center;justify-content:center;gap:5px;
+  border:1px solid #ecd6d3;background:#fff;color:#a4483f;
+  border-radius:8px;padding:6px 9px;min-height:32px;
+  font:inherit;font-size:11px;font-weight:800;cursor:pointer
+}
+.npv-challenge-admin-item-actions .npv-challenge-delete:hover{background:#fff2f0}
+.npv-challenge-admin-item-actions .npv-challenge-delete:disabled{opacity:.55;cursor:not-allowed}
+.npv-challenge-admin-item-actions .npv-challenge-delete:focus-visible{outline:2px solid #c45e54;outline-offset:2px}
