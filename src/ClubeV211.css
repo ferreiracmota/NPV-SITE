@@ -1,0 +1,584 @@
+/*
+ * NÃO PENSE, VAI! — Clube de Benefícios v2.1.1
+ * Refinamento editorial de interface: login, aluno, admin e telas auxiliares.
+ * Escopo exclusivo .clube-shell. NÃO altera regras de negócios, API ou dados.
+ * Ponto de restauração: backup/clube-beneficios-v2.1-20261019
+ * Não modificar a arte de fundo do card Atividades registradas (v2.1).
+ */
+
+/* 01 — Fundação: identidade única e legibilidade */
+.clube-shell {
+  --c-lime:#bddd58;
+  --c-ink:#14231d;
+  --c-muted:#657466;
+  --c-line:#dfe8dd;
+  --c-soft:#f5f8f3;
+  --npv-v211-forest:#142a20;
+  --npv-v211-lime:#bbdf53;
+  --npv-v211-shadow:0 10px 34px rgba(27,53,34,.068);
+  --npv-v211-radius:18px;
+  background:linear-gradient(180deg,#f3f7f1 0%,#f7f9f5 32%,#f4f7f2 100%);
+  color:#213127;
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+.clube-shell :is(button,a,input,select,textarea):focus-visible {
+  outline:3px solid #8dbf2b;
+  outline-offset:3px;
+}
+.clube-shell ::selection{background:#d4ef91;color:#183021}
+.clube-shell .clube-main{min-width:0}
+.clube-shell .clube-intro{margin-bottom:23px;gap:18px}
+.clube-shell .clube-intro h1{
+  color:#183126;
+  font-size:clamp(27px,3.1vw,41px);
+  line-height:1.10;
+  font-weight:900;
+  letter-spacing:-.047em;
+  text-wrap:balance;
+}
+.clube-shell .clube-intro p{color:#627364;font-size:13px;line-height:1.65;max-width:660px}
+.clube-shell .clube-eyebrow{color:#567e30;font-size:10px;letter-spacing:.15em;margin-bottom:9px}
+.clube-shell .clube-eyebrow>span{background:#9bc941}
+.clube-shell .clube-card-head h2,.clube-shell .clube-card h2{
+  color:#1c3124;
+  font-weight:850;
+  letter-spacing:-.03em;
+  line-height:1.25;
+}
+.clube-shell .clube-card-head p,.clube-shell .clube-card>p{color:#69796c;line-height:1.55;font-size:12px}
+.clube-shell .clube-main-footer{color:#819086;padding-top:18px;border-top:1px solid #e1e9df}
+
+/* 02 — Navegação e barra principal */
+.clube-shell .clube-header{
+  background:linear-gradient(115deg,#10231a,#142d20 67%,#193827);
+  border-bottom:1px solid rgba(202,235,175,.18);
+  box-shadow:0 7px 25px rgba(4,19,12,.14);
+}
+.clube-shell .clube-header-inner{min-height:79px}
+.clube-shell .clube-logo-label strong{letter-spacing:.105em}
+.clube-shell .clube-logo-label>span{color:#d0ed80}
+.clube-shell .clube-demo-badge{
+  border-color:rgba(192,227,135,.34);
+  color:#d6ecb6;
+  background:rgba(184,219,91,.07);
+}
+.clube-shell .clube-back{transition:color .18s}
+.clube-shell:not(.clube-live-student) .clube-container{
+  max-width:1440px;
+  grid-template-columns:242px minmax(0,1fr);
+}
+.clube-shell:not(.clube-live-student) .clube-sidebar{
+  background:linear-gradient(180deg,#14291e 0%,#193025 100%);
+  border-right:1px solid rgba(255,255,255,.09);
+  color:#eff8e9;
+  padding-top:28px;
+}
+.clube-shell:not(.clube-live-student) .clube-person{padding:10px 9px 18px;border-bottom:1px solid rgba(232,248,226,.13)}
+.clube-shell:not(.clube-live-student) .clube-person strong{color:#f8fff4;font-size:13px}
+.clube-shell:not(.clube-live-student) .clube-person>div>span{color:#b0c4ae}
+.clube-shell:not(.clube-live-student) .clube-avatar{
+  color:#203c24;background:#d1ec98;border-radius:13px;
+  box-shadow:0 4px 14px rgba(0,0,0,.12);
+}
+.clube-shell:not(.clube-live-student) .clube-side-label{color:#9cb898;letter-spacing:.14em}
+.clube-shell:not(.clube-live-student) .clube-nav>button{
+  color:#d3e3d1;
+  font-size:12px;
+  font-weight:700;
+  border-radius:11px;
+  transition:background .17s,color .17s,transform .17s;
+}
+.clube-shell:not(.clube-live-student) .clube-nav>button svg{opacity:.85}
+.clube-shell:not(.clube-live-student) .clube-nav>button:hover{
+  background:rgba(212,242,186,.09);color:#fff;
+}
+.clube-shell:not(.clube-live-student) .clube-nav>button.active{
+  background:linear-gradient(110deg,#d5efa1,#bede62);
+  color:#1b3522;
+  box-shadow:0 7px 17px rgba(0,0,0,.12);
+}
+.clube-shell:not(.clube-live-student) .clube-nav>button.active svg{color:#385e25;opacity:1}
+.clube-shell:not(.clube-live-student) .clube-side-bottom{
+  border-top-color:rgba(240,255,234,.13);
+}
+.clube-shell:not(.clube-live-student) .clube-online-email,
+.clube-shell:not(.clube-live-student) .clube-online-logout{color:#c9dac6}
+
+/* 03 — Botões, formulários e mensagens */
+.clube-shell .clube-btn{
+  min-height:44px;
+  border-radius:11px;
+  font-size:12px!important;
+  font-weight:800;
+  letter-spacing:-.005em;
+  transition:transform .17s,box-shadow .17s,background .17s,border-color .17s;
+}
+.clube-shell .clube-btn-primary{
+  color:#17301f;
+  background:linear-gradient(112deg,#c6e97f,#add950);
+  border-color:#accc63;
+  box-shadow:0 6px 14px rgba(129,174,59,.16);
+}
+.clube-shell .clube-btn-primary:hover{
+  background:linear-gradient(112deg,#d1f08e,#bce16b);
+  box-shadow:0 9px 21px rgba(129,174,59,.24);
+  transform:translateY(-1px);
+}
+.clube-shell .clube-btn-outline{
+  border:1px solid #cbdac7;
+  background:#fff;
+  color:#315539;
+  box-shadow:0 1px 5px rgba(0,0,0,.025);
+}
+.clube-shell .clube-btn-outline:hover{background:#f4f9eb;border-color:#abc78d}
+.clube-shell .clube-text-button,.clube-shell .npv-shop-view-all{color:#486e2f}
+.clube-shell .clube-form label,.clube-shell .npv-shop-fields label{
+  font-size:12px;
+  line-height:1.45;
+  color:#354b3b;
+  font-weight:750;
+}
+.clube-shell .clube-form :is(input,select,textarea),
+.clube-shell .clube-search input,
+.clube-shell .npv-km-rate input,
+.clube-shell .npv-challenge-input-row input{
+  min-height:44px;
+  border:1px solid #cedacb;
+  background:#fbfdf9;
+  border-radius:11px;
+  color:#203529;
+  transition:border-color .15s,box-shadow .15s;
+}
+.clube-shell .clube-form :is(input,select,textarea):focus,
+.clube-shell .clube-search input:focus,
+.clube-shell .npv-km-rate input:focus,
+.clube-shell .npv-challenge-input-row input:focus{
+  border-color:#8bac60;
+  box-shadow:0 0 0 3px rgba(166,213,111,.2);
+}
+.clube-shell .clube-form input::placeholder{color:#92a092}
+.clube-shell .clube-feedback{
+  border-radius:13px;
+  color:#28512f;
+  background:#e7f4d9;
+  border-color:#c6e4af;
+}
+.clube-shell .clube-online-alert{
+  border-radius:13px;
+  background:#fff2ef;
+  border-color:#f0cfca;
+}
+.clube-shell .clube-empty{color:#657667;line-height:1.6}
+.clube-shell .clube-online-loading{color:#6b7f67}
+
+/* 04 — Login / cadastro / recuperação: acolhedor, objetivo e nítido */
+.clube-shell .clube-auth-wrap{
+  width:min(1260px,100%);
+  grid-template-columns:minmax(0,1.1fr) minmax(340px,.84fr);
+  gap:clamp(24px,5.5vw,88px);
+  margin:36px auto 50px;
+  padding:clamp(18px,3.2vw,44px);
+  min-height:calc(100svh - 170px);
+}
+.clube-shell .clube-auth-hero{position:relative;isolation:isolate;padding:20px 0}
+.clube-shell .clube-auth-hero::before{
+  content:"";position:absolute;z-index:-1;left:-10%;top:-7%;
+  width:min(560px,100%);height:120%;pointer-events:none;
+  background:radial-gradient(ellipse at 38% 46%,rgba(179,223,102,.12),transparent 66%);
+}
+.clube-shell .clube-auth-hero>span{
+  display:inline-flex;align-items:center;gap:9px;
+  padding:9px 13px;
+  color:#4c712c;
+  border:1px solid #d8e7c9;
+  border-radius:999px;
+  background:rgba(255,255,255,.82);
+  font-size:11px;
+  letter-spacing:.12em;
+}
+.clube-shell .clube-auth-hero h1{
+  max-width:780px;
+  color:#173426;
+  font-size:clamp(39px,4.6vw,68px);
+  letter-spacing:-.062em;
+  line-height:1.055;
+  text-wrap:balance;
+  margin:22px 0;
+}
+.clube-shell .clube-auth-hero h1 em{color:#7ba32c}
+.clube-shell .clube-auth-hero>p{
+  max-width:510px;
+  color:#5c6d61;
+  font-size:15px;
+  line-height:1.7;
+}
+.clube-shell .clube-auth-hero>div:not(.clube-auth-panel){
+  color:#34553c;
+  font-weight:700;
+  font-size:13px;
+}
+.clube-shell .clube-auth-hero>div svg{color:#789e44}
+.clube-shell .clube-auth-panel{
+  position:relative;
+  border:1px solid #dce8d5;
+  border-radius:24px;
+  padding:clamp(25px,3vw,39px);
+  background:#fff;
+  box-shadow:0 30px 80px rgba(29,54,27,.12),0 6px 20px rgba(29,54,27,.055);
+}
+.clube-shell .clube-auth-panel::before{
+  content:"";position:absolute;left:28px;right:28px;top:0;height:3px;
+  background:linear-gradient(90deg,transparent,#a5cf60 28%,#d8ecae 72%,transparent);
+  border-radius:100px;
+}
+.clube-shell .clube-auth-icon{
+  width:52px;height:52px;border-radius:15px;
+  background:#eaf5d6;color:#446f2a;
+  box-shadow:inset 0 1px 0 #fff;
+}
+.clube-shell .clube-auth-panel h2{font-size:clamp(22px,2vw,29px);color:#1e3527}
+.clube-shell .clube-auth-panel>p{color:#647366;font-size:13px;line-height:1.6}
+.clube-shell .clube-auth-form{gap:14px}
+.clube-shell .clube-auth-form label{gap:8px}
+.clube-shell .clube-auth-form input{min-height:49px;padding:13px 14px}
+.clube-shell .clube-auth-panel .clube-btn{min-height:50px;font-size:13px!important;margin-top:4px}
+.clube-shell .clube-auth-links{gap:10px}
+.clube-shell .clube-auth-links button{color:#4b7730;font-size:12px;min-height:32px}
+.clube-shell .clube-auth-panel>small{color:#71806e;line-height:1.65}
+.clube-shell .clube-auth-message{
+  background:#ebf7dd;border:1px solid #c3e3ad;color:#335935;
+  border-radius:12px;font-size:12px;line-height:1.6;
+}
+
+/* 05 — Containers e cartões: mesma linguagem no aluno e no admin */
+.clube-shell .clube-card,
+.clube-shell .clube-kpi,
+.clube-shell .npv-shop-card,
+.clube-shell .npv-partner-card,
+.clube-shell .npv-km-card,
+.clube-shell .npv-challenge-admin{
+  border-radius:var(--npv-v211-radius);
+  border:1px solid #dfe8dd;
+  box-shadow:var(--npv-v211-shadow);
+}
+.clube-shell .clube-card:not(.clube-activities-card),
+.clube-shell .npv-km-card,
+.clube-shell .npv-challenge-admin{
+  background:linear-gradient(150deg,#fff,#fdfefc);
+}
+.clube-shell .clube-card:not(.clube-activities-card){padding:clamp(17px,1.8vw,25px)}
+.clube-shell .clube-kpis{gap:15px;margin-bottom:22px}
+.clube-shell .clube-kpi{gap:9px;min-height:158px;padding:22px}
+.clube-shell .clube-kpi>span:not(.clube-icon-chip){color:#617261;font-size:11px;letter-spacing:.075em}
+.clube-shell .clube-kpi>strong{color:#1c3425;letter-spacing:-.05em}
+.clube-shell .clube-kpi>small{color:#738472;font-size:11px}
+.clube-shell .clube-kpi-dark{
+  background:radial-gradient(circle at 100% 0%,rgba(166,213,90,.19),transparent 45%),linear-gradient(125deg,#122b20,#1b3b29);
+  border-color:#24442d;
+}
+.clube-shell .clube-kpi-dark>span:not(.clube-icon-chip),
+.clube-shell .clube-kpi-dark>small{color:#c8dabe}
+.clube-shell .clube-kpi-dark>strong{color:#d6f28e}
+.clube-shell .clube-icon-chip{background:#e9f4dc;color:#507b2d;border-radius:12px}
+.clube-shell .clube-chip-pink{background:#fff0f4;color:#ae587d}
+.clube-shell .clube-columns{gap:19px}
+.clube-shell .clube-activity{padding:15px 0;gap:13px;border-top-color:#e9efea}
+.clube-shell .clube-activity-icon{background:#eaf4dd;color:#51772e;border-radius:12px}
+.clube-shell .clube-activity-description strong{color:#253629;line-height:1.4}
+.clube-shell .clube-toolbar{gap:13px}
+.clube-shell .clube-student-row{border-bottom-color:#ebf0e8}
+.clube-shell .clube-online-member{border-top-color:#e4ebe4}
+.clube-shell .clube-rank-person{line-height:1.45}
+.clube-shell .clube-year{color:#576d54}
+
+/* 06 — Área do aluno: banner, menus e informação clara */
+.clube-shell.clube-live-student .clube-live-banner{min-height:233px}
+.clube-shell.clube-live-student .clube-live-banner::before{
+  background:linear-gradient(180deg,rgba(2,13,8,.45),rgba(3,14,8,.10) 47%,rgba(3,16,12,.17) 68%,rgba(2,14,10,.55) 100%);
+}
+.clube-shell.clube-live-student .clube-live-banner-top{padding-top:21px}
+.clube-shell.clube-live-student .clube-live-title{
+  border-radius:12px;padding:10px 12px;
+  background:linear-gradient(90deg,rgba(3,22,14,.5),rgba(3,22,14,0));
+}
+.clube-shell.clube-live-student .clube-live-title strong{color:#d5f38c;letter-spacing:-.035em}
+.clube-shell.clube-live-student .clube-live-signout{
+  border:1px solid rgba(233,250,217,.43);
+  border-radius:11px;
+  background:rgba(7,31,21,.73);
+  transition:background .17s;
+}
+.clube-shell.clube-live-student .clube-live-tabs{
+  gap:9px;
+  background:rgba(4,26,17,.61);
+  border-top:1px solid rgba(238,255,224,.21);
+  padding-top:10px;padding-bottom:10px;
+}
+.clube-shell.clube-live-student .clube-live-tabs>button{
+  font-size:12px;letter-spacing:0;
+  border-radius:12px;
+  min-height:43px;
+  padding:0 17px;
+}
+.clube-shell.clube-live-student .clube-live-tabs>button.active{
+  color:#fafff0;
+  background:rgba(217,252,157,.21);
+  border-color:rgba(234,255,201,.46);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.15),0 4px 12px rgba(0,0,0,.12);
+}
+.clube-shell.clube-live-student .clube-main{
+  max-width:1290px;
+  padding:24px 30px 48px;
+}
+.clube-shell.clube-live-student .clube-intro{margin-bottom:19px}
+.clube-shell.clube-live-student .clube-student-summary{
+  border-radius:20px;
+  border:1px solid #305639;
+  box-shadow:0 14px 30px rgba(22,47,22,.16);
+  background:radial-gradient(circle at 92% 5%,rgba(161,201,83,.25),transparent 45%),linear-gradient(118deg,#10241b,#22432d);
+  margin-bottom:17px;
+}
+.clube-shell.clube-live-student .clube-student-summary-statement .clube-student-hello{color:#f5fff1}
+.clube-shell.clube-live-student .clube-student-balance-value{color:#d7f18f}
+.clube-shell.clube-live-student .clube-student-statement-body{background:rgba(3,19,10,.25)}
+.clube-shell.clube-live-student .clube-student-statement-cta{
+  color:#ebf8df;line-height:1.4;
+}
+.clube-shell.clube-live-student .clube-activities-card{
+  border-color:#c9dac1;
+  box-shadow:0 13px 28px rgba(31,58,32,.10);
+}
+.clube-shell.clube-live-student .clube-activities-expanded{
+  background:linear-gradient(180deg,#fff,#fafcf8);
+}
+.clube-shell.clube-live-student .npv-strava-detail{color:#263c2b}
+/* A fotografia e a geometria de fundo do card Atividades registradas v2.1 permanecem inalteradas. */
+
+/* 07 — Lojinha / catálogo / status de resgate */
+.clube-shell .npv-shop-featured{margin-top:27px}
+.clube-shell .npv-shop-heading{margin-bottom:18px;gap:14px}
+.clube-shell .npv-shop-heading h2{
+  color:#1b3526;font-size:clamp(25px,2.7vw,34px);
+  line-height:1.13;letter-spacing:-.048em;
+}
+.clube-shell .npv-shop-heading p{font-size:12px;line-height:1.6;color:#657767}
+.clube-shell .npv-shop-eyebrow{color:#527b2e}
+.clube-shell .npv-shop-balance strong{color:#3f7028}
+.clube-shell .npv-shop-grid{gap:17px}
+.clube-shell .npv-shop-card{overflow:hidden;transition:transform .18s,box-shadow .18s,border-color .18s}
+.clube-shell .npv-shop-card:hover{
+  transform:translateY(-3px);
+  border-color:#b8d2a3;
+  box-shadow:0 15px 34px rgba(25,55,29,.11);
+}
+.clube-shell .npv-shop-card-milestone{border-color:#a8cb78}
+.clube-shell .npv-shop-art{height:160px}
+.clube-shell .npv-shop-info{padding-top:16px}
+.clube-shell .npv-shop-category{color:#60853f}
+.clube-shell .npv-shop-price{color:#315c29}
+.clube-shell .npv-shop-progress-track{height:7px;background:#e9efdf}
+.clube-shell .npv-shop-progress-track span{background:linear-gradient(90deg,#86b63a,#c4e46d)}
+.clube-shell .npv-shop-request{border-radius:10px}
+.clube-shell .npv-shop-request-row{border-bottom-color:#e7eee5}
+.clube-shell .npv-shop-status{border-radius:8px}
+.clube-shell .npv-shop-requests-head{gap:12px}
+.clube-shell .npv-shop-resolve{border-radius:9px}
+
+/* 08 — Parceiros / descontos / alertas */
+.clube-shell .npv-benefit-alert{
+  border:1px solid #c4dda9;
+  background:linear-gradient(115deg,#eff8df,#e8f4d3);
+  border-radius:18px;padding:18px 21px;gap:15px;
+  box-shadow:0 8px 25px rgba(45,87,28,.055);
+}
+.clube-shell .npv-benefit-alert-icon{background:#d7ecb9;border-radius:14px;color:#4a7327}
+.clube-shell .npv-benefit-alert strong{color:#294728;font-size:15px}
+.clube-shell .npv-benefit-alert p{color:#4e6750;font-size:12px;line-height:1.6}
+.clube-shell .npv-benefit-alert button{
+  min-height:42px;
+  border-radius:11px;
+  background:#bcdf69;
+  color:#233c1f;
+}
+.clube-shell .npv-partners-section{margin-top:29px}
+.clube-shell .npv-partners-grid{gap:17px}
+.clube-shell .npv-partner-card{transition:transform .18s,box-shadow .18s,border-color .18s}
+.clube-shell .npv-partner-card:hover{
+  transform:translateY(-2px);
+  border-color:#bed4b0;
+  box-shadow:0 14px 30px rgba(25,55,29,.09);
+}
+.clube-shell .npv-partner-logo{background:linear-gradient(155deg,#fafcf8,#f3f7ed)}
+.clube-shell .npv-partner-info>strong{color:#24412d}
+.clube-shell .npv-partner-discount{color:#4a7f2c;font-weight:900}
+.clube-shell .npv-partner-coupon{background:#eff6e9;color:#385938;border-radius:8px}
+.clube-shell .npv-partner-action{
+  border-radius:10px;
+  border-color:#c8dbc1;
+  background:#f4f9ef;
+  color:#355b2e!important;
+}
+.clube-shell .npv-partner-action:hover{background:#e8f4d9}
+
+/* 09 — Ferramentas do administrador (regras, metas, avaliações) */
+.clube-shell:not(.clube-live-student) .clube-intro{margin-bottom:25px}
+.clube-shell:not(.clube-live-student) .clube-main{padding-top:35px}
+.clube-shell .npv-km-card,
+.clube-shell .npv-challenge-admin{padding:22px}
+.clube-shell .npv-km-icon{background:#e8f5d8;border-radius:13px;color:#50782e}
+.clube-shell .npv-km-head h2{color:#203d2a}
+.clube-shell .npv-km-head p,.clube-shell .npv-challenge-admin-heading small{color:#637766}
+.clube-shell .npv-km-preview{
+  background:#f3f8ef;
+  border-color:#dfe9d8;
+  border-radius:13px;
+}
+.clube-shell .npv-km-result strong{color:#477928}
+.clube-shell .npv-challenge-admin-heading strong{color:#24422d}
+.clube-shell .npv-challenge-admin-form button{
+  border-radius:10px;
+  background:#254e34;
+}
+.clube-shell .npv-challenge-admin-form button:hover{background:#376843}
+.clube-shell .npv-admin-rules-bar{border-radius:13px}
+.clube-shell .clube-toolbar{margin-bottom:17px}
+.clube-shell .clube-search{border-radius:11px}
+.clube-shell .clube-students{overflow-x:auto}
+.clube-shell .clube-student-row{transition:background .16s}
+.clube-shell .clube-student-row:hover{background:#f8fbf6}
+
+/* 10 — Modais, confirmação e estados de feedback */
+.clube-shell .clube-modal-backdrop{background:rgba(5,17,10,.70);backdrop-filter:blur(4px)}
+.clube-shell .clube-modal{
+  width:min(100%,520px);
+  border:1px solid #e0e9dd;
+  border-radius:21px;
+  box-shadow:0 30px 100px rgba(0,0,0,.3);
+}
+.clube-shell .clube-modal-top{padding:25px 28px 20px;border-bottom-color:#e3ece0}
+.clube-shell .clube-modal-top small{color:#658d38}
+.clube-shell .clube-modal-top h2{color:#20392a;letter-spacing:-.045em;font-size:25px}
+.clube-shell .clube-modal-top>button{
+  width:36px;height:36px;border-radius:10px;background:#eff4eb;
+}
+.clube-shell .clube-form{gap:17px}
+.clube-shell .clube-modal .clube-form{padding:25px 28px 28px}
+.clube-shell .clube-modal-preview{
+  border-radius:13px;background:#eef8df;border:1px solid #d5e8c1;
+}
+.clube-shell .npv-reward-photo-editor{border-radius:12px}
+.clube-shell :is(.npv-km-error,.clube-real-error){line-height:1.55}
+
+/* 11 — Tablet, celulares e teclado */
+@media (max-width:1100px){
+  .clube-shell:not(.clube-live-student) .clube-container{grid-template-columns:218px minmax(0,1fr)}
+  .clube-shell .npv-shop-grid,.clube-shell .npv-partners-grid{gap:12px}
+  .clube-shell .clube-kpi{padding:17px}
+}
+@media (max-width:760px){
+  .clube-shell{background:#f5f8f3}
+  .clube-shell .clube-header-inner{min-height:66px;padding:9px 15px}
+  .clube-shell .clube-logo-label strong{letter-spacing:.06em}
+  .clube-shell .clube-auth-wrap{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:13px;
+    padding:10px 17px 30px;
+    margin:18px auto 30px;
+    min-height:unset;
+  }
+  .clube-shell .clube-auth-hero{padding:10px 2px 2px}
+  .clube-shell .clube-auth-hero>span{font-size:10px;padding:7px 11px}
+  .clube-shell .clube-auth-hero h1{
+    font-size:clamp(31px,7.6vw,43px);
+    line-height:1.08;
+    margin:11px 0;
+  }
+  .clube-shell .clube-auth-hero>p{font-size:13px;line-height:1.53;margin:0}
+  .clube-shell .clube-auth-panel{padding:24px 20px;border-radius:19px}
+  .clube-shell .clube-auth-icon{width:45px;height:45px;margin-bottom:13px}
+  .clube-shell .clube-auth-panel h2{font-size:24px}
+  .clube-shell .clube-auth-panel>p{margin-bottom:14px}
+  .clube-shell:not(.clube-live-student) .clube-container{display:block}
+  .clube-shell:not(.clube-live-student) .clube-sidebar{
+    padding:10px 13px;
+    border-right:0;
+    border-bottom:1px solid #27402d;
+    background:#162c20;
+  }
+  .clube-shell:not(.clube-live-student) .clube-nav{gap:5px;scrollbar-width:thin}
+  .clube-shell:not(.clube-live-student) .clube-nav>button{
+    min-height:40px;
+    border-radius:10px;
+    padding:8px 12px;
+    color:#dce9d7;
+  }
+  .clube-shell:not(.clube-live-student) .clube-nav>button.active{
+    color:#1b3522;
+    background:#c6e984;
+  }
+  .clube-shell:not(.clube-live-student) .clube-main{padding:22px 15px 28px}
+  .clube-shell .clube-intro h1{font-size:clamp(26px,6.6vw,34px)}
+  .clube-shell .clube-intro p{font-size:12px}
+  .clube-shell .clube-kpis{gap:10px}
+  .clube-shell .clube-kpi{min-height:143px;padding:16px}
+  .clube-shell .clube-kpi-dark{min-height:151px}
+  .clube-shell .clube-columns{gap:14px}
+  .clube-shell .clube-card:not(.clube-activities-card){padding:17px}
+  .clube-shell.clube-live-student .clube-live-banner{min-height:205px}
+  .clube-shell.clube-live-student .clube-live-banner-top{padding:16px 13px 12px}
+  .clube-shell.clube-live-student .clube-live-title{padding:7px 9px}
+  .clube-shell.clube-live-student .clube-live-tabs{
+    display:grid;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:4px;
+    padding:8px 7px;
+  }
+  .clube-shell.clube-live-student .clube-live-tabs>button{
+    display:flex;flex-direction:column;
+    justify-content:center;
+    min-height:50px;height:auto;
+    font-size:10px;
+    line-height:1.1;
+    padding:5px 2px;
+    white-space:normal;text-align:center;
+    gap:4px;
+  }
+  .clube-shell.clube-live-student .clube-live-tabs>button svg{width:16px;height:16px}
+  .clube-shell.clube-live-student .clube-main{padding:21px 14px 33px}
+  .clube-shell.clube-live-student .clube-student-summary{margin-bottom:16px;border-radius:18px}
+  .clube-shell .npv-shop-heading{align-items:flex-start}
+  .clube-shell .npv-shop-heading h2{font-size:27px}
+  .clube-shell .npv-shop-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+  .clube-shell .npv-partners-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+  .clube-shell .npv-shop-art{height:145px}
+  .clube-shell .npv-partner-logo{height:101px}
+  .clube-shell .npv-benefit-alert{flex-wrap:wrap;padding:15px;gap:12px}
+  .clube-shell .npv-benefit-alert-icon{width:41px;height:41px}
+  .clube-shell .npv-benefit-alert button{width:100%}
+  .clube-shell .npv-km-card,.clube-shell .npv-challenge-admin{padding:17px}
+  .clube-shell .clube-modal .clube-form{padding:20px}
+  .clube-shell .clube-modal-top{padding:20px}
+}
+@media (max-width:425px){
+  .clube-shell .clube-intro{margin-bottom:17px}
+  .clube-shell .clube-btn{white-space:normal}
+  .clube-shell .clube-main-footer{font-size:10px}
+  .clube-shell .clube-student-row{gap:9px}
+  .clube-shell .npv-shop-art{height:130px}
+  .clube-shell .npv-shop-info{padding-left:12px;padding-right:12px}
+  .clube-shell .npv-partner-info{padding:12px}
+  .clube-shell .npv-partner-logo{padding:12px}
+  .clube-shell .npv-shop-grid,.clube-shell .npv-partners-grid{gap:10px}
+  .clube-shell.clube-live-student .clube-live-title strong{font-size:21px}
+}
+/* iOS WebKit: evita zoom ao focar formulários, preservando zoom manual. */
+@media (max-width:1024px){
+  .clube-shell input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+  .clube-shell select,.clube-shell textarea{font-size:16px!important}
+}
+@media (prefers-reduced-motion:reduce){
+  .clube-shell .npv-shop-card,.clube-shell .npv-partner-card,
+  .clube-shell .clube-btn{transition:none;transform:none}
+}
