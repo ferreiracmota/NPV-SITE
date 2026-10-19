@@ -14,3 +14,61 @@
 .npv-strava-challenge-top{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:2px}
 .npv-strava-challenge-status{display:block;color:#e7eedb;font-size:11px;font-weight:700;font-variant-numeric:tabular-nums}
 @media(max-width:390px){.npv-strava-challenge-reward{font-size:10px;padding:5px 8px}.npv-strava-challenge-title{font-size:9px}}
+
+
+/* Refinamento do card Atividades registradas - 19/10/2026.
+   Escopo visual exclusivo do desafio mensal. A foto, o tamanho do card,
+   os dados, as recompensas e o comportamento expansivel nao mudam. */
+.npv-strava-activities .npv-strava-challenge{
+  width:min(100%,430px);
+  border-top:0;
+  background:linear-gradient(90deg,rgba(242,218,166,.34),rgba(242,218,166,0)) left top / 72% 1px no-repeat;
+}
+.npv-strava-activities .npv-strava-challenge-title{
+  color:#ffe0a0;
+  text-shadow:0 1px 7px rgba(0,0,0,.15);
+}
+.npv-strava-activities .npv-strava-challenge-reward{
+  border-color:rgba(252,222,157,.63);
+  background:linear-gradient(115deg,rgba(244,207,127,.31),rgba(227,183,85,.15));
+  box-shadow:0 2px 12px rgba(255,209,115,.13),inset 0 1px 0 rgba(255,255,255,.12);
+}
+.npv-strava-activities .npv-strava-challenge-status{
+  color:#f7f6e7;
+  font-weight:800;
+}
+.npv-strava-activities .npv-strava-challenge-track{
+  width:min(76%,315px);
+  height:11px;
+  flex:none;
+  border:1px solid rgba(255,230,181,.36);
+  background:rgba(6,24,17,.57);
+  box-shadow:inset 0 2px 5px rgba(0,0,0,.22),0 0 0 1px rgba(255,255,255,.045);
+}
+.npv-strava-activities .npv-strava-challenge-fill{
+  background:linear-gradient(90deg,#e0ad61 0%,#f1d18a 70%,#ffe6ac 100%);
+  box-shadow:0 0 12px rgba(255,218,149,.34),inset 0 1px 0 rgba(255,255,255,.28);
+}
+.npv-strava-activities .npv-strava-challenge-track.is-complete .npv-strava-challenge-fill{
+  background:linear-gradient(90deg,#d7af67,#ffe3a4);
+}
+.npv-strava-activities .npv-strava-challenge-caption{
+  color:#dfebd6;
+}
+@media(max-width:640px){
+  .npv-strava-activities .npv-strava-challenge{
+    width:100%;
+    background-size:69% 1px;
+  }
+  .npv-strava-activities .npv-strava-challenge-track{
+    width:74%;
+    max-width:252px;
+    height:8px;
+  }
+}
+@media(max-width:380px){
+  .npv-strava-activities .npv-strava-challenge-track{
+    width:72%;
+    height:8px;
+  }
+}
