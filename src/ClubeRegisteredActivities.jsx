@@ -116,7 +116,7 @@ export default function ClubeRegisteredActivities({session}) {
       <span className="npv-strava-hero-copy">
         <span className="npv-strava-hero-eyebrow">SEU ESPAÇO DE PERFORMANCE <span aria-hidden="true">✦</span></span>
         <strong>Atividades registradas</strong>
-        <small>Seus treinos, quilômetros e evolução em um só lugar.</small>
+        <small>Acompanhe seus treinos e sua evolução.</small>
         <span className="npv-strava-hero-meta" aria-live="polite">
           <span className={'npv-strava-hero-indicator'+(status.connected?' is-active':'')} aria-hidden="true"/>
           <span>{loading?'Atualizando conexão...':status.connected?'Strava conectado':status.disabled?'Strava em preparação':'Seu Strava, suas conquistas'}</span>
@@ -131,9 +131,11 @@ export default function ClubeRegisteredActivities({session}) {
               <span aria-hidden="true">✦</span> +{formatPoints(goal.reward)} pts
             </span>}
           </span>
-          <span className="npv-strava-challenge-status">{progress.valid
-              ?(progress.completed?'Meta alcançada ✦':format(monthKm)+' de '+format(monthlyGoal)+' km')
-              :(monthKm!==null?format(monthKm)+' km percorridos':status.connected?'Consultando quilômetros...':status.disabled?'Integração Strava em preparação':'Conecte seu Strava')}</span>
+          <span className="npv-strava-challenge-status" aria-live="polite">{progress.valid
+              ?(progress.completed
+                ?<strong className="npv-strava-challenge-number">Meta concluída ✦</strong>
+                :<><strong className="npv-strava-challenge-number">{format(monthKm)} km</strong><span className="npv-strava-challenge-target">de {format(monthlyGoal)} km</span></>)
+              :<span className="npv-strava-challenge-placeholder">{monthKm!==null?format(monthKm)+' km percorridos':status.connected?'Consultando quilômetros...':status.disabled?'Strava em preparação':'Conecte seu Strava'}</span>}</span>
           <span className={'npv-strava-challenge-track'+(progress.completed?' is-complete':'')}
             role="progressbar" aria-label="Progresso do desafio do mês"
             aria-valuemin={0} aria-valuemax={100} aria-valuenow={progress.valid?progress.percentage:undefined}
@@ -142,9 +144,9 @@ export default function ClubeRegisteredActivities({session}) {
           </span>
           <span className="npv-strava-challenge-caption">
             {progress.valid?(progress.completed
-              ?'Meta alcançada! Recompensa prevista: '+goal.reward+' pontos (crédito ainda não automático).'
-              :format(monthlyGoal-monthKm>0?Math.max(0,monthlyGoal-monthKm):0)+' km para completar o desafio')
-              :(!goal.loaded?'Carregando meta do desafio...':monthlyGoal===null?'Meta mensal a definir pelo clube':!status.connected?status.disabled?'A conexão com o Strava ainda será liberada nesta versão.': 'Conecte-se para acompanhar sua evolução':monthKm===null?'Aguardando dados reais do Strava':'Atualize as atividades para conferir o progresso')}
+              ?'Desafio concluído! +'+formatPoints(goal.reward)+' pts previstos (crédito não automático).'
+              :'Faltam '+format(monthlyGoal-monthKm>0?Math.max(0,monthlyGoal-monthKm):0)+' km para sua meta')
+              :(!goal.loaded?'Carregando meta do desafio...':monthlyGoal===null?'Meta mensal a definir pelo clube':!status.connected?status.disabled?'Integração com Strava em preparação.': 'Conecte-se para acompanhar sua evolução':monthKm===null?'Aguardando dados reais do Strava':'Atualize as atividades para conferir o progresso')}
           </span>
         </span>
       </span>
