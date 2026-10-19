@@ -582,3 +582,42 @@
   .clube-shell .npv-shop-card,.clube-shell .npv-partner-card,
   .clube-shell .clube-btn{transition:none;transform:none}
 }
+
+
+/* CLUBE NPV DESKTOP PANORAMICO — 19/10/2026
+   Card Atividades registradas: proporção baixa apenas no computador.
+   Usa a nova foto 3:1 enviada pelo usuário, sem trocar a imagem do mobile.
+   Salvo: backup/clube-beneficios-v2.1.1-20261019 */
+@media (min-width:1024px){
+  .clube-shell.clube-live-student .npv-strava-activities .npv-strava-hero-trigger,
+  .clube-shell.clube-live-student .npv-strava-activities .npv-strava-hero-trigger:hover{
+    aspect-ratio:auto;
+    height:clamp(235px,19vw,260px);
+    min-height:235px;
+    max-height:260px;
+    padding:16px clamp(18px,2vw,28px);
+    gap:18px;
+    background-image:
+      linear-gradient(90deg,rgba(4,20,13,.84) 0%,rgba(6,26,17,.68) 35%,rgba(7,26,17,.40) 69%,rgba(4,18,12,.37) 100%),
+      url('./assets/clube-card-panoramico-desktop.avif');
+    background-position:center center,center center;
+    background-size:100% 100%,100% 100%;
+    background-repeat:no-repeat,no-repeat;
+  }
+  .clube-shell.clube-live-student .npv-strava-activities .npv-strava-hero-trigger:hover{
+    background-image:
+      linear-gradient(90deg,rgba(4,20,13,.79) 0%,rgba(6,26,17,.62) 35%,rgba(7,26,17,.36) 69%,rgba(4,18,12,.33) 100%),
+      url('./assets/clube-card-panoramico-desktop.avif');
+  }
+  .clube-shell.clube-live-student .npv-strava-activities .npv-strava-hero-eyebrow{
+    margin-bottom:5px;
+  }
+  .clube-shell.clube-live-student .npv-strava-activities .npv-strava-hero-meta{
+    margin-top:7px;
+  }
+  .clube-shell.clube-live-student .npv-strava-activities .npv-strava-challenge{
+    margin-top:9px;
+    padding:9px 12px;
+    gap:5px;
+  }
+}
