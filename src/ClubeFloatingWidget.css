@@ -13,12 +13,12 @@
 .npv-floating-club--expanded{width:min(368px,calc(100vw - 30px))}
 .npv-fw-shell{
   overflow:hidden;
-  border:1px solid rgba(255,255,255,.84);
+  border:1px solid rgba(160,160,160,.35);
   border-radius:23px;
   background:linear-gradient(137deg,rgba(17,17,17,.40),rgba(17,17,17,.40) 60%,rgba(17,17,17,.40));
   -webkit-backdrop-filter:blur(5px);
   backdrop-filter:blur(5px);
-  box-shadow:0 19px 65px rgba(4,19,13,.22),0 3px 14px rgba(10,32,15,.12),inset 0 1px 0 rgba(255,255,255,.90);
+  box-shadow:0 19px 65px rgba(4,19,13,.22),0 3px 14px rgba(10,32,15,.12),inset 0 1px 0 rgba(160,160,160,.16);
 }
 .npv-fw-toggle{
   display:flex;align-items:center;gap:11px;width:100%;
@@ -175,7 +175,7 @@
   color:#f7f8f7;
 }
 .npv-fw-shell{
-  border-color:rgba(255,255,255,.72);
+  border-color:rgba(160,160,160,.35);
   text-shadow:0 1px 3px rgba(0,0,0,.87),0 0 8px rgba(0,0,0,.60);
 }
 .npv-floating-club .npv-fw-heading strong,
