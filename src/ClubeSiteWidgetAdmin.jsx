@@ -28,6 +28,8 @@ const makePreview=(model,rewards,partners)=>{
 }
 export default function ClubeSiteWidgetAdmin({rewards=[],partners=[]}){
  const [draft,setDraft]=useState(DEFAULT_WIDGET)
+ const targetIsProduction=WIDGET_SCOPE==='production'
+ const targetName=targetIsProduction?'site oficial':'Preview'
  const [published,setPublished]=useState(null)
  const [loading,setLoading]=useState(true)
  const [busy,setBusy]=useState(false)
@@ -71,7 +73,7 @@ export default function ClubeSiteWidgetAdmin({rewards=[],partners=[]}){
    setError('Envie uma imagem JPG, PNG ou WebP de até 4 MB.');return
   }
   const type=file.type==='image/png'?'png':file.type==='image/webp'?'webp':'jpg'
-  const key=`site-widget-preview/${crypto.randomUUID()}.${type}`
+  const key=`site-widget-${WIDGET_SCOPE}/${crypto.randomUUID()}.${type}`
   const token=field+(index??'')
   setUploading(token);setError('');setMessage('')
   try{
@@ -79,7 +81,7 @@ export default function ClubeSiteWidgetAdmin({rewards=[],partners=[]}){
    if(uploadError)throw uploadError
    if(field==='logo_path')setField('logo_path',key)
    else rankEdit(index,'avatar_path',key)
-   setMessage('Imagem enviada. Clique em Salvar rascunho e Publicar para disponibilizá-la no Preview.')
+   setMessage(`Imagem enviada. Clique em Salvar rascunho e Publicar para disponibilizá-la no ${targetName}.`)
   }catch{setError('Falha no envio da imagem. Verifique o acesso de administrador e tente novamente.')}
   finally{setUploading('')}
  }
@@ -105,7 +107,7 @@ export default function ClubeSiteWidgetAdmin({rewards=[],partners=[]}){
    if(dbError)throw dbError
    if(publish)setPublished(normalizeWidget(data.published))
    setMessage(publish?
-    'Configuração publicada SOMENTE no Preview. O widget atualizará na próxima consulta ou após recarregar a página.':
+    `Configuração publicada no ${targetName}. O widget atualizará na próxima consulta ou após recarregar a página.`:
     'Rascunho salvo com sucesso. O widget público ainda usa a última publicação.')
   }catch(e){setError(e.message||'Falha ao salvar: revise os dados e sua autorização de administrador.')}
   finally{setBusy(false)}
@@ -113,8 +115,8 @@ export default function ClubeSiteWidgetAdmin({rewards=[],partners=[]}){
  const logoUrl=widgetPublicImage(supabase,draft.logo_path)
  return <section className="npv-widget-admin" aria-label="Widget do Site">
   <div className="npv-widget-admin-head">
-   <div><span className="npv-widget-admin-eyebrow">CLUBE NPV · AMBIENTE DE TESTE</span><h2>Widget do site</h2><p>Configure o mini widget da página inicial, sem deploys adicionais. Rascunho e versão publicada são independentes.</p></div>
-   <span className="npv-widget-admin-mode">PREVIEW ISOLADO</span>
+   <div><span className="npv-widget-admin-eyebrow">{targetIsProduction?'CLUBE NPV · SITE OFICIAL':'CLUBE NPV · AMBIENTE DE TESTE'}</span><h2>Widget do site</h2><p>Configure o mini widget da página inicial, sem deploys adicionais. Rascunho e versão publicada são independentes.</p></div>
+   <span className="npv-widget-admin-mode">{targetIsProduction?'SITE OFICIAL':'PREVIEW ISOLADO'}</span>
   </div>
   {loading?<p role="status">Carregando configurações do widget...</p>:<>
    {error&&<p role="alert" className="npv-widget-admin-error"><AlertCircle size={16}/>{error}</p>}
@@ -123,7 +125,7 @@ export default function ClubeSiteWidgetAdmin({rewards=[],partners=[]}){
     <div className="npv-widget-admin-controls">
      <div className="npv-widget-admin-panel">
       <h3><Eye size={17}/> Exibição na página inicial</h3>
-      <label className="npv-widget-admin-switch"><input type="checkbox" checked={draft.enabled} onChange={e=>setField('enabled',e.target.checked)}/><span>{draft.enabled?'Widget ativado no Preview':'Widget desativado no Preview'}</span></label>
+      <label className="npv-widget-admin-switch"><input type="checkbox" checked={draft.enabled} onChange={e=>setField('enabled',e.target.checked)}/><span>{draft.enabled?`Widget ativado no ${targetName}`:`Widget desativado no ${targetName}`}</span></label>
       <small>Desativar só ocultará o widget no site de teste depois de publicar.</small>
      </div>
      <div className="npv-widget-admin-panel">
@@ -185,14 +187,14 @@ export default function ClubeSiteWidgetAdmin({rewards=[],partners=[]}){
        <ClubeFloatingWidget configOverride={preview} forceVisible/>
       </div>
       {!draft.enabled&&<p className="npv-widget-admin-off"><EyeOff size={14}/> Desativado: aparecerá apenas nesta prévia administrativa.</p>}
-      <p className="npv-widget-admin-published">Última publicação de teste: {published?(published.enabled?'Widget ligado':'Widget desligado'):'Nenhuma. O padrão aprovado continua visível no Preview.'}</p>
+      <p className="npv-widget-admin-published">Última publicação no {targetName}: {published?(published.enabled?'Widget ligado':'Widget desligado'):`Nenhuma. O padrão aprovado continua visível no ${targetName}.`}</p>
      </div>
     </div>
    </div>
    <div className="npv-widget-admin-footer">
     <button className="npv-widget-admin-save" disabled={busy||!!uploading} onClick={()=>save(false)}><Save size={17}/>{busy?'Processando...':'Salvar rascunho'}</button>
-    <button className="npv-widget-admin-publish" disabled={busy||!!uploading} onClick={()=>save(true)}><Send size={17}/>{busy?'Processando...':'Publicar no Preview'}</button>
-    <small>As alterações publicadas são lidas do Supabase, sem novo deploy. Nenhum dado é encaminhado à produção.</small>
+    <button className="npv-widget-admin-publish" disabled={busy||!!uploading} onClick={()=>save(true)}><Send size={17}/>{busy?'Processando...':`Publicar no ${targetName}`}</button>
+    <small>As alterações publicadas são lidas do Supabase, sem novo deploy. Configurações do Preview e do site oficial são independentes.</small>
    </div>
   </>}
  </section>
