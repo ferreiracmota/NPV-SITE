@@ -1,4 +1,5 @@
 import './App.css'
+import ClubeFloatingWidget from './ClubeFloatingWidget.jsx'
 /* Vídeos versionados pelo Vite: urls produzidas junto com a compilação,
    sem depender de /public/videos, que pode não existir na implantação. */
 import fundoDesktopVideo from './assets/videofundo1.MP4?url'
@@ -917,6 +918,8 @@ useEffect(() => {
       QUERO DECOLAR ➜
     </a>
   </div>
+  {/* Prévia isolada: somente o widget. Vídeo, títulos e botões permanecem inalterados. */}
+  <ClubeFloatingWidget />
 </section>
 
       {/* Antes e Depois Section */}
