@@ -60,25 +60,23 @@
   color:#f8fff1;
   text-align:left;
   cursor:pointer;
+  /* Usa exatamente a imagem do cabeçalho superior do Clube.
+     A sobreposição verde-escura mantém letras, badge e progresso legíveis. */
   background:
-    radial-gradient(ellipse at 95% -15%,rgba(138,188,89,.33) 0,transparent 49%),
-    linear-gradient(115deg,#12221b 0%,#1c3427 55%,#294634 100%);
+    linear-gradient(105deg,rgba(7,24,16,.92) 0%,rgba(11,31,21,.78) 49%,rgba(10,27,20,.52) 100%),
+    linear-gradient(0deg,rgba(8,26,17,.26),rgba(8,26,17,.18)),
+    url('./assets/clube-npv-fundo-esportes.avif') center center / cover no-repeat,
+    #13281d;
   transition:filter .2s ease;
 }
 .npv-strava-activities .npv-strava-hero-trigger::before{
   content:"";position:absolute;left:0;top:0;bottom:0;width:4px;
   background:linear-gradient(#d6f69b,#81ba59);pointer-events:none;z-index:1;
 }
-.npv-strava-activities .npv-strava-hero-trigger::after{
-  content:"";position:absolute;right:-40px;top:-105px;
-  width:310px;height:310px;border:1px solid rgba(197,232,176,.12);
-  border-radius:50%;box-shadow:0 0 0 32px rgba(197,232,176,.038),0 0 0 68px rgba(197,232,176,.025);
-  pointer-events:none;z-index:0;
-}
+/* Na versão fotográfica, removemos somente os círculos decorativos. */
+.npv-strava-activities .npv-strava-hero-trigger::after{content:none;}
 .npv-strava-activities .npv-strava-hero-trigger:hover{
-  background:
-    radial-gradient(ellipse at 95% -15%,rgba(153,203,104,.41) 0,transparent 49%),
-    linear-gradient(115deg,#15281d 0%,#213d2c 55%,#315139 100%);
+  filter:brightness(1.08);
 }
 .npv-strava-activities .npv-strava-hero-trigger:focus-visible{
   outline:3px solid #d1f395;
