@@ -240,6 +240,9 @@ BEGIN
   RETURN 'disabled';
  END IF;
  IF p_approved_at IS NULL OR p_approved_at < v_config.starts_at THEN RETURN 'before_start'; END IF;
+ -- Sem baseline de primeira sincronização, nunca bonifica assinaturas antigas.
+ IF v_subscription.baseline_at IS NULL OR p_approved_at <= v_subscription.baseline_at
+ THEN RETURN 'first_sync_reference_required'; END IF;
  IF p_recurrence IS NULL OR p_recurrence<=1 THEN RETURN 'initial_not_renewal'; END IF;
  IF p_purchase_verified IS DISTINCT FROM true THEN RETURN 'pending_purchase_verification'; END IF;
  IF p_plan_id IS NULL OR NOT (p_plan_id=ANY(v_product.monthly_plan_ids)) THEN
