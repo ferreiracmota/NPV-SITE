@@ -1,7 +1,7 @@
 // Webhook Hotmart 2.0.0 — backend exclusivo; sem alteração no frontend.
 // Bloqueado até credenciais e política de ativação aprovadas.
 import { createClient } from '@supabase/supabase-js'
-import { interpretWebhook, isAuthentic, lookupSubscriber } from './core.mjs'
+import { interpretWebhook, isAuthentic, verifyOfficialPayment } from './core.mjs'
 
 const headers={'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}
 const send=(res,code,message)=>res.writeHead(code,{'Content-Type':'application/json; charset=utf-8',...headers}).end(JSON.stringify({status:message}))
@@ -38,9 +38,9 @@ export default async function handler(req,res) {
 
  // Devolve sucesso somente depois da persistência transacional no Supabase.
  // Sem credenciais de API, persiste evento em espera: não afirma identidade.
- let verifiedEmail=null,lookupError=false
+ let evidence=null,lookupError=false
  if(event.type==='PURCHASE_APPROVED') {
-  try{verifiedEmail=await lookupSubscriber(event,env)}
+  try{evidence=await verifyOfficialPayment(event,env)}
   catch {lookupError=true}
  }
  try {
@@ -52,20 +52,21 @@ export default async function handler(req,res) {
    p_event_id:event.id,
    p_event_type:event.type,
    p_product_id:event.productId,
-   p_product_ucode:event.productUcode,
+   p_product_ucode:evidence?.productUcode||event.productUcode,
    p_transaction:event.transaction||null,
    p_subscriber_code:event.subscriberCode,
-   p_verified_subscriber_email:verifiedEmail,
+   p_verified_subscriber_email:evidence?.email||null,
    p_plan_id:event.planId,
-   p_recurrence:event.recurrence,
-   p_approved_at:event.approvedAt
+   p_recurrence:evidence?.recurrence??event.recurrence,
+   p_approved_at:evidence?.approvedAt||event.approvedAt,
+   p_purchase_verified:Boolean(evidence)
   })
   if(error) {
    // Nunca devolve detalhes de credenciais, endereços ou SQL ao emissor.
    return send(res,503,'processing_temporarily_unavailable')
   }
   // Reprocessamento de validação pendente ocorre pela reconciliação.
-  if(lookupError&&data==='pending_identity')return send(res,503,'identity_lookup_retry')
+  if(lookupError||data==='pending_purchase_verification')return send(res,503,'official_verification_retry')
   return send(res,200,data||'recorded')
  }catch {
   return send(res,503,'processing_temporarily_unavailable')
