@@ -26,6 +26,8 @@ jobs:
           node --check api/hotmart/core.mjs
           node --check api/hotmart/webhook.js
           node --check api/hotmart/reconcile.js
+          node --check api/hotmart/discovery.mjs
+          node --check api/hotmart/discovery.test.mjs
           node --check api/hotmart/core.test.mjs
       - name: Executar cenários simulados sem credenciais, rede ou banco real
-        run: node --test api/hotmart/core.test.mjs
+        run: node --test api/hotmart/*.test.mjs
