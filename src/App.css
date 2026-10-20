@@ -670,3 +670,13 @@ a:focus-visible {
     margin-top: clamp(44px, 8svh, 68px);
   }
 }
+
+/* Correção de colisão comprovada em 320 × 568: o widget permanece
+   intacto e reaparece assim que o CTA deixa de estar visível. */
+@media (max-width: 359px) and (max-height: 650px) {
+  html.npv-compact-cta-visible .npv-floating-club:not(.npv-floating-club--expanded) {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+}
