@@ -520,7 +520,7 @@ export default function ClubeNPVOnline() {
                 <b>{value}</b>}
             </div>
           })}</div>
-          <p className="clube-micro">Atividades sujeitas à confirmação. Assinantes pagantes: até 2.000 pontos/mês em atividades regulares; indicações válidas ficam fora desse limite. Acessos gratuitos e embaixadores seguem condições próprias.</p>
+          <p className="clube-micro">Atividades sujeitas à confirmação.</p>
         </section>
       </>}
       {tab==='parceiros'&&<section className="npv-partners-section">
