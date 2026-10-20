@@ -11,7 +11,7 @@ const respond=(res,code,payload)=>res.writeHead(code,{
  'Cache-Control':'no-store','Content-Type':'application/json; charset=utf-8',
  'X-Content-Type-Options':'nosniff'
 }).end(JSON.stringify(payload))
-const mask=value=>value?value.replace(/^(.{1,2}).*(@.+)$/,'$1***$2'):null
+const mask=value=>value?value.slice(0,2)+'***@'+value.split('@')[1]:null
 export default async function handler(req,res){
  if(req.method!=='GET')return respond(res,405,{status:'method_not_allowed'})
  const env=process.env
