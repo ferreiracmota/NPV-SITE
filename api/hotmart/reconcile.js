@@ -1,86 +1,34 @@
-// Conciliação Hotmart: também encontra renovações cujo webhook NÃO chegou.
-// Agendamento NÃO ativado; exige CRON_SECRET, credenciais e flag live_credit_enabled.
+// Conciliação diária protegida. Descobre assinaturas cujos webhooks não chegaram.
+// Sem ativação em produção até credenciais, homologação e aprovação da política.
 import { createClient } from '@supabase/supabase-js'
-import { isAuthentic, oauthToken } from './core.mjs'
-import { eligibleReconciliationItem, reconciliationEventId } from './reconcile-core.mjs'
+import { isAuthentic } from './core.mjs'
+import { discoverMissingPayments } from './discovery.mjs'
 
-const response=(res,status,body)=>res.writeHead(status,{
+const reply=(res,code,data)=>res.writeHead(code,{
  'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store'
-}).end(JSON.stringify(body))
-export default async function handler(req,res) {
- if(req.method!=='GET')return response(res,405,{status:'method_not_allowed'})
+}).end(JSON.stringify(data))
+
+export default async function handler(req,res){
+ if(req.method!=='GET')return reply(res,405,{status:'method_not_allowed'})
  const env=process.env
  if(!env.CRON_SECRET||!isAuthentic(req.headers.authorization,'Bearer '+env.CRON_SECRET))
-  return response(res,401,{status:'unauthorized'})
+  return reply(res,401,{status:'unauthorized'})
  if(!env.SUPABASE_URL||!env.SUPABASE_SERVICE_ROLE_KEY||
-  !env.HOTMART_CLIENT_ID||!env.HOTMART_CLIENT_SECRET||!env.HOTMART_BASIC_TOKEN)
-  return response(res,503,{status:'not_configured'})
+  !env.HOTMART_CLIENT_ID||!env.HOTMART_CLIENT_SECRET||
+  !env.HOTMART_BASIC_TOKEN||!env.HOTMART_ALLOWED_PRODUCT_IDS)
+  return reply(res,503,{status:'not_configured'})
  const db=createClient(env.SUPABASE_URL,env.SUPABASE_SERVICE_ROLE_KEY,{
   auth:{persistSession:false,autoRefreshToken:false}
  })
- const {data:policy,error:policyError}=await db.from('clube_hotmart_config')
+ const {data:config,error}=await db.from('clube_hotmart_config')
   .select('live_credit_enabled,starts_at').eq('singleton',true).single()
- if(policyError)return response(res,503,{status:'db_unavailable'})
- if(!policy?.live_credit_enabled||!policy.starts_at)return response(res,200,{status:'disabled'})
- const {data:products,error:productsError}=await db.from('clube_hotmart_products')
-  .select('product_id,product_ucode,monthly_plan_ids').eq('enabled',true).limit(5)
- if(productsError)return response(res,503,{status:'db_unavailable'})
- if(!products?.length)return response(res,200,{status:'no_products'})
+ if(error)return reply(res,503,{status:'database_unavailable'})
+ if(!config?.live_credit_enabled||!config.starts_at)
+  return reply(res,200,{status:'disabled'})
  try{
-  const token=await oauthToken(env)
-  if(!token)return response(res,503,{status:'hotmart_auth_pending'})
-  let subscribers=0,payments=0
-  // Uma página (até 10 assinaturas) por produto e por execução: limita uso da API.
-  // O token de paginação é persistido, sem perder o progresso de uma rotina falha.
-  for(const product of products){
-   const {data:checkpoint,error:checkpointError}=await db.from('clube_hotmart_reconciliation_state')
-    .select('next_page_token').eq('product_id',product.product_id).maybeSingle()
-   if(checkpointError)throw new Error('checkpoint_unavailable')
-   const url=new URL('https://developers.hotmart.com/payments/api/v1/subscriptions')
-   url.searchParams.set('product_id',String(product.product_id))
-   url.searchParams.set('max_results','10')
-   if(checkpoint?.next_page_token)url.searchParams.set('page_token',checkpoint.next_page_token)
-   const page=await fetchHotmart(url,token)
-   if(!Array.isArray(page.items))throw new Error('invalid_subscriptions_page')
-   for(const subscriber of page.items){
-    if(Number(subscriber.product?.id)!==Number(product.product_id)||
-      subscriber.product?.ucode!==product.product_ucode||
-      Number(subscriber.plan?.recurrency_period)!==30||
-      !product.monthly_plan_ids.includes(Number(subscriber.plan?.id))||
-      !subscriber.subscriber_code||!subscriber.subscriber?.email)continue
-    subscribers++
-    const purchaseUrl=new URL('https://developers.hotmart.com/payments/api/v1/subscriptions/'+
-     encodeURIComponent(subscriber.subscriber_code)+'/purchases')
-    const history=await fetchHotmart(purchaseUrl,token)
-    const entries=Array.isArray(history)?history:Array.isArray(history.items)?history.items:[]
-    for(const row of entries){
-     const e=eligibleReconciliationItem(row,policy.starts_at)
-     if(!e)continue
-     const {error}=await db.rpc('clube_hotmart_ingest',{
-      p_event_id:reconciliationEventId(product.product_id,subscriber.subscriber_code,row.transaction,e.type),
-      p_event_type:e.type,p_product_id:product.product_id,
-      p_product_ucode:product.product_ucode,
-      p_transaction:String(row.transaction),
-      p_subscriber_code:String(subscriber.subscriber_code),
-      p_verified_subscriber_email:subscriber.subscriber.email,
-      p_plan_id:Number(subscriber.plan.id),
-      p_recurrence:e.recurrence,p_approved_at:e.approvedAt,
-      p_purchase_verified:e.type==='PURCHASE_APPROVED'
-     })
-     if(error)throw new Error('ingest_retry')
-     payments++
-    }
-   }
-   const {error}=await db.from('clube_hotmart_reconciliation_state')
-    .upsert({
-      product_id:product.product_id,
-      next_page_token:page.page_info?.next_page_token||null,
-      updated_at:new Date().toISOString()
-    },{onConflict:'product_id'})
-   if(error)throw new Error('checkpoint_write_retry')
-  }
-  return response(res,200,{status:'ok',subscribers,payments})
+  const found=await discoverMissingPayments(db,env,config.starts_at)
+  return reply(res,200,{status:'ok',...found})
  }catch{
-  return response(res,503,{status:'retry_later'})
+  return reply(res,503,{status:'reconciliation_retry_later'})
  }
 }
