@@ -57,14 +57,14 @@ for(const item of cases){
   const nav=page.locator('nav[aria-label="Opções da Área do Aluno"]:visible').first()
   await nav.click({position:{x:3,y:3}})
   assert(await details.evaluate(el=>el.open))
+  const hrefs=await nav.locator('a').evaluateAll(a=>a.map(x=>x.getAttribute('href')))
+  assert(hrefs.includes('/clube'))
+  assert(hrefs.some(href=>href?.includes('hotmart')))
   await page.mouse.click(8,Math.round((item.context.viewport?.height||844)/2))
   assert(!(await details.evaluate(el=>el.open)))
   await summary.click()
   await page.keyboard.press('Escape')
   assert(!(await details.evaluate(el=>el.open)))
-  const hrefs=await nav.locator('a').evaluateAll(a=>a.map(x=>x.getAttribute('href')))
-  assert(hrefs.includes('/clube'))
-  assert(hrefs.some(href=>href?.includes('hotmart')))
  })
  if(item.name==='desktop'){
   await check('menu CONTATO desktop fecha fora e ESC',async()=>{
