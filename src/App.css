@@ -564,3 +564,119 @@ a:focus-visible {
   .npv-instagram-profile,
   .npv-instagram-cta { transition: none !important; }
 }
+
+
+/* NPV mobile premium — ajustes isolados, sem impacto visual em >= 768px. */
+@media (max-width: 767px) {
+  /* A primeira dobra respeita a altura do aparelho, sem forçar todo o
+     conteúdo a caber na tela ou mudar a mídia de fundo. */
+  #inicio {
+    padding-bottom: clamp(84px, 12svh, 128px);
+  }
+  #inicio > .relative.z-10.text-center {
+    width: 100%;
+    max-width: 640px;
+    margin-top: clamp(68px, 12svh, 132px);
+    margin-inline: auto;
+  }
+  #inicio h1 {
+    font-size: clamp(1.7rem, 7.7vw, 2.25rem);
+    line-height: 1.17;
+    letter-spacing: -.018em;
+    text-wrap: balance;
+  }
+  #inicio h1 > span:nth-child(3) {
+    font-size: clamp(2.15rem, 10.4vw, 3.4375rem);
+    line-height: 1.09;
+  }
+  #inicio > .relative.z-10.text-center > p {
+    margin-top: clamp(14px, 2.8svh, 20px);
+    max-width: 32rem;
+    font-size: clamp(.94rem, 3.6vw, 1rem);
+    line-height: 1.55;
+    text-wrap: pretty;
+  }
+  #inicio a.glow-button {
+    display: flex;
+    min-height: 56px;
+    align-items: center;
+    justify-content: center;
+    margin-top: clamp(20px, 4.2svh, 30px);
+    padding: 14px 20px;
+    font-size: clamp(1.06rem, 4.7vw, 1.25rem);
+  }
+
+  /* O logo, o hambúrguer e Área de Alunos mantêm a mesma disposição.
+     Aumenta-se apenas a área de toque e protege-se o submenu estreito. */
+  header > .container > .grid > button[aria-controls="mobile-navigation"],
+  header > .container > .grid > details > summary {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  header > .container > .grid > details > nav {
+    max-width: calc(100vw - 32px);
+  }
+
+  /* Pequenos ajustes de ritmo em blocos já existentes. */
+  #planos {
+    padding-block: clamp(52px, 9svh, 72px);
+  }
+  #planos .npv-plan-card {
+    padding: clamp(22px, 5vw, 28px);
+  }
+  #planos .npv-plan-card .text-4xl {
+    font-size: clamp(1.7rem, 8vw, 2.25rem);
+    line-height: 1.18;
+  }
+  #planos .npv-plan-card > ul {
+    margin-bottom: clamp(24px, 5svh, 32px);
+  }
+  #planos .npv-plan-card > a {
+    min-height: 52px;
+    font-size: clamp(1rem, 4.5vw, 1.25rem);
+  }
+  #faq {
+    padding-block: clamp(48px, 8svh, 64px);
+  }
+  #instagram {
+    padding-block: clamp(52px, 9svh, 72px);
+  }
+  #instagram #instagram-heading {
+    font-size: clamp(1.9rem, 8.5vw, 3rem);
+    text-wrap: balance;
+  }
+  #instagram .npv-instagram-profile {
+    padding: clamp(16px, 4.5vw, 20px);
+  }
+
+  /* O loop e a ordem dos parceiros são mantidos; movimento um pouco
+     mais legível no toque, com pausa original por foco preservada. */
+  .npv-partners-viewport .npv-partners-track {
+    animation-duration: calc(var(--npv-partners-mobile-duration, 9s) * 1.2);
+  }
+
+  /* Links do rodapé: alvo confortável sem alterar textos ou destinos. */
+  footer nav[aria-label="Links do rodapé"] a {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+  }
+}
+/* Nas telas mobile mais baixas, não manter uma margem excessiva. */
+@media (max-width: 767px) and (max-height: 650px) {
+  #inicio > .relative.z-10.text-center {
+    margin-top: clamp(44px, 8svh, 68px);
+  }
+}
+
+/* Correção de colisão comprovada em 320 × 568: o widget permanece
+   intacto e reaparece assim que o CTA deixa de estar visível. */
+@media (max-width: 359px) and (max-height: 650px) {
+  html.npv-compact-cta-visible .npv-floating-club:not(.npv-floating-club--expanded) {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+}
