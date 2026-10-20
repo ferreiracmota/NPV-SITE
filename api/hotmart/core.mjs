@@ -94,3 +94,45 @@ export async function lookupSubscriber(event,env,fetcher=fetch) {
  // Exige uma única associação oficial, nunca usa somente e-mail do comprador.
  return verified.length===1?subscriberEmailFromApi(verified[0],event):null
 }
+
+
+// Evidência cruzada: associação do assinante + compra da recorrência na API Hotmart.
+// Nunca classificar parcelamento como assinatura. Falha de API deixa pendente.
+export async function verifyOfficialPayment(event,env,fetcher=fetch) {
+ if(event.type!=='PURCHASE_APPROVED'||!event.transaction||!event.subscriberCode)return null
+ const token=await oauthToken(env,fetcher)
+ if(!token)return null
+ const head={Authorization:'Bearer '+token,Accept:'application/json'}
+ const subscriptionUrl=new URL('https://developers.hotmart.com/payments/api/v1/subscriptions')
+ subscriptionUrl.searchParams.set('subscriber_code',event.subscriberCode)
+ subscriptionUrl.searchParams.set('product_id',String(event.productId))
+ subscriptionUrl.searchParams.set('max_results','20')
+ const s=await fetcher(subscriptionUrl,{headers:head,signal:AbortSignal.timeout(9000)})
+ if(!s.ok)throw new Error('official_subscription_unavailable')
+ const sBody=await s.json()
+ const subs=(Array.isArray(sBody.items)?sBody.items:[]).filter(row=>matchesSubscriber(row,event))
+ if(subs.length!==1)return null
+ const subscription=subs[0]
+ // API documenta recurrency_period 30 para recorrência mensal.
+ if(Number(subscription.plan?.recurrency_period)!==30)return null
+ const purchaseUrl=new URL('https://developers.hotmart.com/payments/api/v1/subscriptions/'+encodeURIComponent(event.subscriberCode)+'/purchases')
+ const p=await fetcher(purchaseUrl,{headers:head,signal:AbortSignal.timeout(9000)})
+ if(!p.ok)throw new Error('official_purchase_unavailable')
+ const pBody=await p.json()
+ const purchases=Array.isArray(pBody)?pBody:Array.isArray(pBody.items)?pBody.items:[]
+ const rows=purchases.filter(item=>String(item.transaction)===event.transaction)
+ if(rows.length!==1)return null
+ const purchase=rows[0]
+ const recurrence=num(purchase.recurrency_number)
+ const approvedAt=num(purchase.approved_date)
+ if(purchase.status!=='APPROVED'||purchase.purchase_subscription!==true||
+    recurrence===null||recurrence<2||!approvedAt||!Number.isFinite(approvedAt)||
+    (event.recurrence!==null&&recurrence!==event.recurrence))return null
+ return {
+  email:subscriberEmailFromApi(subscription,event),
+  recurrence,
+  approvedAt:new Date(approvedAt).toISOString(),
+  planId:event.planId,
+  productUcode:clean(subscription.product?.ucode)
+ }
+}
