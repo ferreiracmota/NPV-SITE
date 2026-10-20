@@ -47,6 +47,7 @@ CREATE TABLE IF NOT EXISTS public.clube_hotmart_payments (
  credit_event_id uuid UNIQUE REFERENCES public.clube_point_events(id),
  reversal_event_id uuid UNIQUE REFERENCES public.clube_point_events(id),
  processing_status text NOT NULL DEFAULT 'pending',
+ reconciliation_checked_at timestamptz,
  updated_at timestamptz NOT NULL DEFAULT now(),
  UNIQUE(product_id,subscriber_code,transaction_id),
  FOREIGN KEY(product_id,subscriber_code)
@@ -186,8 +187,11 @@ BEGIN
    INSERT INTO public.clube_point_events(student_id,event_type,points,note,reference_id,performed_by)
    VALUES(v_student,'ajuste',-v_points,'Estorno automático Hotmart: '||p_transaction,
        'hotmart:reversal:'||v_payment.id::text,NULL)
-   ON CONFLICT(reference_id) DO UPDATE SET reference_id=excluded.reference_id
-   RETURNING id INTO v_reversal;
+   ON CONFLICT(reference_id) DO NOTHING RETURNING id INTO v_reversal;
+   IF v_reversal IS NULL THEN
+     SELECT id INTO v_reversal FROM public.clube_point_events
+     WHERE reference_id='hotmart:reversal:'||v_payment.id::text;
+   END IF;
    UPDATE public.clube_hotmart_payments SET reversal_event_id=v_reversal WHERE id=v_payment.id;
   END IF;
   UPDATE public.clube_hotmart_webhook_events SET processing_status=v_terminal WHERE event_id=p_event_id;
@@ -237,8 +241,11 @@ BEGIN
  VALUES(v_subscription.student_id,'renovacao',v_points,
    'Renovação Hotmart confirmada — +'||v_points||' pontos',
    'hotmart:credit:'||v_payment.id::text,NULL)
- ON CONFLICT(reference_id) DO UPDATE SET reference_id=excluded.reference_id
- RETURNING id INTO v_credit;
+ ON CONFLICT(reference_id) DO NOTHING RETURNING id INTO v_credit;
+ IF v_credit IS NULL THEN
+   SELECT id INTO v_credit FROM public.clube_point_events
+   WHERE reference_id='hotmart:credit:'||v_payment.id::text;
+ END IF;
  UPDATE public.clube_hotmart_payments
  SET credit_event_id=v_credit,processing_status='credited' WHERE id=v_payment.id;
  UPDATE public.clube_hotmart_webhook_events SET processing_status='credited' WHERE event_id=p_event_id;
