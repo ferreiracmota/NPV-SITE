@@ -109,7 +109,7 @@ function AuthPage({onLoggedIn,onResetDone,defaultMode='login'}) {
         <button className="clube-btn clube-btn-primary clube-btn-full" type="submit" disabled={busy}>{busy?'Aguarde...':mode==='signup'?'Solicitar cadastro':mode==='forgot'?'Enviar recuperação':mode==='reset'?'Salvar nova senha':'Entrar no Clube'}<ArrowRight size={17}/></button>
       </form>
       <div className="clube-auth-links">{mode==='login'?<><button onClick={()=>{setMode('forgot');setShow('')}}>Esqueci minha senha</button><button onClick={()=>{setMode('signup');setShow('')}}>Criar uma conta</button></>:<button onClick={()=>{setMode('login');setShow('')}}><ArrowLeft size={15}/> Voltar para login</button>}</div>
-      <small>Seus pontos ficam vinculados exclusivamente à sua conta. Esta área não substitui o acesso aos treinos pela Hotmart. Consulte nossa <a href="/politica-de-privacidade.html" target="_blank" rel="noopener noreferrer">Política de Privacidade</a> e os <a href="/termos-de-uso.html" target="_blank" rel="noopener noreferrer">Termos de Uso</a>.</small>
+      <small>Seus pontos ficam vinculados exclusivamente à sua conta. Esta área não substitui o acesso aos treinos pela Hotmart. Consulte nossa <a href="/politica-de-privacidade.html" target="_blank" rel="noopener noreferrer">Política de Privacidade</a> e os <a href="/clube/termos-de-uso.html" target="_blank" rel="noopener noreferrer">Termos de Uso</a>.</small>
     </section>
   </div></div>
 }
@@ -538,7 +538,7 @@ export default function ClubeNPVOnline() {
       <footer className="clube-main-footer">
         <span>© {YEAR} Não Pense, Vai! — Clube NPV</span>
         <span>Conta e histórico individual protegidos por autenticação.</span>
-        <p className="npv-points-terms">Os pontos fazem parte do programa de benefícios Não Pense, Vai! e podem ser utilizados exclusivamente para resgatar recompensas disponíveis na lojinha, não sendo convertidos em dinheiro. Os produtos estão sujeitos à disponibilidade. Caso um resgate não possa ser atendido, os pontos utilizados serão devolvidos ao saldo do aluno. Alterações nas recompensas ou eventual encerramento da lojinha serão comunicados previamente, respeitando as condições aplicáveis e os direitos dos participantes.</p>
+        <a className="clube-terms-link" href="/clube/termos-de-uso.html">Termos de Uso</a>
       </footer>
     </main></div>
     {award&&isAdmin&&<div className="clube-modal-backdrop" onMouseDown={e=>{if(e.target===e.currentTarget)setAward(null)}}><section className="clube-modal" role="dialog" aria-modal="true" aria-labelledby="award-title"><div className="clube-modal-top"><div><small>ADMINISTRAÇÃO</small><h2 id="award-title">Lançar pontos</h2></div><button onClick={()=>setAward(null)} aria-label="Fechar"><X size={20}/></button></div><form className="clube-form" onSubmit={submitAward}>
