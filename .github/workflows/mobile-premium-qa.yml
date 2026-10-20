@@ -1,0 +1,37 @@
+name: NPV Mobile Premium QA (Preview)
+on:
+  push:
+    branches:
+      - preview/refinamento-premium-mobile-20261020
+    paths:
+      - 'src/App.css'
+      - 'src/ClubeFloatingWidget.css'
+      - 'qa/mobile-premium-visual.mjs'
+      - '.github/workflows/mobile-premium-qa.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  visual-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Instalar navegador de teste
+        run: |
+          npm install --no-save --ignore-scripts --no-package-lock playwright@1.56.1
+          npx playwright install --with-deps chromium webkit
+      - name: Comparar site público com CSS da prévia
+        run: node qa/mobile-premium-visual.mjs
+      - name: Guardar capturas e relatório
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: npv-mobile-premium-comparativo
+          path: qa/artifacts/mobile-premium/
+          retention-days: 14
