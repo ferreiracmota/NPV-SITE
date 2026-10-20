@@ -1,0 +1,31 @@
+name: QA interativa NPV desktop e mobile
+on:
+  push:
+    branches:
+      - release/ajustes-finais-clube-site-20261020
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Instalar dependências
+        run: npm install --legacy-peer-deps --no-audit --no-fund
+      - name: Instalar navegador para teste
+        run: |
+          npm install --no-save --legacy-peer-deps --no-audit --no-fund playwright
+          npx playwright install chromium
+      - name: Iniciar Vite e testar interfaces
+        run: |
+          npm run dev -- --host 127.0.0.1 --port 4173 > /tmp/npv-vite.log 2>&1 &
+          for n in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:4173/ > /dev/null; then break; fi
+            sleep 1
+          done
+          node tests/npv-browser-smoke.mjs
