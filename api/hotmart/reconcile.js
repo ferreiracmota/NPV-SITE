@@ -1,36 +1,12 @@
 // Conciliação Hotmart: também encontra renovações cujo webhook NÃO chegou.
 // Agendamento NÃO ativado; exige CRON_SECRET, credenciais e flag live_credit_enabled.
-import { createHash } from 'node:crypto'
 import { createClient } from '@supabase/supabase-js'
 import { isAuthentic, oauthToken } from './core.mjs'
+import { eligibleReconciliationItem, reconciliationEventId } from './reconcile-core.mjs'
 
 const response=(res,status,body)=>res.writeHead(status,{
  'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store'
 }).end(JSON.stringify(body))
-const PURCHASE_EVENTS={
- APPROVED:'PURCHASE_APPROVED', COMPLETE:'PURCHASE_APPROVED',
- REFUNDED:'PURCHASE_REFUNDED', CHARGEBACK:'PURCHASE_CHARGEBACK',
- CANCELLED:'PURCHASE_CANCELED'
-}
-async function fetchHotmart(url,token){
- const r=await fetch(url,{headers:{Authorization:'Bearer '+token,Accept:'application/json'},signal:AbortSignal.timeout(9000)})
- if(!r.ok)throw new Error('hotmart_api_retry')
- return r.json()
-}
-export function eligibleReconciliationItem(item,startAt){
- const recurrence=Number(item?.recurrency_number)
- const approval=Number(item?.approved_date)
- const type=PURCHASE_EVENTS[item?.status]
- if(!type||item?.purchase_subscription!==true||!item?.transaction||
-  !Number.isSafeInteger(recurrence)||recurrence<2||
-  !Number.isSafeInteger(approval)||approval<Date.parse(startAt)||
-  item?.payment_type==='FINANCED_INSTALLMENT')return null
- return {type,recurrence,approvedAt:new Date(approval).toISOString()}
-}
-export function reconciliationEventId(productId,subscriberCode,transaction,type){
- const key=[productId,subscriberCode,transaction,type].join(':')
- return 'npv-reconcile:'+createHash('sha256').update(key).digest('hex')
-}
 export default async function handler(req,res) {
  if(req.method!=='GET')return response(res,405,{status:'method_not_allowed'})
  const env=process.env
