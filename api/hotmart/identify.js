@@ -3,9 +3,9 @@
 // depois configurar HOTMART_ALLOWED_PRODUCT_IDS no servidor e usar mode=assinantes.
 // Nunca habilitar este endpoint em produção antes de homologar o controle de acesso.
 import { createClient } from '@supabase/supabase-js'
-import { isAuthentic } from './core.mjs'
+import { isAuthentic } from '../../clube/hotmart/core.mjs'
 import { readCatalog,readSubscriptions,readPurchaseHistory,resolveClubeIdentity,
- baselineForFirstSync } from './identify-core.mjs'
+ baselineForFirstSync } from '../../clube/hotmart/identify-core.mjs'
 
 const respond=(res,code,payload)=>res.writeHead(code,{
  'Cache-Control':'no-store','Content-Type':'application/json; charset=utf-8',
