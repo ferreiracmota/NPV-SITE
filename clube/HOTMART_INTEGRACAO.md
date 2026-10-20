@@ -17,7 +17,7 @@ Não assumir que o texto antigo "2.000" seja configuração efetiva no banco.
 ## ARQUIVOS CRIADOS
 api/hotmart/webhook.js: endpoint POST seguro 2.0.0; HOTTOK e filtro de produto.
 api/hotmart/core.mjs: cruzamento Hotmart assinatura + compra.
-api/hotmart/reconcile.js: reconsulta limitada a 5 transações conhecidas por chamada.
+api/hotmart/reconcile.js: endpoint privado da conciliação, delega descoberta paginada em discovery.mjs; sem cron ativo.
 api/hotmart/discovery.mjs: percorre os IDs oficiais da lista de assinaturas,
 com checkpoint persistido por produto; examina até 2 assinantes por chamada,
 consulta compras e aceita somente recorrências após starts_at.
