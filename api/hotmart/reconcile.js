@@ -1,8 +1,8 @@
 // Conciliação diária protegida. Descobre assinaturas cujos webhooks não chegaram.
 // Sem ativação em produção até credenciais, homologação e aprovação da política.
 import { createClient } from '@supabase/supabase-js'
-import { isAuthentic } from './core.mjs'
-import { discoverMissingPayments } from './discovery.mjs'
+import { isAuthentic } from '../../clube/hotmart/core.mjs'
+import { discoverMissingPayments } from '../../clube/hotmart/discovery.mjs'
 
 const reply=(res,code,data)=>res.writeHead(code,{
  'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store'
