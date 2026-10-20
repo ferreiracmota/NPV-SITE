@@ -1,7 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { discoverMissingPayments } from './discovery.mjs'
-const env={HOTMART_CLIENT_ID:'test',HOTMART_CLIENT_SECRET:'test',HOTMART_BASIC_TOKEN:'test'}
+const env={HOTMART_CLIENT_ID:'test',HOTMART_CLIENT_SECRET:'test',HOTMART_BASIC_TOKEN:'test',HOTMART_ALLOWED_PRODUCT_IDS:'1111111'}
 const START='2026-10-20T00:00:00.000Z'
 const AFTER=Date.parse('2026-10-21T00:00:00.000Z')
 const BEFORE=Date.parse('2026-09-01T00:00:00.000Z')
