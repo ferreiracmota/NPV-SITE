@@ -459,7 +459,8 @@ function App() {
 
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isContactDropdownOpen, setIsContactDropdownOpen] = useState(false)
-  const headerRef = useRef(null)
+  const mobileToggleRef = useRef(null)
+  const mobileNavRef = useRef(null)
   const desktopContactRef = useRef(null)
   const mobileContactRef = useRef(null)
   const showTestimonials = false; // começa oculto
@@ -502,7 +503,7 @@ const beforeAfterSlides = [
       if(!desktopContactRef.current?.contains(target)&&!mobileContactRef.current?.contains(target)){
         setIsContactDropdownOpen(false)
       }
-      if(headerRef.current&&!headerRef.current.contains(target))setIsMenuOpen(false)
+      if(!mobileToggleRef.current?.contains(target)&&!mobileNavRef.current?.contains(target))setIsMenuOpen(false)
     }
     document.addEventListener('pointerdown',outside,true)
     return()=>document.removeEventListener('pointerdown',outside,true)
@@ -718,7 +719,7 @@ useEffect(() => {
 
 
       {/* Header */}
-<header ref={headerRef} className="bg-black border-b border-gray-800 sticky top-0 z-50">
+<header className="bg-black border-b border-gray-800 sticky top-0 z-50">
   <div className="container mx-auto px-4 py-1">
     {/* MOBILE = grid 3 colunas | DESKTOP = flex padrão */}
     <div className="grid grid-cols-3 items-center md:flex md:items-center md:justify-between">
@@ -735,6 +736,7 @@ useEffect(() => {
 
       {/* CENTRO (hambúrguer) — só MOBILE */}
       <button
+        ref={mobileToggleRef}
         type="button"
         onClick={() => setIsMenuOpen((v) => !v)}
         aria-label={isMenuOpen ? "Fechar menu" : "Abrir menu"}
@@ -820,7 +822,7 @@ useEffect(() => {
 
   {/* MENU MOBILE (mantido) */}
   {isMenuOpen && (
-    <div id="mobile-navigation" className="md:hidden bg-black border-t border-gray-800">
+    <div ref={mobileNavRef} id="mobile-navigation" className="md:hidden bg-black border-t border-gray-800">
       <nav className="flex flex-col space-y-4 p-4">
         <button onClick={() => scrollToSection('inicio')} className="text-left hover:text-[#AFCB21] transition-colors">INÍCIO</button>
         <button onClick={() => scrollToSection('about-section')} className="text-left hover:text-[#AFCB21] transition-colors">SOBRE</button>
