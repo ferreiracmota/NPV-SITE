@@ -786,7 +786,7 @@ useEffect(() => {
                       <path d="M2.003 5.884l8 4.8 8-4.8A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
                       <path d="M18 8.118l-8 4.8-8-4.8V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
                     </svg>
-                    <a href="mailto:naopensevai@gmail.com" className="text-white hover:text-pink-500">
+                    <a href="mailto:naopensevai@gmail.com" onClick={() => setIsContactDropdownOpen(false)} className="text-white hover:text-pink-500">
                       naopensevai@gmail.com
                     </a>
                   </div>
@@ -800,6 +800,7 @@ useEffect(() => {
                       href="https://wa.me/5531972158847?text=Ol%C3%A1%2C%20quero%20saber%20mais%20sobre%20a%20plataforma%20de%20treino%20da%20N%C3%A3o%20Pense%20Vai." 
                       target="_blank" 
                       rel="noopener noreferrer"
+                      onClick={() => setIsContactDropdownOpen(false)}
                       className="text-white hover:text-pink-500"
                     >
                       (31) 97215-8847
@@ -844,7 +845,7 @@ useEffect(() => {
               <a
                 href="mailto:naopensevai@gmail.com"
                 className="flex items-center gap-2 text-white hover:text-[#AFCB21] transition-colors"
-                onClick={() => setIsMenuOpen(false)}
+                onClick={() => {setIsMenuOpen(false);setIsContactDropdownOpen(false)}}
               >
                 <svg className="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
                   <path d="M2.94 6.34l6.47 4.04c.37.23.83.23 1.2 0l6.47-4.04A2 2 0 0016.76 5H3.24a2 2 0 00-.3 1.34z" />
@@ -858,7 +859,7 @@ useEffect(() => {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="mt-3 flex items-center gap-2 text-white hover:text-[#AFCB21] transition-colors"
-                onClick={() => setIsMenuOpen(false)}
+                onClick={() => {setIsMenuOpen(false);setIsContactDropdownOpen(false)}}
               >
                 <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M20.52 3.48A11.94 11.94 0 0012.06 0C5.45 0 .1 5.35.1 11.96c0 2.11.55 4.17 1.59 5.98L0 24l6.24-1.63a11.93 11.93 0 005.82 1.49h.01c6.61 0 11.96-5.35 11.96-11.96 0-3.2-1.25-6.21-3.51-8.42zM12.06 21.9h-.01a9.93 9.93 0 01-5.04-1.37l-.36-.21-3.7.97.99-3.61-.23-.37a9.92 9.92 0 01-1.51-5.35C2.2 6.45 6.5 2.15 12.06 2.15c2.64 0 5.13 1.03 7 2.9a9.83 9.83 0 012.95 7c0 5.56-4.3 9.85-9.95 9.85zm5.77-7.43c-.31-.16-1.82-.9-2.1-1-.28-.1-.48-.16-.69.16-.2.31-.79 1-.97 1.2-.18.21-.36.23-.67.08-.31-.16-1.3-.48-2.48-1.53-.92-.82-1.54-1.84-1.72-2.15-.18-.31-.02-.48.13-.63.14-.14.31-.36.46-.54.16-.18.21-.31.31-.51.1-.21.05-.39-.02-.55-.08-.16-.69-1.65-.95-2.26-.25-.61-.51-.52-.69-.52-.18 0-.39-.02-.6-.02-.21 0-.55.08-.84.39-.28.31-1.1 1.08-1.1 2.63 0 1.55 1.13 3.05 1.29 3.26.16.21 2.23 3.4 5.4 4.76.76.33 1.36.52 1.83.67.77.25 1.47.21 2.02.13.62-.09 1.82-.74 2.08-1.45.26-.71.26-1.32.18-1.45-.08-.13-.28-.21-.59-.37z" />
