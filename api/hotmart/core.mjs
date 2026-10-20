@@ -5,7 +5,7 @@ export const EVENTS = new Set([
  'PURCHASE_CANCELED','PURCHASE_DELAYED','SUBSCRIPTION_CANCELLATION'
 ])
 const clean = (value,max=160) =>
- typeof value === 'string' && value.trim().length<=max ? value.trim() : ''
+ typeof value === 'string' && value.trim().length>0 && value.trim().length<=max ? value.trim() : ''
 const idString=(value,max=160)=>
  typeof value==='number'&&Number.isSafeInteger(value)?String(value):clean(value,max)
 const num=value => value===null||value===undefined||value===''?null:
@@ -52,7 +52,7 @@ export function isEligibleMonthlyRenewal(event,planIds,startAt) {
  if(event.type!=='PURCHASE_APPROVED')return false
  if(!event.transaction||!event.subscriberCode)return false
  if(event.recurrence===null||event.recurrence<=1)return false
- if(!event.approvedAt||!startAt||Date.parse(event.approvedAt)<Date.parse(startAt))return false
+ if(!event.approvedAt||!startAt||!Number.isFinite(Date.parse(startAt))||Date.parse(event.approvedAt)<Date.parse(startAt))return false
  return planIds.includes(event.planId)
 }
 export function matchesSubscriber(apiRow,event) {
@@ -60,6 +60,7 @@ export function matchesSubscriber(apiRow,event) {
   String(apiRow.subscriber_code||'')===event.subscriberCode &&
   Number(apiRow.product?.id)===event.productId &&
   (!event.planId||Number(apiRow.plan?.id)===event.planId) &&
+  Number(apiRow.plan?.recurrency_period)===30 &&
   email(apiRow.subscriber?.email))
 }
 export function subscriberEmailFromApi(apiRow,event) {
@@ -85,14 +86,41 @@ export async function lookupSubscriber(event,env,fetcher=fetch) {
  const url=new URL('https://developers.hotmart.com/payments/api/v1/subscriptions')
  url.searchParams.set('subscriber_code',event.subscriberCode)
  url.searchParams.set('product_id',String(event.productId))
- url.searchParams.set('max_results','20')
+ url.searchParams.set('max_results','100')
  const response=await fetcher(url,{headers:{Authorization:'Bearer '+token,Accept:'application/json'},signal:AbortSignal.timeout(9000)})
  if(!response.ok)throw new Error('hotmart_subscription_lookup_failed')
  const body=await response.json()
  const rows=Array.isArray(body.items)?body.items:[]
  const verified=rows.filter(row=>matchesSubscriber(row,event))
  // Exige uma única associação oficial, nunca usa somente e-mail do comprador.
- return verified.length===1?subscriberEmailFromApi(verified[0],event):null
+ if(verified.length!==1)return null
+ const purchaser=verified[0]
+ const purchasesUrl=new URL(
+  'https://developers.hotmart.com/payments/api/v1/subscriptions/'+encodeURIComponent(event.subscriberCode)+'/purchases'
+ )
+ const purchaseResponse=await fetcher(purchasesUrl,{
+  headers:{Authorization:'Bearer '+token,Accept:'application/json'},
+  signal:AbortSignal.timeout(9000)
+ })
+ if(!purchaseResponse.ok)throw new Error('hotmart_purchases_lookup_failed')
+ const purchases=await purchaseResponse.json()
+ if(!Array.isArray(purchases))throw new Error('hotmart_purchases_format')
+ const verifiedPayments=purchases.filter(p=>
+  String(p?.transaction||'')===event.transaction &&
+  p?.purchase_subscription===true &&
+  ['APPROVED','COMPLETE'].includes(p?.status) &&
+  Number(p?.recurrency_number)===event.recurrence &&
+  Number(p?.approved_date)>0 &&
+  p?.payment_type!=='FINANCED_INSTALLMENT'
+ )
+ if(verifiedPayments.length!==1)return null
+ return {
+  subscriberEmail:subscriberEmailFromApi(purchaser,event),
+  paymentVerified:true,
+  planId:Number(purchaser.plan.id),
+  recurrencyPeriod:Number(purchaser.plan.recurrency_period),
+  paidAt:new Date(Number(verifiedPayments[0].approved_date)).toISOString()
+ }
 }
 
 
