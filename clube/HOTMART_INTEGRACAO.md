@@ -18,6 +18,10 @@ Não assumir que o texto antigo "2.000" seja configuração efetiva no banco.
 api/hotmart/webhook.js: endpoint POST seguro 2.0.0; HOTTOK e filtro de produto.
 api/hotmart/core.mjs: cruzamento Hotmart assinatura + compra.
 api/hotmart/reconcile.js: reconsulta limitada a 5 transações conhecidas por chamada.
+api/hotmart/discovery.mjs: percorre os IDs oficiais da lista de assinaturas,
+com checkpoint persistido por produto; examina até 2 assinantes por chamada,
+consulta compras e aceita somente recorrências após starts_at.
+api/hotmart/discovery.test.mjs: testes de descoberta sem rede real.
 api/hotmart/core.test.mjs: cenários de teste simulados, sem contas reais.
 clube/migrations/20261020_hotmart_integracao_pendente.sql: tabelas de vínculo,
 eventos, pagamentos, índices e função SQL transacional, com RLS e kill switch.
@@ -68,8 +72,9 @@ O usuário deverá aprovar uma regra. Parcelamento NÃO é assinatura.
 o teto; campo regular_monthly_limit é NULL, bloqueando crédito real.
 4. Confirmar política para saldo negativo após estorno de benefício resgatado.
 5. Fixar starts_at futura explicitamente e autorizar live_credit_enabled=true.
-6. Completar conciliação de eventos NUNCA recebidos: varredura de assinaturas
-autorizadas com paginação. A rotina atual cobre APENAS transações conhecidas.
+6. Conferir o comportamento real da paginação Hotmart e os limites de API;
+a conciliação de eventos NUNCA recebidos foi preparada com cursores, mas
+ainda não está agendada nem homologada com as credenciais reais.
 
 ## HOMOLOGAÇÃO NECESSÁRIA
 Aplicar migração PRIMEIRO em banco isolado após aprovação de eventual custo.
@@ -86,6 +91,6 @@ Código: criado na branch isolada, não ativado.
 Banco: migração preparada, NÃO APLICADA.
 Credenciais: ausentes.
 Webhook: não conectado.
-Testes sintáticos/unitários: sujeitos ao CI.
+Testes sintáticos/unitários: executados no CI (consultar run e aprovação).
 Testes E2E reais: pendentes.
 Produção e créditos automáticos: NÃO ATIVOS.
