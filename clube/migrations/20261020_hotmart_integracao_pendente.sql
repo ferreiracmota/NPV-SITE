@@ -7,10 +7,9 @@ CREATE TABLE IF NOT EXISTS public.clube_hotmart_config (
  singleton boolean PRIMARY KEY DEFAULT true CHECK(singleton),
  live_credit_enabled boolean NOT NULL DEFAULT false,
  starts_at timestamptz,
- regular_monthly_limit integer CHECK (regular_monthly_limit BETWEEN 1 AND 100000),
  updated_at timestamptz NOT NULL DEFAULT now(),
  CONSTRAINT hotmart_credit_requires_policy CHECK
- (NOT live_credit_enabled OR (starts_at IS NOT NULL AND regular_monthly_limit IS NOT NULL))
+ (NOT live_credit_enabled OR starts_at IS NOT NULL)
 );
 INSERT INTO public.clube_hotmart_config(singleton) VALUES (true) ON CONFLICT DO NOTHING;
 
@@ -18,6 +17,7 @@ CREATE TABLE IF NOT EXISTS public.clube_hotmart_products (
  product_id bigint PRIMARY KEY CHECK(product_id > 0),
  product_ucode text NOT NULL,
  monthly_plan_ids bigint[] NOT NULL DEFAULT '{}',
+ quarterly_plan_ids bigint[] NOT NULL DEFAULT '{}',
  enabled boolean NOT NULL DEFAULT false,
  created_at timestamptz NOT NULL DEFAULT now()
 );
@@ -29,6 +29,11 @@ CREATE TABLE IF NOT EXISTS public.clube_hotmart_subscriptions (
  student_id uuid REFERENCES public.clube_profiles(id),
  link_status text NOT NULL DEFAULT 'pending' CHECK(link_status IN('pending','linked','conflict')),
  hotmart_status text,
+ plan_id bigint,
+ period_days integer CHECK (period_days IN(30,90)),
+ next_charge_at timestamptz,
+ baseline_at timestamptz,
+ baseline_transaction text,
  last_verified_at timestamptz,
  created_at timestamptz NOT NULL DEFAULT now(),
  UNIQUE(product_id,subscriber_code)
@@ -76,6 +81,11 @@ ALTER TABLE public.clube_hotmart_sync_state ENABLE ROW LEVEL SECURITY;
 REVOKE ALL ON public.clube_hotmart_sync_state FROM PUBLIC,anon,authenticated;
 GRANT ALL ON public.clube_hotmart_sync_state TO service_role;
 
+-- Nesta etapa, mensal e trimestral são identificados, mas só há concessão
+-- mensal em código legado; trimestral seguirá exclusivamente o motor de
+-- competências homologado antes da ativação. O kill switch permanece desligado.
+-- NENHUM limite global de pontos é introduzido neste projeto.
+
 -- A autoria automatizada fica explicitamente NULL; eventos anteriores permanecem intactos.
 -- O reference_id único + origem em note constituem trilha de auditoria.
 ALTER TABLE public.clube_point_events ALTER COLUMN performed_by DROP NOT NULL;
@@ -108,7 +118,6 @@ DECLARE
  v_student uuid;
  v_count integer;
  v_points integer;
- v_used integer;
  v_credit uuid;
  v_reversal uuid;
  v_email text;
@@ -237,18 +246,11 @@ BEGIN
   RETURN 'non_monthly_requires_approval';
  END IF;
  IF v_subscription.link_status<>'linked' OR v_subscription.student_id IS NULL THEN RETURN 'pending_identity'; END IF;
- IF v_config.regular_monthly_limit IS NULL THEN RETURN 'pending_cap_configuration'; END IF;
  SELECT points INTO v_points FROM public.clube_point_rules WHERE event_type='renovacao';
  IF v_points IS NULL OR v_points<1 THEN RETURN 'invalid_point_rule'; END IF;
  -- Mesmo lock do saldo usado pelas operações originais do Clube.
  PERFORM 1 FROM public.clube_profiles WHERE id=v_subscription.student_id AND approved FOR UPDATE;
  IF NOT FOUND THEN RETURN 'pending_approval'; END IF;
- SELECT coalesce(sum(greatest(points,0)),0) INTO v_used
- FROM public.clube_point_events
- WHERE student_id=v_subscription.student_id AND
- created_at>=date_trunc('month',now()) AND created_at<date_trunc('month',now())+interval '1 month'
- AND event_type NOT IN('indicacao','ajuste','resgate');
- IF v_used+v_points>v_config.regular_monthly_limit THEN RETURN 'regular_cap_reached'; END IF;
  INSERT INTO public.clube_point_events
    (student_id,event_type,points,note,reference_id,performed_by)
  VALUES(v_subscription.student_id,'renovacao',v_points,
