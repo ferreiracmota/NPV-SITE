@@ -121,13 +121,13 @@ const ruleDefaultPoints=(rules,type)=>rules.find(x=>x.event_type===type)?.points
 const STRAVA_RULE='extra_11111111111111111111111111111111'
 const STORY_RULE='extra_22222222222222222222222222222222'
 const earningCopy={
-  renovacao:{title:'Renovação da assinatura',help:'Por mensalidade paga e confirmada'},
-  desafio:{title:'Desafio mensal',help:'Pontuação definida no desafio ativo'},
-  [STRAVA_RULE]:{title:'Corrida ou caminhada no Strava',help:'Até 200 pontos por mês; crédito após validação'},
-  [STORY_RULE]:{title:'Story marcando @naopensevai',help:'Até 5 Stories válidos por mês'},
-  foto:{title:'Foto de antes e depois',help:'Intervalo mínimo de 3 meses'},
-  aniversario:{title:'Aniversário',help:'Uma vez ao ano'},
-  indicacao:{title:'Indicação convertida em assinante',help:'500 pts no 1º pagamento + 500 no 2º'}
+  renovacao:{help:'Por mensalidade paga e confirmada'},
+  desafio:{help:'Pontuação definida no desafio ativo'},
+  [STRAVA_RULE]:{help:'Até 200 pontos por mês; crédito após validação'},
+  [STORY_RULE]:{help:'Até 5 Stories válidos por mês'},
+  foto:{help:'Intervalo mínimo de 3 meses'},
+  aniversario:{help:'Uma vez ao ano'},
+  indicacao:{help:'500 pts no 1º pagamento + 500 no 2º'}
 }
 // O limite padrão de linhas da API não pode truncar extratos nem listas de alunos.
 // Paginação estável por data e ID, inclusive quando há eventos no mesmo segundo.
@@ -514,7 +514,7 @@ export default function ClubeNPVOnline() {
               `+${format(rule.points)} pontos`
             return <div className="npv-earn-rule" key={rule.event_type}>
               <span aria-hidden="true">✦</span>
-              <div className="npv-earn-rule-text"><strong>{info?.title||ruleLabel(rule.event_type)}</strong>{info?.help&&<small>{info.help}</small>}</div>
+              <div className="npv-earn-rule-text"><strong>{ruleLabel(rule.event_type)}</strong>{info?.help&&<small>{info.help}</small>}</div>
               {rule.event_type==='desafio'&&hasActiveChallenge?
                 <a className="npv-earn-challenge-link" href="#npv-month-challenges-anchor">{value} <ArrowRight size={13}/></a>:
                 <b>{value}</b>}
