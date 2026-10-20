@@ -50,6 +50,7 @@ CREATE TABLE IF NOT EXISTS public.clube_hotmart_payments (
  reconciliation_checked_at timestamptz,
  updated_at timestamptz NOT NULL DEFAULT now(),
  UNIQUE(product_id,subscriber_code,transaction_id),
+ UNIQUE(product_id,transaction_id), -- transação não pode ser creditada sob outro subscriber_code
  FOREIGN KEY(product_id,subscriber_code)
    REFERENCES public.clube_hotmart_subscriptions(product_id,subscriber_code)
 );
@@ -144,7 +145,7 @@ BEGIN
    UPDATE public.clube_hotmart_subscriptions SET link_status='conflict'
    WHERE id=v_subscription.id;
   ELSIF v_subscription.link_status <> 'conflict' THEN
-   SELECT count(*),min(p.id) INTO v_count,v_student
+   SELECT count(*),(array_agg(p.id))[1] INTO v_count,v_student
    FROM public.clube_profiles p
    JOIN auth.users u ON u.id=p.id
    WHERE p.approved AND u.email_confirmed_at IS NOT NULL
