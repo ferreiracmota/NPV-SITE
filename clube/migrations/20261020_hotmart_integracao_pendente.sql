@@ -71,6 +71,18 @@ CREATE TABLE IF NOT EXISTS public.clube_hotmart_reconciliation_state (
  updated_at timestamptz NOT NULL DEFAULT now()
 );
 
+-- Cursor independente por produto para conciliar assinaturas cujo webhook não chegou.
+CREATE TABLE IF NOT EXISTS public.clube_hotmart_sync_state (
+ product_id bigint PRIMARY KEY REFERENCES public.clube_hotmart_products(product_id),
+ page_token text,
+ last_checked_at timestamptz,
+ last_error text,
+ updated_at timestamptz NOT NULL DEFAULT now()
+);
+ALTER TABLE public.clube_hotmart_sync_state ENABLE ROW LEVEL SECURITY;
+REVOKE ALL ON public.clube_hotmart_sync_state FROM PUBLIC,anon,authenticated;
+GRANT ALL ON public.clube_hotmart_sync_state TO service_role;
+
 -- A autoria automatizada fica explicitamente NULL; eventos anteriores permanecem intactos.
 -- O reference_id único + origem em note constituem trilha de auditoria.
 ALTER TABLE public.clube_point_events ALTER COLUMN performed_by DROP NOT NULL;
