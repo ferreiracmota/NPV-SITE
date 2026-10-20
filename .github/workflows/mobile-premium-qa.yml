@@ -15,7 +15,7 @@ permissions:
 
 jobs:
   visual-check:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
@@ -24,8 +24,8 @@ jobs:
           node-version: '22'
       - name: Instalar navegador de teste
         run: |
-          npm install --no-save --ignore-scripts --no-package-lock playwright@1.56.1
-          npx playwright install --with-deps chromium webkit
+          npm install --prefix /tmp/npv-playwright --no-save --ignore-scripts --no-package-lock playwright@1.56.1
+          /tmp/npv-playwright/node_modules/.bin/playwright install --with-deps chromium webkit
       - name: Comparar site público com CSS da prévia
         run: node qa/mobile-premium-visual.mjs
       - name: Guardar capturas e relatório
