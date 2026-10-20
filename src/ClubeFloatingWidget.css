@@ -247,3 +247,72 @@
 .npv-floating-club .npv-fw-shell[style] .npv-fw-about{
   color:var(--npv-widget-text,#fcfcfc);
 }
+
+/* Refinamento de conteudo: nao altera shell, vidro, borda, posicao ou animacao. */
+.npv-floating-club .npv-fw-footer{justify-content:flex-end}
+.npv-floating-club .npv-fw-cta-top{margin:0 0 16px}
+
+.npv-floating-club .npv-fw-reward{
+  position:relative;
+  isolation:isolate;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-end;
+  min-height:165px;
+  gap:0;
+  padding:0;
+  border-radius:12px;
+  background:rgba(17,17,17,.38);
+}
+.npv-floating-club .npv-fw-reward-icon{
+  position:absolute;
+  inset:0;
+  display:grid;
+  place-items:center;
+  width:100%;
+  height:100%;
+  border-radius:inherit;
+  overflow:hidden;
+  background:rgba(17,17,17,.28);
+  color:#f0f4ed;
+}
+.npv-floating-club .npv-fw-reward--no-photo .npv-fw-reward-icon{
+  background:radial-gradient(circle at 50% 38%,rgba(255,255,255,.18),rgba(17,17,17,.72));
+}
+.npv-floating-club .npv-fw-reward-photo{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center;
+  border-radius:inherit;
+  display:block;
+}
+.npv-floating-club .npv-fw-reward-copy{
+  position:relative;
+  z-index:1;
+  display:block;
+  width:100%;
+  padding:35px 10px 11px;
+  background:linear-gradient(180deg,rgba(0,0,0,0),rgba(0,0,0,.83) 64%,rgba(0,0,0,.89));
+}
+.npv-floating-club .npv-fw-reward-copy strong{
+  color:#fff;
+  font-size:11px;
+  line-height:1.25;
+  text-shadow:0 1px 3px rgba(0,0,0,.9);
+}
+.npv-floating-club .npv-fw-reward-copy small{
+  color:#f2f2f2;
+  font-size:10px;
+  font-weight:750;
+  margin-top:4px;
+  line-height:1.35;
+  text-shadow:0 1px 3px rgba(0,0,0,.9);
+}
+@media(max-width:767px){
+  .npv-floating-club .npv-fw-reward{min-height:145px}
+  .npv-floating-club .npv-fw-reward-copy{padding:30px 8px 9px}
+}
