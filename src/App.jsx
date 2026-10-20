@@ -701,6 +701,36 @@ useEffect(() => {
   return () => clearInterval(id);
 }, [showTestimonials, testimonials.length]);
 
+  // Em telas muito estreitas/baixas, o widget fixo cobre o CTA da hero.
+  // Só sua visibilidade temporária é ajustada; seu conteúdo, estado e regras
+  // não mudam. Ao rolar além do CTA, ele reaparece normalmente.
+  useEffect(() => {
+    const media = window.matchMedia('(max-width: 359px) and (max-height: 650px)')
+    let observer
+    const sync = () => {
+      observer?.disconnect()
+      document.documentElement.classList.remove('npv-compact-cta-visible')
+      if (!media.matches || typeof IntersectionObserver !== 'function') return
+      const cta = document.querySelector('#inicio a.glow-button')
+      if (!cta) return
+      observer = new IntersectionObserver(([entry]) => {
+        document.documentElement.classList.toggle('npv-compact-cta-visible', entry.isIntersecting)
+      }, { threshold: 0.01 })
+      observer.observe(cta)
+      const bounds = cta.getBoundingClientRect()
+      document.documentElement.classList.toggle(
+        'npv-compact-cta-visible', bounds.bottom > 0 && bounds.top < window.innerHeight
+      )
+    }
+    sync()
+    media.addEventListener?.('change', sync)
+    return () => {
+      observer?.disconnect()
+      media.removeEventListener?.('change', sync)
+      document.documentElement.classList.remove('npv-compact-cta-visible')
+    }
+  }, [])
+
   return (
     <div className="min-h-screen bg-black text-white font-inter">
       {/* Top Banner Animado */}
