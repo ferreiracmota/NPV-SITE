@@ -126,7 +126,9 @@
 }
 @media(max-width:767px){
   .npv-floating-club{
-    right:12px;bottom:12px;width:min(216px,calc(100vw - 24px));
+    right:max(12px, env(safe-area-inset-right, 0px));
+    bottom:max(12px, env(safe-area-inset-bottom, 0px));
+    width:min(216px,calc(100vw - 24px));
     z-index:30
   }
   .npv-floating-club--expanded{width:min(348px,calc(100vw - 24px))}
