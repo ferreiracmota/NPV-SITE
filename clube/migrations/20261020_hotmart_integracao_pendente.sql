@@ -64,13 +64,6 @@ CREATE TABLE IF NOT EXISTS public.clube_hotmart_webhook_events (
  processing_status text NOT NULL DEFAULT 'received'
 );
 
--- Paginação da rotina diária de conciliação. Em preparação, sem cron habilitado.
-CREATE TABLE IF NOT EXISTS public.clube_hotmart_reconciliation_state (
- product_id bigint PRIMARY KEY REFERENCES public.clube_hotmart_products(product_id),
- next_page_token text,
- updated_at timestamptz NOT NULL DEFAULT now()
-);
-
 -- Cursor independente por produto para conciliar assinaturas cujo webhook não chegou.
 CREATE TABLE IF NOT EXISTS public.clube_hotmart_sync_state (
  product_id bigint PRIMARY KEY REFERENCES public.clube_hotmart_products(product_id),
@@ -92,14 +85,13 @@ ALTER TABLE public.clube_hotmart_products ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.clube_hotmart_subscriptions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.clube_hotmart_payments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.clube_hotmart_webhook_events ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.clube_hotmart_reconciliation_state ENABLE ROW LEVEL SECURITY;
 
 REVOKE ALL ON public.clube_hotmart_config, public.clube_hotmart_products,
  public.clube_hotmart_subscriptions, public.clube_hotmart_payments,
- public.clube_hotmart_webhook_events, public.clube_hotmart_reconciliation_state FROM PUBLIC, anon, authenticated;
+ public.clube_hotmart_webhook_events FROM PUBLIC, anon, authenticated;
 GRANT ALL ON public.clube_hotmart_config, public.clube_hotmart_products,
  public.clube_hotmart_subscriptions, public.clube_hotmart_payments,
- public.clube_hotmart_webhook_events, public.clube_hotmart_reconciliation_state TO service_role;
+ public.clube_hotmart_webhook_events TO service_role;
 
 CREATE OR REPLACE FUNCTION public.clube_hotmart_ingest(
  p_event_id text, p_event_type text, p_product_id bigint,
