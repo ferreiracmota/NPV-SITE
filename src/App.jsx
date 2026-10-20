@@ -376,14 +376,34 @@ const faqs = [
 // o Clube de Benefícios no mesmo domínio. Sem alterar a rota dos treinos.
 const HOTMART_STUDENT_LOGIN = 'https://sso.hotmart.com/login?service=https%3A%2F%2Fsso.hotmart.com%2Foauth2.0%2FcallbackAuthorize%3Fclient_id%3Db432cdd3-eb60-46bd-892b-5b450a65153e%26redirect_uri%3Dhttps%253A%252F%252Fhotmart.com%252Fen%252Fclub%252Fnaopensevai%252Fauth%252Flogin%253Frealm%253Dclub%26response_type%3Dcode%26response_mode%3Dquery%26client_name%3DCasOAuthClient'
 function StudentAccessMenu({mobile=false}) {
-  return <details className={mobile?'relative md:hidden justify-self-end':'relative ml-4 hidden md:block'}>
+  const detailsRef=React.useRef(null)
+  React.useEffect(()=>{
+    const outside=event=>{
+      if(detailsRef.current&&!detailsRef.current.contains(event.target))detailsRef.current.open=false
+    }
+    const escape=event=>{
+      if(event.key==='Escape'&&detailsRef.current?.open){
+        detailsRef.current.open=false
+        detailsRef.current.querySelector('summary')?.focus()
+      }
+    }
+    document.addEventListener('pointerdown',outside,true)
+    document.addEventListener('keydown',escape)
+    return()=>{
+      document.removeEventListener('pointerdown',outside,true)
+      document.removeEventListener('keydown',escape)
+    }
+  },[])
+  return <details ref={detailsRef} className={mobile?'relative md:hidden justify-self-end':'relative ml-4 hidden md:block'}>
     <summary aria-label="Abrir opções da Área do Aluno"
       className={mobile
         ? 'cursor-pointer list-none whitespace-nowrap rounded-md bg-[#AFCB21] px-2 sm:px-3 py-1.5 text-black font-semibold text-[10px] sm:text-xs focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white'
         : 'cursor-pointer list-none whitespace-nowrap rounded-md bg-[#AFCB21] px-4 py-2 text-black font-semibold hover:brightness-110 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white'}>
       ÁREA DE ALUNOS <span aria-hidden="true">⌄</span>
     </summary>
-    <nav aria-label="Opções da Área do Aluno" className="absolute right-0 top-full z-[100] mt-2 w-64 overflow-hidden rounded-xl border border-[#3a4933] bg-[#141d15] p-2 shadow-2xl">
+    <nav aria-label="Opções da Área do Aluno" onClick={event=>{
+      if(event.target.closest('a'))detailsRef.current.open=false
+    }} className="absolute right-0 top-full z-[100] mt-2 w-64 overflow-hidden rounded-xl border border-[#3a4933] bg-[#141d15] p-2 shadow-2xl">
       <a href={HOTMART_STUDENT_LOGIN} target="_blank" rel="noopener noreferrer" className="block rounded-lg px-3 py-3 text-sm font-semibold text-white hover:bg-[#2e3c28] focus-visible:bg-[#2e3c28]">
         Meus treinos <span className="block pt-1 text-xs font-normal text-gray-300">Acessar a Hotmart ↗</span>
       </a>
@@ -439,6 +459,9 @@ function App() {
 
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isContactDropdownOpen, setIsContactDropdownOpen] = useState(false)
+  const headerRef = useRef(null)
+  const desktopContactRef = useRef(null)
+  const mobileContactRef = useRef(null)
   const showTestimonials = false; // começa oculto
   const showVideoTestimonials = false; // começa oculto
 
@@ -471,6 +494,19 @@ const beforeAfterSlides = [
       })
     })
   }
+
+  // Menus suspensos fecham ao interagir fora; botões e conteúdo interno não fecham.
+  useEffect(() => {
+    const outside = event => {
+      const target=event.target
+      if(!desktopContactRef.current?.contains(target)&&!mobileContactRef.current?.contains(target)){
+        setIsContactDropdownOpen(false)
+      }
+      if(headerRef.current&&!headerRef.current.contains(target))setIsMenuOpen(false)
+    }
+    document.addEventListener('pointerdown',outside,true)
+    return()=>document.removeEventListener('pointerdown',outside,true)
+  }, [])
 
   // Escape fecha menus abertos, sem interferir na navegação da página.
   useEffect(() => {
@@ -682,7 +718,7 @@ useEffect(() => {
 
 
       {/* Header */}
-<header className="bg-black border-b border-gray-800 sticky top-0 z-50">
+<header ref={headerRef} className="bg-black border-b border-gray-800 sticky top-0 z-50">
   <div className="container mx-auto px-4 py-1">
     {/* MOBILE = grid 3 colunas | DESKTOP = flex padrão */}
     <div className="grid grid-cols-3 items-center md:flex md:items-center md:justify-between">
@@ -728,7 +764,7 @@ useEffect(() => {
           <button onClick={() => scrollToSection('planos')} className="hover:text-[#AFCB21] transition-colors">PLANOS</button>
 
           {/* Dropdown Contato (mantido) */}
-          <div className="relative">
+          <div className="relative" ref={desktopContactRef}>
             <button
               onClick={() => setIsContactDropdownOpen(!isContactDropdownOpen)}
               aria-expanded={isContactDropdownOpen}
@@ -790,7 +826,7 @@ useEffect(() => {
         <button onClick={() => scrollToSection('planos')} className="text-left hover:text-[#AFCB21] transition-colors">PLANOS</button>
 
         {/* Dropdown CONTATO (mantido) */}
-        <div className="relative">
+        <div className="relative" ref={mobileContactRef}>
           <button
             onClick={() => setIsContactDropdownOpen((v) => !v)}
             aria-expanded={isContactDropdownOpen}
