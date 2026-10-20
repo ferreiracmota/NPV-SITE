@@ -83,7 +83,7 @@ CREATE OR REPLACE FUNCTION public.clube_hotmart_ingest(
  p_event_id text, p_event_type text, p_product_id bigint,
  p_product_ucode text, p_transaction text, p_subscriber_code text,
  p_verified_subscriber_email text, p_plan_id bigint,
- p_recurrence integer, p_approved_at timestamptz
+ p_recurrence integer, p_approved_at timestamptz, p_purchase_verified boolean
 ) RETURNS text LANGUAGE plpgsql SECURITY DEFINER SET search_path = ''
 AS $function$
 DECLARE
@@ -108,7 +108,8 @@ BEGIN
       'SUBSCRIPTION_CANCELLATION')
  THEN RAISE EXCEPTION 'Evento inválido'; END IF;
  SELECT * INTO v_product FROM public.clube_hotmart_products
-  WHERE product_id=p_product_id AND enabled AND product_ucode=p_product_ucode;
+  WHERE product_id=p_product_id AND enabled
+    AND (product_ucode=p_product_ucode OR (p_event_type='SUBSCRIPTION_CANCELLATION' AND coalesce(p_product_ucode,'')=''));
  IF NOT FOUND THEN RETURN 'ignored_product'; END IF;
  INSERT INTO public.clube_hotmart_webhook_events(event_id,event_type,product_id,transaction_id)
  VALUES(p_event_id,p_event_type,p_product_id,p_transaction)
@@ -214,6 +215,7 @@ BEGIN
  END IF;
  IF p_approved_at IS NULL OR p_approved_at < v_config.starts_at THEN RETURN 'before_start'; END IF;
  IF p_recurrence IS NULL OR p_recurrence<=1 THEN RETURN 'initial_not_renewal'; END IF;
+ IF p_purchase_verified IS DISTINCT FROM true THEN RETURN 'pending_purchase_verification'; END IF;
  IF p_plan_id IS NULL OR NOT (p_plan_id=ANY(v_product.monthly_plan_ids)) THEN
   RETURN 'non_monthly_requires_approval';
  END IF;
@@ -243,10 +245,10 @@ BEGIN
  RETURN 'credited';
 END
 $function$;
-REVOKE ALL ON FUNCTION public.clube_hotmart_ingest(text,text,bigint,text,text,text,text,bigint,integer,timestamptz)
+REVOKE ALL ON FUNCTION public.clube_hotmart_ingest(text,text,bigint,text,text,text,text,bigint,integer,timestamptz,boolean)
  FROM PUBLIC,anon,authenticated;
-GRANT EXECUTE ON FUNCTION public.clube_hotmart_ingest(text,text,bigint,text,text,text,text,bigint,integer,timestamptz)
+GRANT EXECUTE ON FUNCTION public.clube_hotmart_ingest(text,text,bigint,text,text,text,text,bigint,integer,timestamptz,boolean)
  TO service_role;
-COMMENT ON FUNCTION public.clube_hotmart_ingest(text,text,bigint,text,text,text,text,bigint,integer,timestamptz)
+COMMENT ON FUNCTION public.clube_hotmart_ingest(text,text,bigint,text,text,text,text,bigint,integer,timestamptz,boolean)
  IS 'Função exclusiva de servidor; idempotência transacional; ativação explicitamente bloqueada por padrão.';
 COMMIT;
