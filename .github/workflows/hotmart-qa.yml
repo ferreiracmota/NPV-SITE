@@ -4,12 +4,14 @@ on:
     branches: [feature/hotmart-renovacoes-seguro-20261020]
     paths:
       - 'api/hotmart/**'
+      - 'clube/hotmart/**'
       - 'clube/migrations/20261020_hotmart_integracao_pendente.sql'
       - '.github/workflows/hotmart-qa.yml'
   pull_request:
     branches: [main]
     paths:
       - 'api/hotmart/**'
+      - 'clube/hotmart/**'
       - 'clube/migrations/20261020_hotmart_integracao_pendente.sql'
       - '.github/workflows/hotmart-qa.yml'
   workflow_dispatch:
@@ -23,15 +25,15 @@ jobs:
           node-version: '22'
       - name: Validar sintaxe JS de produção e código de teste
         run: |
-          node --check api/hotmart/core.mjs
+          node --check clube/hotmart/core.mjs
           node --check api/hotmart/webhook.js
           node --check api/hotmart/reconcile.js
-          node --check api/hotmart/discovery.mjs
-          node --check api/hotmart/discovery.test.mjs
-          node --check api/hotmart/core.test.mjs
+          node --check clube/hotmart/discovery.mjs
+          node --check clube/hotmart/discovery.test.mjs
+          node --check clube/hotmart/core.test.mjs
           node --check api/hotmart/identify.js
-          node --check api/hotmart/identify-core.mjs
-          node --check api/hotmart/identify.test.mjs
-          node --check api/hotmart/competencies.mjs
+          node --check clube/hotmart/identify-core.mjs
+          node --check clube/hotmart/identify.test.mjs
+          node --check clube/hotmart/competencies.mjs
       - name: Executar cenários simulados sem credenciais, rede ou banco real
-        run: node --test api/hotmart/*.test.mjs
+        run: node --test clube/hotmart/*.test.mjs
