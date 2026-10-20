@@ -1,4 +1,4 @@
-import React, {useEffect, useId, useState} from 'react'
+import React, {useEffect, useId, useRef, useState} from 'react'
 import {ArrowRight, Award, ChevronDown, ChevronUp, Crown, Gift, Sparkles, Tag, Trophy, UserRound} from 'lucide-react'
 import {clubeSupabase} from './clubeSupabase.js'
 import {partnerLogo} from './ClubeExtras.jsx'
@@ -26,6 +26,7 @@ function RankingPreview({compact=false,ranking=[]}){
 
 export default function ClubeFloatingWidget({configOverride=null,forceVisible=false}){
   const [open,setOpen]=useState(false)
+  const widgetRef=useRef(null)
   const [slide,setSlide]=useState(0)
   const [authenticated,setAuthenticated]=useState(false)
   const [paused,setPaused]=useState(false)
@@ -73,8 +74,16 @@ export default function ClubeFloatingWidget({configOverride=null,forceVisible=fa
   useEffect(()=>{
     if(!open)return
     const escape=event=>{if(event.key==='Escape')setOpen(false)}
+    // Capture pointerdown catches mouse, touch and pen. Interactions inside remain open.
+    const outside=event=>{
+      if(widgetRef.current&&!widgetRef.current.contains(event.target))setOpen(false)
+    }
     document.addEventListener('keydown',escape)
-    return()=>document.removeEventListener('keydown',escape)
+    document.addEventListener('pointerdown',outside,true)
+    return()=>{
+      document.removeEventListener('keydown',escape)
+      document.removeEventListener('pointerdown',outside,true)
+    }
   },[open])
 
   const slides=[
@@ -95,7 +104,7 @@ export default function ClubeFloatingWidget({configOverride=null,forceVisible=fa
   ]
 
   if(!config.enabled&&!forceVisible)return null
-  return <aside className={'npv-floating-club'+(open?' npv-floating-club--expanded':'')}
+  return <aside ref={widgetRef} className={'npv-floating-club'+(open?' npv-floating-club--expanded':'')}
     aria-label="Prévia do Clube de Benefícios NPV"
     onMouseEnter={()=>setPaused(true)} onMouseLeave={()=>setPaused(false)}
     onFocusCapture={()=>setPaused(true)} onBlurCapture={event=>{
