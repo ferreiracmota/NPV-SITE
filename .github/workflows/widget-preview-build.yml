@@ -4,7 +4,6 @@ on:
     branches:
       - preview/clube-npv-widget-glass-20261019
       - release/widget-clube-oficial-20261019
-      - release/widget-ux-oficial-20261019
   workflow_dispatch:
 permissions:
   contents: read
