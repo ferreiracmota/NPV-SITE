@@ -3,6 +3,7 @@
 // Agendar na Vercel somente após homologação e autorização.
 import { createClient } from '@supabase/supabase-js'
 import { isAuthentic, oauthToken, verifyOfficialPayment } from './core.mjs'
+import { discoverMissingPayments } from './discovery.mjs'
 
 const reply=(res,code,data)=>res.writeHead(code,{
  'Content-Type':'application/json; charset=utf-8',
@@ -86,5 +87,10 @@ export default async function handler(req,res) {
    checked++
   }catch {failed++}
  }
- return reply(res,failed?503:200,{status:failed?'partial_failure':'ok',checked,failed})
+ let discovery=null
+ try {
+  discovery=await discoverMissingPayments(db,env,settings.starts_at)
+ }catch {failed++}
+ return reply(res,failed?503:200,{status:failed?'partial_failure':'ok',checked,failed,
+  discovered:discovery?.processed||0})
 }
