@@ -56,7 +56,7 @@ export default async function handler(req,res) {
    p_transaction:event.transaction||null,
    p_subscriber_code:event.subscriberCode,
    p_verified_subscriber_email:evidence?.email||null,
-   p_plan_id:event.planId,
+   p_plan_id:evidence?.planId??event.planId,
    p_recurrence:evidence?.recurrence??event.recurrence,
    p_approved_at:evidence?.approvedAt||event.approvedAt,
    p_purchase_verified:Boolean(evidence)
