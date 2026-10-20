@@ -39,7 +39,21 @@ async function snapshot(browserType, engineName, w, h, refined) {
     await page.locator('#inicio h1').waitFor({ state: 'visible', timeout: 30000 });
     // A mesma versão pública é o controle dos dois cenários. A versão
     // refinada recebe somente os estilos alterados no ramo de preview.
-    if (refined) await page.addStyleTag({ content: cssOverride });
+    if (refined) {
+      await page.addStyleTag({ content: cssOverride });
+      // A prévia também contém esta pequena regra de integração do widget,
+      // aplicada ao site público apenas dentro do navegador de teste.
+      if (w < 360 && h <= 650) await page.evaluate(() => {
+        const cta = document.querySelector('#inicio a.glow-button');
+        if (!cta) return;
+        const set = visible => document.documentElement.classList.toggle('npv-compact-cta-visible', visible);
+        const rect = cta.getBoundingClientRect();
+        set(rect.bottom > 0 && rect.top < innerHeight);
+        const observer = new IntersectionObserver(([entry]) => set(entry.isIntersecting), {threshold:0.01});
+        observer.observe(cta);
+        window.__npvQaCtaObserver = observer;
+      });
+    }
     await page.waitForTimeout(1800);
     const values = await page.evaluate(selectors => {
       const css = el => {
@@ -86,9 +100,9 @@ async function snapshot(browserType, engineName, w, h, refined) {
       if (!opened || !closed) issues.push('menu-mobile-abertura-fechamento');
       const details = page.locator('header details').first();
       await details.locator('summary').click();
-      const studentOpened = await details.getAttribute('open') !== null;
+      const studentOpened = await page.evaluate(() => Boolean(document.querySelector('header details')?.open));
       await page.locator('#inicio h1').click({force:true});
-      const studentClosed = await details.getAttribute('open') === null;
+      const studentClosed = await page.evaluate(() => !document.querySelector('header details')?.open);
       if (!studentOpened || !studentClosed) issues.push('area-alunos-abertura-fechamento');
     }
     const report={ engineName, width:w,height:h,version:refined?'refinado':'original',...values, issues };
