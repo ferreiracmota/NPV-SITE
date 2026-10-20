@@ -58,8 +58,8 @@ export function normalizePurchases(rows){
  }))
 }
 export function lastConfirmedPayment(purchases) {
- return normalizePurchases(purchases)
- .filter(x=>['APPROVED','COMPLETE'].includes(x.status)&&x.isSubscription&&x.paidAt)
+ const rows=Array.isArray(purchases)?purchases:[]
+ return rows.filter(x=>['APPROVED','COMPLETE'].includes(x.status)&&x.isSubscription&&x.paidAt)
  .sort((a,b)=>Date.parse(b.paidAt)-Date.parse(a.paidAt))[0]||null
 }
 export function baselineForFirstSync(subscription,purchases,at) {
