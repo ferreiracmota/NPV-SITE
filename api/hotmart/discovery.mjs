@@ -18,11 +18,15 @@ export async function discoverMissingPayments(db,env,startsAt,fetcher=fetch) {
   .select('product_id,product_ucode,monthly_plan_ids').eq('enabled',true)
  if(pError)throw new Error('products_query_failed')
  if(!products?.length)return {processed:0,skipped:'no_products'}
+ const allowList=new Set(String(env.HOTMART_ALLOWED_PRODUCT_IDS||'')
+  .split(',').map(v=>v.trim()).filter(Boolean))
+ const authorized=products.filter(p=>allowList.has(String(p.product_id)))
+ if(!authorized.length)return {processed:0,skipped:'no_authorized_products'}
  const {data:checkpoints,error:cError}=await db.from('clube_hotmart_sync_state')
   .select('product_id,page_token,last_checked_at')
  if(cError)throw new Error('sync_state_query_failed')
  const states=new Map((checkpoints||[]).map(x=>[String(x.product_id),x]))
- const product=[...products].sort((a,b)=>Date.parse(states.get(String(a.product_id))?.last_checked_at||0)
+ const product=[...authorized].sort((a,b)=>Date.parse(states.get(String(a.product_id))?.last_checked_at||0)
    -Date.parse(states.get(String(b.product_id))?.last_checked_at||0))[0]
  const checkpoint=states.get(String(product.product_id))
  const token=await oauthToken(env,fetcher)
