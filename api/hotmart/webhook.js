@@ -1,7 +1,7 @@
 // Webhook Hotmart 2.0.0 — backend exclusivo; sem alteração no frontend.
 // Bloqueado até credenciais e política de ativação aprovadas.
 import { createClient } from '@supabase/supabase-js'
-import { interpretWebhook, isAuthentic, verifyOfficialPayment } from './core.mjs'
+import { interpretWebhook, isAuthentic, verifyOfficialPayment } from '../../clube/hotmart/core.mjs'
 
 const headers={'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}
 const send=(res,code,message)=>res.writeHead(code,{'Content-Type':'application/json; charset=utf-8',...headers}).end(JSON.stringify({status:message}))
