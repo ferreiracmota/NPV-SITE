@@ -66,7 +66,7 @@ export default function ClubeFloatingWidget({configOverride=null,forceVisible=fa
     if(open||paused||window.matchMedia('(prefers-reduced-motion: reduce)').matches)return
     const timer=window.setInterval(()=>{
       if(!document.hidden)setSlide(previous=>(previous+1)%3)
-    },6200)
+    },2000)
     return()=>window.clearInterval(timer)
   },[open,paused])
 
@@ -115,27 +115,28 @@ export default function ClubeFloatingWidget({configOverride=null,forceVisible=fa
       <div className="npv-fw-rule" aria-hidden="true"/>
       {!open&&<div className="npv-fw-collapsed" aria-label="Destaques do Clube NPV">
         {slides[slide]}
-        <div className="npv-fw-footer"><span className="npv-fw-demo-chip">DEMONSTRAÇÃO</span>
+        <div className="npv-fw-footer">
           <span className="npv-fw-dots" aria-hidden="true">{slides.map((_,i)=><span key={i} className={slide===i?'is-active':''}/>)}</span>
         </div>
       </div>}
       <div id={panelId} className="npv-fw-expanded-content" aria-hidden={!open} inert={!open?'':undefined}>
         <div className="npv-fw-expanded-inner">
-          <div className="npv-fw-section-head"><span><Crown size={16}/> Ranking do Clube</span><em>EXEMPLO</em></div>
+          <a className="npv-fw-primary npv-fw-cta-top" href="/clube">{authenticated?'Acessar meus pontos':'Conhecer o Clube NPV'} <ArrowRight size={16}/></a>
+          <div className="npv-fw-section-head"><span><Crown size={16}/> Ranking ilustrativo do Clube</span></div>
           <RankingPreview ranking={config.ranking}/>
-          <p className="npv-fw-disclaimer">Nomes e pontuações ilustrativos. Este ranking não representa alunos reais.</p>
+          <p className="npv-fw-disclaimer">E você? Quantos pontos já acumulou?</p>
           <div className="npv-fw-divider"/>
-          <div className="npv-fw-section-head"><span><Gift size={16}/> Lojinha & recompensas</span><em>PRÉVIA</em></div>
+          <div className="npv-fw-section-head"><span><Gift size={16}/> Lojinha & recompensas</span></div>
           <div className="npv-fw-rewards">{rewardList.map(item=>{
             const Icon=typeof item.icon==='function'?item.icon:Gift
-            return <div className="npv-fw-reward" key={item.id}>
-              <span className="npv-fw-reward-icon">{item.image_path&&widgetPublicImage(clubeSupabase,item.image_path)?<img className="npv-fw-reward-photo" src={widgetPublicImage(clubeSupabase,item.image_path)} alt="" loading="lazy"/>:<Icon size={18}/>}</span>
-              <span><strong>{item.name}</strong><small>{item.hint||((item.points||0).toLocaleString('pt-BR')+' pontos')}</small></span>
+            const photo=widgetPublicImage(clubeSupabase,item.image_path)
+            return <div className={'npv-fw-reward'+(photo?' npv-fw-reward--photo':' npv-fw-reward--no-photo')} key={item.id}>
+              <span className="npv-fw-reward-icon" aria-hidden="true">{photo?<img className="npv-fw-reward-photo" src={photo} alt="" loading="lazy"/>:<Icon size={46} strokeWidth={1.2}/>}</span>
+              <span className="npv-fw-reward-copy"><strong>{item.name}</strong><small>{item.hint||((item.points||0).toLocaleString('pt-BR')+' pontos')}</small></span>
             </div>
           })}</div>
           <div className="npv-fw-benefits"><Tag size={16}/><span>{config.partners.length>0&&<span className="npv-fw-partner-logos">{partnerList.map(item=>partnerLogo(item)&&<img src={partnerLogo(item)} alt={item.name} key={item.id} loading="lazy"/>)}</span>}Descontos e benefícios em parceiros como {partnerList.map(item=>item.name+(item.discount_percent?' ('+item.discount_percent+'% de desconto)':'')).join(' e ')}. Consulte as condições no Clube.</span></div>
           <p className="npv-fw-about">Transforme sua constância em conquistas: acompanhe atividades, acumule pontos e descubra recompensas.</p>
-          <a className="npv-fw-primary" href="/clube">{authenticated?'Acessar meus pontos':'Conhecer o Clube NPV'} <ArrowRight size={16}/></a>
           {!authenticated&&<a className="npv-fw-secondary" href="#planos">Conhecer planos e assinar <ArrowRight size={13}/></a>}
           {authenticated&&<p className="npv-fw-account-note"><UserRound size={13}/> Seu saldo real está disponível após entrar no Clube.</p>}
         </div>
