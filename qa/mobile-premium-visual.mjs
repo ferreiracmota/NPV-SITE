@@ -109,8 +109,8 @@ for(const [engineName,browserType,widths] of [
   const browser = await browserType.launch({headless:true});
   try{
     for(const [w,h] of widths) {
-      const before = await snapshot(browserType===chromium?chromium:webkit,engineName,w,h,false); // context created below
-      const after = await snapshot(browserType===chromium?chromium:webkit,engineName,w,h,true);
+      const before = await snapshot(browser,engineName,w,h,false); // context created below
+      const after = await snapshot(browser,engineName,w,h,true);
       if(before&&after) {
         // Desktop não deve receber sequer uma alteração computada do CSS.
         if(w>=768) {
