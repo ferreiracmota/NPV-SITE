@@ -15,6 +15,7 @@ import { BenefitNotice, PartnerCards, PartnerEditor, safePartnerUrl } from './Cl
 import ClubeKmSetup from './ClubeKmSetup.jsx'
 import ClubeRegisteredActivities from './ClubeRegisteredActivities.jsx'
 import ClubeMonthlyChallengeAdmin from './ClubeMonthlyChallengeAdmin.jsx'
+import { currentNpvMonth } from '../clube/strava/challengeProgress.mjs'
 import ClubeSiteWidgetAdmin from './ClubeSiteWidgetAdmin.jsx'
 
 const format = value => Number(value||0).toLocaleString('pt-BR')
@@ -116,6 +117,18 @@ const emptyState={members:[],events:[],rewards:[],requests:[],rules:[],partners:
 const REWARD_IMAGE_BUCKET='clube-npv-recompensas'
 const rewardImageUrl = path => /^images\/[a-f0-9-]{36}\.(?:jpg|png|webp)$/.test(path||'') ? supabase.storage.from(REWARD_IMAGE_BUCKET).getPublicUrl(path).data.publicUrl : ''
 const ruleDefaultPoints=(rules,type)=>rules.find(x=>x.event_type===type)?.points ?? 0
+// Exibição baseada nas regras editáveis do Clube. Valores de histórico nunca são recalculados.
+const STRAVA_RULE='extra_11111111111111111111111111111111'
+const STORY_RULE='extra_22222222222222222222222222222222'
+const earningCopy={
+  renovacao:{title:'Renovação da assinatura',help:'Por mensalidade paga e confirmada'},
+  desafio:{title:'Desafio mensal',help:'Pontuação definida no desafio ativo'},
+  [STRAVA_RULE]:{title:'Corrida ou caminhada no Strava',help:'Até 200 pontos por mês; crédito após validação'},
+  [STORY_RULE]:{title:'Story marcando @naopensevai',help:'Até 5 Stories válidos por mês'},
+  foto:{title:'Foto de antes e depois',help:'Intervalo mínimo de 3 meses'},
+  aniversario:{title:'Aniversário',help:'Uma vez ao ano'},
+  indicacao:{title:'Indicação convertida em assinante',help:'500 pts no 1º pagamento + 500 no 2º'}
+}
 // O limite padrão de linhas da API não pode truncar extratos nem listas de alunos.
 // Paginação estável por data e ID, inclusive quando há eventos no mesmo segundo.
 const CLUB_PAGE_SIZE=500
@@ -153,6 +166,8 @@ export default function ClubeNPVOnline() {
   const [rewardImageFile,setRewardImageFile]=useState(null)
   const [imagePreviewUrl,setImagePreviewUrl]=useState('')
   const [ruleDraft,setRuleDraft]=useState(null)
+  const [kmRate,setKmRate]=useState(null)
+  const [hasActiveChallenge,setHasActiveChallenge]=useState(false)
   const [partnerDraft,setPartnerDraft]=useState(null)
   useEffect(()=>{
     if(!rewardImageFile){setImagePreviewUrl('');return}
@@ -161,6 +176,19 @@ export default function ClubeNPVOnline() {
     return ()=>URL.revokeObjectURL(objectUrl)
   },[rewardImageFile])
   const user=session?.user
+  useEffect(()=>{
+    if(!user?.id)return
+    let live=true
+    Promise.all([
+      supabase.from('clube_km_settings').select('points_per_km').eq('singleton',true).maybeSingle(),
+      supabase.from('clube_monthly_challenges').select('id').eq('month_key',currentNpvMonth()).eq('active',true).limit(1)
+    ]).then(([km,challenge])=>{
+      if(!live)return
+      if(!km.error&&km.data)setKmRate(Number(km.data.points_per_km))
+      if(!challenge.error)setHasActiveChallenge(Boolean(challenge.data?.length))
+    }).catch(()=>{})
+    return()=>{live=false}
+  },[user?.id])
   // O formulário pode estar rolado até o campo Senha quando o painel abre.
   // Após carregar o perfil autenticado, mostre o painel a partir do início.
   useEffect(()=>{
@@ -470,7 +498,7 @@ export default function ClubeNPVOnline() {
           </div>}
         </section>
         <BenefitNotice rewards={data.rewards} points={Math.max(0,balance(user.id)-reserved(user.id))} onOpen={()=>setTab('recompensas')}/>
-        <ClubeRegisteredActivities session={session}/>
+        <div id="npv-month-challenges-anchor"><ClubeRegisteredActivities session={session}/></div>
         <section className="npv-shop npv-shop-featured"><div className="npv-shop-heading"><div><div className="npv-shop-eyebrow"><Gift size={15}/>LOJINHA DO CLUBE NPV</div><h2>Troque seus pontos ✦</h2><p>Seu próximo objetivo pode estar aqui.</p></div><button className="npv-shop-view-all" onClick={()=>setTab('recompensas')}>Ver catálogo <ArrowRight size={16}/></button></div>{rewardsGrid(4)}<p className="npv-shop-demo-note">A disponibilidade real será confirmada após a aprovação do prêmio e dos parceiros.</p></section>
         {data.partners.some(x=>x.active)&&<section className="npv-partners-section">
           <div className="npv-shop-heading"><div><div className="npv-shop-eyebrow"><Award size={15}/> PARCERIAS NPV</div><h2>Benefícios de parceiros ✦</h2><p>Explore os parceiros e consulte os descontos disponíveis.</p></div>
@@ -479,8 +507,20 @@ export default function ClubeNPVOnline() {
         </section>}
         <section className="clube-card clube-next clube-earn-bottom">
           <div className="clube-card-head"><div><h2>Continue acumulando ✦</h2><p>Mais maneiras de ganhar pontos no Clube NPV</p></div></div>
-          <div className="clube-how">{data.rules.map(rule=><div key={rule.event_type}><span>✦</span><strong>{ruleLabel(rule.event_type)}</strong><b>+{format(rule.points)} pts</b></div>)}</div>
-          <p className="clube-micro">Pontuação de referência em testes. As atividades precisam ser confirmadas pela administração; os pontos não são adicionados automaticamente.</p>
+          <div className="clube-how">{data.rules.map(rule=>{
+            const info=earningCopy[rule.event_type]
+            const value=rule.event_type==='desafio'?'Confira o desafio':
+              rule.event_type===STRAVA_RULE?`+${format(kmRate??rule.points)} pontos/km`:
+              `+${format(rule.points)} pontos`
+            return <div className="npv-earn-rule" key={rule.event_type}>
+              <span aria-hidden="true">✦</span>
+              <div className="npv-earn-rule-text"><strong>{info?.title||ruleLabel(rule.event_type)}</strong>{info?.help&&<small>{info.help}</small>}</div>
+              {rule.event_type==='desafio'&&hasActiveChallenge?
+                <a className="npv-earn-challenge-link" href="#npv-month-challenges-anchor">{value} <ArrowRight size={13}/></a>:
+                <b>{value}</b>}
+            </div>
+          })}</div>
+          <p className="clube-micro">Atividades sujeitas à confirmação. Assinantes pagantes: até 2.000 pontos/mês em atividades regulares; indicações válidas ficam fora desse limite. Acessos gratuitos e embaixadores seguem condições próprias.</p>
         </section>
       </>}
       {tab==='parceiros'&&<section className="npv-partners-section">
@@ -495,7 +535,11 @@ export default function ClubeNPVOnline() {
       {tab==='recompensas'&&<section className="npv-shop"><div className="npv-shop-heading"><div><div className="npv-shop-eyebrow"><Gift size={15}/> CLUBE NPV</div><h2>Vitrine de recompensas ✦</h2><p>Prêmios, benefícios e pedidos de resgate.</p></div>{isAdmin?<button className="clube-btn clube-btn-primary" onClick={()=>editReward({name:'',category:'Benefícios',description:'',points:500,stock:1,icon:'gift',theme:'lime',active:false,showcase:true,test_only:true,image_path:''})}><Plus size={16}/> Novo prêmio</button>:<div className="npv-shop-balance">Saldo disponível<strong>{format(Math.max(0,balance(user.id)-reserved(user.id)))} pts</strong></div>}</div>{rewardsGrid()}
         <div className="npv-shop-requests"><div className="npv-shop-requests-head"><div><h3>{isAdmin?'Solicitações para aprovação':'Meus resgates'}</h3><p>{isAdmin?'Pedidos feitos pelos alunos':'Histórico e andamento dos pedidos'}</p></div>{isAdmin&&<span className="npv-shop-pending-count">{pendingCount} pendentes</span>}</div>{(isAdmin?data.requests:mineRequests).length===0&&<p className="npv-shop-no-requests">Nenhum pedido por enquanto.</p>}{(isAdmin?data.requests:mineRequests).map(req=><div className="npv-shop-request-row" key={req.id}><span className="npv-shop-request-icon"><Gift size={19}/></span><div className="npv-shop-request-text"><strong>{req.reward_name}</strong>{isAdmin&&<span>{memberName(req.student_id)}</span>}<small>{date(req.created_at)} · {format(req.points)} pts</small></div>{req.is_test&&<span className="npv-shop-test-tag">TESTE</span>}<span className={`npv-shop-status npv-shop-status-${req.status}`}>{req.status==='pending'?'Aguardando':req.status==='approved'?'Aprovado':'Recusado'}</span>{isAdmin&&req.status==='pending'&&<div className="npv-shop-resolve"><button disabled={busy} onClick={()=>resolve(req,true)}>Aprovar</button><button disabled={busy} onClick={()=>resolve(req,false)}>Recusar</button></div>}</div>)}</div>
       </section>}
-      <footer className="clube-main-footer"><span>© {YEAR} Não Pense, Vai! — Clube NPV</span><span>Conta e histórico individual protegidos por autenticação.</span></footer>
+      <footer className="clube-main-footer">
+        <span>© {YEAR} Não Pense, Vai! — Clube NPV</span>
+        <span>Conta e histórico individual protegidos por autenticação.</span>
+        <p className="npv-points-terms">Os pontos fazem parte do programa de benefícios Não Pense, Vai! e podem ser utilizados exclusivamente para resgatar recompensas disponíveis na lojinha, não sendo convertidos em dinheiro. Os produtos estão sujeitos à disponibilidade. Caso um resgate não possa ser atendido, os pontos utilizados serão devolvidos ao saldo do aluno. Alterações nas recompensas ou eventual encerramento da lojinha serão comunicados previamente, respeitando as condições aplicáveis e os direitos dos participantes.</p>
+      </footer>
     </main></div>
     {award&&isAdmin&&<div className="clube-modal-backdrop" onMouseDown={e=>{if(e.target===e.currentTarget)setAward(null)}}><section className="clube-modal" role="dialog" aria-modal="true" aria-labelledby="award-title"><div className="clube-modal-top"><div><small>ADMINISTRAÇÃO</small><h2 id="award-title">Lançar pontos</h2></div><button onClick={()=>setAward(null)} aria-label="Fechar"><X size={20}/></button></div><form className="clube-form" onSubmit={submitAward}>
       <label>Aluno aprovado<select required value={award.studentId} onChange={e=>setAward(d=>({...d,studentId:e.target.value}))}><option value="">Selecione um aluno</option>{studentMembers.filter(x=>x.approved).map(x=><option value={x.id} key={x.id}>{x.full_name||x.email}</option>)}</select></label>
