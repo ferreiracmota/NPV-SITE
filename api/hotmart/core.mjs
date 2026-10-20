@@ -79,51 +79,6 @@ export async function oauthToken(env,fetcher=fetch) {
  if(typeof data.access_token!=='string'||!data.access_token)throw new Error('hotmart_oauth_invalid')
  return data.access_token
 }
-export async function lookupSubscriber(event,env,fetcher=fetch) {
- if(!event.subscriberCode||!event.productId)return null
- const token=await oauthToken(env,fetcher)
- if(!token)return null
- const url=new URL('https://developers.hotmart.com/payments/api/v1/subscriptions')
- url.searchParams.set('subscriber_code',event.subscriberCode)
- url.searchParams.set('product_id',String(event.productId))
- url.searchParams.set('max_results','100')
- const response=await fetcher(url,{headers:{Authorization:'Bearer '+token,Accept:'application/json'},signal:AbortSignal.timeout(9000)})
- if(!response.ok)throw new Error('hotmart_subscription_lookup_failed')
- const body=await response.json()
- const rows=Array.isArray(body.items)?body.items:[]
- const verified=rows.filter(row=>matchesSubscriber(row,event))
- // Exige uma única associação oficial, nunca usa somente e-mail do comprador.
- if(verified.length!==1)return null
- const purchaser=verified[0]
- const purchasesUrl=new URL(
-  'https://developers.hotmart.com/payments/api/v1/subscriptions/'+encodeURIComponent(event.subscriberCode)+'/purchases'
- )
- const purchaseResponse=await fetcher(purchasesUrl,{
-  headers:{Authorization:'Bearer '+token,Accept:'application/json'},
-  signal:AbortSignal.timeout(9000)
- })
- if(!purchaseResponse.ok)throw new Error('hotmart_purchases_lookup_failed')
- const purchases=await purchaseResponse.json()
- if(!Array.isArray(purchases))throw new Error('hotmart_purchases_format')
- const verifiedPayments=purchases.filter(p=>
-  String(p?.transaction||'')===event.transaction &&
-  p?.purchase_subscription===true &&
-  ['APPROVED','COMPLETE'].includes(p?.status) &&
-  Number(p?.recurrency_number)===event.recurrence &&
-  Number(p?.approved_date)>0 &&
-  p?.payment_type!=='FINANCED_INSTALLMENT'
- )
- if(verifiedPayments.length!==1)return null
- return {
-  subscriberEmail:subscriberEmailFromApi(purchaser,event),
-  paymentVerified:true,
-  planId:Number(purchaser.plan.id),
-  recurrencyPeriod:Number(purchaser.plan.recurrency_period),
-  paidAt:new Date(Number(verifiedPayments[0].approved_date)).toISOString()
- }
-}
-
-
 // Evidência cruzada: associação do assinante + compra da recorrência na API Hotmart.
 // Nunca classificar parcelamento como assinatura. Falha de API deixa pendente.
 export async function verifyOfficialPayment(event,env,fetcher=fetch) {
@@ -153,14 +108,15 @@ export async function verifyOfficialPayment(event,env,fetcher=fetch) {
  const purchase=rows[0]
  const recurrence=num(purchase.recurrency_number)
  const approvedAt=num(purchase.approved_date)
- if(purchase.status!=='APPROVED'||purchase.purchase_subscription!==true||
+ if(!['APPROVED','COMPLETE'].includes(purchase.status)||purchase.purchase_subscription!==true||
+    purchase.payment_type==='FINANCED_INSTALLMENT'||
     recurrence===null||recurrence<2||!approvedAt||!Number.isFinite(approvedAt)||
     (event.recurrence!==null&&recurrence!==event.recurrence))return null
  return {
   email:subscriberEmailFromApi(subscription,event),
   recurrence,
   approvedAt:new Date(approvedAt).toISOString(),
-  planId:event.planId,
+  planId:Number(subscription.plan.id),
   productUcode:clean(subscription.product?.ucode)
  }
 }
