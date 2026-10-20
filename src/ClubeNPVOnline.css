@@ -192,3 +192,34 @@
   .clube-shell .npv-rule-editor-modal .clube-form{padding:16px}
   .clube-shell .npv-rule-editor-row input{padding:9px 8px;font-size:16px}
 }
+
+/* Regras existentes do Clube: microtextos claros, sem redesenhar os cartões. */
+.clube-shell .clube-how .npv-earn-rule-text{
+  flex:1;min-width:0;display:flex;flex-direction:column;gap:3px
+}
+.clube-shell .clube-how .npv-earn-rule-text strong{
+  display:block;flex:none;font-size:11px;line-height:1.35
+}
+.clube-shell .clube-how .npv-earn-rule-text small{
+  color:#7b8879;font-size:9px;line-height:1.4
+}
+.clube-shell .clube-how .npv-earn-rule>b{
+  max-width:44%;white-space:normal;text-align:right;line-height:1.35;font-size:11px
+}
+.clube-shell .npv-earn-challenge-link{
+  flex:none;display:inline-flex;align-items:center;gap:4px;
+  color:#567e2b;font-size:11px;font-weight:850;text-decoration:underline;
+  text-underline-offset:3px
+}
+.clube-shell .npv-points-terms{
+  flex:0 0 100%;margin:1px 0 0;max-width:920px;
+  font-size:10px;line-height:1.65;color:#849082;font-weight:400
+}
+@media(max-width:600px){
+ .clube-shell .clube-how .npv-earn-rule{gap:7px;padding:12px 0}
+ .clube-shell .clube-how .npv-earn-rule>span{width:17px;flex:none}
+ .clube-shell .clube-how .npv-earn-rule-text strong{font-size:10px}
+ .clube-shell .clube-how .npv-earn-rule-text small{font-size:9px}
+ .clube-shell .clube-how .npv-earn-rule>b,.clube-shell .npv-earn-challenge-link{font-size:10px}
+ .clube-shell .npv-points-terms{font-size:9px;line-height:1.6}
+}
