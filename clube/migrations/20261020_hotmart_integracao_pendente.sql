@@ -160,6 +160,16 @@ BEGIN
  ON CONFLICT(product_id,subscriber_code) DO NOTHING;
  SELECT * INTO v_sub FROM public.clube_hotmart_subscriptions
  WHERE product_id=p_product_id AND subscriber_code=p_subscriber_code FOR UPDATE;
+ -- Webhook recebido antes da primeira sincronização cria assinatura sem email.
+ -- Pode preencher a identidade apenas mediante consulta oficial autenticada.
+ IF v_sub.subscriber_email IS NULL THEN
+   UPDATE public.clube_hotmart_subscriptions SET
+     subscriber_email=v_email,
+     baseline_at=coalesce(baseline_at,p_first_seen_at),
+     baseline_transaction=coalesce(baseline_transaction,p_last_transaction)
+   WHERE id=v_sub.id;
+   SELECT * INTO v_sub FROM public.clube_hotmart_subscriptions WHERE id=v_sub.id;
+ END IF;
  IF v_sub.subscriber_email IS DISTINCT FROM v_email OR v_sub.link_status='conflict'
   OR (v_sub.student_id IS NOT NULL AND
      NOT EXISTS(SELECT 1 FROM auth.users u
