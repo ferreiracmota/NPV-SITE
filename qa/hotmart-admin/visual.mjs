@@ -15,7 +15,7 @@ for(const [browserName,browserType] of [['chromium',chromium],['webkit',webkit]]
    const page=await context.newPage()
    const errors=[]
    page.on('pageerror',error=>errors.push(error.message))
-   await page.route('**/api/clube/hotmart-admin',async route=>{
+   await page.route('**/api/clube/hotmart-admin**',async route=>{
     const request=route.request()
     assert.equal(request.method(),'GET')
     assert.equal(request.headers().authorization,'Bearer test-token-mock-value-not-real')
@@ -42,7 +42,7 @@ for(const [browserName,browserType] of [['chromium',chromium],['webkit',webkit]]
    assert.equal(await page.locator('.npv-hotmart-table tbody tr').count(),1)
    await page.getByPlaceholder('Pesquisar assinante, e-mail ou produto').fill('qualquer pesquisa')
    await page.getByLabel('Filtrar por plano').selectOption('trimestral')
-   await page.getByLabel('Filtrar por situação').selectOption('active')
+   await page.getByLabel('Filtrar por situação').selectOption('ACTIVE')
    assert.ok(await page.getByText('Nenhum registro corresponde aos filtros.').isVisible())
    await page.getByPlaceholder('Pesquisar assinante, e-mail ou produto').fill('')
    await page.getByLabel('Filtrar por plano').selectOption('todos')
@@ -61,7 +61,7 @@ for(const [browserName,browserType] of [['chromium',chromium],['webkit',webkit]]
   // Verificação 403: a interface não apresenta dados sem confirmação do servidor.
   const context=await browser.newContext({viewport:{width:390,height:850}})
   const page=await context.newPage()
-  await page.route('**/api/clube/hotmart-admin',route=>route.fulfill({
+  await page.route('**/api/clube/hotmart-admin**',route=>route.fulfill({
     status:403,contentType:'application/json',body:JSON.stringify({status:'forbidden'})
   }))
   await page.goto(base,{waitUntil:'networkidle'})
