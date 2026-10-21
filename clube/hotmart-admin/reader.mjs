@@ -5,6 +5,8 @@ export const PRODUCT={id:6304828,ucode:'588a8af3-ca54-4745-9420-47e5d45d51e0'}
 export const PLAN_IDS={1155921:'mensal',1155920:'trimestral'}
 export const SUBSCRIPTION_STATUS=['ACTIVE','DELAYED','INACTIVE','CANCELLED_BY_ADMIN','CANCELLED_BY_CUSTOMER']
 const PAYMENT_GOOD=new Set(['APPROVED','COMPLETE'])
+// Cache efêmero do token OAuth apenas na função serverless. Nunca persistir em storage.
+let oauthCache=null
 const safeText=(x,max=240)=>typeof x==='string'?x.slice(0,max):''
 export const canonicalEmail=v=>typeof v==='string'&&v.trim().length<=320&&
  /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim())?v.trim().toLowerCase():null
@@ -22,10 +24,12 @@ async function jsonRequest(url,token,fetcher,method='GET'){
  let response
  try{response=await fetcher(url,options)}
  catch{throw new Error('hotmart_transport_unavailable')}
- if(!response?.ok)throw new Error('hotmart_http_'+String(response?.status||'unknown'))
+ if(!response?.ok){if(response?.status===401)oauthCache=null;throw new Error('hotmart_http_'+String(response?.status||'unknown'))}
  try{return await response.json()}catch{throw new Error('hotmart_payload_invalid')}
 }
 export async function hotmartToken(env,fetcher=fetch){
+ if(fetcher===fetch&&oauthCache?.clientId===env.HOTMART_CLIENT_ID&&oauthCache.expires>Date.now())
+  return oauthCache.token
  if(!env.HOTMART_CLIENT_ID||!env.HOTMART_CLIENT_SECRET||!env.HOTMART_BASIC_TOKEN)
   throw new Error('hotmart_not_configured')
  const u=new URL('https://api-sec-vlc.hotmart.com/security/oauth/token')
@@ -34,6 +38,8 @@ export async function hotmartToken(env,fetcher=fetch){
  u.searchParams.set('client_secret',env.HOTMART_CLIENT_SECRET)
  const body=await jsonRequest(u,env.HOTMART_BASIC_TOKEN,fetcher,'POST')
  if(typeof body.access_token!=='string'||!body.access_token)throw new Error('hotmart_oauth_invalid')
+ if(fetcher===fetch)oauthCache={clientId:env.HOTMART_CLIENT_ID,token:body.access_token,
+  expires:Date.now()+Math.min(180000,Math.max(30000,Number(body.expires_in||180)*1000-30000))}
  return body.access_token
 }
 export async function pages(url,token,fetcher=fetch,{limit=12,perPage=50}={}){
