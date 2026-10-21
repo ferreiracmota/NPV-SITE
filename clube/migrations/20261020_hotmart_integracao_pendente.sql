@@ -48,6 +48,8 @@ CREATE TABLE IF NOT EXISTS public.clube_hotmart_payments (
  plan_id bigint,
  recurrence_number integer,
  approved_at timestamptz,
+ period_days integer CHECK(period_days IN (30,90)),
+ purchase_verified boolean NOT NULL DEFAULT false,
  state text NOT NULL DEFAULT 'pending' CHECK(state IN('pending','approved','delayed','cancelled','refunded','chargeback')),
  credit_event_id uuid UNIQUE REFERENCES public.clube_point_events(id),
  reversal_event_id uuid UNIQUE REFERENCES public.clube_point_events(id),
@@ -55,7 +57,7 @@ CREATE TABLE IF NOT EXISTS public.clube_hotmart_payments (
  reconciliation_checked_at timestamptz,
  updated_at timestamptz NOT NULL DEFAULT now(),
  UNIQUE(product_id,subscriber_code,transaction_id),
- UNIQUE(product_id,transaction_id), -- transação não pode ser creditada sob outro subscriber_code
+ UNIQUE(product_id,transaction_id), -- impede troca do assinante para a mesma transação
  FOREIGN KEY(product_id,subscriber_code)
    REFERENCES public.clube_hotmart_subscriptions(product_id,subscriber_code)
 );
@@ -81,10 +83,33 @@ ALTER TABLE public.clube_hotmart_sync_state ENABLE ROW LEVEL SECURITY;
 REVOKE ALL ON public.clube_hotmart_sync_state FROM PUBLIC,anon,authenticated;
 GRANT ALL ON public.clube_hotmart_sync_state TO service_role;
 
--- Nesta etapa, mensal e trimestral são identificados, mas só há concessão
--- mensal em código legado; trimestral seguirá exclusivamente o motor de
--- competências homologado antes da ativação. O kill switch permanece desligado.
--- NENHUM limite global de pontos é introduzido neste projeto.
+-- O kill switch começa desligado; sem teto global de pontuação.
+-- Competências trimestrais persistentes são liberadas individualmente.
+
+CREATE TABLE IF NOT EXISTS public.clube_hotmart_competencies (
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+ payment_id uuid NOT NULL REFERENCES public.clube_hotmart_payments(id),
+ ordinal smallint NOT NULL CHECK(ordinal BETWEEN 1 AND 3),
+ due_at timestamptz NOT NULL,
+ status text NOT NULL DEFAULT 'scheduled'
+   CHECK(status IN ('scheduled','credited','reversed','void')),
+ credit_event_id uuid UNIQUE REFERENCES public.clube_point_events(id),
+ reversal_event_id uuid UNIQUE REFERENCES public.clube_point_events(id),
+ credited_points integer CHECK(credited_points > 0),
+ created_at timestamptz NOT NULL DEFAULT now(),
+ UNIQUE(payment_id,ordinal),
+ CONSTRAINT clube_comp_credit_consistent CHECK(
+   (status IN('credited','reversed') AND credit_event_id IS NOT NULL AND credited_points IS NOT NULL)
+    OR (status IN('scheduled','void') AND credit_event_id IS NULL AND credited_points IS NULL)),
+ CONSTRAINT clube_comp_reversal_consistent CHECK(
+   (status='reversed' AND reversal_event_id IS NOT NULL)
+   OR (status<>'reversed' AND reversal_event_id IS NULL))
+);
+CREATE INDEX IF NOT EXISTS clube_comp_due_idx
+ ON public.clube_hotmart_competencies(status,due_at);
+ALTER TABLE public.clube_hotmart_competencies ENABLE ROW LEVEL SECURITY;
+REVOKE ALL ON public.clube_hotmart_competencies FROM PUBLIC,anon,authenticated;
+GRANT ALL ON public.clube_hotmart_competencies TO service_role;
 
 -- A autoria automatizada fica explicitamente NULL; eventos anteriores permanecem intactos.
 -- O reference_id único + origem em note constituem trilha de auditoria.
@@ -103,177 +128,260 @@ GRANT ALL ON public.clube_hotmart_config, public.clube_hotmart_products,
  public.clube_hotmart_subscriptions, public.clube_hotmart_payments,
  public.clube_hotmart_webhook_events TO service_role;
 
-CREATE OR REPLACE FUNCTION public.clube_hotmart_ingest(
- p_event_id text, p_event_type text, p_product_id bigint,
- p_product_ucode text, p_transaction text, p_subscriber_code text,
- p_verified_subscriber_email text, p_plan_id bigint,
- p_recurrence integer, p_approved_at timestamptz, p_purchase_verified boolean
-) RETURNS text LANGUAGE plpgsql SECURITY DEFINER SET search_path = ''
-AS $function$
+
+-- Vinculação e baseline: somente fonte Hotmart validada no servidor pode chamar.
+-- A primeira sincronização NUNCA premia ou retroage.
+CREATE OR REPLACE FUNCTION public.clube_hotmart_register_baseline(
+ p_product_id bigint,p_subscriber_code text,p_verified_email text,
+ p_plan_id bigint,p_period_days integer,p_first_seen_at timestamptz,
+ p_last_transaction text DEFAULT NULL,p_next_charge_at timestamptz DEFAULT NULL
+) RETURNS text LANGUAGE plpgsql SECURITY DEFINER SET search_path=''
+AS $func$
 DECLARE
  v_product public.clube_hotmart_products%rowtype;
- v_config public.clube_hotmart_config%rowtype;
- v_subscription public.clube_hotmart_subscriptions%rowtype;
- v_payment public.clube_hotmart_payments%rowtype;
- v_student uuid;
- v_count integer;
- v_points integer;
- v_credit uuid;
- v_reversal uuid;
- v_email text;
- v_terminal text;
+ v_sub public.clube_hotmart_subscriptions%rowtype;
+ v_student uuid; v_matches integer; v_email text;
 BEGIN
- IF (SELECT auth.role()) IS DISTINCT FROM 'service_role'
- THEN RAISE EXCEPTION 'Apenas service_role'; END IF;
+ IF (SELECT auth.role()) IS DISTINCT FROM 'service_role' THEN RAISE EXCEPTION 'service_role_only'; END IF;
+ SELECT * INTO v_product FROM public.clube_hotmart_products WHERE product_id=p_product_id AND enabled;
+ IF NOT FOUND OR p_first_seen_at IS NULL OR p_first_seen_at>now()+interval '5 minutes'
+    OR coalesce(length(p_subscriber_code),0)<2
+    OR NOT ((p_period_days=30 AND p_plan_id=ANY(v_product.monthly_plan_ids))
+         OR (p_period_days=90 AND p_plan_id=ANY(v_product.quarterly_plan_ids)))
+ THEN RETURN 'unverified_plan_or_baseline'; END IF;
+ v_email:=nullif(lower(btrim(p_verified_email)),'');
+ IF v_email IS NULL OR v_email !~ '^[^@ ]+@[^@ ]+\.[^@ ]+$' THEN RETURN 'invalid_email'; END IF;
+ PERFORM pg_catalog.pg_advisory_xact_lock(pg_catalog.hashtextextended(p_product_id||':'||p_subscriber_code, 10));
+ INSERT INTO public.clube_hotmart_subscriptions
+   (product_id,subscriber_code,subscriber_email,plan_id,period_days,next_charge_at,
+    baseline_at,baseline_transaction)
+ VALUES(p_product_id,p_subscriber_code,v_email,p_plan_id,p_period_days,p_next_charge_at,
+        p_first_seen_at,p_last_transaction)
+ ON CONFLICT(product_id,subscriber_code) DO NOTHING;
+ SELECT * INTO v_sub FROM public.clube_hotmart_subscriptions
+ WHERE product_id=p_product_id AND subscriber_code=p_subscriber_code FOR UPDATE;
+ IF v_sub.subscriber_email IS DISTINCT FROM v_email OR v_sub.link_status='conflict'
+  OR (v_sub.student_id IS NOT NULL AND
+     NOT EXISTS(SELECT 1 FROM auth.users u
+       WHERE u.id=v_sub.student_id AND lower(u.email)=v_email AND u.email_confirmed_at IS NOT NULL))
+ THEN
+  UPDATE public.clube_hotmart_subscriptions SET link_status='conflict' WHERE id=v_sub.id;
+  RETURN 'identity_conflict';
+ END IF;
+ SELECT count(*),(array_agg(p.id))[1] INTO v_matches,v_student
+ FROM public.clube_profiles p JOIN auth.users u ON u.id=p.id
+ WHERE p.approved AND u.email_confirmed_at IS NOT NULL
+   AND lower(btrim(p.email))=v_email AND lower(btrim(u.email))=v_email;
+ IF v_matches<>1 THEN
+  UPDATE public.clube_hotmart_subscriptions SET
+   link_status='pending',last_verified_at=now(),next_charge_at=p_next_charge_at,
+   plan_id=p_plan_id,period_days=p_period_days WHERE id=v_sub.id;
+  RETURN 'pending_identity';
+ END IF;
+ IF EXISTS(SELECT 1 FROM public.clube_hotmart_subscriptions s
+  WHERE s.product_id=p_product_id AND s.student_id=v_student AND s.id<>v_sub.id
+    AND s.link_status='linked') THEN
+  UPDATE public.clube_hotmart_subscriptions SET link_status='conflict' WHERE id=v_sub.id;
+  RETURN 'student_already_linked';
+ END IF;
+ UPDATE public.clube_hotmart_subscriptions SET
+   student_id=v_student,link_status='linked',last_verified_at=now(),
+   next_charge_at=p_next_charge_at,plan_id=p_plan_id,period_days=p_period_days
+ WHERE id=v_sub.id AND (student_id IS NULL OR student_id=v_student);
+ IF NOT FOUND THEN RETURN 'identity_conflict'; END IF;
+ RETURN 'linked_baseline_preserved';
+END
+$func$;
+REVOKE ALL ON FUNCTION public.clube_hotmart_register_baseline(bigint,text,text,bigint,integer,timestamptz,text,timestamptz) FROM PUBLIC,anon,authenticated;
+GRANT EXECUTE ON FUNCTION public.clube_hotmart_register_baseline(bigint,text,text,bigint,integer,timestamptz,text,timestamptz) TO service_role;
+
+CREATE OR REPLACE FUNCTION public.clube_hotmart_ingest(
+ p_event_id text,p_event_type text,p_product_id bigint,p_product_ucode text,
+ p_transaction text,p_subscriber_code text,p_verified_subscriber_email text,
+ p_plan_id bigint,p_recurrence integer,p_approved_at timestamptz,p_purchase_verified boolean
+) RETURNS text LANGUAGE plpgsql SECURITY DEFINER SET search_path=''
+AS $func$
+DECLARE
+ v_product public.clube_hotmart_products%rowtype;
+ v_sub public.clube_hotmart_subscriptions%rowtype;
+ v_pay public.clube_hotmart_payments%rowtype;
+ v_comp public.clube_hotmart_competencies%rowtype;
+ v_status text; v_period integer; v_first timestamptz;
+ v_student uuid; v_pts integer; v_reversal uuid;
+BEGIN
+ IF (SELECT auth.role()) IS DISTINCT FROM 'service_role' THEN RAISE EXCEPTION 'service_role_only'; END IF;
  IF p_event_id IS NULL OR length(p_event_id) NOT BETWEEN 3 AND 160
-    OR p_event_type NOT IN('PURCHASE_APPROVED','PURCHASE_REFUNDED',
-      'PURCHASE_CHARGEBACK','PURCHASE_CANCELED','PURCHASE_DELAYED',
-      'SUBSCRIPTION_CANCELLATION')
- THEN RAISE EXCEPTION 'Evento inválido'; END IF;
+  OR p_event_type NOT IN('PURCHASE_APPROVED','PURCHASE_REFUNDED',
+  'PURCHASE_CHARGEBACK','PURCHASE_CANCELED','PURCHASE_DELAYED','SUBSCRIPTION_CANCELLATION')
+ THEN RAISE EXCEPTION 'invalid_event'; END IF;
  SELECT * INTO v_product FROM public.clube_hotmart_products
-  WHERE product_id=p_product_id AND enabled
-    AND (product_ucode=p_product_ucode OR (p_event_type='SUBSCRIPTION_CANCELLATION' AND coalesce(p_product_ucode,'')=''));
+ WHERE product_id=p_product_id AND enabled
+ AND (product_ucode=p_product_ucode OR (p_event_type='SUBSCRIPTION_CANCELLATION'
+ AND coalesce(p_product_ucode,'')=''));
  IF NOT FOUND THEN RETURN 'ignored_product'; END IF;
  INSERT INTO public.clube_hotmart_webhook_events(event_id,event_type,product_id,transaction_id)
- VALUES(p_event_id,p_event_type,p_product_id,p_transaction)
- ON CONFLICT (event_id) DO NOTHING;
+ VALUES(p_event_id,p_event_type,p_product_id,p_transaction) ON CONFLICT DO NOTHING;
  IF p_event_type='SUBSCRIPTION_CANCELLATION' THEN
-   UPDATE public.clube_hotmart_subscriptions SET hotmart_status='CANCELLED'
+  UPDATE public.clube_hotmart_subscriptions SET hotmart_status='CANCELLED'
    WHERE product_id=p_product_id AND subscriber_code=p_subscriber_code;
-   UPDATE public.clube_hotmart_webhook_events SET processing_status='subscription_cancelled'
-   WHERE event_id=p_event_id;
-   RETURN 'subscription_cancelled_no_reversal';
+  RETURN 'subscription_cancelled_no_reversal';
  END IF;
  IF p_transaction IS NULL OR length(p_transaction) NOT BETWEEN 3 AND 160
   OR p_subscriber_code IS NULL OR length(p_subscriber_code) NOT BETWEEN 2 AND 128
  THEN RETURN 'pending_identifiers'; END IF;
-
- -- Serializa eventos concorrentes para a MESMA assinatura e transação.
+ -- Chave de bloqueio NÃO inclui subscriber_code: não permite trocar titular da transação.
  PERFORM pg_catalog.pg_advisory_xact_lock(
-   pg_catalog.hashtextextended(p_product_id::text||':'||p_subscriber_code||':'||p_transaction,0)
- );
+   pg_catalog.hashtextextended(p_product_id::text||':'||p_transaction,11));
  INSERT INTO public.clube_hotmart_subscriptions(product_id,subscriber_code)
  VALUES(p_product_id,p_subscriber_code) ON CONFLICT DO NOTHING;
- SELECT * INTO v_subscription FROM public.clube_hotmart_subscriptions
- WHERE product_id=p_product_id AND subscriber_code=p_subscriber_code FOR UPDATE;
-
- -- Nunca vincular alguém com base no e-mail do comprador ou em dado livre.
- -- p_verified_subscriber_email só pode vir de consulta autenticada à API oficial.
- v_email:=nullif(lower(btrim(p_verified_subscriber_email)),'');
- IF v_email IS NOT NULL THEN
-  IF v_subscription.subscriber_email IS NOT NULL
-   AND v_subscription.subscriber_email <> v_email THEN
-   UPDATE public.clube_hotmart_subscriptions SET link_status='conflict'
-   WHERE id=v_subscription.id;
-  ELSIF v_subscription.link_status <> 'conflict' THEN
-   SELECT count(*),(array_agg(p.id))[1] INTO v_count,v_student
-   FROM public.clube_profiles p
-   JOIN auth.users u ON u.id=p.id
-   WHERE p.approved AND u.email_confirmed_at IS NOT NULL
-     AND lower(btrim(u.email))=v_email
-     AND lower(btrim(p.email))=v_email;
-   IF v_count=1 AND (v_subscription.student_id IS NULL OR v_subscription.student_id=v_student) THEN
-    UPDATE public.clube_hotmart_subscriptions
-    SET student_id=v_student,subscriber_email=v_email,link_status='linked',last_verified_at=now()
-    WHERE id=v_subscription.id;
-   ELSIF v_subscription.student_id IS NULL THEN
-    UPDATE public.clube_hotmart_subscriptions
-    SET subscriber_email=v_email,link_status='pending',last_verified_at=now()
-    WHERE id=v_subscription.id;
-   END IF;
-  END IF;
+ SELECT * INTO v_sub FROM public.clube_hotmart_subscriptions
+  WHERE product_id=p_product_id AND subscriber_code=p_subscriber_code FOR UPDATE;
+ IF v_sub.subscriber_email IS NOT NULL
+  AND p_verified_subscriber_email IS NOT NULL
+  AND lower(btrim(p_verified_subscriber_email)) <> v_sub.subscriber_email THEN
+  UPDATE public.clube_hotmart_subscriptions SET link_status='conflict' WHERE id=v_sub.id;
+  RETURN 'identity_conflict';
  END IF;
- SELECT * INTO v_subscription FROM public.clube_hotmart_subscriptions WHERE id=v_subscription.id;
-
  INSERT INTO public.clube_hotmart_payments
-  (product_id,subscriber_code,transaction_id,plan_id,recurrence_number,approved_at)
+ (product_id,subscriber_code,transaction_id,plan_id,recurrence_number,approved_at)
  VALUES(p_product_id,p_subscriber_code,p_transaction,p_plan_id,p_recurrence,p_approved_at)
- ON CONFLICT (product_id,subscriber_code,transaction_id) DO NOTHING;
- SELECT * INTO v_payment FROM public.clube_hotmart_payments
- WHERE product_id=p_product_id AND subscriber_code=p_subscriber_code
- AND transaction_id=p_transaction FOR UPDATE;
-
- IF v_payment.plan_id IS NOT NULL AND p_plan_id IS NOT NULL AND v_payment.plan_id<>p_plan_id THEN
-  UPDATE public.clube_hotmart_payments SET processing_status='plan_conflict' WHERE id=v_payment.id;
-  RETURN 'plan_conflict';
+ ON CONFLICT(product_id,subscriber_code,transaction_id) DO NOTHING;
+ SELECT * INTO v_pay FROM public.clube_hotmart_payments
+ WHERE product_id=p_product_id AND transaction_id=p_transaction FOR UPDATE;
+ IF v_pay.subscriber_code IS DISTINCT FROM p_subscriber_code
+ OR (v_pay.plan_id IS NOT NULL AND p_plan_id IS NOT NULL AND v_pay.plan_id<>p_plan_id)
+ OR (v_pay.recurrence_number IS NOT NULL AND p_recurrence IS NOT NULL
+   AND v_pay.recurrence_number<>p_recurrence)
+ THEN
+  UPDATE public.clube_hotmart_payments SET processing_status='conflict' WHERE id=v_pay.id;
+  RETURN 'payment_identity_or_plan_conflict';
  END IF;
- IF p_event_type IN('PURCHASE_REFUNDED','PURCHASE_CHARGEBACK','PURCHASE_CANCELED') THEN
-  v_terminal:=CASE p_event_type WHEN 'PURCHASE_REFUNDED' THEN 'refunded'
+ IF p_event_type IN ('PURCHASE_REFUNDED','PURCHASE_CHARGEBACK','PURCHASE_CANCELED') THEN
+  v_status:=CASE p_event_type WHEN 'PURCHASE_REFUNDED' THEN 'refunded'
     WHEN 'PURCHASE_CHARGEBACK' THEN 'chargeback' ELSE 'cancelled' END;
-  UPDATE public.clube_hotmart_payments SET state=v_terminal,processing_status=v_terminal,
-    updated_at=now() WHERE id=v_payment.id;
-  IF v_payment.credit_event_id IS NOT NULL AND v_payment.reversal_event_id IS NULL THEN
-   SELECT student_id,points INTO v_student,v_points FROM public.clube_point_events
-    WHERE id=v_payment.credit_event_id;
-   -- Não apaga crédito, resgate ou histórico: estorno assinado, até saldo negativo.
-   INSERT INTO public.clube_point_events(student_id,event_type,points,note,reference_id,performed_by)
-   VALUES(v_student,'ajuste',-v_points,'Estorno automático Hotmart: '||p_transaction,
-       'hotmart:reversal:'||v_payment.id::text,NULL)
-   ON CONFLICT(reference_id) DO NOTHING RETURNING id INTO v_reversal;
-   IF v_reversal IS NULL THEN
-     SELECT id INTO v_reversal FROM public.clube_point_events
-     WHERE reference_id='hotmart:reversal:'||v_payment.id::text;
-   END IF;
-   UPDATE public.clube_hotmart_payments SET reversal_event_id=v_reversal WHERE id=v_payment.id;
-  END IF;
-  UPDATE public.clube_hotmart_webhook_events SET processing_status=v_terminal WHERE event_id=p_event_id;
-  RETURN v_terminal;
+  UPDATE public.clube_hotmart_payments SET state=v_status,
+    processing_status=v_status,updated_at=now() WHERE id=v_pay.id;
+  FOR v_comp IN SELECT * FROM public.clube_hotmart_competencies
+    WHERE payment_id=v_pay.id ORDER BY ordinal FOR UPDATE LOOP
+    IF v_comp.status='scheduled' THEN
+      UPDATE public.clube_hotmart_competencies SET status='void' WHERE id=v_comp.id;
+    ELSIF v_comp.status='credited' THEN
+      SELECT student_id,points INTO v_student,v_pts FROM public.clube_point_events
+        WHERE id=v_comp.credit_event_id;
+      INSERT INTO public.clube_point_events(student_id,event_type,points,note,reference_id,performed_by)
+        VALUES(v_student,'ajuste',-v_pts,'Estorno de competência Hotmart',
+          'hotmart:reverse:'||v_comp.id::text,NULL)
+      ON CONFLICT(reference_id) DO NOTHING RETURNING id INTO v_reversal;
+      IF v_reversal IS NULL THEN
+       SELECT id INTO v_reversal FROM public.clube_point_events
+       WHERE reference_id='hotmart:reverse:'||v_comp.id::text;
+      END IF;
+      UPDATE public.clube_hotmart_competencies
+        SET status='reversed',reversal_event_id=v_reversal WHERE id=v_comp.id;
+      IF v_comp.ordinal=1 THEN
+       UPDATE public.clube_hotmart_payments SET reversal_event_id=v_reversal WHERE id=v_pay.id;
+      END IF;
+    END IF;
+  END LOOP;
+  RETURN v_status;
  END IF;
- IF v_payment.state IN('refunded','chargeback','cancelled') THEN RETURN 'terminal_preserved'; END IF;
+ IF v_pay.state IN('refunded','chargeback','cancelled') THEN RETURN 'terminal_preserved'; END IF;
  IF p_event_type='PURCHASE_DELAYED' THEN
-   IF v_payment.state<>'approved' THEN
-     UPDATE public.clube_hotmart_payments SET state='delayed',processing_status='delayed',
-     updated_at=now() WHERE id=v_payment.id;
-   END IF;
-   RETURN 'delayed_no_credit';
+  IF v_pay.state<>'approved' THEN
+   UPDATE public.clube_hotmart_payments SET state='delayed',processing_status='delayed'
+   WHERE id=v_pay.id;
+  END IF;
+  RETURN 'delayed_no_credit';
  END IF;
  IF p_event_type<>'PURCHASE_APPROVED' THEN RETURN 'ignored_event'; END IF;
- IF v_payment.credit_event_id IS NOT NULL THEN RETURN 'already_credited'; END IF;
- UPDATE public.clube_hotmart_payments SET
-  state='approved',plan_id=coalesce(v_payment.plan_id,p_plan_id),
-  recurrence_number=coalesce(v_payment.recurrence_number,p_recurrence),
-  approved_at=coalesce(v_payment.approved_at,p_approved_at),updated_at=now()
- WHERE id=v_payment.id;
- SELECT * INTO v_config FROM public.clube_hotmart_config WHERE singleton;
- IF NOT v_config.live_credit_enabled OR v_config.starts_at IS NULL THEN
-  UPDATE public.clube_hotmart_payments SET processing_status='disabled' WHERE id=v_payment.id;
-  RETURN 'disabled';
+ IF p_plan_id=ANY(v_product.monthly_plan_ids) THEN v_period:=30;
+ ELSIF p_plan_id=ANY(v_product.quarterly_plan_ids) THEN v_period:=90;
+ ELSE RETURN 'unknown_plan'; END IF;
+ IF p_approved_at IS NULL OR p_recurrence IS NULL OR p_recurrence<=1 THEN
+  RETURN 'initial_or_unconfirmed'; END IF;
+ IF p_purchase_verified IS DISTINCT FROM true THEN
+  UPDATE public.clube_hotmart_payments SET processing_status='unverified'
+  WHERE id=v_pay.id;
+  RETURN 'pending_purchase_verification';
  END IF;
- IF p_approved_at IS NULL OR p_approved_at < v_config.starts_at THEN RETURN 'before_start'; END IF;
- -- Sem baseline de primeira sincronização, nunca bonifica assinaturas antigas.
- IF v_subscription.baseline_at IS NULL OR p_approved_at <= v_subscription.baseline_at
- THEN RETURN 'first_sync_reference_required'; END IF;
- IF p_recurrence IS NULL OR p_recurrence<=1 THEN RETURN 'initial_not_renewal'; END IF;
- IF p_purchase_verified IS DISTINCT FROM true THEN RETURN 'pending_purchase_verification'; END IF;
- IF p_plan_id IS NULL OR NOT (p_plan_id=ANY(v_product.monthly_plan_ids)) THEN
-  RETURN 'non_monthly_requires_approval';
- END IF;
- IF v_subscription.link_status<>'linked' OR v_subscription.student_id IS NULL THEN RETURN 'pending_identity'; END IF;
- SELECT points INTO v_points FROM public.clube_point_rules WHERE event_type='renovacao';
- IF v_points IS NULL OR v_points<1 THEN RETURN 'invalid_point_rule'; END IF;
- -- Mesmo lock do saldo usado pelas operações originais do Clube.
- PERFORM 1 FROM public.clube_profiles WHERE id=v_subscription.student_id AND approved FOR UPDATE;
- IF NOT FOUND THEN RETURN 'pending_approval'; END IF;
- INSERT INTO public.clube_point_events
-   (student_id,event_type,points,note,reference_id,performed_by)
- VALUES(v_subscription.student_id,'renovacao',v_points,
-   'Renovação Hotmart confirmada — +'||v_points||' pontos',
-   'hotmart:credit:'||v_payment.id::text,NULL)
- ON CONFLICT(reference_id) DO NOTHING RETURNING id INTO v_credit;
- IF v_credit IS NULL THEN
-   SELECT id INTO v_credit FROM public.clube_point_events
-   WHERE reference_id='hotmart:credit:'||v_payment.id::text;
- END IF;
- UPDATE public.clube_hotmart_payments
- SET credit_event_id=v_credit,processing_status='credited' WHERE id=v_payment.id;
- UPDATE public.clube_hotmart_webhook_events SET processing_status='credited' WHERE event_id=p_event_id;
- RETURN 'credited';
+ UPDATE public.clube_hotmart_payments SET state='approved',purchase_verified=true,
+  approved_at=p_approved_at,recurrence_number=p_recurrence,
+  plan_id=p_plan_id,period_days=v_period,updated_at=now()
+ WHERE id=v_pay.id;
+ IF v_sub.link_status<>'linked' OR v_sub.student_id IS NULL OR v_sub.baseline_at IS NULL
+ THEN RETURN 'pending_baseline_or_identity'; END IF;
+ IF p_approved_at<=v_sub.baseline_at THEN RETURN 'before_first_sync'; END IF;
+ SELECT starts_at INTO v_first FROM public.clube_hotmart_config WHERE singleton;
+ IF v_first IS NULL OR p_approved_at<v_first THEN RETURN 'before_automation_start'; END IF;
+ INSERT INTO public.clube_hotmart_competencies(payment_id,ordinal,due_at)
+ SELECT v_pay.id, n, (p_approved_at+make_interval(months => n-1))
+ FROM generate_series(1,CASE v_period WHEN 90 THEN 3 ELSE 1 END) n
+ ON CONFLICT(payment_id,ordinal) DO NOTHING;
+ UPDATE public.clube_hotmart_payments SET processing_status='scheduled' WHERE id=v_pay.id;
+ RETURN 'scheduled_pending_release';
 END
-$function$;
-REVOKE ALL ON FUNCTION public.clube_hotmart_ingest(text,text,bigint,text,text,text,text,bigint,integer,timestamptz,boolean)
- FROM PUBLIC,anon,authenticated;
-GRANT EXECUTE ON FUNCTION public.clube_hotmart_ingest(text,text,bigint,text,text,text,text,bigint,integer,timestamptz,boolean)
- TO service_role;
-COMMENT ON FUNCTION public.clube_hotmart_ingest(text,text,bigint,text,text,text,text,bigint,integer,timestamptz,boolean)
- IS 'Função exclusiva de servidor; idempotência transacional; ativação explicitamente bloqueada por padrão.';
+$func$;
+REVOKE ALL ON FUNCTION public.clube_hotmart_ingest(text,text,bigint,text,text,text,text,bigint,integer,timestamptz,boolean) FROM PUBLIC,anon,authenticated;
+GRANT EXECUTE ON FUNCTION public.clube_hotmart_ingest(text,text,bigint,text,text,text,text,bigint,integer,timestamptz,boolean) TO service_role;
+
+-- Executar periodicamente SOMENTE após homologação e autorização explícita.
+-- Lançamento concorrente: lock em pagamento, depois perfil, depois competência.
+-- O extrato mantém índices únicos pelo ID da competência.
+CREATE OR REPLACE FUNCTION public.clube_hotmart_release_due(p_as_of timestamptz DEFAULT now())
+RETURNS integer LANGUAGE plpgsql SECURITY DEFINER SET search_path=''
+AS $func$
+DECLARE
+ v_pay public.clube_hotmart_payments%rowtype;
+ v_comp public.clube_hotmart_competencies%rowtype;
+ v_student uuid; v_rule integer; v_credit uuid; v_count integer:=0;
+ v_settings public.clube_hotmart_config%rowtype;
+BEGIN
+ IF (SELECT auth.role()) IS DISTINCT FROM 'service_role' THEN RAISE EXCEPTION 'service_role_only'; END IF;
+ SELECT * INTO v_settings FROM public.clube_hotmart_config WHERE singleton;
+ IF NOT coalesce(v_settings.live_credit_enabled,false) OR v_settings.starts_at IS NULL
+ THEN RETURN 0; END IF;
+ SELECT points INTO v_rule FROM public.clube_point_rules WHERE event_type='renovacao';
+ IF v_rule IS NULL OR v_rule<1 THEN RAISE EXCEPTION 'renovacao_rule_invalid'; END IF;
+ FOR v_pay IN
+  SELECT p.* FROM public.clube_hotmart_payments p
+  WHERE p.state='approved' AND p.purchase_verified AND p.approved_at>=v_settings.starts_at
+    AND EXISTS (SELECT 1 FROM public.clube_hotmart_competencies c
+      WHERE c.payment_id=p.id AND c.status='scheduled' AND c.due_at<=p_as_of)
+  ORDER BY p.approved_at,p.id FOR UPDATE OF p SKIP LOCKED LIMIT 100
+ LOOP
+  SELECT s.student_id INTO v_student FROM public.clube_hotmart_subscriptions s
+  JOIN public.clube_profiles profile ON profile.id=s.student_id AND profile.approved
+  WHERE s.product_id=v_pay.product_id AND s.subscriber_code=v_pay.subscriber_code
+   AND s.link_status='linked' AND s.baseline_at IS NOT NULL
+   AND v_pay.approved_at>s.baseline_at;
+  IF v_student IS NULL THEN CONTINUE; END IF;
+  PERFORM 1 FROM public.clube_profiles WHERE id=v_student AND approved FOR UPDATE;
+  IF NOT FOUND THEN CONTINUE; END IF;
+  FOR v_comp IN SELECT * FROM public.clube_hotmart_competencies
+     WHERE payment_id=v_pay.id AND status='scheduled' AND due_at<=p_as_of
+     ORDER BY ordinal FOR UPDATE
+  LOOP
+   INSERT INTO public.clube_point_events(student_id,event_type,points,note,reference_id,performed_by)
+   VALUES(v_student,'renovacao',v_rule,
+    'Renovação Hotmart confirmada — +'||v_rule||' pontos ('||v_comp.ordinal||')',
+    'hotmart:comp:'||v_comp.id::text,NULL)
+   ON CONFLICT(reference_id) DO NOTHING RETURNING id INTO v_credit;
+   IF v_credit IS NULL THEN
+    SELECT id INTO v_credit FROM public.clube_point_events WHERE reference_id='hotmart:comp:'||v_comp.id::text;
+   END IF;
+   UPDATE public.clube_hotmart_competencies
+     SET status='credited',credit_event_id=v_credit,credited_points=v_rule WHERE id=v_comp.id;
+   IF v_comp.ordinal=1 THEN
+    UPDATE public.clube_hotmart_payments SET credit_event_id=v_credit WHERE id=v_pay.id;
+   END IF;
+   v_count:=v_count+1;
+  END LOOP;
+  UPDATE public.clube_hotmart_payments SET processing_status='credited_or_partial'
+    WHERE id=v_pay.id;
+ END LOOP;
+ RETURN v_count;
+END
+$func$;
+REVOKE ALL ON FUNCTION public.clube_hotmart_release_due(timestamptz) FROM PUBLIC,anon,authenticated;
+GRANT EXECUTE ON FUNCTION public.clube_hotmart_release_due(timestamptz) TO service_role;
 COMMIT;
