@@ -43,7 +43,7 @@ for(const [browserName,browserType] of [['chromium',chromium],['webkit',webkit]]
    await page.getByPlaceholder('Pesquisar assinante, e-mail ou produto').fill('qualquer pesquisa')
    await page.getByLabel('Filtrar por plano').selectOption('trimestral')
    await page.getByLabel('Filtrar por situação').selectOption('active')
-   assert.ok(await page.getByText('Nenhum registro encontrado para os filtros selecionados.').isVisible())
+   assert.ok(await page.getByText('Nenhum registro corresponde aos filtros.').isVisible())
    await page.getByPlaceholder('Pesquisar assinante, e-mail ou produto').fill('')
    await page.getByLabel('Filtrar por plano').selectOption('todos')
    await page.getByLabel('Filtrar por situação').selectOption('todas')
