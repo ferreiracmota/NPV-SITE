@@ -1,11 +1,12 @@
 name: NPV — Aba Hotmart Admin QA (isolado)
 on:
   push:
-    branches: [feat/clube-admin-hotmart-aba-20261020]
+    branches: [feat/clube-admin-hotmart-aba-20261020, feat/clube-hotmart-real-readonly-20261021]
     paths:
       - 'src/ClubeHotmartAdmin.*'
       - 'src/ClubeNPVOnline.jsx'
       - 'api/clube/hotmart-admin.js'
+      - 'clube/hotmart-admin/**'
       - 'qa/hotmart-admin/**'
       - '.github/workflows/hotmart-admin-qa.yml'
   pull_request:
@@ -32,7 +33,7 @@ jobs:
           corepack enable
           corepack pnpm install --frozen-lockfile
       - name: Testes de autorização, dados vazios e separação do PR 14
-        run: node --test qa/hotmart-admin/security.test.mjs
+        run: node --test qa/hotmart-admin/*.test.mjs
       - name: Compilar site sem publicar
         run: corepack pnpm run build
   browser-responsive:
@@ -59,6 +60,7 @@ jobs:
             sleep 2
           done
           node qa/hotmart-admin/visual.mjs
+          node qa/hotmart-admin/real-visual.mjs
       - name: Guardar capturas (somente dados fictícios da suíte)
         if: always()
         uses: actions/upload-artifact@v4
