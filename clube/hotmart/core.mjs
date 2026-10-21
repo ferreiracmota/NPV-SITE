@@ -60,7 +60,7 @@ export function matchesSubscriber(apiRow,event) {
   String(apiRow.subscriber_code||'')===event.subscriberCode &&
   Number(apiRow.product?.id)===event.productId &&
   (!event.planId||Number(apiRow.plan?.id)===event.planId) &&
-  Number(apiRow.plan?.recurrency_period)===30 &&
+  [30,90].includes(Number(apiRow.plan?.recurrency_period)) &&
   email(apiRow.subscriber?.email))
 }
 export function subscriberEmailFromApi(apiRow,event) {
@@ -79,44 +79,72 @@ export async function oauthToken(env,fetcher=fetch) {
  if(typeof data.access_token!=='string'||!data.access_token)throw new Error('hotmart_oauth_invalid')
  return data.access_token
 }
-// Evidência cruzada: associação do assinante + compra da recorrência na API Hotmart.
-// Nunca classificar parcelamento como assinatura. Falha de API deixa pendente.
+// A API de compras retorna array; tolera páginas caso Hotmart amplie o formato.
+// Jamais dá crédito após lista truncada, token repetido ou falha 429/5xx.
+export function hotmartDate(value) {
+ const n=Number(value)
+ if(!Number.isFinite(n)||n<=0)return null
+ const milliseconds=n<1e11?n*1000:n
+ const date=new Date(milliseconds)
+ return Number.isFinite(date.getTime())?date.toISOString():null
+}
+export async function listSubscriptionPurchases(subscriberCode,token,fetcher=fetch,{maxPages=8}={}) {
+ if(!subscriberCode||!token)throw new Error('purchase_credentials_missing')
+ const base='https://developers.hotmart.com/payments/api/v1/subscriptions/'+encodeURIComponent(subscriberCode)+'/purchases'
+ let next=null
+ const rows=[],seen=new Set()
+ for(let page=0;page<maxPages;page++){
+  const url=new URL(base)
+  if(next)url.searchParams.set('page_token',next)
+  const response=await fetcher(url,{headers:{Authorization:'Bearer '+token,Accept:'application/json'},signal:AbortSignal.timeout(9000)})
+  if(!response.ok)throw new Error('official_purchase_unavailable_'+response.status)
+  const payload=await response.json()
+  if(Array.isArray(payload))return rows.concat(payload)
+  if(!payload||!Array.isArray(payload.items))throw new Error('purchase_response_invalid')
+  rows.push(...payload.items)
+  const candidate=payload.page_info?.next_page_token
+  if(!candidate)return rows
+  if(seen.has(candidate))throw new Error('purchase_page_cycle')
+  seen.add(candidate);next=candidate
+ }
+ throw new Error('purchase_pages_incomplete')
+}
+// Evidência cruzada: identidade do assinante da API + cobrança da MESMA transação.
+// Um vencimento previsto ou uma parcela jamais equivalem a pagamento confirmado.
 export async function verifyOfficialPayment(event,env,fetcher=fetch) {
  if(event.type!=='PURCHASE_APPROVED'||!event.transaction||!event.subscriberCode)return null
  const token=await oauthToken(env,fetcher)
  if(!token)return null
  const head={Authorization:'Bearer '+token,Accept:'application/json'}
- const subscriptionUrl=new URL('https://developers.hotmart.com/payments/api/v1/subscriptions')
- subscriptionUrl.searchParams.set('subscriber_code',event.subscriberCode)
- subscriptionUrl.searchParams.set('product_id',String(event.productId))
- subscriptionUrl.searchParams.set('max_results','20')
- const s=await fetcher(subscriptionUrl,{headers:head,signal:AbortSignal.timeout(9000)})
- if(!s.ok)throw new Error('official_subscription_unavailable')
- const sBody=await s.json()
- const subs=(Array.isArray(sBody.items)?sBody.items:[]).filter(row=>matchesSubscriber(row,event))
- if(subs.length!==1)return null
- const subscription=subs[0]
- // API documenta recurrency_period 30 para recorrência mensal.
- if(Number(subscription.plan?.recurrency_period)!==30)return null
- const purchaseUrl=new URL('https://developers.hotmart.com/payments/api/v1/subscriptions/'+encodeURIComponent(event.subscriberCode)+'/purchases')
- const p=await fetcher(purchaseUrl,{headers:head,signal:AbortSignal.timeout(9000)})
- if(!p.ok)throw new Error('official_purchase_unavailable')
- const pBody=await p.json()
- const purchases=Array.isArray(pBody)?pBody:Array.isArray(pBody.items)?pBody.items:[]
- const rows=purchases.filter(item=>String(item.transaction)===event.transaction)
- if(rows.length!==1)return null
- const purchase=rows[0]
- const recurrence=num(purchase.recurrency_number)
- const approvedAt=num(purchase.approved_date)
- if(!['APPROVED','COMPLETE'].includes(purchase.status)||purchase.purchase_subscription!==true||
-    purchase.payment_type==='FINANCED_INSTALLMENT'||
-    recurrence===null||recurrence<2||!approvedAt||!Number.isFinite(approvedAt)||
-    (event.recurrence!==null&&recurrence!==event.recurrence))return null
+ const url=new URL('https://developers.hotmart.com/payments/api/v1/subscriptions')
+ url.searchParams.set('subscriber_code',event.subscriberCode)
+ url.searchParams.set('product_id',String(event.productId))
+ url.searchParams.set('max_results','20')
+ const response=await fetcher(url,{headers:head,signal:AbortSignal.timeout(9000)})
+ if(!response.ok)throw new Error('official_subscription_unavailable')
+ const body=await response.json()
+ const filtered=(Array.isArray(body.items)?body.items:[]).filter(row=>matchesSubscriber(row,event))
+ if(filtered.length!==1) return null
+ // Listagem parcial não prova que só há uma assinatura coincidente.
+ if(body.page_info?.next_page_token)throw new Error('subscription_page_incomplete')
+ const subscription=filtered[0]
+ const periodDays=Number(subscription.plan?.recurrency_period)
+ if(![30,90].includes(periodDays))return null
+ const purchases=await listSubscriptionPurchases(event.subscriberCode,token,fetcher)
+ const matches=purchases.filter(item=>String(item.transaction)===event.transaction)
+ if(matches.length!==1)return null
+ const purchase=matches[0]
+ const recurrence=Number(purchase.recurrency_number)
+ const paidAt=hotmartDate(purchase.approved_date)
+ if(!['APPROVED','COMPLETE'].includes(purchase.status)||
+  purchase.purchase_subscription!==true||
+  purchase.payment_type==='FINANCED_INSTALLMENT'||
+  !Number.isSafeInteger(recurrence)||recurrence<=1||!paidAt||
+  (event.recurrence!==null&&recurrence!==event.recurrence))return null
  return {
   email:subscriberEmailFromApi(subscription,event),
-  recurrence,
-  approvedAt:new Date(approvedAt).toISOString(),
-  planId:Number(subscription.plan.id),
+  recurrence,approvedAt:paidAt,
+  periodDays,planId:Number(subscription.plan.id),
   productUcode:clean(subscription.product?.ucode)
  }
 }
