@@ -145,3 +145,71 @@ Docs oficiais:
 - https://developers.hotmart.com/docs/en/2.0.0/webhook/purchase-webhook/
 
 **Nota:** `date_next_charge` é PREVISÃO, não pagamento confirmado.
+
+
+## Consulta real Hotmart — 21/10/2026
+
+Auditoria READ-ONLY da API oficial na branch Preview do PR #14. Zero alteracoes
+em producao, zero creditos, zero novas assinaturas, zero vinculos gravados.
+Nenhum identificador pessoal de aluno foi salvo neste repositorio.
+
+### Produto e planos REAIS, explicitamente autorizados
+
+- Produto 6304828, UCODE 588a8af3-ca54-4745-9420-47e5d45d51e0:
+  PLATAFORMA DE TREINO PARA MULHERES | NAO PENSE, VAI! (ACTIVE).
+- Plano mensal: codigo g64ryxgr, plano numerico 1155921, MONTHLY,
+  ASSINATURA, maximo 1 parcela.
+- Plano trimestral: codigo il6n3k8y, plano numerico 1155920, QUARTERLY,
+  MULTIPLOS_PAGAMENTOS, ate 3 parcelas. Nao equiparar cada parcela a renovacao.
+- Allowlist somente no Preview restrito a branch: HOTMART_ALLOWED_PRODUCT_IDS=6304828.
+  As credenciais originais permanecem Sensitive e apenas no Preview.
+
+### Assinaturas oficiais
+
+GET /payments/api/v1/subscriptions com product_id=6304828,
+accession_date=1, paginação integral (3 paginas), sem filtro date_next_charge.
+
+- Total 45 (mensal 39, trimestral 6): ACTIVE 2, DELAYED 6, INACTIVE 8,
+  CANCELLED_BY_ADMIN 15, CANCELLED_BY_CUSTOMER 14.
+- **Cuidado real comprovado:** adicionar date_next_charge=1 retornou
+  somente 27 assinaturas, omitindo ativas, atrasadas e inativas. Para
+  inventariar a base, NAO utilizar esse filtro. Proxima cobranca prevista
+  nao e comprovante de compra.
+- Vínculos: 45 assinaturas com 37 emails distintos, comparados via
+  digest SHA-256 com sal aleatorio e SELECT no Supabase. 0 candidatos
+  vinculados e 45 pendentes sem perfil correspondente. Clube possuia
+  2 perfis, 1 aprovado. Nenhum perfil novo criado.
+
+### Histórico real de pagamentos
+
+GET /payments/api/v1/subscriptions/{subscriber_code}/purchases
+consultado para os 45 assinantes. 45 historicos completos, 200
+registros: COMPLETE 76, APPROVED 1, OVERDUE 108, REFUNDED 4,
+CHARGEBACK 2, CANCELLED 5, EXPIRED 3, WAITING_PAYMENT 1.
+77 entradas COMPLETE/APPROVED com approved_date (75 de assinaturas
+mensais, 2 trimestrais); NAO equivalem automaticamente a renovacoes
+bonificaveis. Meios: PIX 85, CREDIT_CARD 82, PIX_AUTOMATIC 33.
+45 registros possuem recurrency_number=1, e 155 possuem numero >1,
+considerando todos os estados, inclusive inadimplentes e estornados.
+
+**Divergencia importante da API real:** campo purchase_subscription
+NAO apareceu em NENHUM dos 200 registros, apesar de previsto na
+documentacao oficial. Ausencia nao significa false nem confirma que
+uma parcela representa renovacao. O motor de pontos atual deve
+continuar FAIL-CLOSED, sem concessao. Em especial, as transacoes
+do plano trimestral MULTIPLOS_PAGAMENTOS precisam de prova oficial
+complementar (sumario/vendas/historico de cobrancas) antes de separar
+parcelamento financeiro de renovacao trimestral efetivamente paga.
+
+### Limites de homologacao
+
+Instantaneo de 21/10/2026, nao alimenta automaticamente o painel
+oficial. Para exibir dados reais em Production ainda faltam:
+controle administrativo real e permissao minima no backend, estrategia
+protegida de credenciais server-side (nao herdar Preview), gestao de
+paginacao/erros, vinculacao robusta sem cadastros falsos, validacao
+de statuses reais e testes ponta a ponta. Isso dependera de nova
+autorizacao expressa para publicar a integracao read-only.
+
+Nao fazer merge do PR #14, nao aplicar migracoes oficiais, nao
+habilitar creditos, webhook, cron ou pontos retroativos.
