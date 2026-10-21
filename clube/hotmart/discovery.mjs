@@ -1,7 +1,7 @@
 // Descoberta paginada de recorrências sem webhook. Somente após início explícito
 // e habilitação revisada. Duas assinaturas por execução para proteger quota API.
 import { createHash } from 'node:crypto'
-import { oauthToken } from './core.mjs'
+import { oauthToken, listSubscriptionPurchases, hotmartDate } from './core.mjs'
 const tokenId=(product,subscriber,transaction)=>
  'npv-discovery:'+createHash('sha256')
   .update([product,subscriber,transaction].join(':')).digest('hex')
@@ -15,7 +15,7 @@ export async function discoverMissingPayments(db,env,startsAt,fetcher=fetch) {
  const start=Date.parse(startsAt)
  if(!Number.isFinite(start))return {processed:0,skipped:'missing_start'}
  const {data:products,error:pError}=await db.from('clube_hotmart_products')
-  .select('product_id,product_ucode,monthly_plan_ids').eq('enabled',true)
+  .select('product_id,product_ucode,monthly_plan_ids,quarterly_plan_ids').eq('enabled',true)
  if(pError)throw new Error('products_query_failed')
  if(!products?.length)return {processed:0,skipped:'no_products'}
  const allowList=new Set(String(env.HOTMART_ALLOWED_PRODUCT_IDS||'')
@@ -40,24 +40,31 @@ export async function discoverMissingPayments(db,env,startsAt,fetcher=fetch) {
  if(!Array.isArray(batch.items))throw new Error('unexpected_subscription_payload')
  let count=0
  for(const subscriber of batch.items) {
+  const planId=Number(subscriber.plan?.id)
+  const days=Number(subscriber.plan?.recurrency_period)
+  const allowed=days===30
+    ?(product.monthly_plan_ids||[]).some(id=>Number(id)===planId)
+    :days===90
+      ?(product.quarterly_plan_ids||[]).some(id=>Number(id)===planId)
+      :false
   if(Number(subscriber.product?.id)!==Number(product.product_id)||
      subscriber.product?.ucode!==product.product_ucode||
      !subscriber.subscriber_code||!subscriber.subscriber?.email||
-     Number(subscriber.plan?.recurrency_period)!==30||
-     !(product.monthly_plan_ids||[]).some(id=>Number(id)===Number(subscriber.plan?.id)))
-   continue
-  const purchaserUrl=new URL('https://developers.hotmart.com/payments/api/v1/subscriptions/'
-    +encodeURIComponent(subscriber.subscriber_code)+'/purchases')
-  const payments=await getJson(purchaserUrl,token,fetcher)
-  const items=Array.isArray(payments)?payments:Array.isArray(payments.items)?payments.items:[]
-  // Desde o marco autorizado, preservando TODAS as recorrências do período.
+     !allowed)continue
+  // Pode retornar array simples ou página estruturada. Falhas antes do checkpoint
+  // preservam a página atual para repetição segura na próxima execução.
+  const items=await listSubscriptionPurchases(subscriber.subscriber_code,token,fetcher)
   for(const payment of items) {
-   const recurrence=Number(payment.recurrency_number),ms=Number(payment.approved_date)
-   if(payment.purchase_subscription!==true||!Number.isSafeInteger(recurrence)||
-      recurrence<2||!Number.isFinite(ms)||ms<start||!payment.transaction)continue
+   const recurrence=Number(payment.recurrency_number)
+   const paidAt=hotmartDate(payment.approved_date)
+   if(payment.purchase_subscription!==true||
+      payment.payment_type==='FINANCED_INSTALLMENT'||
+      !Number.isSafeInteger(recurrence)||recurrence<=1||
+      !paidAt||Date.parse(paidAt)<start||!payment.transaction)continue
    const eventType={
-    APPROVED:'PURCHASE_APPROVED',REFUNDED:'PURCHASE_REFUNDED',
-    CHARGEBACK:'PURCHASE_CHARGEBACK',CANCELLED:'PURCHASE_CANCELED'
+    APPROVED:'PURCHASE_APPROVED',COMPLETE:'PURCHASE_APPROVED',
+    REFUNDED:'PURCHASE_REFUNDED',CHARGEBACK:'PURCHASE_CHARGEBACK',
+    CANCELLED:'PURCHASE_CANCELED'
    }[payment.status]
    if(!eventType)continue
    const {error}=await db.rpc('clube_hotmart_ingest',{
@@ -66,8 +73,8 @@ export async function discoverMissingPayments(db,env,startsAt,fetcher=fetch) {
     p_product_ucode:product.product_ucode,p_transaction:payment.transaction,
     p_subscriber_code:subscriber.subscriber_code,
     p_verified_subscriber_email:subscriber.subscriber.email,
-    p_plan_id:Number(subscriber.plan.id),p_recurrence:recurrence,
-    p_approved_at:new Date(ms).toISOString(),
+    p_plan_id:planId,p_recurrence:recurrence,
+    p_approved_at:paidAt,
     p_purchase_verified:eventType==='PURCHASE_APPROVED'
    })
    if(error)throw new Error('discovery_sql_failed')
