@@ -12,50 +12,7 @@ const respond=(res,code,payload)=>res.writeHead(code,{
  'X-Content-Type-Options':'nosniff'
 }).end(JSON.stringify(payload))
 const mask=value=>value?value.slice(0,2)+'***@'+value.split('@')[1]:null
-
-// Diagnóstico efêmero SOMENTE no Preview Vercel com SSO habilitado.
-// Este caminho não recebe credenciais no cliente, não acessa assinantes/Supabase
-// e deixa de funcionar automaticamente após a janela de auditoria.
-// Remover logo após a consulta. Nunca mesclar na main.
-async function previewCatalogDiagnostic(req,res){
- const env=process.env
- if(env.VERCEL_ENV!=='preview' ||
-    env.VERCEL_GIT_COMMIT_REF!=='feature/hotmart-renovacoes-seguro-20261020')
-   return respond(res,404,{status:'not_found'})
- if(Date.now()>Date.parse('2026-10-21T15:30:00Z'))
-   return respond(res,410,{status:'diagnostic_expired'})
- if(!env.HOTMART_CLIENT_ID||!env.HOTMART_CLIENT_SECRET||!env.HOTMART_BASIC_TOKEN)
-   return respond(res,503,{status:'hotmart_credentials_not_configured'})
- const url=new URL(req.url,'https://npv.local')
- try{
-   if(url.searchParams.get('phase')==='plans'){
-     const ucode=url.searchParams.get('ucode')||''
-     if(!/^[a-f0-9-]{36}$/i.test(ucode))return respond(res,400,{status:'invalid_ucode'})
-     const catalog=await readCatalog(env)
-     if(!catalog.complete)return respond(res,409,{status:'catalog_incomplete'})
-     const product=catalog.products.find(p=>p.ucode.toLowerCase()===ucode.toLowerCase())
-     if(!product)return respond(res,404,{status:'not_in_authorized_catalog'})
-     const plans=await readProductPlans(env,product.ucode)
-     return respond(res,200,{status:'read_only',phase:'plans',
-       product,plans:plans.plans,complete:plans.complete,hasMore:plans.hasMore})
-   }
-   if(url.searchParams.get('phase')!=='catalog')
-     return respond(res,400,{status:'invalid_phase'})
-   const catalog=await readCatalog(env)
-   return respond(res,200,{status:'read_only',phase:'catalog',
-     ...catalog})
- }catch(error){
-   const code=String(error?.message||'unknown')
-   // Apenas código técnico de erro conhecido, NUNCA OAuth token ou dados pessoais.
-   const reason=/^hotmart_(oauth_unavailable|oauth_invalid|credentials_missing|read_unavailable_\d{3})$/.test(code)
-     ?code:'catalog_read_error'
-   return respond(res,503,{status:'diagnostic_read_failed',reason})
- }
-}
-
 export default async function handler(req,res){
- if(req.method==='POST' && new URL(req.url,'https://npv.local').searchParams.get('mode')==='preview-catalog-diagnostic')
-  return previewCatalogDiagnostic(req,res)
  if(req.method!=='GET')return respond(res,405,{status:'method_not_allowed'})
  const env=process.env
  if(!env.HOTMART_IDENTIFY_SECRET||
