@@ -24,7 +24,7 @@ jobs:
         with:
           node-version: '22'
       - name: Instalar dependências para validar o endpoint e compilar o site
-        run: npm ci
+        run: npm ci --legacy-peer-deps
       - name: Validar sintaxe JS de produção e código de teste
         run: |
           node --check clube/hotmart/core.mjs
