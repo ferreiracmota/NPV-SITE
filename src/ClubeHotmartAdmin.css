@@ -78,3 +78,19 @@
  .clube-shell .npv-hotmart-admin,.clube-shell .npv-hotmart-panel{min-width:0;max-width:100%}
  .clube-shell .npv-hotmart-swipe-hint{display:block}
 }
+
+/* Novo histórico real: preserva os cartões premium e a região scroll já aprovada. */
+.clube-shell .npv-hotmart-table{min-width:1060px}
+.clube-shell .npv-hotmart-table td{max-width:245px;overflow-wrap:anywhere}
+.clube-shell .npv-hotmart-table .npv-hotmart-row-active td{background:rgba(236,247,226,.66)}
+.clube-shell .npv-hotmart-status{display:inline-flex;align-items:center;padding:5px 9px;border:1px solid #dfe6dc;border-radius:20px;color:#617461;font-size:11px;font-weight:750;white-space:nowrap;background:#f7faf5}
+.clube-shell .npv-hotmart-status.is-active{color:#3b6b32;background:#e9f5e3;border-color:#cee5c5}
+.clube-shell .npv-hotmart-status-summary{display:flex;gap:8px;flex-wrap:wrap}
+.clube-shell .npv-hotmart-status-summary span{padding:7px 10px;border:1px solid #e0e9db;border-radius:18px;background:rgba(255,255,255,.8);font-size:10px;color:#738471}
+.clube-shell .npv-hotmart-status-summary strong{color:#345339;font-weight:850}
+.clube-shell .npv-hotmart-sync{white-space:normal;text-align:right;max-width:230px;line-height:1.5}
+@media(max-width:640px){
+ .clube-shell .npv-hotmart-sync{text-align:left;max-width:100%}
+ .clube-shell .npv-hotmart-status-summary{gap:6px}
+ .clube-shell .npv-hotmart-status-summary span{font-size:10px}
+}
