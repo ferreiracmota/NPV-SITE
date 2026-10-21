@@ -81,5 +81,6 @@ jobs:
           psql -v ON_ERROR_STOP=1 -f clube/hotmart/pg/fixture.sql
           psql -v ON_ERROR_STOP=1 -f clube/migrations/20261020_hotmart_integracao_pendente.sql
           psql -v ON_ERROR_STOP=1 -f clube/hotmart/pg/scenarios.sql
+          psql -v ON_ERROR_STOP=1 -f clube/hotmart/pg/permissions.sql
       - name: Testar travas entre duas conexões simultâneas
         run: bash clube/hotmart/pg/concurrent.sh
