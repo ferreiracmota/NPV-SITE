@@ -57,9 +57,9 @@ test('5 cancelamento de assinatura não estorna uma cobrança passada',()=>{
 })
 test('6 reembolso e chargeback geram um único ajuste negativo auditável',()=>{
  assert.match(SQL,/PURCHASE_REFUNDED.*PURCHASE_CHARGEBACK/s)
- assert.match(SQL,/v_payment\.reversal_event_id IS NULL/)
- assert.match(SQL,/'hotmart:reversal:'/)
- assert.match(SQL,/VALUES\(v_student,'ajuste',-v_points/)
+ assert.match(SQL,/v_comp\.status='credited'/)
+ assert.match(SQL,/'hotmart:reverse:'/)
+ assert.match(SQL,/VALUES\(v_student,'ajuste',-v_pts/)
 })
 test('7 cadastro após evento mantém vinculação pendente até conta aprovada e email confirmado',()=>{
  assert.match(SQL,/u\.email_confirmed_at IS NOT NULL/)
@@ -73,9 +73,9 @@ test('8 e-mail diferente entre comprador e assinante: só a API define titular',
  assert.equal(receipt.email,'aluno@example.com')
  assert.notEqual(receipt.email,e.buyerEmail)
 })
-test('9 plano trimestral e compra parcelada não geram bonificação mensal',async()=>{
+test('9 plano trimestral verificado é reconhecido e compra parcelada não',async()=>{
  const e=interpretWebhook(seed())
- assert.equal(await verifyOfficialPayment(e,ENV,transport(official(90))),null)
+ assert.equal((await verifyOfficialPayment(e,ENV,transport(official(90)))).periodDays,90)
  const model=official()
  model.purchases[0].purchase_subscription=false
  assert.equal(await verifyOfficialPayment(e,ENV,transport(model)),null)
@@ -92,7 +92,7 @@ test('11 falha da API mantém evento não verificado',async()=>{
 test('12 recuperar pagamento sem perder históricos: configuração desligada por padrão',()=>{
  assert.match(SQL,/live_credit_enabled boolean NOT NULL DEFAULT false/)
  assert.match(SQL,/starts_at timestamptz/)
- assert.match(SQL,/IF NOT v_config\.live_credit_enabled/)
+ assert.match(SQL,/NOT coalesce\(v_settings\.live_credit_enabled,false\)/)
  assert.doesNotMatch(SQL,/DELETE FROM public\.clube_point_events/i)
 })
 test('Hottok obrigatório e comparado em tempo constante',()=>{
