@@ -34,7 +34,7 @@ async function request({method='GET',authorization='Bearer '+TOKEN,mock=fakeDb()
 }
 test('1 nenhuma autorização é rejeitada antes de consultar a base',async()=>{
  const mock=fakeDb()
- const r=await request({authorization:undefined,mock})
+ const r=await request({authorization:null,mock})
  assert.equal(r.status,401);assert.equal(mock.actions.length,0)
 })
 test('2 token de formato inválido é rejeitado',async()=>{
