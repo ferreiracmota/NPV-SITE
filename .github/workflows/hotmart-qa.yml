@@ -24,7 +24,9 @@ jobs:
         with:
           node-version: '22'
       - name: Instalar dependências para validar o endpoint e compilar o site
-        run: npm ci --legacy-peer-deps
+        run: |
+          corepack enable
+          corepack pnpm install --frozen-lockfile
       - name: Validar sintaxe JS de produção e código de teste
         run: |
           node --check clube/hotmart/core.mjs
@@ -41,4 +43,4 @@ jobs:
       - name: Executar cenários simulados sem credenciais, rede ou banco real
         run: node --test clube/hotmart/*.test.mjs
       - name: Compilar frontend sem publicar
-        run: npm run build
+        run: corepack pnpm run build
