@@ -4,7 +4,7 @@
 // Nunca habilitar este endpoint em produção antes de homologar o controle de acesso.
 import { createClient } from '@supabase/supabase-js'
 import { isAuthentic } from '../../clube/hotmart/core.mjs'
-import { readCatalog,readSubscriptions,readPurchaseHistory,resolveClubeIdentity,
+import { readCatalog,readProductPlans,readSubscriptions,readPurchaseHistory,resolveClubeIdentity,
  baselineForFirstSync } from '../../clube/hotmart/identify-core.mjs'
 
 const respond=(res,code,payload)=>res.writeHead(code,{
@@ -26,6 +26,17 @@ export default async function handler(req,res){
   if(mode==='catalog'){
    const result=await readCatalog(env)
    return respond(res,200,{status:'read_only',mode,generatedAt:new Date().toISOString(),...result})
+  }
+  if(mode==='plans'){
+   const ucode=url.searchParams.get('ucode')||''
+   if(!/^[a-f0-9-]{36}$/i.test(ucode))return respond(res,400,{status:'invalid_product_ucode'})
+   // Não consulta assinantes nem outros produtos: exige que o UCODE exista no catálogo desta conta.
+   const catalog=await readCatalog(env)
+   const product=catalog.products.find(p=>p.ucode.toLowerCase()===ucode.toLowerCase())
+   if(!product)return respond(res,catalog.complete?404:409,{status:catalog.complete?'product_not_found':'catalog_incomplete'})
+   const result=await readProductPlans(env,product.ucode)
+   return respond(res,200,{status:'read_only',mode,generatedAt:new Date().toISOString(),
+    product:{id:product.id,ucode:product.ucode,name:product.name,status:product.status},...result})
   }
   if(mode!=='assinantes')return respond(res,400,{status:'invalid_mode'})
   const ids=String(env.HOTMART_ALLOWED_PRODUCT_IDS||'').split(',')
