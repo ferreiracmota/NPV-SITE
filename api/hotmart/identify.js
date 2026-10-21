@@ -42,7 +42,8 @@ async function auditPreview(req,res){
   const url=new URL('https://developers.hotmart.com/payments/api/v1/subscriptions')
   url.searchParams.set('product_id','6304828')
   url.searchParams.set('accession_date','1')
-  url.searchParams.set('date_next_charge','1')
+  if(body.compareFilter!=='without_date_next_charge')
+   url.searchParams.set('date_next_charge','1')
   url.searchParams.set('max_results','20')
   if(pageToken)url.searchParams.set('page_token',pageToken)
   const response=await officialGet(url,token)
@@ -81,12 +82,26 @@ async function auditPreview(req,res){
      if(body.page_info?.next_page_token)complete=false
     }else complete=false
    }catch{complete=false}
-   const stats={total:payments.length,statuses:{},approved:0,
-    confirmedRenewals:0,installmentAmbiguous:0,initial:0,lastConfirmedPaidAt:null,
-    hasPaymentHistory:complete}
+   const stats={total:payments.length,statuses:{},paymentTypes:{},
+    approvedDatePresent:0,subscriptionTrue:0,subscriptionFalse:0,subscriptionMissing:0,
+    completeOrApprovedWithDate:0,recurrenceOne:0,recurrenceMultiple:0,recurrenceMissing:0,
+    approved:0,confirmedRenewals:0,installmentAmbiguous:0,
+    initial:0,lastConfirmedPaidAt:null,hasPaymentHistory:complete}
    for(const p of payments){
     const state=String(p.status||'UNKNOWN')
     stats.statuses[state]=(stats.statuses[state]||0)+1
+    const paymentType=String(p.payment_type||'MISSING').slice(0,60)
+    stats.paymentTypes[paymentType]=(stats.paymentTypes[paymentType]||0)+1
+    const paidDate=fromHotmartDate(p.approved_date)
+    if(paidDate)stats.approvedDatePresent++
+    if(p.purchase_subscription===true)stats.subscriptionTrue++
+    else if(p.purchase_subscription===false)stats.subscriptionFalse++
+    else stats.subscriptionMissing++
+    const rec=Number(p.recurrency_number)
+    if(!Number.isSafeInteger(rec)||rec<1)stats.recurrenceMissing++
+    else if(rec===1)stats.recurrenceOne++
+    else stats.recurrenceMultiple++
+    if(['APPROVED','COMPLETE'].includes(state)&&paidDate)stats.completeOrApprovedWithDate++
     const approved=['APPROVED','COMPLETE'].includes(state) &&
       p.purchase_subscription===true && !!fromHotmartDate(p.approved_date)
     if(approved){
