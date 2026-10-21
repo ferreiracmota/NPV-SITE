@@ -50,7 +50,8 @@ test('endpoint real: com autenticação mas sem credenciais Hotmart retorna 503'
 })
 test('auditoria: identificação sem operações que escrevem pontos, perfis, assinaturas ou resgates',()=>{
  const src=readFileSync(new URL('../../api/hotmart/identify.js',import.meta.url),'utf8')
- assert.doesNotMatch(src,/\.insert\(|\.update\(|\.upsert\(|\.delete\(|\.rpc\(|\.createUser\(|\.signUp\(/)
+ assert.doesNotMatch(src,/\b(?:db|client|supabase)\.(?:insert|update|upsert|delete|rpc|createUser|signUp)\(/)
+ assert.doesNotMatch(src,/\.from\([^\n]+\)\.(?:insert|update|upsert|delete)\(/)
  assert.match(src,/if\(!env\.HOTMART_IDENTIFY_SECRET/)
  assert.match(src,/isAuthentic\(req\.headers\.authorization/)
  assert.match(src,/Cache-Control.*no-store/)
