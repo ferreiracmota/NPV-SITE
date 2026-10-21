@@ -24,12 +24,12 @@ function fakeDb({user={id:ID},admin={user_id:ID},authError=null,roleError=null}=
  }
  return {createClientFn,actions}
 }
-async function request({method='GET',authorization='Bearer '+TOKEN,mock=fakeDb(),variables=env}={}){
+async function request({method='GET',authorization='Bearer '+TOKEN,mock=fakeDb(),variables=env,loadSnapshot=undefined,url='/api/clube/hotmart-admin'}={}){
  let result={status:null,headers:{},body:null}
  const res={writeHead(code,headers){result.status=code;result.headers=headers;return this},
   end(body){result.body=JSON.parse(body);return this}}
- await handleHotmartAdminStatus({method,headers:{authorization}},res,
-  {createClientFn:mock.createClientFn,env:variables})
+ await handleHotmartAdminStatus({method,url,headers:{authorization}},res,
+  {createClientFn:mock.createClientFn,env:variables,...(loadSnapshot?{loadSnapshot}:{})})
  return {...result,actions:mock.actions}
 }
 test('1 nenhuma autorização é rejeitada antes de consultar a base',async()=>{
@@ -98,4 +98,44 @@ test('11 navegação somente admin e logo depois de Alunos, sem tocar tela aluno
  const studentNav=src.slice(src.indexOf('aria-label="Navegação do Clube NPV"'),
   src.indexOf('aria-label="Navegação do Clube NPV"')+700)
  assert.doesNotMatch(studentNav,/hotmart/i)
+})
+
+test('12 endpoint não chama Hotmart para aluno não administrador mesmo quando configurado',async()=>{
+ let queries=0
+ const q=async()=>{queries++;throw new Error('not allowed')}
+ const r=await request({mock:fakeDb({admin:null}),variables:{
+  ...env,HOTMART_ADMIN_READONLY_ENABLED:'true',HOTMART_ALLOWED_PRODUCT_IDS:'6304828'
+ },loadSnapshot:q})
+ assert.equal(r.status,403)
+ assert.equal(queries,0)
+})
+test('13 admin autorizado recebe números e nomes apenas após leitura bem-sucedida',async()=>{
+ const rows=[{id:'fake-1',subscriber_name:'Pessoa fictícia',subscriber_email:'fixture@example.invalid',
+  status:'ACTIVE',plan:'mensal',link_status:'pending_no_clube_profile'}]
+ const snapshot={
+  status:'synced',synced_at:'2026-10-21T18:00:00Z',complete:true,
+  metrics:{active:1,linked:0,pending:1,renewed:null,total:1,statuses:{ACTIVE:1}},
+  subscriptions:rows
+ }
+ const r=await request({variables:{...env,HOTMART_ADMIN_READONLY_ENABLED:'true',
+  HOTMART_ALLOWED_PRODUCT_IDS:'6304828'},loadSnapshot:async()=>snapshot,url:'/api/clube/hotmart-admin?refresh=1'})
+ assert.equal(r.status,200)
+ assert.equal(r.body.metrics.active,1)
+ assert.equal(r.body.metrics.renewed,null)
+ assert.equal(r.body.subscriptions[0].subscriber_name,'Pessoa fictícia')
+ assert.equal(r.headers['Cache-Control'],'private, no-store, max-age=0')
+})
+test('14 snapshot incompleto nunca se apresenta como sincronizado',async()=>{
+ const r=await request({variables:{...env,HOTMART_ADMIN_READONLY_ENABLED:'true',
+  HOTMART_ALLOWED_PRODUCT_IDS:'6304828'},loadSnapshot:async()=>({status:'synced',complete:false,subscriptions:[],metrics:{active:0}}),url:'/api/clube/hotmart-admin?refresh=1'})
+ // se há cache bem-sucedido, mostramos STALE; jamais zero de resposta incompleta
+ assert.ok(r.status===503||(r.status===200&&r.body.status==='stale'))
+ assert.notEqual(r.body.status,'synced')
+})
+test('15 uma allowlist errada não chama nenhuma API Hotmart',async()=>{
+ let count=0
+ const r=await request({variables:{...env,HOTMART_ADMIN_READONLY_ENABLED:'true',
+  HOTMART_ALLOWED_PRODUCT_IDS:'999999'},loadSnapshot:async()=>{count++;return null}})
+ assert.equal(r.status,503)
+ assert.equal(count,0)
 })
