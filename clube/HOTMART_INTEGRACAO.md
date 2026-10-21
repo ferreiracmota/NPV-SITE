@@ -1,97 +1,147 @@
-# Hotmart + Clube de Benefícios NPV — integração simplificada (modelo Strava)
+# PR #14 — Hotmart ↔ Clube NPV (não ativar)
 
-Status: **FASE 1 IMPLEMENTADA EM CÓDIGO, SEM CONSULTA REAL**.
-Branch de trabalho: `feature/hotmart-renovacoes-seguro-20261020`.
-PR de rascunho: https://github.com/ferreiracmota/NPV-SITE/pull/14
-**Nenhum arquivo desta branch foi publicado, nenhuma migração foi aplicada,
-nenhum webhook foi ativado e nenhum ponto foi movimentado.**
+Branch: `feature/hotmart-renovacoes-seguro-20261020`
+PR: https://github.com/ferreiracmota/NPV-SITE/pull/14 (rascunho)
 
-## Decisões comerciais já aprovadas (20/10/2026)
+**ESTADO:** código e SQL preparados; migração validada com fixture em PostgreSQL
+17 descartável no GitHub Actions. NÃO migrado ao Supabase oficial. NÃO feito
+merge. NENHUM saldo real ou perfil alterado. NÃO há webhook nem cron ativos.
+IDs em testes são inteiramente fictícios e não podem ser usados na conta real.
 
-- Mensal: 400 pontos por renovação REALMENTE paga e confirmada.
-- Trimestral: 3 competências mensais de 400 pontos = até 1200
-  por pagamento trimestral REALMENTE confirmado, sem antecipação:
-  primeira competência a partir da renovação aprovada; demais
-  a cada mês de cobertura. Uma compra em 3 parcelas nunca são 3 renovações.
-- **Sem teto global por aluno**. Preservar as regras específicas de outros benefícios.
-- Sem pontos por primeira contratação, primeira sincronização, vencimento estimado,
-  compra recusada ou eventos anteriores ao marco configurado.
-- A operação nova deverá usar a categoria renovacao da tabela clube_point_rules
-  (400 agora; futuro valor configurável) e eventos no extrato existente.
+## Componentes preservados
 
-## Fase 1 — leitura somente
+- `api/hotmart/identify.js` — consulta protegida READ-ONLY de catálogo e
+  candidatos (sem insert/update/RPC); resultados minimizados.
+- `api/hotmart/webhook.js` — autenticação HOTTOK, filtro de produtos,
+  validação oficial de pagamento, gravação apenas pela função protegida.
+- `api/hotmart/reconcile.js` — execução protegida por CRON_SECRET, delega
+  à função de conciliação e permanece sem qualquer cron em produção.
+- A carteira já existente `clube_point_events`, `clube_point_rules`,
+  `clube_profiles` e `auth.users`. Nenhuma interface alterada.
 
-Arquivos novos:
-- api/hotmart/identify-core.mjs: catálogo oficial Hotmart, lista de assinaturas,
-  periodicidade 30/90 dias, datas, histórico, baseline e cruzamento com Supabase.
-- api/hotmart/identify.js: endpoint GET com credencial de acesso PRIVADA;
-  modo catalog devolve produtos de assinatura da conta oficial;
-  modo assinantes faz a consulta read-only dos IDs expressamente autorizados,
-  cruza e-mails com Supabase Auth confirmado + clube_profiles approved e
-  retorna dados minimizados e status de vínculo, SEM GRAVAÇÃO.
-- api/hotmart/identify.test.mjs: testes sem rede real nem contas de alunos.
-- api/hotmart/competencies.mjs: cálculo puro de competência mensal/trimestral,
-  idempotência por chave transação + ordinal, liberada somente quando mês vence.
+**Somente estes três endpoints** ficam em `api/hotmart/`. Auxiliares:
+`clube/hotmart/core.mjs`, `discovery.mjs`, `identify-core.mjs`,
+`competencies.mjs`. Testes: `clube/hotmart/*.test.mjs`,
+`clube/hotmart/pg/{fixture,scenarios,permissions}.sql` e `pg/concurrent.sh`.
 
-Endpoints da futura implantação em Preview, com autorização:
-GET /api/hotmart/identify?mode=catalog
-GET /api/hotmart/identify?mode=assinantes
-Cabeçalho obrigatório Authorization: Bearer <credencial privada HOTMART_IDENTIFY_SECRET>.
-A ausência de credenciais retorna 503. Não oferecer endpoint público.
+## Política aprovada
 
-## Credenciais ainda ausentes (NÃO compartilhá-las no chat)
+- Mensal: 1 competência por pagamento mensal recorrente aprovado.
+- Trimestral: 3 competências de 1 mês, a partir do pagamento trimestral
+  confirmado, liberadas no mês de cada competência. Ex.: 31/10, 30/11,
+  31/12. Sem antecipação das competências 2 e 3.
+- Valor por competência = regra `renovacao` vigente no momento do crédito
+  (atualmente 400). Trimestral totaliza 1.200 se a regra ficar em 400.
+- Sem teto global. Limites específicos das demais atividades não são alterados.
+- Compra inicial, parcelamento, previsão de cobrança e sincronização
+  inicial NÃO concedem pontos.
+- Exige confirmação Hotmart, assinatura vinculada e aprovada, email
+  confirmado Supabase Auth, ID de produto+plano autorizado, número de
+  recorrência > 1, transação única, data posterior ao marco de primeira
+  sincronização e a `starts_at` explicitamente aprovada.
+- A primeira sincronização grava `baseline_at` e `baseline_transaction`,
+  preservando-os nas próximas sincronizações, sem recalcular o histórico.
 
-Hotmart > Ferramentas > Credenciais Developers > criar credencial com acesso de
-leitura de produtos, assinaturas e compras; guardar exclusivamente em
-Vercel (ambiente Preview autenticado):
-HOTMART_CLIENT_ID, HOTMART_CLIENT_SECRET, HOTMART_BASIC_TOKEN,
-HOTMART_IDENTIFY_SECRET, HOTMART_ALLOWED_PRODUCT_IDS,
-SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY.
-O identificador de produto NÃO deve ser presumido: primeiro executar
-modo catalog após autorização, confirmar os produtos reais NPV; só então
-configurar HOTMART_ALLOWED_PRODUCT_IDS para consultas aos assinantes.
-NÃO configurar serviço de escrita para esta fase. Não usar VITE_ em segredos.
+## Migração preparada — nunca aplicar automaticamente
 
-## Fase 2 — preparada, mas NÃO ATIVADA
+`clube/migrations/20261020_hotmart_integracao_pendente.sql`
 
-Reaproveitar no PR #14: api/hotmart/core.mjs, webhook.js, discovery.mjs,
-reconcile.js e a migração SQL ainda NÃO APLICADA.
-O SQL anterior exigia um teto geral mensal. Essa exigência foi removida.
-O SQL antigo de lançamento ainda NÃO implementa o parcelamento do benefício
-trimestral por competência: **não ativar live_credit_enabled**.
-O bloqueio de segurança exige baseline_at registrada após primeira identificação.
-Para etapas posteriores, adaptar as RPCs para liberar 1 competência por mês,
-com unicidade (product_id, transaction_id, ordinal), e estornar somente
-competências efetivamente creditadas. Homologar em banco isolado primeiro.
-Não migrar o banco NPV atual sem nova autorização.
+Estruturas e funções:
+- `clube_hotmart_products`: allowlist de produto/UCODE e planos 30/90 dias;
+- `clube_hotmart_subscriptions`: vinculação aprovada ou pendente e
+  baseline imutável;
+- `clube_hotmart_payments`: transação única por produto e assinante;
+- `clube_hotmart_competencies`: unique(payment_id, ordinal), prazos,
+  crédito e estorno distintos, estados scheduled/credited/reversed/void;
+- `clube_hotmart_webhook_events`: trilha de eventos recebidos;
+- `clube_hotmart_sync_state`: cursor por produto, atualizado só após
+  concluir a página inteira;
+- `clube_hotmart_config`: `live_credit_enabled=false` por padrão,
+  requer `starts_at` para autorizar ativação futura;
+- RPC `clube_hotmart_register_baseline` apenas service_role;
+- RPC `clube_hotmart_ingest` (registro/agenda/estorno) apenas service_role;
+- RPC `clube_hotmart_release_due` apenas service_role; impõe kill switch
+  e bloqueios `FOR UPDATE SKIP LOCKED` no pagamento + lock do perfil +
+  idempotência com referência única por competência.
 
-## Conferência oficial das APIs
+Para estorno: só competências creditadas recebem lançamento negativo,
+sem apagar o lançamento original ou resgates; competências futuras são
+anuladas. Cancelamento de recorrências futuras sem evento financeiro não
+estorna cobranças anteriores. Saldo insuficiente pode ficar negativo e
+deve ser revisado na política comercial antes de homologar produção.
 
-Fontes:
-- https://developers.hotmart.com/docs/pt-BR/v1/product/product-list/
+O SQL altera `clube_point_events.performed_by` para permitir NULL
+identificando autoria automatizada. É alteração de schema sujeita à
+revisão/backup antes da migração oficial; NÃO aplicar sem autorização.
+
+## API Hotmart e conciliação
+
+A API de assinaturas pagina com `page_token` / `next_page_token`.
+A API `/:subscriber_code/purchases` documenta resposta array; caso
+retorne objeto paginado, processamos páginas e rejeitamos dados
+incompletos, cursor repetido, falha HTTP ou mais de 8 páginas (fail-closed).
+Timestamps aceitos em segundos ou milissegundos. Atraso não credita;
+somente APPROVED/COMPLETE após confirmação oficial. FINANCED_INSTALLMENT
+não é renovação. Reembolso, cancelamento financeiro e chargeback
+são processados por transação com unicidade. O checkpoint do produto
+avança APENAS após sucesso de todas as compras da página. Sem reprocessamento
+retroativo anterior à `starts_at` / `baseline_at`.
+
+Para reduzir limite de API: até dois assinantes por chamada do conciliador
+e máximo oito páginas de histórico por assinante. Operar com intervalo
+apropriado quando cron for autorizado. O catálogo e assinaturas reais
+precisam confirmar formato, paginação e limites da API.
+
+**CUIDADO COM TROCA DE PLANO:** quando uma assinatura muda de 30 para 90
+dias (ou vice-versa), o endpoint de assinaturas pode trazer só o plano
+atual. A API de compras nem sempre traz o plano histórico do pagamento.
+Para transações antigas ambíguas, exige-se comprovação pela notificação
+de compra ou outra fonte oficial vinculada à época; NÃO inferir o plano
+anterior apenas do plano atual. Essa verificação é pendência de
+homologação com eventos reais e não justifica liberar automaticamente
+transações históricas.
+
+## Testes comprovados e limites da validação
+
+GitHub Actions `.github/workflows/hotmart-qa.yml`: Node 22, pnpm,
+verificação sintática, testes JavaScript e build de frontend;
+PostgreSQL 17 EM CONTAINER DESCARTÁVEL, sem Supabase externo.
+Os testes executam exatamente esta migração, cenários de mensal,
+trimestral, estornos, chargeback, baseline, RLS, permissões e duas
+conexões simultâneas. Cenários usam emails e IDs FICTÍCIOS.
+
+Fixture replica somente as colunas necessárias das tabelas atuais.
+**Não representa uma homologação ponta a ponta Supabase** com esquema
+completo, políticas reais de Auth, rede, triggers, Vercel ou Hotmart.
+Para produção, fazer backup, revisão de migração contra schema atual,
+testes de identidade real e revisão de saldo negativo/resgate.
+A regra do Clube continua sendo lida da tabela, com valores
+exemplificados em 400 e 550 em testes isolados.
+
+## Retomada quando Vercel voltar (sem enviar segredos por chat)
+
+1. Confirmar PREVIEW `HOTMART_CLIENT_ID`, `HOTMART_CLIENT_SECRET`,
+   `HOTMART_BASIC_TOKEN`, `HOTMART_IDENTIFY_SECRET`. As quatro estavam
+   cadastradas como Sensitive na branch; não duplicar nem exibir valores.
+2. No Preview protegido, testar acesso negado sem Authorization e com
+   Bearer incorreto. Testar `GET /api/hotmart/identify?mode=catalog`
+   autenticado; validar IDs/UCODE sem assumir IDs de testes.
+3. **Aprovação do usuário** dos produtos/planos NPV antes de consultar
+   assinantes e ativar `HOTMART_ALLOWED_PRODUCT_IDS`.
+4. Consulta de assinantes SOMENTE READ-ONLY; cruzar email de assinante
+   confirmado com perfil Supabase aprovado e verificar conflitos,
+   próxima cobrança e último pagamento; nenhuma persistência ainda.
+5. Homologar um banco Supabase de teste com schema/políticas atuais,
+   vínculo real autorizado, troca de plano, APIs e webhook com
+   dados de teste, cancelamentos, créditos concorrentes e histórico.
+6. Somente depois de autorização expressa: aplicar migração em produção,
+   configurar allowlist, `starts_at` futura, habilitar release/cron e
+   liberar `live_credit_enabled`. Nunca retroagir automaticamente.
+
+Docs oficiais:
 - https://developers.hotmart.com/docs/pt-BR/v1/subscription/get-subscribers/
 - https://developers.hotmart.com/docs/es/v1/subscription/get-subscription-purchases/
-- https://developers.hotmart.com/docs/pt-BR/start/app-auth/
+- https://developers.hotmart.com/docs/pt-BR/start/pagination/
 - https://developers.hotmart.com/docs/en/2.0.0/webhook/purchase-webhook/
 
-Nota: date_next_charge é PREVISÃO de tentativa de cobrança, nunca prova de
-pagamento. Os timestamps da documentação alternam segundos e milissegundos,
-portanto os normalizadores aceitam ambos.
-
-## Critérios para avançar
-
-1. Acesso OAuth oficial de leitura, com credenciais no Vercel Preview.
-2. Identificar IDs e UCODE dos produtos/planos NPV pela própria Hotmart.
-3. Obter lista real somente leitura, preservar privacidade, verificar contas
-   Supabase confirmadas; não vincular apenas por e-mail informado.
-4. Fotografar baseline real (último pagamento aprovado e próxima cobrança),
-   sem criar conta fictícia nem alterar saldo.
-5. Homologar o mecanismo de persistência do vínculo e a distribuição trimestral
-   em DB de testes; validar conflitos e duplicidade concorrente.
-6. Testes E2E webhook, falhas, atrasos, estornos, 30/90 dias e 12 cenários
-   mandatórios; verificar integridade histórica, RLS e idempotência.
-7. Aprovação explícita antes de migrar Supabase de produção, publicar endpoint
-   ou permitir créditos reais; fixar data starts_at futura.
-
-**Estado do banco oficial ao diagnóstico**: 19 eventos, soma assinada de
-1.170 pontos; regra renovacao=400. Apenas leituras efetuadas.
+**Nota:** `date_next_charge` é PREVISÃO, não pagamento confirmado.
