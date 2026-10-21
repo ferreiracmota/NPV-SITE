@@ -53,6 +53,7 @@ for(const [browserName,browserType] of [['chromium',chromium],['webkit',webkit]]
    assert.deepEqual(errors,[])
    // Quando não-admin, a aba e a consulta desaparecem.
    await page.evaluate(()=>window.__NPV_SET_ADMIN__(false))
+   await page.locator('.npv-hotmart-admin').waitFor({state:'detached'})
    assert.equal(await page.locator('.npv-hotmart-admin').count(),0)
    await context.close()
    checked++
