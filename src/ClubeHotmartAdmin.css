@@ -35,8 +35,8 @@
 .clube-shell .npv-hotmart-filters>.npv-hotmart-search{flex:1 1 245px;position:relative;min-width:180px}
 .clube-shell .npv-hotmart-search svg{position:absolute;top:13px;left:12px;color:#8b9b85}
 .clube-shell .npv-hotmart-search input{width:100%;padding:0 12px 0 38px}
-.clube-shell .npv-hotmart-table-wrap{max-width:100%;overflow-x:auto;border:1px solid #e5ece2;border-radius:13px;-webkit-overflow-scrolling:touch}
-.clube-shell .npv-hotmart-table{width:100%;border-collapse:collapse;min-width:750px;font-size:12px;text-align:left}
+.clube-shell .npv-hotmart-table-wrap{width:100%;min-width:0;max-width:100%;overflow-x:auto;overflow-y:hidden;border:1px solid #e5ece2;border-radius:13px;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;touch-action:pan-x pan-y}
+ .clube-shell .npv-hotmart-table{width:100%;border-collapse:collapse;min-width:750px;font-size:12px;text-align:left}
 .clube-shell .npv-hotmart-table th{background:#f4f8f1;color:#627761;letter-spacing:.025em;font-size:10px;font-weight:850;padding:13px 15px;white-space:nowrap;border-bottom:1px solid #e2ebde}
 .clube-shell .npv-hotmart-table td{padding:15px;border-bottom:1px solid #edf1eb;color:#38513c;vertical-align:middle}
 .clube-shell .npv-hotmart-table td strong{display:block;font-weight:780}
@@ -69,4 +69,12 @@
  .clube-shell .npv-hotmart-metrics{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
  .clube-shell .npv-hotmart-metric{padding:11px;min-height:126px}
  .clube-shell .npv-hotmart-metric strong{font-size:23px}
+}
+
+/* Rolagem confinada à tabela Hotmart, sem ampliar a página do Clube. */
+.clube-shell .npv-hotmart-table-wrap:focus-visible{outline:2px solid #719c50;outline-offset:3px}
+.clube-shell .npv-hotmart-swipe-hint{display:none;margin:0 0 8px;color:#768876;font-size:11px;line-height:1.5}
+@media(max-width:760px){
+ .clube-shell .npv-hotmart-admin,.clube-shell .npv-hotmart-panel{min-width:0;max-width:100%}
+ .clube-shell .npv-hotmart-swipe-hint{display:block}
 }
