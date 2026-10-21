@@ -74,7 +74,7 @@ test('9 admin autorizado vê apenas estado sem integração e não números fals
  assert.equal(r.body.metrics,null)
  assert.deepEqual(r.body.subscriptions,[])
  assert.equal(r.body.synced_at,null)
- assert.equal(r.headers['Cache-Control'],'no-store, private')
+ assert.equal(r.headers['Cache-Control'],'private, no-store, max-age=0')
  assert.equal(r.headers.Vary,'Authorization')
  assert.deepEqual(r.actions.filter(x=>x.operation==='from').map(x=>x.table),['clube_admins'])
 })
