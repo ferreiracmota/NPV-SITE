@@ -84,7 +84,7 @@ test('10 API só consulta Hotmart no servidor, nunca escreve pontos nem expõe c
  assert.match(server,/SUPABASE_SERVICE_ROLE_KEY/)
  assert.doesNotMatch(server,/\.(insert|update|delete|upsert|rpc)\(/)
  const client=readFileSync(new URL('../../src/ClubeHotmartAdmin.jsx',import.meta.url),'utf8')
- assert.match(client,/Authorization:'Bearer '\+session\.access_token/)
+ assert.match(client,/Authorization:'Bearer '\+accessToken/)
  assert.match(client,/if\(!isAdmin\)return null/)
  assert.doesNotMatch(client,/service_role|VITE_HOTMART_/)
 })
