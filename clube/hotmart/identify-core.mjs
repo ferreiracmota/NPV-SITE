@@ -106,6 +106,30 @@ export async function readCatalog(env,fetcher=fetch){
   complete:found.complete,hasMore:!found.complete
  }
 }
+// Consulta separada pelo UCODE para limitar requisições à API.
+// Retorna o código do plano (alfanumérico), NÃO presume que seja o plan_id numérico das assinaturas.
+export async function readProductPlans(env,ucode,fetcher=fetch){
+ if(typeof ucode!=='string'||!/^[a-f0-9-]{36}$/i.test(ucode))
+  throw new Error('invalid_product_ucode')
+ const token=await oauthToken(env,fetcher)
+ if(!token)throw new Error('hotmart_credentials_missing')
+ const baseUrl='https://developers.hotmart.com/products/api/v1/products/'+encodeURIComponent(ucode)+'/plans'
+ const page=await readPages({baseUrl,token,pageLimit:3,pageSize:20,fetcher})
+ return {
+  ucode,
+  plans:page.items.map(item=>({
+   code:typeof item.code==='string'?item.code:null,
+   name:String(item.name||''),
+   periodicity:String(item.periodicity||'UNKNOWN'),
+   paymentMode:String(item.payment_mode||'UNKNOWN'),
+   maxInstallments:Number.isSafeInteger(Number(item.max_installments))?
+    Number(item.max_installments):null,
+   numericPlanId:null
+  })),
+  complete:page.complete,hasMore:!page.complete
+ }
+}
+
 export async function readSubscriptions(env,authorizedIds,fetcher=fetch){
  if(!Array.isArray(authorizedIds)||!authorizedIds.length)throw new Error('authorized_products_required')
  const token=await oauthToken(env,fetcher)
