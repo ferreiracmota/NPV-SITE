@@ -23,6 +23,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Instalar dependências para validar o endpoint e compilar o site
+        run: npm ci
       - name: Validar sintaxe JS de produção e código de teste
         run: |
           node --check clube/hotmart/core.mjs
@@ -34,6 +36,9 @@ jobs:
           node --check api/hotmart/identify.js
           node --check clube/hotmart/identify-core.mjs
           node --check clube/hotmart/identify.test.mjs
+          node --check clube/hotmart/identify-handler.test.mjs
           node --check clube/hotmart/competencies.mjs
       - name: Executar cenários simulados sem credenciais, rede ou banco real
         run: node --test clube/hotmart/*.test.mjs
+      - name: Compilar frontend sem publicar
+        run: npm run build
