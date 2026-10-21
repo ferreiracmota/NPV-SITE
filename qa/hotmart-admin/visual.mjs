@@ -26,6 +26,17 @@ for(const [browserName,browserType] of [['chromium',chromium],['webkit',webkit]]
    })
    await page.goto(base,{waitUntil:'networkidle'})
    await page.locator('.npv-hotmart-pending').getByText('Aguardando integração com a Hotmart').waitFor()
+   assert.equal(await page.getByRole('heading',{name:'Hotmart — Assinaturas'}).count(),1)
+   assert.equal(await page.getByRole('region',{name:'Tabela de assinaturas com rolagem horizontal'}).count(),1)
+   if(width<=768){
+     const scrolling=await page.locator('.npv-hotmart-table-wrap').evaluate(element=>{
+       const before={visible:element.clientWidth,content:element.scrollWidth}
+       element.scrollLeft=180
+       return {...before,after:element.scrollLeft}
+     })
+     assert.ok(scrolling.content>scrolling.visible+40,JSON.stringify({browserName,width,scrolling}))
+     assert.ok(scrolling.after>10,JSON.stringify({browserName,width,scrolling}))
+   }
    assert.equal(await page.locator('.npv-hotmart-metric>strong').count(),4)
    assert.deepEqual(await page.locator('.npv-hotmart-metric>strong').allTextContents(),['—','—','—','—'])
    assert.equal(await page.locator('.npv-hotmart-table tbody tr').count(),1)
@@ -42,6 +53,7 @@ for(const [browserName,browserType] of [['chromium',chromium],['webkit',webkit]]
    assert.deepEqual(errors,[])
    // Quando não-admin, a aba e a consulta desaparecem.
    await page.evaluate(()=>window.__NPV_SET_ADMIN__(false))
+   await page.locator('.npv-hotmart-admin').waitFor({state:'detached'})
    assert.equal(await page.locator('.npv-hotmart-admin').count(),0)
    await context.close()
    checked++
