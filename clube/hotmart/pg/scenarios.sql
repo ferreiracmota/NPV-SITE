@@ -117,6 +117,54 @@ SELECT test.expect(public.clube_hotmart_ingest(
  'HP-TRIMESTRAL-1','SUB-TEST-A','aluno@example.invalid',20,5,now()-interval '5 days',true)
  ='terminal_preserved','aprovado atrasado não ressuscita chargeback');
 
+
+-- Reembolso ANTES do primeiro crédito anula as três competências sem lançamento.
+SELECT test.expect(public.clube_hotmart_ingest(
+ 'evt-early-refund-a','PURCHASE_APPROVED',1111111,'TESTE-EXCLUSIVO',
+ 'HP-REFUND-ANTES','SUB-TEST-A','aluno@example.invalid',20,8,now()-interval '1 hour',true)
+ ='scheduled_pending_release','preparar reembolso antes de pontuar');
+SELECT test.expect(public.clube_hotmart_ingest(
+ 'evt-early-refund-b','PURCHASE_REFUNDED',1111111,'TESTE-EXCLUSIVO',
+ 'HP-REFUND-ANTES','SUB-TEST-A',NULL,20,8,NULL,false)
+ ='refunded','refund antes de liberar');
+SELECT test.expect((SELECT count(*) FROM public.clube_hotmart_competencies c
+ JOIN public.clube_hotmart_payments p ON p.id=c.payment_id
+ WHERE p.transaction_id='HP-REFUND-ANTES' AND c.status='void')=3,
+ 'refund prévio anula as três competências');
+SELECT test.expect((SELECT count(*) FROM public.clube_hotmart_competencies c
+ JOIN public.clube_hotmart_payments p ON p.id=c.payment_id
+ WHERE p.transaction_id='HP-REFUND-ANTES' AND c.credit_event_id IS NOT NULL)=0,
+ 'refund prévio jamais lançou pontos');
+
+-- Alteração administrativa de regra afeta novos créditos, não altera históricos.
+UPDATE public.clube_point_rules SET points=550 WHERE event_type='renovacao';
+SELECT test.expect(public.clube_hotmart_ingest(
+ 'evt-dynamic','PURCHASE_APPROVED',1111111,'TESTE-EXCLUSIVO',
+ 'HP-REGRA-EDITAVEL','SUB-TEST-A','aluno@example.invalid',10,9,now()-interval '1 hour',true)
+ ='scheduled_pending_release','pagamento da regra editável');
+SELECT test.expect(public.clube_hotmart_release_due(now())=1,'uma competência da nova regra');
+SELECT test.expect((SELECT points FROM public.clube_point_events
+ WHERE reference_id IN (SELECT 'hotmart:comp:'||c.id::text
+ FROM public.clube_hotmart_competencies c
+ JOIN public.clube_hotmart_payments p ON p.id=c.payment_id
+ WHERE p.transaction_id='HP-REGRA-EDITAVEL'))=550,
+ 'RPC consulta valor atual da renovação, 550');
+SELECT test.expect((SELECT points FROM public.clube_point_events
+ WHERE reference_id IN (SELECT 'hotmart:comp:'||c.id::text
+ FROM public.clube_hotmart_competencies c
+ JOIN public.clube_hotmart_payments p ON p.id=c.payment_id
+ WHERE p.transaction_id='HP-MENSAL-1'))=400,
+ 'regra alterada não recalcula histórico');
+UPDATE public.clube_point_rules SET points=400 WHERE event_type='renovacao';
+
+-- O cálculo no PostgreSQL preserva fim de mês e ano a partir da MESMA data-base.
+SELECT test.expect((('2026-01-31 12:00:00+00'::timestamptz
+ +make_interval(months=>1)) AT TIME ZONE 'UTC')::date='2026-02-28'::date,
+ 'janeiro 31 vira fevereiro 28');
+SELECT test.expect((('2026-12-31 12:00:00+00'::timestamptz
+ +make_interval(months=>1)) AT TIME ZONE 'UTC')::date='2027-01-31'::date,
+ 'dezembro para janeiro');
+
 -- Cancelamento apenas de assinatura não afeta as compras pagas.
 SELECT test.expect(public.clube_hotmart_ingest(
  'evt-cancel-plan','SUBSCRIPTION_CANCELLATION',1111111,'TESTE-EXCLUSIVO',
