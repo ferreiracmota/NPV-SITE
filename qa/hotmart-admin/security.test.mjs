@@ -78,9 +78,10 @@ test('9 admin autorizado vê apenas estado sem integração e não números fals
  assert.equal(r.headers.Vary,'Authorization')
  assert.deepEqual(r.actions.filter(x=>x.operation==='from').map(x=>x.table),['clube_admins'])
 })
-test('10 API não consulta Hotmart, não lança pontos e não contém service role',()=>{
+test('10 API só consulta Hotmart no servidor, nunca escreve pontos nem expõe credenciais no cliente',()=>{
  const server=readFileSync(new URL('../../api/clube/hotmart-admin.js',import.meta.url),'utf8')
- assert.doesNotMatch(server,/HOTMART_CLIENT_|HOTMART_BASIC_|HOTMART_HOTTOK|SERVICE_ROLE_KEY/)
+ assert.match(server,/HOTMART_CLIENT_ID/)
+ assert.match(server,/SUPABASE_SERVICE_ROLE_KEY/)
  assert.doesNotMatch(server,/\.(insert|update|delete|upsert|rpc)\(/)
  const client=readFileSync(new URL('../../src/ClubeHotmartAdmin.jsx',import.meta.url),'utf8')
  assert.match(client,/Authorization:'Bearer '\+session\.access_token/)
