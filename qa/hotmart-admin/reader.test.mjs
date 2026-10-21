@@ -107,7 +107,7 @@ test('repetição de cursor, 429 e página incompleta falham fechados',async()=>
  await assert.rejects(()=>pages('https://developers.hotmart.com/payments/api/v1/subscriptions','fixture',
   async()=>({ok:false,status:429})),/hotmart_http_429/)
  await assert.rejects(()=>pages('https://developers.hotmart.com/payments/api/v1/subscriptions','fixture',
-  async()=>({ok:true,json:async()=>({items:[],page_info:{next_page_token:'B'}})},{limit:1}),/hotmart_pages_incomplete/)
+  async()=>({ok:true,json:async()=>({items:[],page_info:{next_page_token:'B'}})}),{limit:1}),/hotmart_pages_incomplete/)
 })
 test('consulta de inventário não usa date_next_charge como filtro e não baixa outros produtos',async()=>{
  const urls=[]
