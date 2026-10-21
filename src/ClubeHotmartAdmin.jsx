@@ -55,7 +55,7 @@ export default function ClubeHotmartAdmin({session,isAdmin}){
     <div className="npv-hotmart-top">
       <div className="npv-hotmart-heading">
         <div className="npv-hotmart-eyebrow"><ShieldCheck size={15}/> ÁREA RESTRITA · ADMINISTRADOR</div>
-        <h2>Hotmart <span>— Assinaturas</span></h2>
+        
         <p>Visão administrativa das assinaturas, pagamentos confirmados e competências de pontos do Clube NPV.</p>
       </div>
       <button type="button" className="npv-hotmart-refresh" onClick={()=>refresh()} disabled={status==='loading'}>
@@ -107,7 +107,8 @@ export default function ClubeHotmartAdmin({session,isAdmin}){
           <option value="pending">Pendente</option><option value="cancelled">Cancelada</option>
         </select></label>
       </div>
-      <div className="npv-hotmart-table-wrap">
+      <p className="npv-hotmart-swipe-hint">Deslize a tabela para os lados para ver todas as colunas.</p>
+      <div className="npv-hotmart-table-wrap" role="region" tabIndex={0} aria-label="Tabela de assinaturas com rolagem horizontal">
         <table className="npv-hotmart-table">
           <thead><tr><th>Assinante / vínculo</th><th>Produto / plano</th><th>Situação</th>
             <th>Próxima cobrança</th><th>Último pagamento</th><th>Pontos</th></tr></thead>
