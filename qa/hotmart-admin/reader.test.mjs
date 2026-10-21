@@ -192,3 +192,38 @@ test('nenhum cadastro, credito, webhook ou rpc é executado nesta rota',async()=
  assert.match(src,/auth\.getUser/)
  assert.match(src,/administrator\?\.user_id/)
 })
+
+test('vínculo real simulado: servidor usa service role só depois da autorização e exige Auth confirmado',async()=>{
+ const hits=[]
+ const clientFn=(url,key)=>{
+  hits.push(key)
+  if(key==='fixture_service_role')return {
+   from(table){assert.equal(table,'clube_profiles');return {
+    select(){return {limit:async()=>({data:[{
+     id:'verified-user',email:'cliente@example.invalid',approved:true
+    }],count:1,error:null})}}
+   }},
+   auth:{admin:{getUserById:async(id)=>{
+    assert.equal(id,'verified-user')
+    return {data:{user:{id,email:'cliente@example.invalid',email_confirmed_at:'2026-10-01T00:00:00Z'}},error:null}
+   }}}
+  }
+  return {auth:{getUser:async()=>({data:{user:{id:'admin-123'}},error:null})},
+   from(table){assert.equal(table,'clube_admins');return {select(){return {eq(){return {
+    maybeSingle:async()=>({data:{user_id:'admin-123'},error:null})}}}}}}
+  }
+ }
+ const response={status:null,body:null}
+ const res={writeHead(status){response.status=status;return this},
+  end(data){response.body=JSON.parse(data)}}
+ const reader=async()=>({complete:true,synced_at:'2026-10-21T10:00:00Z',
+  subscriptions:sortedSubscriptions([subscriber(1,'ACTIVE')])})
+ await handleHotmartAdminStatus(
+  {method:'GET',url:'/api/clube/hotmart-admin?refresh=1',headers:{authorization:jwt}},
+  res,{env:{...env,SUPABASE_SERVICE_ROLE_KEY:'fixture_service_role'},createClientFn:clientFn,reader})
+ assert.equal(response.status,200)
+ assert.equal(response.body.identity_verified,true)
+ assert.equal(response.body.subscriptions[0].link_status,'linked')
+ assert.equal(response.body.metrics.pending,0)
+ assert.deepEqual(hits,[env.VITE_CLUBE_SUPABASE_PUBLISHABLE_KEY,'fixture_service_role'])
+})
