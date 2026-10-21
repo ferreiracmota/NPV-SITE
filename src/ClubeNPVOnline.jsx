@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   ArrowLeft, ArrowRight, Award, Check, Clock3, Gift, History, KeyRound, LockKeyhole,
   LogOut, Mail, Package, Plus, Search, ShieldCheck, Sparkles, TrendingUp,
-  UserRound, Users, Wallet, X, Shirt, CupSoda, Droplets, Ticket, Pencil, ImagePlus, SlidersHorizontal, ChevronDown, ChevronUp
+  UserRound, Users, Wallet, X, Shirt, CupSoda, Droplets, Ticket, Pencil, ImagePlus, SlidersHorizontal, ChevronDown, ChevronUp, CreditCard
 } from 'lucide-react'
 import { clubeSupabase as supabase } from './clubeSupabase.js'
 import logoVaiCirculo from './assets/logo-vai-circular.webp'
@@ -17,6 +17,7 @@ import ClubeRegisteredActivities from './ClubeRegisteredActivities.jsx'
 import ClubeMonthlyChallengeAdmin from './ClubeMonthlyChallengeAdmin.jsx'
 import { currentNpvMonth } from '../clube/strava/challengeProgress.mjs'
 import ClubeSiteWidgetAdmin from './ClubeSiteWidgetAdmin.jsx'
+import ClubeHotmartAdmin from './ClubeHotmartAdmin.jsx'
 
 const format = value => Number(value||0).toLocaleString('pt-BR')
 const date = value => new Date(value).toLocaleDateString('pt-BR',{day:'2-digit',month:'short',year:'numeric'})
@@ -452,6 +453,7 @@ export default function ClubeNPVOnline() {
       <div className="clube-side-label">MINHA NAVEGAÇÃO</div>
       <nav className="clube-nav"><button className={tab==='inicio'?'active':''} onClick={()=>setTab('inicio')}><Wallet size={18}/>Visão geral</button>
         {isAdmin&&<button className={tab==='alunos'?'active':''} onClick={()=>setTab('alunos')}><Users size={18}/>Alunos</button>}
+        {isAdmin&&<button className={tab==='hotmart'?'active':''} onClick={()=>setTab('hotmart')}><CreditCard size={18}/>Hotmart — Assinaturas</button>}
         <button className={tab==='historico'?'active':''} onClick={()=>setTab('historico')}><History size={18}/>Histórico</button>
         <button className={tab==='recompensas'?'active':''} onClick={()=>setTab('recompensas')}><Gift size={18}/>Recompensas</button>
         <button className={tab==='parceiros'?'active':''} onClick={()=>setTab('parceiros')}><Award size={18}/>Parceiros</button>
@@ -464,8 +466,8 @@ export default function ClubeNPVOnline() {
       {isAdmin&&<div className="clube-online-mobile-account"><span>Administrador · {user.email}</span><button onClick={signOut}><LogOut size={15}/> Sair</button></div>}
       {error&&<div className="clube-online-alert" role="alert">{error} <button onClick={refresh}>Tentar novamente</button></div>}
       {notice&&<div className="clube-feedback" role="status"><Check size={17}/>{notice}<button onClick={()=>setNotice('')}><X size={16}/></button></div>}
-      <div className="clube-intro"><div><div className="clube-eyebrow"><span/> {isAdmin?'PAINEL DE GESTÃO':'MINHA CONTA NPV'}</div><h1>{tab==='inicio'?(isAdmin?'Seu clube, sob controle.':'Sua evolução vale pontos.'):tab==='alunos'?'Alunos do Clube NPV':tab==='historico'?'Histórico de pontos':tab==='parceiros'?'Parceiros e descontos':tab==='widget'?'Widget do site':'Benefícios e recompensas'}</h1><p>{isAdmin?'Gerencie os cadastros, lançamentos e solicitações com segurança.':'Seu extrato de pontos e benefícios em um só lugar.'}</p></div>
-        {isAdmin&&tab!=='recompensas'&&tab!=='parceiros'&&tab!=='widget'&&<button className="clube-btn clube-btn-primary" onClick={()=>newAward()}><Plus size={17}/> Lançar pontos</button>}
+      <div className="clube-intro"><div><div className="clube-eyebrow"><span/> {isAdmin?'PAINEL DE GESTÃO':'MINHA CONTA NPV'}</div><h1>{tab==='inicio'?(isAdmin?'Seu clube, sob controle.':'Sua evolução vale pontos.'):tab==='alunos'?'Alunos do Clube NPV':tab==='hotmart'?'Hotmart — Assinaturas':tab==='historico'?'Histórico de pontos':tab==='parceiros'?'Parceiros e descontos':tab==='widget'?'Widget do site':'Benefícios e recompensas'}</h1><p>{isAdmin?'Gerencie os cadastros, lançamentos e solicitações com segurança.':'Seu extrato de pontos e benefícios em um só lugar.'}</p></div>
+        {isAdmin&&tab!=='recompensas'&&tab!=='parceiros'&&tab!=='widget'&&tab!=='hotmart'&&<button className="clube-btn clube-btn-primary" onClick={()=>newAward()}><Plus size={17}/> Lançar pontos</button>}
       </div>
       {loading&&<p className="clube-online-loading">Atualizando dados do clube...</p>}
       {tab==='inicio'&&isAdmin&&<>
@@ -476,6 +478,7 @@ export default function ClubeNPVOnline() {
       </>}
       {tab==='inicio'&&isAdmin&&<><ClubeKmSetup/><ClubeMonthlyChallengeAdmin/><ClubeRegisteredActivities session={session}/></>}
       {tab==='widget'&&isAdmin&&<ClubeSiteWidgetAdmin rewards={data.rewards} partners={data.partners}/>}
+      {tab==='hotmart'&&isAdmin&&<ClubeHotmartAdmin session={session} isAdmin={isAdmin}/>}
       {tab==='inicio'&&!isAdmin&&<>
         <section className={`clube-student-summary clube-student-summary-statement${activitiesOpen?' is-open':''}`} aria-label="Seus pontos e extrato">
           <button type="button" className="clube-student-summary-trigger"
