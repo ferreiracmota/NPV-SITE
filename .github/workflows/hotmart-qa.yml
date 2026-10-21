@@ -44,3 +44,42 @@ jobs:
         run: node --test clube/hotmart/*.test.mjs
       - name: Compilar frontend sem publicar
         run: corepack pnpm run build
+
+  pg_integration:
+    name: PostgreSQL real descartável (sem Supabase)
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: npv_test_only
+          POSTGRES_DB: hotmart_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d hotmart_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      PGHOST: localhost
+      PGPORT: '5432'
+      PGUSER: postgres
+      PGPASSWORD: npv_test_only
+      PGDATABASE: hotmart_ci
+    steps:
+      - uses: actions/checkout@v4
+      - name: Instalar cliente PostgreSQL quando ausente
+        run: |
+          if ! command -v psql; then
+            sudo apt-get update
+            sudo apt-get install -y postgresql-client
+          fi
+      - name: Criar banco sintético, aplicar migração pendente e exercitar RPCs
+        run: |
+          psql -v ON_ERROR_STOP=1 -f clube/hotmart/pg/fixture.sql
+          psql -v ON_ERROR_STOP=1 -f clube/migrations/20261020_hotmart_integracao_pendente.sql
+          psql -v ON_ERROR_STOP=1 -f clube/hotmart/pg/scenarios.sql
+      - name: Testar travas entre duas conexões simultâneas
+        run: bash clube/hotmart/pg/concurrent.sh
