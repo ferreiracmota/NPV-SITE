@@ -42,7 +42,7 @@ for(const [browserName,browserType] of [['chromium',chromium],['webkit',webkit]]
    assert.equal(await page.locator('.npv-hotmart-table tbody tr').count(),1)
    await page.getByPlaceholder('Pesquisar assinante, e-mail ou produto').fill('qualquer pesquisa')
    await page.getByLabel('Filtrar por plano').selectOption('trimestral')
-   await page.getByLabel('Filtrar por situação').selectOption('active')
+   await page.getByLabel('Filtrar por situação').selectOption('ACTIVE')
    assert.ok(await page.getByText('Nenhum registro encontrado para os filtros selecionados.').isVisible())
    await page.getByPlaceholder('Pesquisar assinante, e-mail ou produto').fill('')
    await page.getByLabel('Filtrar por plano').selectOption('todos')
@@ -68,6 +68,44 @@ for(const [browserName,browserType] of [['chromium',chromium],['webkit',webkit]]
   await page.getByText('Acesso administrativo não autorizado').waitFor()
   assert.equal(await page.locator('.npv-hotmart-metric>strong').first().textContent(),'—')
   await context.close()
+  // Resposta realista e inteiramente fictícia: 2 ativos e histórico heterogêneo.
+  const context2=await browser.newContext({viewport:{width:390,height:850}})
+  const page2=await context2.newPage()
+  const fakeRows=[
+   {id:'X1',subscriber_name:'Aluno de teste A',subscriber_email:'a@example.invalid',status:'ACTIVE',
+    plan:'mensal',plan_label:'Mensal',product_name:'NPV teste',link_status:'linked',
+    last_paid_at:'2026-10-20T12:00:00Z',next_charge_at:'2026-11-20T12:00:00Z'},
+   {id:'X2',subscriber_name:'Aluno de teste B',subscriber_email:'b@example.invalid',status:'ACTIVE',
+    plan:'trimestral',plan_label:'Trimestral',product_name:'NPV teste',link_status:'pending_no_clube_profile'},
+   {id:'X3',subscriber_name:'Aluno antigo fictício',subscriber_email:'c@example.invalid',status:'CANCELLED_BY_ADMIN',
+    plan:'mensal',plan_label:'Mensal',product_name:'NPV teste',link_status:'pending_no_clube_profile'}
+  ]
+  await page2.route('**/api/clube/hotmart-admin',route=>route.fulfill({
+   status:200,contentType:'application/json',body:JSON.stringify({
+    status:'synced',synced_at:'2026-10-21T18:00:00Z',identity_complete:true,
+    metrics:{active:2,linked:1,pending:1,renewed:null,total:3,
+     statuses:{ACTIVE:2,DELAYED:0,INACTIVE:0,CANCELLED_BY_ADMIN:1,CANCELLED_BY_CUSTOMER:0,OTHER:0}},
+    subscriptions:fakeRows
+   })
+  }))
+  await page2.goto(base,{waitUntil:'networkidle'})
+  await page2.getByText('Dados consultados na Hotmart').waitFor()
+  assert.deepEqual((await page2.locator('.npv-hotmart-metric>strong').allTextContents()),['2','1','1','—'])
+  assert.equal(await page2.locator('.npv-hotmart-table tbody tr').count(),3)
+  assert.equal(await page2.locator('.npv-hotmart-row-active').count(),2)
+  await page2.getByLabel('Filtrar por situação').selectOption('CANCELLED_BY_ADMIN')
+  assert.equal(await page2.locator('.npv-hotmart-table tbody tr').count(),1)
+  await page2.getByLabel('Filtrar por situação').selectOption('todas')
+  await page2.getByLabel('Filtrar por plano').selectOption('trimestral')
+  assert.equal(await page2.locator('.npv-hotmart-table tbody tr').count(),1)
+  await page2.getByLabel('Filtrar por plano').selectOption('todos')
+  await page2.getByPlaceholder('Pesquisar assinante, e-mail ou produto').fill('b@example.invalid')
+  assert.equal(await page2.locator('.npv-hotmart-table tbody tr').count(),1)
+  const dims2=await page2.evaluate(()=>({width:window.innerWidth,scroll:document.documentElement.scrollWidth}))
+  assert.ok(dims2.scroll<=dims2.width+1,JSON.stringify({browserName,dims2}))
+  const t=await page2.locator('.npv-hotmart-table-wrap').evaluate(el=>{el.scrollLeft=200;return el.scrollLeft})
+  assert.ok(t>10)
+  await context2.close()
  }finally{await browser.close()}
 }
 console.log('PASS: '+checked+' viewports desktop/mobile em Chromium e WebKit, filtros, autenticação simulada, responsividade e sem erros JS')
