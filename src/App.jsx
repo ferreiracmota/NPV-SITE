@@ -1,6 +1,7 @@
 import './App.css'
 import './npvPremiumPreview.css'
 import './npvPremiumV2.css'
+import editorialMultisports from './assets/npv-multisport-editorial.avif?url'
 import ClubeFloatingWidget from './ClubeFloatingWidget.jsx'
 /* Vídeos versionados pelo Vite: urls produzidas junto com a compilação,
    sem depender de /public/videos, que pode não existir na implantação. */
@@ -1027,9 +1028,9 @@ useEffect(() => {
     </a>
   </div>
 
-  {/* Campanha editorial utiliza a foto própria já presente na seção Sobre. */}
+  {/* Campanha editorial usa a imagem multiesportes enviada pelo usuário, otimizada sem alterar sua composição. */}
   <div className={'npv-campaign-editorial'+(heroSlide === 1 ? ' is-active' : '')} aria-hidden={heroSlide !== 1} inert={heroSlide !== 1}>
-    <img src={sobremim} alt="" className="npv-campaign-editorial-photo" decoding="async" />
+    <img src={editorialMultisports} alt="" className="npv-campaign-editorial-photo" decoding="async" fetchPriority="high" />
     <div className="npv-campaign-editorial-copy">
       <span className="npv-campaign-eyebrow">Não Pense, Vai! · Plataforma de Treinos</span>
       <h2>TREINE NO SEU <em>RITMO.</em></h2>
