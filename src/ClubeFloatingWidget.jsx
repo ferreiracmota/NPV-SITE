@@ -131,7 +131,7 @@ export default function ClubeFloatingWidget({configOverride=null,forceVisible=fa
       <div id={panelId} className="npv-fw-expanded-content" aria-hidden={!open} inert={!open?'':undefined}>
         <div className="npv-fw-expanded-inner">
           <a className="npv-fw-primary npv-fw-cta-top" href="/clube">{authenticated?'Acessar meus pontos':'Conhecer o Clube NPV'} <ArrowRight size={16}/></a>
-          <div className="npv-fw-section-head"><span><Crown size={16}/> Ranking ilustrativo do Clube</span></div>
+          <div className="npv-fw-section-head" title="Participantes e pontuações de exemplo, não representam alunos reais."><span><Crown size={16}/> Ranking do Clube</span></div>
           <RankingPreview ranking={config.ranking}/>
           <p className="npv-fw-disclaimer">E você? Quantos pontos já acumulou?</p>
           <div className="npv-fw-divider"/>

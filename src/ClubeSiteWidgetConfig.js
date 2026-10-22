@@ -8,9 +8,9 @@ export const WIDGET_BUCKET='clube-npv-recompensas'
 export const DEFAULT_WIDGET={
  enabled:true,
  ranking:[
-  {id:'exemplo-a',name:'Aluno exemplo A',points:1260,avatar_path:''},
-  {id:'exemplo-b',name:'Aluno exemplo B',points:980,avatar_path:''},
-  {id:'exemplo-c',name:'Aluno exemplo C',points:740,avatar_path:''}
+  {id:'exemplo-a',name:'Aluno exemplo A',points:6400,avatar_path:''},
+  {id:'exemplo-b',name:'Aluno exemplo B',points:5600,avatar_path:''},
+  {id:'exemplo-c',name:'Aluno exemplo C',points:4800,avatar_path:''}
  ],
  reward_ids:[],partner_ids:[],logo_path:'',
  visual:{glass_color:'#111111',opacity:40,blur:5,border_color:'#a0a0a0',border_opacity:35,text_color:'#fcfcfc'},
