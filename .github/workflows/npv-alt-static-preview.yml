@@ -1,0 +1,45 @@
+name: NPV Preview estático alternativo (sem Vercel)
+on:
+  push:
+    branches:
+      - preview/npv-sao-miguelito-reference-20261022
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: npv-static-preview-publish
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    if: github.repository == 'ferreiracmota/NPV-SITE'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout do Preview aprovado para experimentação
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Preparar Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Preparar pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: '10.4.1'
+      - name: Instalar dependências
+        run: pnpm install --frozen-lockfile
+      - name: Compilar home apenas para visualização
+        run: pnpm exec vite build --base="https://raw.githack.com/ferreiracmota/NPV-SITE/npv-preview-static/"
+      - name: Publicar arquivos estáticos em branch descartável
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+          publish_branch: npv-preview-static
+          force_orphan: true
+          enable_jekyll: false
+          commit_message: "chore(preview): atualiza teste estático NPV [skip ci]"
