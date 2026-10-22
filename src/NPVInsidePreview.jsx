@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import './NPVInsidePreview.css'
 
 /**
@@ -8,7 +8,7 @@ import './NPVInsidePreview.css'
  */
 const VIEWS = [
   { key: 'treinos', tab: '01 · TREINOS', short: 'Treinos' },
-  { key: 'videos', tab: '02 · AULAS', short: 'Aulas' },
+  { key: 'videos', tab: '02 · VÍDEOS', short: 'Vídeos' },
   { key: 'clube', tab: '03 · BENEFÍCIOS', short: 'Clube' }
 ]
 
@@ -23,7 +23,6 @@ function CheckItem({children}) {
 
 export default function NPVInsidePreview({academyImage, mobilityImage, onViewPlans}) {
   const [active, setActive] = useState('treinos')
-  const currentIndex = VIEWS.findIndex(view => view.key === active)
   const handleTabKey = (event, index) => {
     if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return
     event.preventDefault()
@@ -39,7 +38,7 @@ export default function NPVInsidePreview({academyImage, mobilityImage, onViewPla
           <span className="npv-inside-kicker"><span aria-hidden="true" className="npv-inside-dot"/> DESCUBRA A PLATAFORMA</span>
           <h2 id="npv-inside-title">O SEU PRÓXIMO PASSO <span>COMEÇA AQUI.</span></h2>
         </div>
-        <p>Treinos, orientação e benefícios em uma experiência que acompanha a sua evolução. Conheça alguns recursos antes de escolher seu plano.</p>
+        <p>Treinos, orientação e benefícios em uma experiência que acompanha a sua evolução. Veja como o conteúdo é organizado — e o que você encontra antes de assinar.</p>
       </div>
       <div className="npv-inside-frame">
         <div className="npv-inside-tabs" role="tablist" aria-label="Recursos da plataforma">
@@ -69,8 +68,8 @@ export default function NPVInsidePreview({academyImage, mobilityImage, onViewPla
           {active==='videos' && <>
             <div className="npv-inside-media npv-inside-media-video">
               <img src={mobilityImage} alt="Capa do módulo de exercícios de mobilidade da plataforma Não Pense, Vai!" loading="lazy" decoding="async"/>
-              <div className="npv-inside-video-disc" aria-hidden="true"><svg viewBox="0 0 40 40" width="32" height="32"><path fill="currentColor" d="M15 10 31 20 15 30z"/></svg></div>
-              <div className="npv-inside-media-tag">CAPAS DOS MÓDULOS NPV <span>↗</span></div>
+              <span className="npv-inside-video-label" aria-hidden="true">VÍDEOS DE EXECUÇÃO</span>
+              <div className="npv-inside-media-tag">MÓDULO DE MOBILIDADE NPV <span>✦</span></div>
             </div>
             <div className="npv-inside-copy">
               <span className="npv-inside-step">02 / EXECUÇÃO</span>
@@ -97,7 +96,7 @@ export default function NPVInsidePreview({academyImage, mobilityImage, onViewPla
               <h3>TREINE. EVOLUA. <em>CONQUISTE.</em></h3>
               <p>O Clube de Benefícios NPV permite acompanhar atividades, acumular pontos nas ações elegíveis e conhecer recompensas disponíveis.</p>
               <ul><CheckItem>Atividades e extrato de pontos</CheckItem><CheckItem>Desafios e recompensas</CheckItem><CheckItem>Benefícios de parceiros</CheckItem></ul>
-              <a href="/clube" className="npv-inside-cta">CONHECER O CLUBE {ICONS.arrow}</a>
+              <a href="https://www.naopensevai.com/clube" className="npv-inside-cta" target="_blank" rel="noopener noreferrer">CONHECER O CLUBE {ICONS.arrow}</a>
             </div>
           </>}
         </div>
