@@ -65,6 +65,56 @@ export function summarizePayments(rawRows){
   chargebacks,last_paid_at:lastPaidAt,last_payment_status:lastStatus,
   points_status:'not_verified'}
 }
+// Auditoria de competências pagas por ASSINATURA, sem conceder pontos.
+// Uma cobrança paga pode ser a primeira compra ou uma tentativa repetida.
+// Sem número de recorrência em TODOS os pagamentos aprovados, não estimar meses.
+export function auditPaidRecurrences(rawRows,plan){
+ const paidStatuses=new Set(['APPROVED','COMPLETE'])
+ const reversedStatuses=new Set(['REFUNDED','CHARGEBACK','PARTIALLY_REFUNDED'])
+ const successful=rawRows.filter(row=>paidStatuses.has(str(row?.status,60).toUpperCase())&&hotmartDate(row.approved_date))
+ const recurrenceNumber=row=>{
+  const n=Number(row?.recurrency_number)
+  return Number.isSafeInteger(n)&&n>=1&&n<=10000?n:null
+ }
+ const byNumber=new Map(),ambiguous=new Set()
+ let complete=successful.length>0
+ for(const row of rawRows){
+  const state=str(row?.status,60).toUpperCase()
+  const num=recurrenceNumber(row)
+  if((paidStatuses.has(state)&&hotmartDate(row.approved_date))||reversedStatuses.has(state)){
+   if(num===null){complete=false;continue}
+   const entry=byNumber.get(num)||{paid:new Set(),reversed:false}
+   if(reversedStatuses.has(state))entry.reversed=true
+   else{
+    const transaction=str(row?.transaction,128)
+    if(!transaction)complete=false
+    else entry.paid.add(transaction)
+   }
+   byNumber.set(num,entry)
+  }
+ }
+ const paidNumbers=[]
+ for(const [num,entry] of byNumber){
+  if(entry.paid.size>1)ambiguous.add(num)
+  if(!entry.reversed&&entry.paid.size===1)paidNumbers.push(num)
+ }
+ if(ambiguous.size)complete=false
+ if(!complete)return {
+  paid_recurrences:null,paid_months:null,renewal_cycles:null,
+  recurring_audit:'not_verified'
+ }
+ const cycleMonths=plan==='trimestral'?3:plan==='mensal'?1:null
+ if(!cycleMonths)return {paid_recurrences:null,paid_months:null,renewal_cycles:null,recurring_audit:'not_verified'}
+ return {
+  paid_recurrences:paidNumbers.length,
+  // Trimestral: meses cobertos financeiramente, não pontos liberados hoje.
+  paid_months:paidNumbers.length*cycleMonths,
+  // A primeira compra (recorrência 1) nunca é contada como renovação.
+  renewal_cycles:paidNumbers.filter(n=>n>1).length,
+  recurring_audit:'payment_recurrences_identified'
+ }
+}
+
 function safeNetworkError(response){
  // Não incluir URL, cabeçalhos ou corpo da Hotmart: podem conter credenciais ou PII.
  if(response.status===429)return new Error('hotmart_rate_limited')
@@ -210,7 +260,10 @@ export async function readLiveSnapshot(env,{fetcher=fetch,createClientFn,adminCl
  rows.sort((a,b)=>Number(b.status==='ACTIVE')-Number(a.status==='ACTIVE')
    ||(b.accession_at||'').localeCompare(a.accession_at||''))
  // Qualquer falha de página/assinante impede considerar a sincronização completa.
- const summaries=await mapLimited(rows,row=>purchases(row.subscriber_code,token,fetcher).then(summarizePayments))
+ const summaries=await mapLimited(rows,async row=>{
+  const history=await purchases(row.subscriber_code,token,fetcher)
+  return {...summarizePayments(history),...auditPaidRecurrences(history,row.plan)}
+ })
  rows.forEach((row,i)=>Object.assign(row,summaries[i],{payment_history_complete:true}))
  let identity={complete:false,reason:'identity_verification_not_configured'}
  if(createClientFn){
