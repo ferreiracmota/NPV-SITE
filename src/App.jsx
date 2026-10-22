@@ -1,6 +1,5 @@
 import './App.css'
-import './npvPremiumPreview.css'
-import './npvPremiumV2.css'
+import './npvHeroOnlyPreview.css'
 import editorialMultisports from './assets/npv-multisport-editorial.avif?url'
 import ClubeFloatingWidget from './ClubeFloatingWidget.jsx'
 /* Vídeos versionados pelo Vite: urls produzidas junto com a compilação,
@@ -419,9 +418,7 @@ function StudentAccessMenu({mobile=false}) {
 
 function App() {
   const [heroSlide, setHeroSlide] = useState(0)
-  const [heroOnScreen, setHeroOnScreen] = useState(true)
   const heroSectionRef = useRef(null)
-  const programsRailRef = useRef(null)
   const heroDesktopVideoRef = useRef(null)
   const heroMobileVideoRef = useRef(null)
   const [mobileVideoSource, setMobileVideoSource] = useState(fundoMobileIOSVideo)
@@ -464,34 +461,33 @@ function App() {
     }
   }, [heroSlide])
 
-  // A história visual só avança quando a primeira tela está visível.
-  // Preferência por movimento reduzido preserva controles manuais e para o autoplay.
+  // Preview: alternar somente o vídeo e a fotografia na abertura.
+  // O restante do site é idêntico à versão oficial.
   useEffect(() => {
-    const element = heroSectionRef.current
-    if (!element || typeof IntersectionObserver !== 'function') return
-    const observer = new IntersectionObserver(([entry]) => {
-      setHeroOnScreen(Boolean(entry?.isIntersecting))
-    }, { threshold: 0.12 })
-    observer.observe(element)
-    return () => observer.disconnect()
-  }, [])
-  useEffect(() => {
-    if (!heroOnScreen || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    let visible = true
+    let observer
+    if (typeof IntersectionObserver === 'function' && heroSectionRef.current) {
+      observer = new IntersectionObserver(([entry]) => {
+        visible = Boolean(entry?.isIntersecting)
+      }, { threshold: 0.1 })
+      observer.observe(heroSectionRef.current)
+    }
     const timer = window.setInterval(() => {
-      if (!document.hidden) setHeroSlide(current => (current + 1) % 2)
-    }, 7000)
-    return () => window.clearInterval(timer)
-  }, [heroOnScreen, heroSlide])
-  useEffect(() => {
-    const videos = [heroDesktopVideoRef.current, heroMobileVideoRef.current]
-    if (heroSlide !== 0) videos.forEach(video => video?.pause())
-    else if (!document.hidden) {
-      const video = window.matchMedia('(min-width: 768px)').matches
-        ? heroDesktopVideoRef.current : heroMobileVideoRef.current
-      if (video) {
-        video.muted = true
-        video.play().catch(() => {})
+      if (visible && !document.hidden &&
+          !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        setHeroSlide(current => (current + 1) % 2)
       }
+    }, 7000)
+    return () => {
+      window.clearInterval(timer)
+      observer?.disconnect()
+    }
+  }, [])
+
+  useEffect(() => {
+    if (heroSlide === 1) {
+      heroDesktopVideoRef.current?.pause()
+      heroMobileVideoRef.current?.pause()
     }
   }, [heroSlide])
 
@@ -770,9 +766,9 @@ useEffect(() => {
   }, [])
 
   return (
-    <div className="min-h-screen bg-black text-white font-inter npv-premium-prototype">
+    <div className="min-h-screen bg-black text-white font-inter">
       {/* Top Banner Animado */}
-<div className="bg-[#AFCB21] text-black py-2 overflow-hidden npv-premium-topline">
+<div className="bg-[#AFCB21] text-black py-2 overflow-hidden">
   <div className="inline-flex animate-marquee">
     {/* Cópia 1 */}
     <span className="text-sm font-medium px-4">
@@ -787,7 +783,7 @@ useEffect(() => {
 
 
       {/* Header */}
-<header className="bg-black border-b border-gray-800 sticky top-0 z-50 npv-premium-header">
+<header className="bg-black border-b border-gray-800 sticky top-0 z-50">
   <div className="container mx-auto px-4 py-1">
     {/* MOBILE = grid 3 colunas | DESKTOP = flex padrão */}
     <div className="grid grid-cols-3 items-center md:flex md:items-center md:justify-between">
@@ -948,11 +944,10 @@ useEffect(() => {
 <section
   id="inicio"
   ref={heroSectionRef}
-  className="relative min-h-[90svh] md:min-h-[100svh] flex items-start md:items-center justify-center overflow-hidden pb-36 md:pb-0 scroll-mt-16 npv-campaign-hero"
-  aria-label="Destaques Não Pense, Vai!"
+  className="relative min-h-[90svh] md:min-h-[100svh] flex items-start md:items-center justify-center overflow-hidden pb-36 md:pb-0 scroll-mt-16 npv-only-hero-carousel"
 >
-  {/* Vídeo original preservado, alternando com um painel editorial no Preview. */}
-  <div className={'absolute inset-0 z-0 overflow-hidden pointer-events-none npv-campaign-video-layer'+(heroSlide !== 0 ? ' is-inactive' : '')}>
+  {/* Vídeo original da home, sem alterações visuais ou de conteúdo. */}
+  <div className={'absolute inset-0 z-0 overflow-hidden pointer-events-none npv-original-hero-video'+(heroSlide === 1 ? ' is-hidden' : '')}>
     {/* Desktop / tablet (>= md) */}
     <video
       ref={heroDesktopVideoRef}
@@ -1002,8 +997,8 @@ useEffect(() => {
     </video>
   </div>
 
-{/* Conteúdo por cima do vídeo */}
-  <div className={'relative z-10 text-center px-4 mt-60 md:mt-0 npv-campaign-intro'+(heroSlide !== 0 ? ' is-inactive' : '')} aria-hidden={heroSlide !== 0} inert={heroSlide !== 0}>
+{/* Conteúdo original do vídeo: preservado e visível no primeiro slide. */}
+  <div className={'relative z-10 text-center px-4 mt-60 md:mt-0 npv-original-hero-content'+(heroSlide === 1 ? ' is-hidden' : '')} inert={heroSlide === 1} aria-hidden={heroSlide === 1}>
     <h1 className="text-4xl md:text-6xl lg:text-6xl font-black leading-tight">
       <span className="text-white block animate-slide-up">{siteData.hero.title}</span>
       <span className="text-white block animate-slide-up animation-delay-200">{siteData.hero.subtitle}</span>
@@ -1028,47 +1023,24 @@ useEffect(() => {
     </a>
   </div>
 
-  {/* Campanha editorial usa a imagem multiesportes enviada pelo usuário, otimizada sem alterar sua composição. */}
-  <div className={'npv-campaign-editorial'+(heroSlide === 1 ? ' is-active' : '')} aria-hidden={heroSlide !== 1} inert={heroSlide !== 1}>
-    <img src={editorialMultisports} alt="" className="npv-campaign-editorial-photo" decoding="async" fetchPriority="high" />
-    <div className="npv-campaign-editorial-copy">
-      <span className="npv-campaign-eyebrow">Não Pense, Vai! · Plataforma de Treinos</span>
-      <h2>TREINE NO SEU <em>RITMO.</em></h2>
+  {/* Segundo slide: fotografia multiesportes enviada, sem controles/contador. */}
+  <div className={'npv-hero-photo-slide'+(heroSlide === 1 ? ' is-visible' : '')}
+       aria-hidden={heroSlide !== 1} inert={heroSlide !== 1}>
+    <img src={editorialMultisports} alt="" className="npv-hero-photo" decoding="async" />
+    <div className="npv-hero-photo-copy">
+      <span className="npv-hero-photo-eyebrow">NÃO PENSE, VAI! · PLATAFORMA DE TREINOS</span>
+      <h2>TREINE NO SEU <span>RITMO.</span></h2>
       <p>Academia, corrida, express e muito mais. Descubra os caminhos para evoluir com orientação profissional.</p>
-      <button className="npv-campaign-action" type="button" onClick={() => scrollToSection('como-funciona')}>
-        EXPLORAR A PLATAFORMA <span aria-hidden="true">↗</span>
-      </button>
+      <button type="button" onClick={() => scrollToSection('como-funciona')}>EXPLORAR A PLATAFORMA <span aria-hidden="true">↗</span></button>
     </div>
   </div>
-
-  {/* Controles acessíveis; longe do widget fixo no canto direito. */}
-  <div className="npv-campaign-controls" role="group" aria-label="Selecionar destaque">
-    <button type="button" aria-label="Destaque anterior" onClick={() => setHeroSlide(current => (current + 1) % 2)}>‹</button>
-    <span className="npv-campaign-index" aria-live="polite">{String(heroSlide + 1).padStart(2, '0')} / 02</span>
-    <button className={'npv-campaign-indicator'+(heroSlide === 0 ? ' is-active' : '')} type="button" aria-label="Mostrar o vídeo de abertura" aria-pressed={heroSlide === 0} onClick={() => setHeroSlide(0)}></button>
-    <button className={'npv-campaign-indicator'+(heroSlide === 1 ? ' is-active' : '')} type="button" aria-label="Mostrar a campanha de treinos" aria-pressed={heroSlide === 1} onClick={() => setHeroSlide(1)}></button>
-    <button type="button" aria-label="Próximo destaque" onClick={() => setHeroSlide(current => (current + 1) % 2)}>›</button>
-  </div>
 </section>
-{/* Widget mantém posição e comportamento originais, fora do overflow da hero. */}
+{/* Widget fora da hero com overflow-hidden, para acompanhar a viewport em toda a página.
+    O vídeo, os títulos e os botões da hero permanecem intactos. */}
 <ClubeFloatingWidget />
 
-{/* Atalhos editoriais discretos: o conteúdo e a ordem das seções permanecem iguais. */}
-<nav className="npv-editorial-shortcuts" aria-label="Explore a plataforma NPV">
-  <span className="npv-editorial-shortcuts-lead">Encontre seu próximo passo</span>
-  <a href="#como-funciona" className="npv-editorial-shortcut" onClick={event => { event.preventDefault(); scrollToSection('como-funciona') }}>
-    <span><small>01 / DESCUBRA</small> COMO FUNCIONA</span><span className="npv-shortcut-arrow" aria-hidden="true">↗</span>
-  </a>
-  <a href="#planos" className="npv-editorial-shortcut" onClick={event => { event.preventDefault(); scrollToSection('planos') }}>
-    <span><small>02 / ESCOLHA</small> NOSSOS PLANOS</span><span className="npv-shortcut-arrow" aria-hidden="true">↗</span>
-  </a>
-  <a href="/clube" className="npv-editorial-shortcut">
-    <span><small>03 / CONQUISTE</small> CLUBE NPV</span><span className="npv-shortcut-arrow" aria-hidden="true">↗</span>
-  </a>
-</nav>
-
       {/* Antes e Depois Section */}
-<section id="resultados" className="pt-12 pb-6 bg-white npv-results-editorial">
+<section className="pt-12 pb-6 bg-white">
   <div className="container mx-auto px-4 text-center">
 
     {/* Título principal em verde */}
@@ -1109,16 +1081,9 @@ useEffect(() => {
 
 
 {/* Projects Section (BÔNUS) */}
-<section className="py-6 bg-gray-900 npv-programs-editorial" aria-labelledby="npv-programs-heading">
+<section className="py-6 bg-gray-900">
   <div className="container mx-auto px-4 text-center">
-    <div className="npv-programs-titlebar">
-      <span className="npv-editorial-kicker">EXPERIÊNCIAS & TREINOS</span>
-      <div className="npv-programs-arrows" role="group" aria-label="Navegar entre módulos">
-        <button type="button" aria-label="Ver módulos anteriores" onClick={()=>programsRailRef.current?.scrollBy({left:-360,behavior:'smooth'})}>←</button>
-        <button type="button" aria-label="Ver próximos módulos" onClick={()=>programsRailRef.current?.scrollBy({left:360,behavior:'smooth'})}>→</button>
-      </div>
-    </div>
-    <h2 id="npv-programs-heading" className="text-4xl leading-tight mt-0 mb-3">
+    <h2 className="text-4xl leading-tight mt-0 mb-3">
       <span className="font-bold block">COMPLETO?</span>
       <span className="font-light block italic">NÃO, ALÉM!</span>
     </h2>
@@ -1129,9 +1094,9 @@ useEffect(() => {
 
 
     {/* grid dos cards */}
-    <div ref={programsRailRef} className="npv-programs-rail" role="region" aria-label="Módulos de treinos disponíveis" tabIndex={0}>
+    <div className="grid grid-cols-2 md:grid-cols-6 gap-3 md:gap-6">
       {siteData.projects.items.slice(0, 12).map((project, index) => (
-        <div key={index} className="npv-program-card bg-black rounded-2xl overflow-hidden shadow-xl">
+        <div key={index} className="bg-black rounded-2xl overflow-hidden shadow-xl">
           <div className="relative w-full aspect-[3/4]">
             <img
               src={project}
@@ -1161,7 +1126,7 @@ useEffect(() => {
 </section>
 
  {/* Como funciona: três etapas baseadas nas perguntas frequentes */}
- <section id="como-funciona" aria-labelledby="how-heading" className="bg-black py-16 md:py-24 scroll-mt-16 npv-how-editorial">
+ <section id="como-funciona" aria-labelledby="how-heading" className="bg-black py-16 md:py-24 scroll-mt-16">
   <div className="container mx-auto px-4">
    <div className="mx-auto max-w-3xl text-center">
     <span className="npv-eyebrow">SIMPLES ASSIM</span>
@@ -1192,7 +1157,7 @@ useEffect(() => {
  </section>
 
  {/* Team Section */}
-<section className="py-12 bg-black npv-team-editorial">
+<section className="py-12 bg-black">
   <div className="container mx-auto px-4 text-center">
     
     {/* UMA EQUIPE DE ESPECIALISTAS */}
@@ -1207,7 +1172,7 @@ useEffect(() => {
         <div
     key={index}
     className={
-      "text-center group npv-specialist-card " +
+      "text-center group " +
       (index === siteData.team.members.length - 1 && siteData.team.members.length % 2 === 1
   ? "col-span-2 justify-self-center md:col-span-1" // centraliza a última só se sobrar 1
   : "")
@@ -1233,7 +1198,7 @@ useEffect(() => {
 
 
       {/* Partners Section */}
-      <section className="py-8 bg-gray-100 npv-partners-editorial">
+      <section className="py-8 bg-gray-100">
         <div className="container mx-auto px-4">
           <h2
   className="
@@ -1337,7 +1302,7 @@ useEffect(() => {
 
 
       {/* Plans Section */}
-      <section id="planos" className="py-20 md:py-24 bg-gray-100 scroll-mt-16 npv-plans-editorial">
+      <section id="planos" className="py-20 md:py-24 bg-gray-100 scroll-mt-16">
   <div className="container mx-auto px-4">
     <div className="mb-12 text-center text-zinc-900" aria-label="Planos de assinatura">
       {siteData.plans.title}
@@ -1346,7 +1311,7 @@ useEffect(() => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto items-stretch">
             {/* Plano Mensal */}
-            <div className="npv-plan-card npv-plan-monthly flex h-full flex-col bg-black border border-gray-700 rounded-2xl p-7 sm:p-8 text-center shadow-xl">
+            <div className="npv-plan-card flex h-full flex-col bg-black border border-gray-700 rounded-2xl p-7 sm:p-8 text-center shadow-xl">
               <h3 className="text-2xl font-bold mb-2">{siteData.plans.monthly.title}</h3>
               <p className="text-gray-400 mb-6">{siteData.plans.monthly.subtitle}</p>
               <div className="text-4xl font-bold text-[#AFCB21] mb-6">{siteData.plans.monthly.price}</div>
@@ -1369,7 +1334,7 @@ useEffect(() => {
             </div>
 
             {/* Plano Trimestral */}
-            <div className="npv-plan-card npv-plan-quarterly flex h-full flex-col bg-[#AFCB21] text-black rounded-2xl p-7 sm:p-8 text-center relative shadow-xl">
+            <div className="npv-plan-card flex h-full flex-col bg-[#AFCB21] text-black rounded-2xl p-7 sm:p-8 text-center relative shadow-xl">
               <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-black text-[#AFCB21] px-4 py-1 rounded text-sm font-bold">
                 MAIS POPULAR
               </div>
@@ -1415,7 +1380,7 @@ useEffect(() => {
       </section>
 
       {/* About Me Section */}
-      <section id="about-section" className="py-10 bg-black scroll-mt-16 npv-about-editorial">
+      <section id="about-section" className="py-10 bg-black scroll-mt-16">
         <div className="container mx-auto px-4">
           <div className="flex flex-col lg:flex-row items-center gap-12">
             {/* Foto à esquerda */}
@@ -1505,7 +1470,7 @@ useEffect(() => {
 
 
       {/* Guarantee Seal Section */}
-<section className="py-16 bg-black npv-guarantee-editorial">
+<section className="py-16 bg-black">
   <div className="container mx-auto px-4">
     {/* Mobile: coluna; Desktop: linha centralizada e com gap menor */}
     <div className="flex flex-col items-center gap-8 lg:flex-row lg:justify-center lg:gap-8">
@@ -1550,7 +1515,7 @@ useEffect(() => {
     {/* ... aqui vem o banner, header, seções ... */}
 
     {/* FAQ Section */}
-    <section id="faq" className="py-16 bg-zinc-50 text-black scroll-mt-16 npv-faq-editorial">
+    <section id="faq" className="py-16 bg-zinc-50 text-black scroll-mt-16">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl md:text-4xl font-bold text-center mb-10">
           Possui alguma dúvida?
@@ -1576,7 +1541,7 @@ useEffect(() => {
     </section>
 
       {/* Instagram: seção independente, sem depender de widget pago ou API externa */}
-      <section id="instagram" aria-labelledby="instagram-heading" className="npv-instagram npv-instagram-editorial relative overflow-hidden bg-[#111114] py-20 md:py-28 scroll-mt-16">
+      <section id="instagram" aria-labelledby="instagram-heading" className="npv-instagram relative overflow-hidden bg-[#111114] py-20 md:py-28 scroll-mt-16">
         <div className="container mx-auto px-4 relative z-10">
           <div className="grid items-center gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:gap-20">
             <div className="text-center lg:text-left">
@@ -1632,7 +1597,7 @@ useEffect(() => {
 
 
       {/* Footer */}
-      <footer className="bg-black border-t border-gray-800 py-12 npv-premium-footer">
+      <footer className="bg-black border-t border-gray-800 py-12">
         <div className="container mx-auto px-4 text-center">
           <div className="mb-4">
             <img src={logoNPV} alt="Não Pense, Vai" className="h-12 mx-auto" />
