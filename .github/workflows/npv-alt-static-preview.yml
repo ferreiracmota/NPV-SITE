@@ -32,6 +32,13 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Compilar home apenas para visualização
         run: pnpm exec vite build --base="https://raw.githack.com/ferreiracmota/NPV-SITE/npv-preview-static/"
+      - name: Gerar pacote completo para validação offline
+        uses: actions/upload-artifact@v4
+        with:
+          name: npv-preview-dist-offline
+          path: ./dist
+          if-no-files-found: error
+          retention-days: 2
       - name: Publicar arquivos estáticos em branch descartável
         uses: peaceiris/actions-gh-pages@v4
         with:
