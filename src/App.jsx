@@ -1,4 +1,5 @@
 import './App.css'
+import './npvPremiumPreview.css'
 import ClubeFloatingWidget from './ClubeFloatingWidget.jsx'
 /* Vídeos versionados pelo Vite: urls produzidas junto com a compilação,
    sem depender de /public/videos, que pode não existir na implantação. */
@@ -415,6 +416,9 @@ function StudentAccessMenu({mobile=false}) {
 }
 
 function App() {
+  const [heroSlide, setHeroSlide] = useState(0)
+  const [heroOnScreen, setHeroOnScreen] = useState(true)
+  const heroSectionRef = useRef(null)
   const heroDesktopVideoRef = useRef(null)
   const heroMobileVideoRef = useRef(null)
   const [mobileVideoSource, setMobileVideoSource] = useState(fundoMobileIOSVideo)
@@ -423,7 +427,7 @@ function App() {
   // voltar para a página ou interagir. Nenhum controle visual adicional.
   useEffect(() => {
     const resumeHeroVideo = () => {
-      if (document.hidden) return
+      if (document.hidden || heroSlide !== 0) return
       const video = window.matchMedia('(min-width: 768px)').matches
         ? heroDesktopVideoRef.current
         : heroMobileVideoRef.current
@@ -455,7 +459,38 @@ function App() {
       window.removeEventListener('pointerdown', resumeHeroVideo)
       window.removeEventListener('resize', resumeHeroVideo)
     }
+  }, [heroSlide])
+
+  // A história visual só avança quando a primeira tela está visível.
+  // Preferência por movimento reduzido preserva controles manuais e para o autoplay.
+  useEffect(() => {
+    const element = heroSectionRef.current
+    if (!element || typeof IntersectionObserver !== 'function') return
+    const observer = new IntersectionObserver(([entry]) => {
+      setHeroOnScreen(Boolean(entry?.isIntersecting))
+    }, { threshold: 0.12 })
+    observer.observe(element)
+    return () => observer.disconnect()
   }, [])
+  useEffect(() => {
+    if (!heroOnScreen || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const timer = window.setInterval(() => {
+      if (!document.hidden) setHeroSlide(current => (current + 1) % 2)
+    }, 11000)
+    return () => window.clearInterval(timer)
+  }, [heroOnScreen, heroSlide])
+  useEffect(() => {
+    const videos = [heroDesktopVideoRef.current, heroMobileVideoRef.current]
+    if (heroSlide !== 0) videos.forEach(video => video?.pause())
+    else if (!document.hidden) {
+      const video = window.matchMedia('(min-width: 768px)').matches
+        ? heroDesktopVideoRef.current : heroMobileVideoRef.current
+      if (video) {
+        video.muted = true
+        video.play().catch(() => {})
+      }
+    }
+  }, [heroSlide])
 
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isContactDropdownOpen, setIsContactDropdownOpen] = useState(false)
@@ -732,7 +767,7 @@ useEffect(() => {
   }, [])
 
   return (
-    <div className="min-h-screen bg-black text-white font-inter">
+    <div className="min-h-screen bg-black text-white font-inter npv-premium-prototype">
       {/* Top Banner Animado */}
 <div className="bg-[#AFCB21] text-black py-2 overflow-hidden">
   <div className="inline-flex animate-marquee">
@@ -909,10 +944,12 @@ useEffect(() => {
       {/* Hero Section */}
 <section
   id="inicio"
-  className="relative min-h-[90svh] md:min-h-[100svh] flex items-start md:items-center justify-center overflow-hidden pb-36 md:pb-0 scroll-mt-16"
+  ref={heroSectionRef}
+  className="relative min-h-[90svh] md:min-h-[100svh] flex items-start md:items-center justify-center overflow-hidden pb-36 md:pb-0 scroll-mt-16 npv-campaign-hero"
+  aria-label="Destaques Não Pense, Vai!"
 >
-  {/* Vídeo de fundo (desktop + mobile) */}
-  <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+  {/* Vídeo original preservado, alternando com um painel editorial no Preview. */}
+  <div className={'absolute inset-0 z-0 overflow-hidden pointer-events-none npv-campaign-video-layer'+(heroSlide !== 0 ? ' is-inactive' : '')}>
     {/* Desktop / tablet (>= md) */}
     <video
       ref={heroDesktopVideoRef}
@@ -963,7 +1000,7 @@ useEffect(() => {
   </div>
 
 {/* Conteúdo por cima do vídeo */}
-  <div className="relative z-10 text-center px-4 mt-60 md:mt-0">
+  <div className={'relative z-10 text-center px-4 mt-60 md:mt-0 npv-campaign-intro'+(heroSlide !== 0 ? ' is-inactive' : '')} aria-hidden={heroSlide !== 0} inert={heroSlide !== 0}>
     <h1 className="text-4xl md:text-6xl lg:text-6xl font-black leading-tight">
       <span className="text-white block animate-slide-up">{siteData.hero.title}</span>
       <span className="text-white block animate-slide-up animation-delay-200">{siteData.hero.subtitle}</span>
@@ -987,10 +1024,45 @@ useEffect(() => {
       QUERO DECOLAR ➜
     </a>
   </div>
+
+  {/* Campanha editorial utiliza a foto própria já presente na seção Sobre. */}
+  <div className={'npv-campaign-editorial'+(heroSlide === 1 ? ' is-active' : '')} aria-hidden={heroSlide !== 1} inert={heroSlide !== 1}>
+    <img src={sobremim} alt="" className="npv-campaign-editorial-photo" decoding="async" />
+    <div className="npv-campaign-editorial-copy">
+      <span className="npv-campaign-eyebrow">Não Pense, Vai! · Plataforma de Treinos</span>
+      <h2>TREINE NO SEU <em>RITMO.</em></h2>
+      <p>Academia, corrida, express e muito mais. Descubra os caminhos para evoluir com orientação profissional.</p>
+      <button className="npv-campaign-action" type="button" onClick={() => scrollToSection('como-funciona')}>
+        EXPLORAR A PLATAFORMA <span aria-hidden="true">↗</span>
+      </button>
+    </div>
+  </div>
+
+  {/* Controles acessíveis; longe do widget fixo no canto direito. */}
+  <div className="npv-campaign-controls" role="group" aria-label="Selecionar destaque">
+    <button type="button" aria-label="Destaque anterior" onClick={() => setHeroSlide(current => (current + 1) % 2)}>‹</button>
+    <span className="npv-campaign-index" aria-live="polite">{String(heroSlide + 1).padStart(2, '0')} / 02</span>
+    <button className={'npv-campaign-indicator'+(heroSlide === 0 ? ' is-active' : '')} type="button" aria-label="Mostrar o vídeo de abertura" aria-pressed={heroSlide === 0} onClick={() => setHeroSlide(0)}></button>
+    <button className={'npv-campaign-indicator'+(heroSlide === 1 ? ' is-active' : '')} type="button" aria-label="Mostrar a campanha de treinos" aria-pressed={heroSlide === 1} onClick={() => setHeroSlide(1)}></button>
+    <button type="button" aria-label="Próximo destaque" onClick={() => setHeroSlide(current => (current + 1) % 2)}>›</button>
+  </div>
 </section>
-{/* Widget fora da hero com overflow-hidden, para acompanhar a viewport em toda a página.
-    O vídeo, os títulos e os botões da hero permanecem intactos. */}
+{/* Widget mantém posição e comportamento originais, fora do overflow da hero. */}
 <ClubeFloatingWidget />
+
+{/* Atalhos editoriais discretos: o conteúdo e a ordem das seções permanecem iguais. */}
+<nav className="npv-editorial-shortcuts" aria-label="Explore a plataforma NPV">
+  <span className="npv-editorial-shortcuts-lead">Encontre seu próximo passo</span>
+  <a href="#como-funciona" className="npv-editorial-shortcut" onClick={event => { event.preventDefault(); scrollToSection('como-funciona') }}>
+    <span><small>01 / DESCUBRA</small> COMO FUNCIONA</span><span className="npv-shortcut-arrow" aria-hidden="true">↗</span>
+  </a>
+  <a href="#planos" className="npv-editorial-shortcut" onClick={event => { event.preventDefault(); scrollToSection('planos') }}>
+    <span><small>02 / ESCOLHA</small> NOSSOS PLANOS</span><span className="npv-shortcut-arrow" aria-hidden="true">↗</span>
+  </a>
+  <a href="/clube" className="npv-editorial-shortcut">
+    <span><small>03 / CONQUISTE</small> CLUBE NPV</span><span className="npv-shortcut-arrow" aria-hidden="true">↗</span>
+  </a>
+</nav>
 
       {/* Antes e Depois Section */}
 <section className="pt-12 pb-6 bg-white">
