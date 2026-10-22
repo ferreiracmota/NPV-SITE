@@ -21,7 +21,7 @@ function CheckItem({children}) {
   return <li><span className="npv-inside-check">{ICONS.check}</span><span>{children}</span></li>
 }
 
-export default function NPVInsidePreview({academyImage, dietImage, onViewPlans}) {
+export default function NPVInsidePreview({academyImage, mobilityImage, onViewPlans}) {
   const [active, setActive] = useState('treinos')
   const currentIndex = VIEWS.findIndex(view => view.key === active)
   const handleTabKey = (event, index) => {
@@ -68,7 +68,7 @@ export default function NPVInsidePreview({academyImage, dietImage, onViewPlans})
           </>}
           {active==='videos' && <>
             <div className="npv-inside-media npv-inside-media-video">
-              <img src={dietImage} alt="Capa de módulo de materiais da plataforma Não Pense, Vai!" loading="lazy" decoding="async"/>
+              <img src={mobilityImage} alt="Capa do módulo de exercícios de mobilidade da plataforma Não Pense, Vai!" loading="lazy" decoding="async"/>
               <div className="npv-inside-video-disc" aria-hidden="true"><svg viewBox="0 0 40 40" width="32" height="32"><path fill="currentColor" d="M15 10 31 20 15 30z"/></svg></div>
               <div className="npv-inside-media-tag">CAPAS DOS MÓDULOS NPV <span>↗</span></div>
             </div>
