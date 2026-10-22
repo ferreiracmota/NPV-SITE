@@ -136,11 +136,11 @@ export default function ClubeHotmartAdmin({session,isAdmin,renewalPointRate=null
     {label:'Assinantes ativos',value:data.metrics?.active,help:'Assinaturas com situação ACTIVE na Hotmart',Icon:Users},
     {label:'Vinculados ao Clube',value:data.metrics?.linked,help:'Somente vínculos com conta e identidade verificadas',Icon:CheckCircle2},
     {label:'Vínculos pendentes',value:data.metrics?.pending,help:'Somente assinaturas ativas sem vínculo confirmado',Icon:Clock3},
-    {label:'Renovações verificadas',value:null,help:'Indisponível até homologar renovação versus parcelamento',Icon:CreditCard}
+    {label:'Pontos por renovação',value:Number.isSafeInteger(renewalPointRate)&&renewalPointRate>=0?renewalPointRate:null,help:'Valor atual da regra Renovação da assinatura no Clube NPV',Icon:CreditCard}
    ].map(({label,value,help,Icon})=><div className="npv-hotmart-metric" key={label} title={help}>
     <span className="npv-hotmart-metric-icon"><Icon size={18}/></span>
     <small>{label}</small><strong>{fmtMetric(value)}</strong>
-    <span>{label==='Renovações verificadas'?'Não verificadas':Number.isFinite(value)?'Conforme última sincronização':'Aguardando verificação'}</span>
+    <span>{label==='Pontos por renovação'?'Regra atual do Clube':Number.isFinite(value)?'Conforme última sincronização':'Aguardando verificação'}</span>
    </div>)}
   </div>
   {data.metrics?.statuses&&<div className="npv-hotmart-status-summary" aria-label="Histórico por situação">
