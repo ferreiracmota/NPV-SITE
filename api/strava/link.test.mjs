@@ -7,6 +7,9 @@ import status from './status.js'
 const SECRET='long-fake-test-secret-a45e8f0d4782cf37'
 const OWNER='aaaaaaaa-aaaa-4aaa-aaaa-aaaaaaaaaaaa'
 const STRANGER='bbbbbbbb-bbbb-4bbb-bbbb-bbbbbbbbbbbb'
+// Fixação em 2026-10-14 tornou o teste de Strava obsoleto após 7 dias.
+// Usa uma atividade fictícia recente sem alterar qualquer lógica de produção.
+const MOCK_ACTIVITY_DATE=new Date(Date.now()-2*86400000).toISOString().slice(0,10)
 function setup(){
   const originals={}
   for(const key of ['STRAVA_CLIENT_ID','STRAVA_CLIENT_SECRET','STRAVA_PILOT_CALLBACK_URL','VITE_CLUBE_SUPABASE_URL','VITE_CLUBE_SUPABASE_PUBLISHABLE_KEY']) originals[key]=process.env[key]
@@ -58,7 +61,7 @@ test('OAuth can link a Strava user to this NPV login and show real (mocked) km w
       athlete:{id:12345}
     })}
     if(u.includes('/api/v3/athlete/activities'))return {ok:true,json:async()=>[
-      {id:12345,start_date_local:'2026-10-14T08:00:00',sport_type:'Run',distance:7090,map:{polyline:'must-not-leak'}}
+      {id:12345,start_date_local:MOCK_ACTIVITY_DATE+'T08:00:00',sport_type:'Run',distance:7090,map:{polyline:'must-not-leak'}}
     ]}
     if(u.endsWith('/oauth/revoke'))return {ok:true}
     throw Error('unexpected '+u)
@@ -86,7 +89,7 @@ test('OAuth can link a Strava user to this NPV login and show real (mocked) km w
     const own=response()
     await status(request('GET','/api/strava/status',{headers:{cookie:linkCookie}}),own)
     assert.equal(own.code,200)
-    assert.deepEqual(own.data().activities,[{date:'2026-10-14',sport:'Run',km:7.09}])
+    assert.deepEqual(own.data().activities,[{date:MOCK_ACTIVITY_DATE,sport:'Run',km:7.09}])
     assert.equal(own.data().connected,true)
     assert.equal(own.body.includes('fake-access'),false)
     assert.equal(own.body.includes('polyline'),false)
