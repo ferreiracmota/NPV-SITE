@@ -3,7 +3,6 @@ import './npvHeroOnlyPreview.css'
 import editorialMultisports from './assets/npv-multisport-editorial.avif?url'
 import ClubeFloatingWidget from './ClubeFloatingWidget.jsx'
 import NPVInsidePreview from './NPVInsidePreview.jsx'
-import NPVModuleShowcase from './NPVModuleShowcase.jsx'
 /* Vídeos versionados pelo Vite: urls produzidas junto com a compilação,
    sem depender de /public/videos, que pode não existir na implantação. */
 import fundoDesktopVideo from './assets/videofundo1.MP4?url'
@@ -1082,12 +1081,50 @@ useEffect(() => {
 
 
 
-{/* Galeria compacta de módulos com filtros — 12 capas originais, sem exclusões. */}
-<NPVModuleShowcase
-  images={siteData.projects.items}
-  onExplore={()=>scrollToSection('por-dentro')}
-  onViewPlans={()=>scrollToSection('planos')}
-/>
+{/* Projects Section (BÔNUS) */}
+<section className="py-6 bg-gray-900">
+  <div className="container mx-auto px-4 text-center">
+    <h2 className="text-4xl leading-tight mt-0 mb-3">
+      <span className="font-bold block">COMPLETO?</span>
+      <span className="font-light block italic">NÃO, ALÉM!</span>
+    </h2>
+
+    <p className="text-lg text-gray-300 mb-8">
+      Nunca foi tão fácil ter <strong>acesso a tudo</strong> o que você precisa <strong>para transformar seu corpo</strong>.
+    </p>
+
+
+    {/* grid dos cards */}
+    <div className="grid grid-cols-2 md:grid-cols-6 gap-3 md:gap-6">
+      {siteData.projects.items.slice(0, 12).map((project, index) => (
+        <div key={index} className="bg-black rounded-2xl overflow-hidden shadow-xl">
+          <div className="relative w-full aspect-[3/4]">
+            <img
+              src={project}
+              alt={`Bônus ${index + 1}`}
+              loading="lazy"
+              decoding="async"
+              className="absolute inset-0 w-full h-full object-cover select-none pointer-events-none"
+              draggable="false"
+            />
+          </div>
+        </div>
+      ))}
+    </div>
+
+    {/* Botão dentro da seção */}
+    <div className="mt-8">
+      <a
+        href="https://pay.hotmart.com/J102054674M?off=g64ryxgr&checkoutMode=10"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="block w-full max-w-md mx-auto text-center text-[15px] font-black text-white py-4 px-6 rounded-lg bg-pink-500 glow-button"
+      >
+        ACESSO TOTAL POR APENAS R$1,33/dia
+      </a>
+    </div>
+  </div>
+</section>
 
  {/* Vitrine de recursos em teste: usa capas originais e exemplo editorial transparente. */}
  <NPVInsidePreview academyImage={modulo1} mobilityImage={modulo4} onViewPlans={()=>scrollToSection('planos')}/>
