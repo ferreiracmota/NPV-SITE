@@ -28,7 +28,7 @@ export default function ClubeVersionsAdmin({ onNavigate }) {
       <div className="npv-releases-summary" aria-label="Visão rápida das versões">
         <span><Layers3 size={16} aria-hidden="true" /> Clube <strong>v2.1.1</strong></span>
         <span><PanelTop size={16} aria-hidden="true" /> Widget <strong>v2.1.1</strong></span>
-        <span><GitCommitHorizontal size={16} aria-hidden="true" /> Site <strong>{sha ? sha.slice(0, 7) : 'build não informado'}</strong></span>
+        <span><GitCommitHorizontal size={16} aria-hidden="true" /> Site <strong>v{NPV_RELEASES.find(item => item.id === 'site')?.version || '—'}</strong></span>
       </div>
     </div>
 
@@ -42,8 +42,8 @@ export default function ClubeVersionsAdmin({ onNavigate }) {
             <span className="npv-releases-version-label">{item.versionKind}</span>
           </div>
           <h3>{item.title}</h3>
-          <div className="npv-releases-version-value">{isSite ? (sha ? sha.slice(0, 10) : 'Não numerado') : `v${item.version}`}</div>
-          <p className="npv-releases-version-help">{isSite ? 'Commit da publicação visualizada, quando disponível' : `Referência aprovada em ${item.date}`}</p>
+          <div className="npv-releases-version-value">v{item.version}</div>
+          <p className="npv-releases-version-help">Referência aprovada em {item.date}{isSite && <> · Commit: <code>{sha ? sha.slice(0, 10) : 'não informado'}</code></>}</p>
           <p className="npv-releases-description">{item.description}</p>
           <h4>O que oferece</h4>
           <ul className="npv-releases-feature-list">{item.features.map(text =>
@@ -79,7 +79,7 @@ export default function ClubeVersionsAdmin({ onNavigate }) {
 
     <div className="npv-releases-note"><Info size={19} aria-hidden="true" />
       <div><strong>Como manter este registro confiável</strong>
-        <p>Clube e widget usam versões visuais aprovadas, atualizadas manualmente quando a identidade ou estrutura mudar. O site não tinha uma numeração própria: seu identificador técnico muda automaticamente em cada build. O histórico acima é uma seleção documentada, não um histórico completo de commits.</p>
+        <p>Clube, widget e site usam versões de referência aprovadas, atualizadas quando houver uma nova versão definida. Cada parte pode evoluir separadamente a partir da v2.1.1. O identificador técnico do site muda automaticamente em cada build. O histórico acima é uma seleção documentada, não um histórico completo de commits.</p>
         {typeof onNavigate === 'function' && <button type="button" onClick={() => onNavigate('widget')}>Abrir configurações do widget <ExternalLink size={14} aria-hidden="true" /></button>}
       </div>
     </div>

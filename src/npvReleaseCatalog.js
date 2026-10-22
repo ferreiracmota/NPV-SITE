@@ -46,10 +46,10 @@ export const NPV_RELEASES = Object.freeze([
   {
     id: 'site',
     title: 'Site Não Pense, Vai!',
-    version: null,
-    versionKind: 'Identificação técnica automática',
-    date: null,
-    description: 'Site institucional e de apresentação da plataforma. Como não existe uma versão semântica oficial do site, cada publicação é identificada pelo commit usado para construir o site.',
+    version: '2.1.1',
+    versionKind: 'Versão de referência aprovada',
+    date: '22/10/2026',
+    description: 'Site institucional e de apresentação da plataforma Não Pense, Vai!. Após as correções e melhorias aprovadas, a referência do site foi alinhada à v2.1.1 do Clube e do widget. O commit técnico continua identificando cada publicação.',
     features: [
       'Página inicial responsiva com vídeos de fundo específicos para desktop e celular.',
       'Apresentação das trilhas de treinos, benefícios e acesso à compra pela Hotmart.',
@@ -58,6 +58,7 @@ export const NPV_RELEASES = Object.freeze([
       'Identificação automática do build, data de compilação e commit da publicação exibida.'
     ],
     history: [
+      { date: '22/10/2026', text: 'Versão de referência do site alinhada à v2.1.1 do Clube e do widget.' },
       { date: '21/10/2026', text: 'Publicação da integração Hotmart na administração do Clube (PR #18).' }
     ]
   }
