@@ -48,7 +48,7 @@
   margin:0 auto!important;max-width:1400px!important;
 }
 .npv-premium-prototype .npv-campaign-intro h1{
-  font-size:clamp(38px,6.1vw,92px)!important;
+  font-size:clamp(38px,5vw,76px)!important;
   letter-spacing:-.055em;line-height:1.015!important;
 }
 .npv-premium-prototype .npv-campaign-intro h1 span{
