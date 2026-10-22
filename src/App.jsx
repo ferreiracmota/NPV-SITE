@@ -1,5 +1,6 @@
 import './App.css'
 import './npvPremiumPreview.css'
+import './npvPremiumV2.css'
 import ClubeFloatingWidget from './ClubeFloatingWidget.jsx'
 /* Vídeos versionados pelo Vite: urls produzidas junto com a compilação,
    sem depender de /public/videos, que pode não existir na implantação. */
@@ -419,6 +420,7 @@ function App() {
   const [heroSlide, setHeroSlide] = useState(0)
   const [heroOnScreen, setHeroOnScreen] = useState(true)
   const heroSectionRef = useRef(null)
+  const programsRailRef = useRef(null)
   const heroDesktopVideoRef = useRef(null)
   const heroMobileVideoRef = useRef(null)
   const [mobileVideoSource, setMobileVideoSource] = useState(fundoMobileIOSVideo)
@@ -476,7 +478,7 @@ function App() {
     if (!heroOnScreen || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
     const timer = window.setInterval(() => {
       if (!document.hidden) setHeroSlide(current => (current + 1) % 2)
-    }, 11000)
+    }, 7000)
     return () => window.clearInterval(timer)
   }, [heroOnScreen, heroSlide])
   useEffect(() => {
@@ -769,7 +771,7 @@ useEffect(() => {
   return (
     <div className="min-h-screen bg-black text-white font-inter npv-premium-prototype">
       {/* Top Banner Animado */}
-<div className="bg-[#AFCB21] text-black py-2 overflow-hidden">
+<div className="bg-[#AFCB21] text-black py-2 overflow-hidden npv-premium-topline">
   <div className="inline-flex animate-marquee">
     {/* Cópia 1 */}
     <span className="text-sm font-medium px-4">
@@ -784,7 +786,7 @@ useEffect(() => {
 
 
       {/* Header */}
-<header className="bg-black border-b border-gray-800 sticky top-0 z-50">
+<header className="bg-black border-b border-gray-800 sticky top-0 z-50 npv-premium-header">
   <div className="container mx-auto px-4 py-1">
     {/* MOBILE = grid 3 colunas | DESKTOP = flex padrão */}
     <div className="grid grid-cols-3 items-center md:flex md:items-center md:justify-between">
@@ -1065,7 +1067,7 @@ useEffect(() => {
 </nav>
 
       {/* Antes e Depois Section */}
-<section className="pt-12 pb-6 bg-white">
+<section id="resultados" className="pt-12 pb-6 bg-white npv-results-editorial">
   <div className="container mx-auto px-4 text-center">
 
     {/* Título principal em verde */}
@@ -1106,9 +1108,16 @@ useEffect(() => {
 
 
 {/* Projects Section (BÔNUS) */}
-<section className="py-6 bg-gray-900">
+<section className="py-6 bg-gray-900 npv-programs-editorial" aria-labelledby="npv-programs-heading">
   <div className="container mx-auto px-4 text-center">
-    <h2 className="text-4xl leading-tight mt-0 mb-3">
+    <div className="npv-programs-titlebar">
+      <span className="npv-editorial-kicker">EXPERIÊNCIAS & TREINOS</span>
+      <div className="npv-programs-arrows" role="group" aria-label="Navegar entre módulos">
+        <button type="button" aria-label="Ver módulos anteriores" onClick={()=>programsRailRef.current?.scrollBy({left:-360,behavior:'smooth'})}>←</button>
+        <button type="button" aria-label="Ver próximos módulos" onClick={()=>programsRailRef.current?.scrollBy({left:360,behavior:'smooth'})}>→</button>
+      </div>
+    </div>
+    <h2 id="npv-programs-heading" className="text-4xl leading-tight mt-0 mb-3">
       <span className="font-bold block">COMPLETO?</span>
       <span className="font-light block italic">NÃO, ALÉM!</span>
     </h2>
@@ -1119,9 +1128,9 @@ useEffect(() => {
 
 
     {/* grid dos cards */}
-    <div className="grid grid-cols-2 md:grid-cols-6 gap-3 md:gap-6">
+    <div ref={programsRailRef} className="npv-programs-rail" role="region" aria-label="Módulos de treinos disponíveis" tabIndex={0}>
       {siteData.projects.items.slice(0, 12).map((project, index) => (
-        <div key={index} className="bg-black rounded-2xl overflow-hidden shadow-xl">
+        <div key={index} className="npv-program-card bg-black rounded-2xl overflow-hidden shadow-xl">
           <div className="relative w-full aspect-[3/4]">
             <img
               src={project}
@@ -1151,7 +1160,7 @@ useEffect(() => {
 </section>
 
  {/* Como funciona: três etapas baseadas nas perguntas frequentes */}
- <section id="como-funciona" aria-labelledby="how-heading" className="bg-black py-16 md:py-24 scroll-mt-16">
+ <section id="como-funciona" aria-labelledby="how-heading" className="bg-black py-16 md:py-24 scroll-mt-16 npv-how-editorial">
   <div className="container mx-auto px-4">
    <div className="mx-auto max-w-3xl text-center">
     <span className="npv-eyebrow">SIMPLES ASSIM</span>
@@ -1182,7 +1191,7 @@ useEffect(() => {
  </section>
 
  {/* Team Section */}
-<section className="py-12 bg-black">
+<section className="py-12 bg-black npv-team-editorial">
   <div className="container mx-auto px-4 text-center">
     
     {/* UMA EQUIPE DE ESPECIALISTAS */}
@@ -1197,7 +1206,7 @@ useEffect(() => {
         <div
     key={index}
     className={
-      "text-center group " +
+      "text-center group npv-specialist-card " +
       (index === siteData.team.members.length - 1 && siteData.team.members.length % 2 === 1
   ? "col-span-2 justify-self-center md:col-span-1" // centraliza a última só se sobrar 1
   : "")
@@ -1223,7 +1232,7 @@ useEffect(() => {
 
 
       {/* Partners Section */}
-      <section className="py-8 bg-gray-100">
+      <section className="py-8 bg-gray-100 npv-partners-editorial">
         <div className="container mx-auto px-4">
           <h2
   className="
@@ -1327,7 +1336,7 @@ useEffect(() => {
 
 
       {/* Plans Section */}
-      <section id="planos" className="py-20 md:py-24 bg-gray-100 scroll-mt-16">
+      <section id="planos" className="py-20 md:py-24 bg-gray-100 scroll-mt-16 npv-plans-editorial">
   <div className="container mx-auto px-4">
     <div className="mb-12 text-center text-zinc-900" aria-label="Planos de assinatura">
       {siteData.plans.title}
@@ -1336,7 +1345,7 @@ useEffect(() => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto items-stretch">
             {/* Plano Mensal */}
-            <div className="npv-plan-card flex h-full flex-col bg-black border border-gray-700 rounded-2xl p-7 sm:p-8 text-center shadow-xl">
+            <div className="npv-plan-card npv-plan-monthly flex h-full flex-col bg-black border border-gray-700 rounded-2xl p-7 sm:p-8 text-center shadow-xl">
               <h3 className="text-2xl font-bold mb-2">{siteData.plans.monthly.title}</h3>
               <p className="text-gray-400 mb-6">{siteData.plans.monthly.subtitle}</p>
               <div className="text-4xl font-bold text-[#AFCB21] mb-6">{siteData.plans.monthly.price}</div>
@@ -1359,7 +1368,7 @@ useEffect(() => {
             </div>
 
             {/* Plano Trimestral */}
-            <div className="npv-plan-card flex h-full flex-col bg-[#AFCB21] text-black rounded-2xl p-7 sm:p-8 text-center relative shadow-xl">
+            <div className="npv-plan-card npv-plan-quarterly flex h-full flex-col bg-[#AFCB21] text-black rounded-2xl p-7 sm:p-8 text-center relative shadow-xl">
               <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-black text-[#AFCB21] px-4 py-1 rounded text-sm font-bold">
                 MAIS POPULAR
               </div>
@@ -1405,7 +1414,7 @@ useEffect(() => {
       </section>
 
       {/* About Me Section */}
-      <section id="about-section" className="py-10 bg-black scroll-mt-16">
+      <section id="about-section" className="py-10 bg-black scroll-mt-16 npv-about-editorial">
         <div className="container mx-auto px-4">
           <div className="flex flex-col lg:flex-row items-center gap-12">
             {/* Foto à esquerda */}
@@ -1495,7 +1504,7 @@ useEffect(() => {
 
 
       {/* Guarantee Seal Section */}
-<section className="py-16 bg-black">
+<section className="py-16 bg-black npv-guarantee-editorial">
   <div className="container mx-auto px-4">
     {/* Mobile: coluna; Desktop: linha centralizada e com gap menor */}
     <div className="flex flex-col items-center gap-8 lg:flex-row lg:justify-center lg:gap-8">
@@ -1540,7 +1549,7 @@ useEffect(() => {
     {/* ... aqui vem o banner, header, seções ... */}
 
     {/* FAQ Section */}
-    <section id="faq" className="py-16 bg-zinc-50 text-black scroll-mt-16">
+    <section id="faq" className="py-16 bg-zinc-50 text-black scroll-mt-16 npv-faq-editorial">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl md:text-4xl font-bold text-center mb-10">
           Possui alguma dúvida?
@@ -1566,7 +1575,7 @@ useEffect(() => {
     </section>
 
       {/* Instagram: seção independente, sem depender de widget pago ou API externa */}
-      <section id="instagram" aria-labelledby="instagram-heading" className="npv-instagram relative overflow-hidden bg-[#111114] py-20 md:py-28 scroll-mt-16">
+      <section id="instagram" aria-labelledby="instagram-heading" className="npv-instagram npv-instagram-editorial relative overflow-hidden bg-[#111114] py-20 md:py-28 scroll-mt-16">
         <div className="container mx-auto px-4 relative z-10">
           <div className="grid items-center gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:gap-20">
             <div className="text-center lg:text-left">
@@ -1622,7 +1631,7 @@ useEffect(() => {
 
 
       {/* Footer */}
-      <footer className="bg-black border-t border-gray-800 py-12">
+      <footer className="bg-black border-t border-gray-800 py-12 npv-premium-footer">
         <div className="container mx-auto px-4 text-center">
           <div className="mb-4">
             <img src={logoNPV} alt="Não Pense, Vai" className="h-12 mx-auto" />
