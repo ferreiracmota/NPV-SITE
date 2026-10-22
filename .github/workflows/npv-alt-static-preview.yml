@@ -28,8 +28,6 @@ jobs:
           node-version: '22'
       - name: Preparar pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: '10.4.1'
       - name: Instalar dependências
         run: pnpm install --frozen-lockfile
       - name: Compilar home apenas para visualização
