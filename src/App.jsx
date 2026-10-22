@@ -2,6 +2,7 @@ import './App.css'
 import './npvHeroOnlyPreview.css'
 import editorialMultisports from './assets/npv-multisport-editorial.avif?url'
 import ClubeFloatingWidget from './ClubeFloatingWidget.jsx'
+import NPVInsidePreview from './NPVInsidePreview.jsx'
 /* Vídeos versionados pelo Vite: urls produzidas junto com a compilação,
    sem depender de /public/videos, que pode não existir na implantação. */
 import fundoDesktopVideo from './assets/videofundo1.MP4?url'
@@ -1091,6 +1092,13 @@ useEffect(() => {
     <p className="text-lg text-gray-300 mb-8">
       Nunca foi tão fácil ter <strong>acesso a tudo</strong> o que você precisa <strong>para transformar seu corpo</strong>.
     </p>
+    <div className="npv-modules-intro" aria-label="Modalidades e recursos da plataforma">
+      <p>Escolha o que combina com você. A NPV reúne diferentes formas de treinar, aprender e evoluir.</p>
+      <ul className="npv-modules-tags">
+        {['Academia','Corrida','Treino Express','Mobilidade & Yoga','Planilhas de dieta','Moda em Movimento','Clube de Benefícios'].map(item=><li key={item}>{item}</li>)}
+      </ul>
+      <a href="#por-dentro" onClick={event=>{event.preventDefault();scrollToSection('por-dentro')}}>Conheça a plataforma por dentro <span aria-hidden="true">↗</span></a>
+    </div>
 
 
     {/* grid dos cards */}
@@ -1124,6 +1132,9 @@ useEffect(() => {
     </div>
   </div>
 </section>
+
+ {/* Vitrine de recursos em teste: usa capas originais e exemplo editorial transparente. */}
+ <NPVInsidePreview academyImage={modulo1} mobilityImage={modulo4} onViewPlans={()=>scrollToSection('planos')}/>
 
  {/* Como funciona: três etapas baseadas nas perguntas frequentes */}
  <section id="como-funciona" aria-labelledby="how-heading" className="bg-black py-16 md:py-24 scroll-mt-16">
