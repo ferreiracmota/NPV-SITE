@@ -186,6 +186,13 @@
   padding:clamp(20px,2.5vw,37px)!important;
   border-color:rgba(255,255,255,.05)!important;
 }
+.npv-premium-prototype .npv-how-editorial .npv-step-card h3{
+  color:#f5f7f0!important;font-size:clamp(19px,1.5vw,25px);
+  letter-spacing:-.025em;line-height:1.3;
+}
+.npv-premium-prototype .npv-how-editorial .npv-step-card p{
+  color:#cdd5c9!important;line-height:1.65;
+}
 .npv-premium-prototype .npv-how-editorial .npv-step-number{
   color:#c5e547;font-size:42px;line-height:1;letter-spacing:-.06em;
 }
