@@ -94,3 +94,7 @@
  .clube-shell .npv-hotmart-status-summary{gap:6px}
  .clube-shell .npv-hotmart-status-summary span{font-size:10px}
 }
+
+/* Cálculo de renovações: apenas informativo, não lança no saldo do aluno. */
+.clube-shell .npv-hotmart-points-cell strong{display:block;color:#416d31;font-size:15px;font-weight:850;font-variant-numeric:tabular-nums;white-space:nowrap}
+.clube-shell .npv-hotmart-points-cell small{display:block;color:#6f8071;font-size:10px;line-height:1.55;margin-top:5px;max-width:225px}
