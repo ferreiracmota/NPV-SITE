@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Activity, AlertCircle, CheckCircle2, Clock3, CreditCard, RefreshCw, Search, ShieldCheck, Users } from 'lucide-react'
 import './ClubeHotmartAdmin.css'
+import { calculateRenewalPoints } from '../clube/hotmart-admin/renewalPoints.mjs'
 
 const EMPTY={status:'awaiting_integration',metrics:null,subscriptions:[],synced_at:null,identity_complete:false}
 const STATUS={
@@ -28,7 +29,17 @@ const fmtDate=value=>{
 }
 const fmtMetric=value=>Number.isFinite(value)?value.toLocaleString('pt-BR'):'—'
 
-export default function ClubeHotmartAdmin({session,isAdmin}){
+function RenewalPointsCell({item,rate}) {
+ const calc=calculateRenewalPoints(item,rate)
+ if(calc.total===null)return <td className="npv-hotmart-points-cell">—<small>{calc.reason==='rule_unavailable'?'Regra de pontos não carregada':'Renovação ainda não comprovada'}</small></td>
+ return <td className="npv-hotmart-points-cell">
+  <strong>{fmtMetric(calc.total)} pts</strong>
+  <small>{fmtMetric(calc.renewals)} × {fmtMetric(calc.rate)} pontos por renovação</small>
+  <small>{calc.reason==='quarterly_installments'?'Trimestral: competências mensais precisam de liberação separada':calc.linked?'Cálculo confirmado; não lançado no extrato':'Aguardando vínculo com o Clube; não creditado'}</small>
+ </td>
+}
+
+export default function ClubeHotmartAdmin({session,isAdmin,renewalPointRate=null}){
  const [status,setStatus]=useState('loading')
  const [data,setData]=useState(EMPTY)
  const [warning,setWarning]=useState(null)
@@ -159,7 +170,7 @@ export default function ClubeHotmartAdmin({session,isAdmin}){
    <div className="npv-hotmart-table-wrap" role="region" tabIndex={0} aria-label="Tabela de assinaturas com rolagem horizontal">
     <table className="npv-hotmart-table">
      <thead><tr><th>Assinante / e-mail</th><th>Produto / plano</th><th>Situação Hotmart</th>
-      <th>Vínculo NPV</th><th>Pagamentos aprovados</th><th>Meses pagos*</th><th>Renovações identificadas</th><th>Último pagamento confirmado</th><th>Próxima cobrança prevista</th><th>Pontos</th></tr></thead>
+      <th>Vínculo NPV</th><th>Pagamentos aprovados</th><th>Meses pagos*</th><th>Renovações identificadas</th><th>Último pagamento confirmado</th><th>Próxima cobrança prevista</th><th>Pontos calculados</th></tr></thead>
      <tbody>{rows.length?rows.map(item=><tr key={item.id} className={item.status==='ACTIVE'?'npv-hotmart-row-active':''}>
       <td><strong>{item.subscriber_name||'Nome não informado'}</strong>
        <small>{item.subscriber_email||'E-mail não informado'}</small></td>
@@ -172,7 +183,7 @@ export default function ClubeHotmartAdmin({session,isAdmin}){
       <td>{fmtMetric(item.renewal_cycles)}<small>{item.renewal_cycles===null?'Aguardando prova de recorrência':'Ciclos após primeira compra; crédito sujeito à conferência'}</small></td>
       <td>{fmtDate(item.last_paid_at)}<small>{item.last_paid_at?'Pagamento confirmado; elegibilidade não verificada':'Sem pagamento confirmado no histórico'}</small></td>
       <td>{fmtDate(item.next_charge_at)}</td>
-      <td>Não verificados</td>
+      <RenewalPointsCell item={item} rate={renewalPointRate}/>
      </tr>):<tr><td colSpan="10" className="npv-hotmart-empty">
       <div><CreditCard size={26}/><strong>{data.status==='awaiting_integration'?'Aguardando integração com a Hotmart':'Nenhuma assinatura disponível'}</strong>
        <p>{search||plan!=='todos'||situation!=='todas'?'Nenhum registro encontrado para os filtros selecionados.':
@@ -180,7 +191,7 @@ export default function ClubeHotmartAdmin({session,isAdmin}){
      </td></tr>}</tbody>
     </table>
    </div>
-   <p className="npv-hotmart-footnote">* Meses pagos: calculados somente quando o número da recorrência foi identificado nas transações aprovadas e não revertidas. No trimestral, uma cobrança cobre três meses, mas os pontos são liberados por competência. A primeira compra não gera bônus. Renovação identificada não significa pontos automaticamente elegíveis. Quem não tem conta no Clube não pode receber créditos. Consulta exclusiva para administradores; nenhuma pontuação é lançada nesta tela.</p>
+   <p className="npv-hotmart-footnote">* Fórmula exibida: renovações identificadas × pontos da regra atual do Clube. A primeira compra é excluída. Pagamentos sem número de recorrência validado não geram cálculo. Trimestrais exigem liberação das três competências em meses diferentes; a multiplicação é apenas referência por ciclo, não total liberável. Valor calculado NÃO é saldo creditado. A tabela é apenas consulta e não lança pontos; crédito exige vínculo confirmado e deduplicação por transação.</p>
   </div>
  </section>
 }
