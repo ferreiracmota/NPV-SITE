@@ -49,7 +49,7 @@ export const NPV_RELEASES = Object.freeze([
     version: '2.1.1',
     versionKind: 'Versão de referência aprovada',
     date: '22/10/2026',
-    description: 'Site institucional e de apresentação da plataforma Não Pense, Vai!. Após as correções e melhorias aprovadas, a referência do site foi alinhada à v2.1.1 do Clube e do widget. O commit técnico continua identificando cada publicação.'
+    description: 'Site institucional e de apresentação da plataforma Não Pense, Vai!. Após as correções e melhorias aprovadas, a referência do site foi alinhada à v2.1.1 do Clube e do widget. O commit técnico continua identificando cada publicação.',
     features: [
       'Página inicial responsiva com vídeos de fundo específicos para desktop e celular.',
       'Apresentação das trilhas de treinos, benefícios e acesso à compra pela Hotmart.',
