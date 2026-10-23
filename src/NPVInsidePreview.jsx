@@ -67,7 +67,7 @@ export default function NPVInsidePreview({academyImage, executionVideo, clubImag
           </>}
           {active==='videos' && <>
             <div className="npv-inside-media npv-inside-media-video">
-              <video src={executionVideo} controls playsInline preload="metadata" aria-label="Vídeo real de execução de exercício no ambiente NPV" />
+              <video src={executionVideo} autoPlay muted loop playsInline preload="auto" aria-label="Vídeo real de execução de exercício no ambiente NPV, reproduzido automaticamente" />
               <div className="npv-inside-media-tag npv-inside-media-tag-video">VÍDEO REAL DE EXECUÇÃO <span>▶</span></div>
             </div>
             <div className="npv-inside-copy">
