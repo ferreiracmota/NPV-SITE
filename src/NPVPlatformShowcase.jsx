@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import './NPVPlatformShowcase.css'
 
 /**
@@ -7,8 +7,55 @@ import './NPVPlatformShowcase.css'
  * conexões lentas e navegadores que bloqueiam autoplay.
  */
 export default function NPVPlatformShowcase({ onViewPlans }) {
-  const [videoStarted, setVideoStarted] = useState(false)
+  const videoRef = useRef(null)
+  const [playbackState, setPlaybackState] = useState('loading')
   const [videoUnavailable, setVideoUnavailable] = useState(false)
+
+  // O Safari pode negar autoplay mesmo em um vídeo mudo. Nunca ocultar
+  // os quadros do vídeo aguardando um onTimeUpdate: a prévia real continua
+  // visível, e um toque direto no botão permite reproduzir se necessário.
+  const requestPlayback = useCallback(() => {
+    const video = videoRef.current
+    if (!video || videoUnavailable) return
+    video.muted = true
+    video.defaultMuted = true
+    video.setAttribute('muted', '')
+    video.setAttribute('playsinline', '')
+    video.setAttribute('webkit-playsinline', '')
+    try {
+      const result = video.play()
+      if (result?.catch) {
+        result.catch(() => setPlaybackState(state => state === 'playing' ? state : 'paused'))
+      }
+    } catch {
+      setPlaybackState('paused')
+    }
+  }, [videoUnavailable])
+
+  useEffect(() => {
+    const video = videoRef.current
+    if (!video || videoUnavailable) return
+
+    const resumeWhenVisible = () => {
+      if (document.visibilityState !== 'hidden') requestPlayback()
+    }
+    const observer = typeof IntersectionObserver !== 'undefined'
+      ? new IntersectionObserver(entries => {
+        if (entries.some(entry => entry.isIntersecting)) resumeWhenVisible()
+      }, { threshold: 0.15 })
+      : null
+
+    if (observer) observer.observe(video)
+    else resumeWhenVisible()
+
+    document.addEventListener('visibilitychange', resumeWhenVisible)
+    window.addEventListener('pageshow', resumeWhenVisible)
+    return () => {
+      observer?.disconnect()
+      document.removeEventListener('visibilitychange', resumeWhenVisible)
+      window.removeEventListener('pageshow', resumeWhenVisible)
+    }
+  }, [requestPlayback, videoUnavailable])
 
   return (
     <section id="como-funciona" className="npv-showcase" aria-labelledby="npv-showcase-title">
@@ -23,28 +70,36 @@ export default function NPVPlatformShowcase({ onViewPlans }) {
             />
             {!videoUnavailable && (
               <video
-                className={`npv-showcase__video${videoStarted ? ' npv-showcase__video--started' : ''}`}
-                src="/videos/npv-plataforma-por-dentro.mp4"
+                ref={videoRef}
+                className="npv-showcase__video"
+                poster="/videos/npv-plataforma-poster.jpg"
                 autoPlay
                 muted
                 playsInline
                 loop
                 preload="auto"
-                onLoadedData={event => {
-                  const result = event.currentTarget.play()
-                  if (result?.catch) result.catch(() => {})
-                }}
-                onTimeUpdate={event => {
-                  if (event.currentTarget.currentTime > 0.15) setVideoStarted(true)
-                }}
-                onWaiting={() => setVideoStarted(false)}
-                onStalled={() => setVideoStarted(false)}
+                onCanPlay={requestPlayback}
+                onPlaying={() => setPlaybackState('playing')}
+                onPause={() => setPlaybackState('paused')}
                 onError={() => {
-                  setVideoStarted(false)
+                  setPlaybackState('unavailable')
                   setVideoUnavailable(true)
                 }}
-                aria-label="Demonstração real da plataforma Não Pense, Vai! em um celular"
-              />
+                aria-label="Demonstração em vídeo da plataforma Não Pense, Vai! no celular"
+              >
+                <source src="/videos/npv-plataforma-por-dentro.mp4" type="video/mp4" />
+              </video>
+            )}
+            {!videoUnavailable && playbackState !== 'playing' && (
+              <button
+                type="button"
+                className="npv-showcase__play-video"
+                onClick={requestPlayback}
+                aria-label="Reproduzir o vídeo da plataforma"
+                title="Reproduzir vídeo"
+              >
+                <span aria-hidden="true">▶</span>
+              </button>
             )}
           </div>
           <div className="npv-showcase__media-caption">UMA PLATAFORMA COMPLETA · ONDE VOCÊ ESTIVER</div>
