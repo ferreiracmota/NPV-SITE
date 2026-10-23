@@ -1,6 +1,10 @@
 import './App.css'
 import './npvHeroOnlyPreview.css'
 import editorialMultisports from './assets/npv-multisport-editorial.avif?url'
+import heroPortrait from './assets/npv-hero-multisportes-vertical.jpg?url'
+import treinoScreenshot from './assets/npv-treino-intermediario-emagrecimento.jpg?url'
+import clubeScreenshot from './assets/npv-clube-beneficios-painel.jpg?url'
+import executionVideo from './assets/npv-execucao-aluno.mp4?url'
 import ClubeFloatingWidget from './ClubeFloatingWidget.jsx'
 import NPVInsidePreview from './NPVInsidePreview.jsx'
 /* Vídeos versionados pelo Vite: urls produzidas junto com a compilação,
@@ -1027,7 +1031,10 @@ useEffect(() => {
   {/* Segundo slide: fotografia multiesportes enviada, sem controles/contador. */}
   <div className={'npv-hero-photo-slide'+(heroSlide === 1 ? ' is-visible' : '')}
        aria-hidden={heroSlide !== 1} inert={heroSlide !== 1}>
-    <img src={editorialMultisports} alt="" className="npv-hero-photo" decoding="async" />
+    <picture className="npv-hero-photo-picture">
+      <source media="(max-width: 767px)" srcSet={heroPortrait} />
+      <img src={editorialMultisports} alt="" className="npv-hero-photo" decoding="async" />
+    </picture>
     <div className="npv-hero-photo-copy">
       <span className="npv-hero-photo-eyebrow">NÃO PENSE, VAI! · PLATAFORMA DE TREINOS</span>
       <h2>TREINE NO SEU <span>RITMO.</span></h2>
@@ -1127,7 +1134,7 @@ useEffect(() => {
 </section>
 
  {/* Vitrine de recursos em teste: usa capas originais e exemplo editorial transparente. */}
- <NPVInsidePreview academyImage={modulo1} mobilityImage={modulo4} onViewPlans={()=>scrollToSection('planos')}/>
+ <NPVInsidePreview academyImage={treinoScreenshot} executionVideo={executionVideo} clubImage={clubeScreenshot} onViewPlans={()=>scrollToSection('planos')}/>
 
  {/* Como funciona: três etapas baseadas nas perguntas frequentes */}
  <section id="como-funciona" aria-labelledby="how-heading" className="bg-black py-16 md:py-24 scroll-mt-16">
