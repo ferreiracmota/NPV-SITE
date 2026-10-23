@@ -3,17 +3,16 @@ import './NPVPlatformShowcase.css'
 
 /**
  * A própria gravação já contém o celular em fundo branco.
- * Mantemos um quadro real do vídeo como prévia para iOS/Safari,
- * conexões lentas e navegadores que bloqueiam autoplay.
+ * O MP4 preserva a qualidade original.
+ * A animacao da MESMA gravacao opera em loop mesmo com autoplay bloqueado.
  */
 export default function NPVPlatformShowcase({ onViewPlans }) {
   const videoRef = useRef(null)
   const [playbackState, setPlaybackState] = useState('loading')
   const [videoUnavailable, setVideoUnavailable] = useState(false)
 
-  // O Safari pode negar autoplay mesmo em um vídeo mudo. Nunca ocultar
-  // os quadros do vídeo aguardando um onTimeUpdate: a prévia real continua
-  // visível, e um toque direto no botão permite reproduzir se necessário.
+  // Safari pode negar autoplay mesmo sem audio. A alternativa animada
+  // continua em movimento, sem exigir clique.
   const requestPlayback = useCallback(() => {
     const video = videoRef.current
     if (!video || videoUnavailable) return
@@ -64,22 +63,32 @@ export default function NPVPlatformShowcase({ onViewPlans }) {
           <div className="npv-showcase__video-shell">
             <img
               className="npv-showcase__poster"
-              src="/videos/npv-plataforma-poster.jpg"
-              alt="Celular mostrando a plataforma Não Pense, Vai! por dentro"
+              src="/videos/npv-plataforma-loop.webp"
+              alt="Demonstração animada da plataforma Não Pense, Vai! no celular"
               decoding="async"
+              loading="lazy"
+              onError={event => {
+                event.currentTarget.onerror = null
+                event.currentTarget.src = '/videos/npv-plataforma-poster.jpg'
+              }}
             />
             {!videoUnavailable && (
               <video
                 ref={videoRef}
-                className="npv-showcase__video"
+                className={`npv-showcase__video${playbackState === 'playing' ? ' npv-showcase__video--playing' : ''}`}
                 poster="/videos/npv-plataforma-poster.jpg"
                 autoPlay
                 muted
                 playsInline
                 loop
-                preload="auto"
+                preload="metadata"
+                onLoadedMetadata={requestPlayback}
                 onCanPlay={requestPlayback}
                 onPlaying={() => setPlaybackState('playing')}
+                onTimeUpdate={event => {
+                  if (event.currentTarget.currentTime > 0.1) setPlaybackState('playing')
+                }}
+                onWaiting={() => setPlaybackState('waiting')}
                 onPause={() => setPlaybackState('paused')}
                 onError={() => {
                   setPlaybackState('unavailable')
@@ -87,19 +96,8 @@ export default function NPVPlatformShowcase({ onViewPlans }) {
                 }}
                 aria-label="Demonstração em vídeo da plataforma Não Pense, Vai! no celular"
               >
-                <source src="/videos/npv-plataforma-por-dentro.mp4" type="video/mp4" />
+                <source src="/videos/npv-plataforma-original-20261023.mp4" type="video/mp4" />
               </video>
-            )}
-            {!videoUnavailable && playbackState !== 'playing' && (
-              <button
-                type="button"
-                className="npv-showcase__play-video"
-                onClick={requestPlayback}
-                aria-label="Reproduzir o vídeo da plataforma"
-                title="Reproduzir vídeo"
-              >
-                <span aria-hidden="true">▶</span>
-              </button>
             )}
           </div>
           <div className="npv-showcase__media-caption">UMA PLATAFORMA COMPLETA · ONDE VOCÊ ESTIVER</div>
