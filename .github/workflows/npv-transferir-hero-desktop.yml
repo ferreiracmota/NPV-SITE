@@ -1,0 +1,51 @@
+name: NPV - obter foto original para hero desktop
+on:
+  push:
+    branches:
+      - feature/npv-nova-foto-hero-desktop-20261023
+permissions:
+  contents: write
+jobs:
+  transferir-imagem:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Baixar a imagem enviada em resolucao integral
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import urllib.request,os,subprocess
+          urls=["https://media.canva.com/v2/image-resize/format:JPG/height:864/quality:95/uri:ifs%3A%2F%2FM%2F2561927e-303c-4a3e-b1b8-fd0e0c2658c7/watermark:F/width:1536?csig=AAAAAAAAAAAAAAAAAAAAABSYF8UAtUMinuL0fkGTyZMYM2ZW5BgOcUne6zVZxJQK&exp=1792778875&osig=AAAAAAAAAAAAAAAAAAAAAOfXmoHzzW_JAtxwXg72Vf9K5LMJ3b-wtwTTPwaaBPq5&signer=media-rpc&token=AAIAAU0AJDI1NjE5MjdlLTMwM2MtNGEzZS1iMWI4LWZkMGUwYzI2NThjNwAAAAABoWnysHjg-DsNO7J50ctn1FOmpnTIiwyZDJwlL9JpkDV7bsoqHg&x-canva-quality=original","https://media.canva.com/v2/image-resize/format:JPG/height:864/quality:75/uri:ifs%3A%2F%2FM%2F2561927e-303c-4a3e-b1b8-fd0e0c2658c7/watermark:F/width:1536?csig=AAAAAAAAAAAAAAAAAAAAABSYF8UAtUMinuL0fkGTyZMYM2ZW5BgOcUne6zVZxJQK&exp=1792778875&osig=AAAAAAAAAAAAAAAAAAAAAOfXmoHzzW_JAtxwXg72Vf9K5LMJ3b-wtwTTPwaaBPq5&signer=media-rpc&token=AAIAAU0AJDI1NjE5MjdlLTMwM2MtNGEzZS1iMWI4LWZkMGUwYzI2NThjNwAAAAABoWnysHjg-DsNO7J50ctn1FOmpnTIiwyZDJwlL9JpkDV7bsoqHg&x-canva-quality=thumbnail","https://media.canva.com/v2/image-resize/format:JPG/height:864/quality:100/uri:ifs%3A%2F%2FM%2F2561927e-303c-4a3e-b1b8-fd0e0c2658c7/watermark:F/width:1536?csig=AAAAAAAAAAAAAAAAAAAAABSYF8UAtUMinuL0fkGTyZMYM2ZW5BgOcUne6zVZxJQK&exp=1792778875&osig=AAAAAAAAAAAAAAAAAAAAAOfXmoHzzW_JAtxwXg72Vf9K5LMJ3b-wtwTTPwaaBPq5&signer=media-rpc&token=AAIAAU0AJDI1NjE5MjdlLTMwM2MtNGEzZS1iMWI4LWZkMGUwYzI2NThjNwAAAAABoWnysHjg-DsNO7J50ctn1FOmpnTIiwyZDJwlL9JpkDV7bsoqHg&x-canva-quality=thumbnail","https://media.canva.com/v2/image-resize/format:JPG/height:864/quality:95/uri:ifs%3A%2F%2FM%2F2561927e-303c-4a3e-b1b8-fd0e0c2658c7/watermark:F/width:1536?csig=AAAAAAAAAAAAAAAAAAAAABSYF8UAtUMinuL0fkGTyZMYM2ZW5BgOcUne6zVZxJQK&exp=1792778875&osig=AAAAAAAAAAAAAAAAAAAAAOfXmoHzzW_JAtxwXg72Vf9K5LMJ3b-wtwTTPwaaBPq5&signer=media-rpc&token=AAIAAU0AJDI1NjE5MjdlLTMwM2MtNGEzZS1iMWI4LWZkMGUwYzI2NThjNwAAAAABoWnysHjg-DsNO7J50ctn1FOmpnTIiwyZDJwlL9JpkDV7bsoqHg&x-canva-quality=thumbnail","https://media.canva.com/1/2561927e-303c-4a3e-b1b8-fd0e0c2658c7.jpg"]
+          out="public/images/npv-hero-desktop-outubro-2026.jpg"
+          os.makedirs(os.path.dirname(out), exist_ok=True)
+          for i,u in enumerate(urls):
+           try:
+            req=urllib.request.Request(u,headers={'User-Agent':'Mozilla/5.0','Accept':'image/avif,image/webp,image/apng,image/*,*/*;q=0.8'})
+            with urllib.request.urlopen(req,timeout=25) as res: content=res.read()
+            test="/tmp/candidate-npv.jpg"
+            open(test,"wb").write(content)
+            info=subprocess.run(['ffprobe','-v','error','-select_streams','v:0','-show_entries','stream=width,height','-of','csv=p=0',test],capture_output=True,text=True)
+            dims=info.stdout.strip()
+            print('Candidate',i,'bytes',len(content),'dimensions',dims,flush=True)
+            if dims=='1536,864' and len(content)>100000 and content[0:2]==bytes([255,216]):
+             with open(out,'wb') as f: f.write(content)
+             break
+           except Exception as e: print('Candidate',i,'unavailable:',str(e)[:180],flush=True)
+          else:
+           raise RuntimeError('Nenhuma URL retornou foto em 1536x864. Não substituir por thumbnail.')
+          
+          PY
+      - name: Commitar somente arquivo de imagem
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/npv-transferir-hero-desktop.yml
+          git add public/images/npv-hero-desktop-outubro-2026.jpg
+          git commit -m "assets(site): foto original do carrossel desktop NPV"
+          git push origin HEAD:feature/npv-nova-foto-hero-desktop-20261023
