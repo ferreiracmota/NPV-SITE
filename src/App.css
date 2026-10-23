@@ -680,3 +680,74 @@ a:focus-visible {
     pointer-events: none;
   }
 }
+
+/* Refinamento final: ícones vetoriais coerentes e menu Área de Alunos alinhado. */
+.npv-student-menu > .npv-student-summary {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  line-height:1.25;
+  -webkit-tap-highlight-color:transparent;
+}
+.npv-student-menu > .npv-student-summary::-webkit-details-marker { display:none }
+.npv-student-menu .npv-student-chevron {
+  flex:none;
+  transform:translateY(0);
+  transition:transform .18s ease;
+}
+.npv-student-menu[open] .npv-student-chevron { transform:rotate(180deg) }
+.npv-student-menu .npv-menu-link-arrow { display:inline-block;vertical-align:-2px;flex:none }
+
+/* Os doze módulos são clicáveis apenas para informar que o acesso é restrito. */
+.npv-locked-module {
+  display:block;
+  border:0;
+  padding:0;
+  text-align:inherit;
+  cursor:pointer;
+  isolation:isolate;
+  transition:transform .18s ease,box-shadow .18s ease;
+}
+.npv-locked-module::after {
+  content:"";
+  position:absolute;
+  inset:0;
+  background:rgba(0,0,0,.54);
+  opacity:0;
+  transition:opacity .18s ease;
+  pointer-events:none;
+}
+.npv-locked-module__notice {
+  position:absolute;
+  z-index:1;
+  top:50%;left:50%;
+  width:min(88%,190px);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:9px;
+  transform:translate(-50%,-47%);
+  opacity:0;
+  pointer-events:none;
+  color:#fff;
+  font-size:clamp(9px,1.2vw,12px);
+  font-weight:850;
+  line-height:1.35;
+  letter-spacing:.05em;
+  text-align:center;
+  transition:opacity .18s ease,transform .18s ease;
+}
+.npv-locked-module.is-active::after,
+.npv-locked-module.is-active .npv-locked-module__notice { opacity:1 }
+.npv-locked-module.is-active .npv-locked-module__notice { transform:translate(-50%,-50%) }
+.npv-locked-module:focus-visible { outline:3px solid #afcb21;outline-offset:3px }
+@media(hover:hover) {
+  .npv-locked-module:hover { transform:translateY(-3px);box-shadow:0 14px 30px rgba(0,0,0,.3) }
+}
+@media(prefers-reduced-motion:reduce) {
+  .npv-student-menu .npv-student-chevron,
+  .npv-locked-module,
+  .npv-locked-module::after,
+  .npv-locked-module__notice { transition:none }
+}

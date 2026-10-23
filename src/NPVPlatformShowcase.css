@@ -27,7 +27,7 @@
 .npv-showcase__points span{display:inline-flex;align-items:center;gap:7px;padding:10px 12px;border:1px solid #dce1d1;border-radius:8px;font-size:10px;font-weight:850;letter-spacing:.035em;color:#394132}
 .npv-showcase__points b{color:#8dab13}
 .npv-showcase__cta{min-height:54px;padding:14px 23px;display:inline-flex;align-items:center;gap:25px;border:0;border-radius:10px;background:#afcb21;color:#11160b;font-size:12px;font-weight:900;letter-spacing:.045em;cursor:pointer;transition:background .2s,transform .2s}
-.npv-showcase__cta span{font-size:20px}
+.npv-showcase__cta svg{flex-shrink:0}
 .npv-showcase__cta:hover{background:#c3df3f;transform:translateY(-2px)}
 .npv-showcase__cta:focus-visible{outline:3px solid #292929;outline-offset:4px}
 @media(max-width:850px){.npv-showcase{padding:30px 16px 46px}.npv-showcase__inner{grid-template-columns:1fr;gap:20px}.npv-showcase__media{order:1}.npv-showcase__copy{order:2;margin:auto;width:100%}.npv-showcase__video-shell{width:min(78vw,350px)}.npv-showcase__copy h2{font-size:clamp(38px,9.5vw,61px)}.npv-showcase__media-caption{font-size:9px}.npv-showcase__points{gap:7px}}
