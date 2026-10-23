@@ -1,5 +1,13 @@
 import './App.css'
+import './npvHeroOnlyPreview.css'
+import editorialMultisports from './assets/npv-multisport-editorial.avif?url'
+import heroPortrait from './assets/npv-hero-multisportes-vertical.jpg?url'
+import treinoScreenshot from './assets/npv-treino-intermediario-emagrecimento.jpg?url'
+import clubeScreenshot from './assets/npv-clube-beneficios-painel.jpg?url'
+import executionVideo from './assets/npv-execucao-aluno.mp4?url'
 import ClubeFloatingWidget from './ClubeFloatingWidget.jsx'
+import NPVInsidePreview from './NPVInsidePreview.jsx'
+import NPVPlatformShowcase from './NPVPlatformShowcase.jsx'
 /* Vídeos versionados pelo Vite: urls produzidas junto com a compilação,
    sem depender de /public/videos, que pode não existir na implantação. */
 import fundoDesktopVideo from './assets/videofundo1.MP4?url'
@@ -415,6 +423,8 @@ function StudentAccessMenu({mobile=false}) {
 }
 
 function App() {
+  const [heroSlide, setHeroSlide] = useState(0)
+  const heroSectionRef = useRef(null)
   const heroDesktopVideoRef = useRef(null)
   const heroMobileVideoRef = useRef(null)
   const [mobileVideoSource, setMobileVideoSource] = useState(fundoMobileIOSVideo)
@@ -423,7 +433,7 @@ function App() {
   // voltar para a página ou interagir. Nenhum controle visual adicional.
   useEffect(() => {
     const resumeHeroVideo = () => {
-      if (document.hidden) return
+      if (document.hidden || heroSlide !== 0) return
       const video = window.matchMedia('(min-width: 768px)').matches
         ? heroDesktopVideoRef.current
         : heroMobileVideoRef.current
@@ -455,7 +465,37 @@ function App() {
       window.removeEventListener('pointerdown', resumeHeroVideo)
       window.removeEventListener('resize', resumeHeroVideo)
     }
+  }, [heroSlide])
+
+  // Preview: alternar somente o vídeo e a fotografia na abertura.
+  // O restante do site é idêntico à versão oficial.
+  useEffect(() => {
+    let visible = true
+    let observer
+    if (typeof IntersectionObserver === 'function' && heroSectionRef.current) {
+      observer = new IntersectionObserver(([entry]) => {
+        visible = Boolean(entry?.isIntersecting)
+      }, { threshold: 0.1 })
+      observer.observe(heroSectionRef.current)
+    }
+    const timer = window.setInterval(() => {
+      if (visible && !document.hidden &&
+          !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        setHeroSlide(current => (current + 1) % 2)
+      }
+    }, 7000)
+    return () => {
+      window.clearInterval(timer)
+      observer?.disconnect()
+    }
   }, [])
+
+  useEffect(() => {
+    if (heroSlide === 1) {
+      heroDesktopVideoRef.current?.pause()
+      heroMobileVideoRef.current?.pause()
+    }
+  }, [heroSlide])
 
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isContactDropdownOpen, setIsContactDropdownOpen] = useState(false)
@@ -909,10 +949,11 @@ useEffect(() => {
       {/* Hero Section */}
 <section
   id="inicio"
-  className="relative min-h-[90svh] md:min-h-[100svh] flex items-start md:items-center justify-center overflow-hidden pb-36 md:pb-0 scroll-mt-16"
+  ref={heroSectionRef}
+  className="relative min-h-[90svh] md:min-h-[100svh] flex items-start md:items-center justify-center overflow-hidden pb-36 md:pb-0 scroll-mt-16 npv-only-hero-carousel"
 >
-  {/* Vídeo de fundo (desktop + mobile) */}
-  <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+  {/* Vídeo original da home, sem alterações visuais ou de conteúdo. */}
+  <div className={'absolute inset-0 z-0 overflow-hidden pointer-events-none npv-original-hero-video'+(heroSlide === 1 ? ' is-hidden' : '')}>
     {/* Desktop / tablet (>= md) */}
     <video
       ref={heroDesktopVideoRef}
@@ -962,8 +1003,8 @@ useEffect(() => {
     </video>
   </div>
 
-{/* Conteúdo por cima do vídeo */}
-  <div className="relative z-10 text-center px-4 mt-60 md:mt-0">
+{/* Conteúdo original do vídeo: preservado e visível no primeiro slide. */}
+  <div className={'relative z-10 text-center px-4 mt-60 md:mt-0 npv-original-hero-content'+(heroSlide === 1 ? ' is-hidden' : '')} inert={heroSlide === 1} aria-hidden={heroSlide === 1}>
     <h1 className="text-4xl md:text-6xl lg:text-6xl font-black leading-tight">
       <span className="text-white block animate-slide-up">{siteData.hero.title}</span>
       <span className="text-white block animate-slide-up animation-delay-200">{siteData.hero.subtitle}</span>
@@ -986,6 +1027,21 @@ useEffect(() => {
 
       QUERO DECOLAR ➜
     </a>
+  </div>
+
+  {/* Segundo slide: fotografia multiesportes enviada, sem controles/contador. */}
+  <div className={'npv-hero-photo-slide'+(heroSlide === 1 ? ' is-visible' : '')}
+       aria-hidden={heroSlide !== 1} inert={heroSlide !== 1}>
+    <picture className="npv-hero-photo-picture">
+      <source media="(max-width: 767px)" srcSet={heroPortrait} />
+      <img src={editorialMultisports} alt="" className="npv-hero-photo" decoding="async" />
+    </picture>
+    <div className="npv-hero-photo-copy">
+      <span className="npv-hero-photo-eyebrow">NÃO PENSE, VAI! · PLATAFORMA DE TREINOS</span>
+      <h2>TREINE NO SEU <span>RITMO.</span></h2>
+      <p>Academia, corrida, express e muito mais. Descubra os caminhos para evoluir com orientação profissional.</p>
+      <button type="button" onClick={() => scrollToSection('como-funciona')}>EXPLORAR A PLATAFORMA <span aria-hidden="true">↗</span></button>
+    </div>
   </div>
 </section>
 {/* Widget fora da hero com overflow-hidden, para acompanhar a viewport em toda a página.
@@ -1078,36 +1134,11 @@ useEffect(() => {
   </div>
 </section>
 
- {/* Como funciona: três etapas baseadas nas perguntas frequentes */}
- <section id="como-funciona" aria-labelledby="how-heading" className="bg-black py-16 md:py-24 scroll-mt-16">
-  <div className="container mx-auto px-4">
-   <div className="mx-auto max-w-3xl text-center">
-    <span className="npv-eyebrow">SIMPLES ASSIM</span>
-    <h2 id="how-heading" className="mt-4 text-3xl sm:text-4xl md:text-5xl font-black leading-tight">SUA EVOLUÇÃO COMEÇA <span className="text-[#AFCB21]">EM 3 PASSOS.</span></h2>
-    <p className="mt-4 text-zinc-300 text-base md:text-lg">Tudo para você começar com clareza, no seu ritmo.</p>
-   </div>
-   <div className="mx-auto mt-12 grid max-w-6xl grid-cols-1 gap-4 md:grid-cols-3 md:gap-6">
-        <div className="npv-step-card">
-          <span className="npv-step-number">01</span>
-          <h3 className="mt-6 text-xl font-bold">Escolha seu plano</h3>
-          <p className="mt-3 text-zinc-300 leading-relaxed">Selecione a assinatura que faz mais sentido para sua rotina.</p>
-        </div>
-        <div className="npv-step-card">
-          <span className="npv-step-number">02</span>
-          <h3 className="mt-6 text-xl font-bold">Acesse a plataforma</h3>
-          <p className="mt-3 text-zinc-300 leading-relaxed">Após a aprovação da compra, receba por e-mail as instruções de acesso.</p>
-        </div>
-        <div className="npv-step-card">
-          <span className="npv-step-number">03</span>
-          <h3 className="mt-6 text-xl font-bold">Comece a treinar</h3>
-          <p className="mt-3 text-zinc-300 leading-relaxed">Explore os níveis, as planilhas e os vídeos de execução para começar.</p>
-        </div>
-   </div>
-   <div className="mt-10 text-center">
-    <button type="button" onClick={() => scrollToSection('planos')} className="inline-flex min-h-14 items-center justify-center gap-4 rounded-xl bg-[#AFCB21] px-8 py-4 text-base font-black text-black transition hover:brightness-95 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#AFCB21]">CONHECER OS PLANOS <span aria-hidden="true" className="text-xl leading-none">➜</span></button>
-   </div>
-  </div>
- </section>
+ {/* Vitrine de recursos em teste: usa capas originais e exemplo editorial transparente. */}
+ <NPVInsidePreview academyImage={treinoScreenshot} executionVideo={executionVideo} clubImage={clubeScreenshot} onViewPlans={()=>scrollToSection('planos')}/>
+
+ {/* Apresentação real da plataforma, em substituição às três etapas anteriores. */}
+ <NPVPlatformShowcase onViewPlans={() => scrollToSection('planos')} />
 
  {/* Team Section */}
 <section className="py-12 bg-black">
