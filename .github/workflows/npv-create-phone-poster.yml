@@ -48,3 +48,5 @@ jobs:
           git add public/videos/npv-plataforma-poster.jpg
           git commit -m "fix(site): poster real do celular para Safari e carregamento"
           git push origin HEAD:fix/npv-celular-visible-20261023
+
+# Executar no push da branch de correção do Safari.
