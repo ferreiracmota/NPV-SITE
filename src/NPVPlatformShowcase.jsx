@@ -4,38 +4,30 @@ import './NPVPlatformShowcase.css'
 /**
  * Vitrine do Preview: a gravação já contém o aparelho e um fundo branco.
  * Preserva a própria gravação, sem desenhar uma segunda moldura de celular.
- * O vídeo será integrado em public/videos/npv-plataforma-por-dentro.mp4.
+ * Se o vídeo original ainda não estiver publicado, mantém apenas o texto aprovado.
  */
 export default function NPVPlatformShowcase({ onViewPlans }) {
   const [videoUnavailable, setVideoUnavailable] = useState(false)
 
   return (
-    <section id="como-funciona" className="npv-showcase" aria-labelledby="npv-showcase-title">
+    <section id="como-funciona" className={`npv-showcase${videoUnavailable ? " npv-showcase--without-video" : ""}`} aria-labelledby="npv-showcase-title">
       <div className="npv-showcase__inner">
-        <div className="npv-showcase__media">
+        {!videoUnavailable && <div className="npv-showcase__media">
           <div className="npv-showcase__video-shell">
-            {!videoUnavailable ? (
-              <video
-                className="npv-showcase__video"
-                src="/videos/npv-plataforma-por-dentro.mp4"
-                autoPlay
-                muted
-                playsInline
-                loop
-                preload="metadata"
-                onError={() => setVideoUnavailable(true)}
-                aria-label="Demonstração real da plataforma Não Pense, Vai! em um celular"
-              />
-            ) : (
-              <div className="npv-showcase__pending" role="status">
-                <span className="npv-showcase__pending-icon" aria-hidden="true">▶</span>
-                <strong>VÍDEO DA PLATAFORMA</strong>
-                <span>Gravação original aguardando vinculação ao Preview.</span>
-              </div>
-            )}
+            <video
+              className="npv-showcase__video"
+              src="/videos/npv-plataforma-por-dentro.mp4"
+              autoPlay
+              muted
+              playsInline
+              loop
+              preload="metadata"
+              onError={() => setVideoUnavailable(true)}
+              aria-label="Demonstração real da plataforma Não Pense, Vai! em um celular"
+            />
           </div>
           <div className="npv-showcase__media-caption">UMA PLATAFORMA COMPLETA · ONDE VOCÊ ESTIVER</div>
-        </div>
+        </div>}
         <div className="npv-showcase__copy">
           <span className="npv-showcase__eyebrow"><span aria-hidden="true" /> VEJA POR DENTRO</span>
           <h2 id="npv-showcase-title">TUDO ISSO NA <em>PALMA DA SUA MÃO.</em> <span>ATUALIZADO MENSALMENTE.</span></h2>
