@@ -1,0 +1,39 @@
+name: NPV - integrar gravacao original da plataforma
+on:
+  push:
+    branches:
+      - feature/npv-video-plataforma-20261023
+
+permissions:
+  contents: write
+
+jobs:
+  reconstruir-video:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Conferir versao da branch
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Reconstruir MP4 original otimizado para web
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p public/videos
+          cat .npv-video-chunks/chunk-*.txt | base64 --decode > public/videos/npv-plataforma-por-dentro.mp4
+          echo "16940611077fe0fb6dc94f46e8d37ff71e3aa1e19b3495ee3c6772041761e6ab  public/videos/npv-plataforma-por-dentro.mp4" | sha256sum -c -
+          test "$(wc -c < public/videos/npv-plataforma-por-dentro.mp4)" -eq 65479
+          file public/videos/npv-plataforma-por-dentro.mp4
+      - name: Versionar o MP4 e retirar blocos temporarios
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm -r -- .npv-video-chunks
+          git rm -- .github/workflows/npv-assemble-platform-video.yml
+          git add public/videos/npv-plataforma-por-dentro.mp4
+          git commit -m "feat(site): incorporar video vertical original da plataforma NPV"
+          git push origin HEAD:feature/npv-video-plataforma-20261023
