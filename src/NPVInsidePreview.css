@@ -351,3 +351,11 @@
   .npv-inside-video-label{top:14px;left:14px}
   .npv-inside-clube-preview{width:min(80%,320px)}
 }
+
+/* Mídias autênticas do usuário: não cortar as capturas nem simular vídeo. */
+.npv-inside-media-video>video{display:block;position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#111611;z-index:1}
+.npv-inside-media-video::after{display:none}
+.npv-inside-media-tag-video{top:12px;bottom:auto;left:14px;right:14px;border:0;padding:0;pointer-events:none;text-shadow:0 2px 9px #000;background:rgba(2,8,4,.45);border-radius:7px;width:max-content;max-width:calc(100% - 28px);padding:7px 11px}
+.npv-inside-media-clube>img{width:100%;max-width:100%;height:100%;object-fit:contain;object-position:center center;margin:0;filter:none}
+.npv-inside-media-clube::after{display:none}
+.npv-inside-media>img{max-width:100%}
