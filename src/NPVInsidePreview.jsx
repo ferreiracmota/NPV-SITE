@@ -21,7 +21,7 @@ function CheckItem({children}) {
   return <li><span className="npv-inside-check">{ICONS.check}</span><span>{children}</span></li>
 }
 
-export default function NPVInsidePreview({academyImage, mobilityImage, onViewPlans}) {
+export default function NPVInsidePreview({academyImage, executionVideo, clubImage, onViewPlans}) {
   const [active, setActive] = useState('treinos')
   const handleTabKey = (event, index) => {
     if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return
@@ -54,8 +54,8 @@ export default function NPVInsidePreview({academyImage, mobilityImage, onViewPla
         <div id="npv-inside-panel" role="tabpanel" aria-labelledby={'npv-inside-tab-'+active} tabIndex={0} className="npv-inside-panel" key={active}>
           {active==='treinos' && <>
             <div className="npv-inside-media">
-              <img src={academyImage} alt="Capa do módulo Academia da plataforma Não Pense, Vai!" loading="lazy" decoding="async"/>
-              <div className="npv-inside-media-tag">MÓDULOS REAIS DA NPV <span>↗</span></div>
+              <img src={academyImage} alt="Captura do material Academia Intermediário Emagrecimento, enviada para o Preview NPV" loading="lazy" decoding="async"/>
+              <div className="npv-inside-media-tag">MATERIAL REAL DA PLATAFORMA <span>↗</span></div>
             </div>
             <div className="npv-inside-copy">
               <span className="npv-inside-step">01 / ORGANIZAÇÃO</span>
@@ -67,9 +67,8 @@ export default function NPVInsidePreview({academyImage, mobilityImage, onViewPla
           </>}
           {active==='videos' && <>
             <div className="npv-inside-media npv-inside-media-video">
-              <img src={mobilityImage} alt="Capa do módulo de exercícios de mobilidade da plataforma Não Pense, Vai!" loading="lazy" decoding="async"/>
-              <span className="npv-inside-video-label" aria-hidden="true">VÍDEOS DE EXECUÇÃO</span>
-              <div className="npv-inside-media-tag">MÓDULO DE MOBILIDADE NPV <span>✦</span></div>
+              <video src={executionVideo} controls playsInline preload="metadata" aria-label="Vídeo real de execução de exercício no ambiente NPV" />
+              <div className="npv-inside-media-tag npv-inside-media-tag-video">VÍDEO REAL DE EXECUÇÃO <span>▶</span></div>
             </div>
             <div className="npv-inside-copy">
               <span className="npv-inside-step">02 / EXECUÇÃO</span>
@@ -81,15 +80,7 @@ export default function NPVInsidePreview({academyImage, mobilityImage, onViewPla
           </>}
           {active==='clube' && <>
             <div className="npv-inside-media npv-inside-media-clube">
-              <div className="npv-inside-clube-preview" aria-label="Representação ilustrativa dos recursos do Clube">
-                <div className="npv-inside-clube-logo">NPV <span>✦</span></div>
-                <span className="npv-inside-clube-eyebrow">CLUBE DE BENEFÍCIOS</span>
-                <strong>SUAS CONQUISTAS <span>VALEM MAIS.</span></strong>
-                <div className="npv-inside-clube-features">
-                  <span>ATIVIDADES</span><span>PONTOS</span><span>RECOMPENSAS</span>
-                </div>
-                <small>Representação ilustrativa. Consulte os benefícios no Clube.</small>
-              </div>
+              <img src={clubImage} alt="Exemplo visual do painel do Clube de Benefícios NPV: atividades, pontos e recompensas" loading="lazy" decoding="async"/>
             </div>
             <div className="npv-inside-copy">
               <span className="npv-inside-step">03 / RECOMPENSAS</span>
@@ -101,7 +92,7 @@ export default function NPVInsidePreview({academyImage, mobilityImage, onViewPla
           </>}
         </div>
       </div>
-      <div className="npv-inside-footnote"><span>01—03</span> Imagens dos módulos e representação editorial para apresentar os recursos. Consulte as áreas do aluno para ver a experiência real.</div>
+      <div className="npv-inside-footnote"><span>01—03</span> Capturas e vídeo enviados para o Preview. A imagem do Clube é demonstrativa e seus pontos não representam saldos reais.</div>
     </div>
   </section>
 }
