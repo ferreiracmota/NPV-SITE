@@ -1,6 +1,6 @@
 import './App.css'
 import './npvHeroOnlyPreview.css'
-import editorialMultisports from './assets/npv-multisport-editorial.avif?url'
+const editorialMultisports = '/images/npv-hero-desktop-outubro-2026.jpg'
 import heroPortrait from './assets/npv-hero-multisportes-vertical.jpg?url'
 import treinoScreenshot from './assets/npv-treino-intermediario-emagrecimento.jpg?url'
 import clubeScreenshot from './assets/npv-clube-beneficios-painel.jpg?url'
