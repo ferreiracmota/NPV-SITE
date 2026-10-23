@@ -113,7 +113,7 @@ export default function NPVPlatformShowcase({ onViewPlans }) {
             <span><b>03</b> CONTEÚDO RENOVADO</span>
           </div>
           <button type="button" className="npv-showcase__cta" onClick={onViewPlans}>
-            CONHEÇA A PLATAFORMA <ArrowRight size={19} strokeWidth={2} aria-hidden="true" />
+            CONHEÇA A PLATAFORMA <ArrowRight size={19} strokeWidth={2.1} aria-hidden="true" />
           </button>
         </div>
       </div>

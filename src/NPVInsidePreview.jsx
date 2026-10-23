@@ -15,7 +15,7 @@ const VIEWS = [
 
 const ICONS = {
   check: <svg aria-hidden="true" viewBox="0 0 20 20" width="17" height="17" fill="none"><path d="m4 10 4 4 8-8" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/></svg>,
-  arrow: <ArrowRight size={20} strokeWidth={2} aria-hidden="true" />
+  arrow: <ArrowRight size={20} strokeWidth={1.9} aria-hidden="true" />
 }
 
 function CheckItem({children}) {
@@ -56,7 +56,7 @@ export default function NPVInsidePreview({academyImage, executionVideo, clubImag
           {active==='treinos' && <>
             <div className="npv-inside-media">
               <img src={academyImage} alt="Captura do material Academia Intermediário Emagrecimento, enviada para o Preview NPV" loading="lazy" decoding="async"/>
-              <div className="npv-inside-media-tag">MATERIAL REAL DA PLATAFORMA <ArrowRight size={17} strokeWidth={2} aria-hidden="true" /></div>
+              <div className="npv-inside-media-tag">MATERIAL REAL DA PLATAFORMA <ArrowRight size={17} strokeWidth={2.3} aria-hidden="true" /></div>
             </div>
             <div className="npv-inside-copy">
               <span className="npv-inside-step">01 / ORGANIZAÇÃO</span>

@@ -408,16 +408,16 @@ function StudentAccessMenu({mobile=false}) {
       className={mobile
         ? 'npv-student-summary cursor-pointer list-none whitespace-nowrap rounded-md bg-[#AFCB21] px-2 sm:px-3 py-1.5 text-black font-semibold text-[10px] sm:text-xs focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white'
         : 'npv-student-summary cursor-pointer list-none whitespace-nowrap rounded-md bg-[#AFCB21] px-4 py-2 text-black font-semibold hover:brightness-110 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white'}>
-      <span>ÁREA DE ALUNOS</span><ChevronDown className="npv-student-chevron" size={15} strokeWidth={2} aria-hidden="true" />
+      <span>ÁREA DE ALUNOS</span><ChevronDown className="npv-student-chevron" size={15} strokeWidth={2.6} aria-hidden="true" />
     </summary>
     <nav aria-label="Opções da Área do Aluno" onClick={event=>{
       if(event.target.closest('a'))detailsRef.current.open=false
     }} className="absolute right-0 top-full z-[100] mt-2 w-64 overflow-hidden rounded-xl border border-[#3a4933] bg-[#141d15] p-2 shadow-2xl">
       <a href={HOTMART_STUDENT_LOGIN} target="_blank" rel="noopener noreferrer" className="block rounded-lg px-3 py-3 text-sm font-semibold text-white hover:bg-[#2e3c28] focus-visible:bg-[#2e3c28]">
-        Meus treinos <span className="block pt-1 text-xs font-normal text-gray-300">Acessar a Hotmart <ArrowRight size={14} strokeWidth={2} className="npv-menu-link-arrow" aria-hidden="true" /></span>
+        Meus treinos <span className="block pt-1 text-xs font-normal text-gray-300">Acessar a Hotmart <ArrowRight size={14} strokeWidth={2.75} className="npv-menu-link-arrow" aria-hidden="true" /></span>
       </a>
       <a href="/clube" className="mt-1 block rounded-lg bg-[#AFCB21]/10 px-3 py-3 text-sm font-semibold text-[#C8E45C] hover:bg-[#AFCB21]/20 focus-visible:bg-[#AFCB21]/20">
-        Clube de Benefícios NPV <span className="block pt-1 text-xs font-normal text-gray-200">Pontos e recompensas <ArrowRight size={14} strokeWidth={2} className="npv-menu-link-arrow" aria-hidden="true" /></span>
+        Clube de Benefícios NPV <span className="block pt-1 text-xs font-normal text-gray-200">Pontos e recompensas <ArrowRight size={14} strokeWidth={2.75} className="npv-menu-link-arrow" aria-hidden="true" /></span>
       </a>
     </nav>
   </details>
@@ -1042,7 +1042,7 @@ useEffect(() => {
       <span className="npv-hero-photo-eyebrow">NÃO PENSE, VAI! · PLATAFORMA DE TREINOS</span>
       <h2>TREINE NO SEU <span>RITMO.</span></h2>
       <p>Academia, corrida, express e muito mais. Descubra os caminhos para evoluir com orientação profissional.</p>
-      <button type="button" onClick={() => scrollToSection('como-funciona')}>EXPLORAR A PLATAFORMA <ArrowRight size={19} strokeWidth={2} aria-hidden="true" /></button>
+      <button type="button" onClick={() => scrollToSection('como-funciona')}>EXPLORAR A PLATAFORMA <ArrowRight size={19} strokeWidth={2.1} aria-hidden="true" /></button>
     </div>
   </div>
 </section>
