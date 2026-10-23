@@ -1,12 +1,15 @@
-/* Somente Preview do PR #25. Fundo branco contínuo com o fundo branco do vídeo enviado. */
+/* Fundo branco contínuo com a gravação original do celular. */
 .npv-showcase{background:#fff;color:#10130e;padding:clamp(30px,4.2vw,60px) 20px clamp(40px,5vw,68px);overflow:hidden}
 .npv-showcase *{box-sizing:border-box}
 .npv-showcase--without-video .npv-showcase__inner{grid-template-columns:minmax(0,1fr);max-width:900px}
 .npv-showcase--without-video .npv-showcase__copy{max-width:900px}
 .npv-showcase__inner{width:min(1180px,100%);margin:auto;display:grid;grid-template-columns:minmax(270px,.86fr) minmax(0,1.14fr);align-items:center;gap:clamp(24px,5.5vw,90px)}
 .npv-showcase__media{display:flex;flex-direction:column;align-items:center;min-width:0}
-.npv-showcase__video-shell{width:min(100%,385px);aspect-ratio:512/982;display:flex;align-items:center;justify-content:center;background:#fff}
-.npv-showcase__video{display:block;width:100%;height:100%;object-fit:contain;background:#fff}
+.npv-showcase__video-shell{position:relative;width:min(100%,385px);aspect-ratio:512/982;display:flex;align-items:center;justify-content:center;background:#fff}
+.npv-showcase__poster,.npv-showcase__video{display:block;position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:transparent}
+.npv-showcase__poster{z-index:0}
+.npv-showcase__video{z-index:1;opacity:0;transition:opacity .18s ease}
+.npv-showcase__video--started{opacity:1}
 .npv-showcase__pending{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;width:75%;aspect-ratio:9/17;border:2px solid #ced6b5;border-radius:36px;padding:20px;background:#f7f8f4;text-align:center;color:#4a523c}
 .npv-showcase__pending-icon{width:70px;height:70px;border-radius:50%;display:grid;place-items:center;background:#afcb21;color:#111;font-size:25px}
 .npv-showcase__pending strong{font-weight:900;font-size:14px}

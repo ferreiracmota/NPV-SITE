@@ -1,0 +1,50 @@
+name: NPV - gerar poster real do video do celular
+on:
+  push:
+    branches:
+      - fix/npv-celular-visible-20261023
+
+permissions:
+  contents: write
+
+jobs:
+  poster-real:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Extrair quadro do proprio MP4
+        shell: bash
+        run: |
+          set -euo pipefail
+          command -v ffmpeg || (sudo apt-get update && sudo apt-get install -y ffmpeg)
+          test -s public/videos/npv-plataforma-por-dentro.mp4
+          ffprobe -v error -show_entries format=duration:stream=codec_name,width,height -of default=noprint_wrappers=1 public/videos/npv-plataforma-por-dentro.mp4
+          ffmpeg -hide_banner -loglevel error -ss 0.40 -i public/videos/npv-plataforma-por-dentro.mp4 -frames:v 1 -vf scale=320:-2 -q:v 5 -update 1 -y public/videos/npv-plataforma-poster.jpg
+          test -s public/videos/npv-plataforma-poster.jpg
+      - name: Validar que o quadro nao esta em branco
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import subprocess, statistics
+          cmd=['ffmpeg','-hide_banner','-loglevel','error','-ss','0.40','-i','public/videos/npv-plataforma-por-dentro.mp4','-frames:v','1','-vf','crop=iw/2:ih/2:iw/4:ih/4,scale=8:8,format=gray','-f','rawvideo','-']
+          pixels=subprocess.run(cmd,check=True,capture_output=True).stdout
+          avg=statistics.mean(pixels)
+          print('Luminosidade media do centro:',avg)
+          if avg > 180:
+              raise SystemExit('O arquivo pode ter quadros brancos: nao publicar poster.')
+          PY
+      - name: Versionar poster e remover workflow temporario
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/npv-create-phone-poster.yml
+          git add public/videos/npv-plataforma-poster.jpg
+          git commit -m "fix(site): poster real do celular para Safari e carregamento"
+          git push origin HEAD:fix/npv-celular-visible-20261023

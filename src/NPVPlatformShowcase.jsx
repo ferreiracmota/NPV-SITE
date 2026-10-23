@@ -2,32 +2,53 @@ import { useState } from 'react'
 import './NPVPlatformShowcase.css'
 
 /**
- * Vitrine do Preview: a gravação já contém o aparelho e um fundo branco.
- * Preserva a própria gravação, sem desenhar uma segunda moldura de celular.
- * Se o vídeo original ainda não estiver publicado, mantém apenas o texto aprovado.
+ * A própria gravação já contém o celular em fundo branco.
+ * Mantemos um quadro real do vídeo como prévia para iOS/Safari,
+ * conexões lentas e navegadores que bloqueiam autoplay.
  */
 export default function NPVPlatformShowcase({ onViewPlans }) {
+  const [videoStarted, setVideoStarted] = useState(false)
   const [videoUnavailable, setVideoUnavailable] = useState(false)
 
   return (
-    <section id="como-funciona" className={`npv-showcase${videoUnavailable ? " npv-showcase--without-video" : ""}`} aria-labelledby="npv-showcase-title">
+    <section id="como-funciona" className="npv-showcase" aria-labelledby="npv-showcase-title">
       <div className="npv-showcase__inner">
-        {!videoUnavailable && <div className="npv-showcase__media">
+        <div className="npv-showcase__media">
           <div className="npv-showcase__video-shell">
-            <video
-              className="npv-showcase__video"
-              src="/videos/npv-plataforma-por-dentro.mp4"
-              autoPlay
-              muted
-              playsInline
-              loop
-              preload="metadata"
-              onError={() => setVideoUnavailable(true)}
-              aria-label="Demonstração real da plataforma Não Pense, Vai! em um celular"
+            <img
+              className="npv-showcase__poster"
+              src="/videos/npv-plataforma-poster.jpg"
+              alt="Celular mostrando a plataforma Não Pense, Vai! por dentro"
+              decoding="async"
             />
+            {!videoUnavailable && (
+              <video
+                className={`npv-showcase__video${videoStarted ? ' npv-showcase__video--started' : ''}`}
+                src="/videos/npv-plataforma-por-dentro.mp4"
+                autoPlay
+                muted
+                playsInline
+                loop
+                preload="auto"
+                onLoadedData={event => {
+                  const result = event.currentTarget.play()
+                  if (result?.catch) result.catch(() => {})
+                }}
+                onTimeUpdate={event => {
+                  if (event.currentTarget.currentTime > 0.15) setVideoStarted(true)
+                }}
+                onWaiting={() => setVideoStarted(false)}
+                onStalled={() => setVideoStarted(false)}
+                onError={() => {
+                  setVideoStarted(false)
+                  setVideoUnavailable(true)
+                }}
+                aria-label="Demonstração real da plataforma Não Pense, Vai! em um celular"
+              />
+            )}
           </div>
           <div className="npv-showcase__media-caption">UMA PLATAFORMA COMPLETA · ONDE VOCÊ ESTIVER</div>
-        </div>}
+        </div>
         <div className="npv-showcase__copy">
           <span className="npv-showcase__eyebrow"><span aria-hidden="true" /> VEJA POR DENTRO</span>
           <h2 id="npv-showcase-title">TUDO ISSO NA <em>PALMA DA SUA MÃO.</em> <span>ATUALIZADO MENSALMENTE.</span></h2>
