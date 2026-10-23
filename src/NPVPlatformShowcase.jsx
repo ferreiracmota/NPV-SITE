@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { ArrowRight } from 'lucide-react'
 import './NPVPlatformShowcase.css'
 
 /**
@@ -112,7 +113,7 @@ export default function NPVPlatformShowcase({ onViewPlans }) {
             <span><b>03</b> CONTEÚDO RENOVADO</span>
           </div>
           <button type="button" className="npv-showcase__cta" onClick={onViewPlans}>
-            CONHEÇA A PLATAFORMA <span aria-hidden="true">↗</span>
+            CONHEÇA A PLATAFORMA <ArrowRight size={19} strokeWidth={2} aria-hidden="true" />
           </button>
         </div>
       </div>

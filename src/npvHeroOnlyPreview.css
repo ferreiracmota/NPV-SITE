@@ -75,6 +75,10 @@
   margin-bottom:30px;
 }
 .npv-only-hero-carousel .npv-hero-photo-copy button {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
   background:#c8e645;
   color:#080b09;
   border:0;

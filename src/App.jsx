@@ -71,6 +71,7 @@ import modulo12      from './assets/modulo12.jpg'
 
 
 import React, { useState, useEffect, useRef, useCallback } from 'react'
+import { ArrowRight, ChevronDown, LockKeyhole } from 'lucide-react'
 
 // ===== Componente Antes/Depois — autoplay + drag + retoma do ponto atual =====
 function BeforeAfter({ slides = [] }) {
@@ -402,21 +403,21 @@ function StudentAccessMenu({mobile=false}) {
       document.removeEventListener('keydown',escape)
     }
   },[])
-  return <details ref={detailsRef} className={mobile?'relative md:hidden justify-self-end':'relative ml-4 hidden md:block'}>
-    <summary aria-label="Abrir opções da Área do Aluno"
+  return <details ref={detailsRef} className={mobile?'npv-student-menu relative md:hidden justify-self-end':'npv-student-menu relative ml-4 hidden md:block'}>
+    <summary aria-label="Opções da Área do Aluno"
       className={mobile
-        ? 'cursor-pointer list-none whitespace-nowrap rounded-md bg-[#AFCB21] px-2 sm:px-3 py-1.5 text-black font-semibold text-[10px] sm:text-xs focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white'
-        : 'cursor-pointer list-none whitespace-nowrap rounded-md bg-[#AFCB21] px-4 py-2 text-black font-semibold hover:brightness-110 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white'}>
-      ÁREA DE ALUNOS <span aria-hidden="true">⌄</span>
+        ? 'npv-student-summary cursor-pointer list-none whitespace-nowrap rounded-md bg-[#AFCB21] px-2 sm:px-3 py-1.5 text-black font-semibold text-[10px] sm:text-xs focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white'
+        : 'npv-student-summary cursor-pointer list-none whitespace-nowrap rounded-md bg-[#AFCB21] px-4 py-2 text-black font-semibold hover:brightness-110 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white'}>
+      <span>ÁREA DE ALUNOS</span><ChevronDown className="npv-student-chevron" size={15} strokeWidth={2} aria-hidden="true" />
     </summary>
     <nav aria-label="Opções da Área do Aluno" onClick={event=>{
       if(event.target.closest('a'))detailsRef.current.open=false
     }} className="absolute right-0 top-full z-[100] mt-2 w-64 overflow-hidden rounded-xl border border-[#3a4933] bg-[#141d15] p-2 shadow-2xl">
       <a href={HOTMART_STUDENT_LOGIN} target="_blank" rel="noopener noreferrer" className="block rounded-lg px-3 py-3 text-sm font-semibold text-white hover:bg-[#2e3c28] focus-visible:bg-[#2e3c28]">
-        Meus treinos <span className="block pt-1 text-xs font-normal text-gray-300">Acessar a Hotmart ➜</span>
+        Meus treinos <span className="block pt-1 text-xs font-normal text-gray-300">Acessar a Hotmart <ArrowRight size={14} strokeWidth={2} className="npv-menu-link-arrow" aria-hidden="true" /></span>
       </a>
       <a href="/clube" className="mt-1 block rounded-lg bg-[#AFCB21]/10 px-3 py-3 text-sm font-semibold text-[#C8E45C] hover:bg-[#AFCB21]/20 focus-visible:bg-[#AFCB21]/20">
-        Clube de Benefícios NPV <span className="block pt-1 text-xs font-normal text-gray-200">Pontos e recompensas →</span>
+        Clube de Benefícios NPV <span className="block pt-1 text-xs font-normal text-gray-200">Pontos e recompensas <ArrowRight size={14} strokeWidth={2} className="npv-menu-link-arrow" aria-hidden="true" /></span>
       </a>
     </nav>
   </details>
@@ -424,6 +425,7 @@ function StudentAccessMenu({mobile=false}) {
 
 function App() {
   const [heroSlide, setHeroSlide] = useState(0)
+  const [activeLockedModule, setActiveLockedModule] = useState(-1)
   const heroSectionRef = useRef(null)
   const heroDesktopVideoRef = useRef(null)
   const heroMobileVideoRef = useRef(null)
@@ -1040,7 +1042,7 @@ useEffect(() => {
       <span className="npv-hero-photo-eyebrow">NÃO PENSE, VAI! · PLATAFORMA DE TREINOS</span>
       <h2>TREINE NO SEU <span>RITMO.</span></h2>
       <p>Academia, corrida, express e muito mais. Descubra os caminhos para evoluir com orientação profissional.</p>
-      <button type="button" onClick={() => scrollToSection('como-funciona')}>EXPLORAR A PLATAFORMA <span aria-hidden="true">➜</span></button>
+      <button type="button" onClick={() => scrollToSection('como-funciona')}>EXPLORAR A PLATAFORMA <ArrowRight size={19} strokeWidth={2} aria-hidden="true" /></button>
     </div>
   </div>
 </section>
@@ -1105,18 +1107,27 @@ useEffect(() => {
     {/* grid dos cards */}
     <div className="grid grid-cols-2 md:grid-cols-6 gap-3 md:gap-6">
       {siteData.projects.items.slice(0, 12).map((project, index) => (
-        <div key={index} className="bg-black rounded-2xl overflow-hidden shadow-xl">
-          <div className="relative w-full aspect-[3/4]">
-            <img
-              src={project}
-              alt={`Bônus ${index + 1}`}
-              loading="lazy"
-              decoding="async"
-              className="absolute inset-0 w-full h-full object-cover select-none pointer-events-none"
-              draggable="false"
-            />
-          </div>
-        </div>
+        <button
+          key={index}
+          type="button"
+          className={`npv-locked-module relative w-full aspect-[3/4] bg-black rounded-2xl overflow-hidden shadow-xl${activeLockedModule === index ? ' is-active' : ''}`}
+          aria-label={`Módulo ${index + 1}: conteúdo exclusivo para assinantes. Toque para ver o aviso de acesso.`}
+          aria-pressed={activeLockedModule === index}
+          onClick={() => setActiveLockedModule(current => current === index ? -1 : index)}
+        >
+          <img
+            src={project}
+            alt=""
+            loading="lazy"
+            decoding="async"
+            className="absolute inset-0 w-full h-full object-cover select-none pointer-events-none"
+            draggable="false"
+          />
+          <span className="npv-locked-module__notice" aria-hidden="true">
+            <LockKeyhole size={20} strokeWidth={2} />
+            <span>ACESSO EXCLUSIVO PARA ASSINANTES</span>
+          </span>
+        </button>
       ))}
     </div>
 
