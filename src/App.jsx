@@ -413,7 +413,7 @@ function StudentAccessMenu({mobile=false}) {
       if(event.target.closest('a'))detailsRef.current.open=false
     }} className="absolute right-0 top-full z-[100] mt-2 w-64 overflow-hidden rounded-xl border border-[#3a4933] bg-[#141d15] p-2 shadow-2xl">
       <a href={HOTMART_STUDENT_LOGIN} target="_blank" rel="noopener noreferrer" className="block rounded-lg px-3 py-3 text-sm font-semibold text-white hover:bg-[#2e3c28] focus-visible:bg-[#2e3c28]">
-        Meus treinos <span className="block pt-1 text-xs font-normal text-gray-300">Acessar a Hotmart ↗</span>
+        Meus treinos <span className="block pt-1 text-xs font-normal text-gray-300">Acessar a Hotmart ➜</span>
       </a>
       <a href="/clube" className="mt-1 block rounded-lg bg-[#AFCB21]/10 px-3 py-3 text-sm font-semibold text-[#C8E45C] hover:bg-[#AFCB21]/20 focus-visible:bg-[#AFCB21]/20">
         Clube de Benefícios NPV <span className="block pt-1 text-xs font-normal text-gray-200">Pontos e recompensas →</span>
@@ -1040,7 +1040,7 @@ useEffect(() => {
       <span className="npv-hero-photo-eyebrow">NÃO PENSE, VAI! · PLATAFORMA DE TREINOS</span>
       <h2>TREINE NO SEU <span>RITMO.</span></h2>
       <p>Academia, corrida, express e muito mais. Descubra os caminhos para evoluir com orientação profissional.</p>
-      <button type="button" onClick={() => scrollToSection('como-funciona')}>EXPLORAR A PLATAFORMA <span aria-hidden="true">↗</span></button>
+      <button type="button" onClick={() => scrollToSection('como-funciona')}>EXPLORAR A PLATAFORMA <span aria-hidden="true">➜</span></button>
     </div>
   </div>
 </section>
