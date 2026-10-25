@@ -1,10 +1,13 @@
-import { StrictMode } from 'react'
+import { StrictMode, lazy, Suspense } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
-import ClubeNPV from './ClubeNPV.jsx'
-import ClubeNPVOnline from './ClubeNPVOnline.jsx'
 import { clubeReady } from './clubeSupabase.js'
+
+// Área do Clube só carrega quando a rota /clube é acessada.
+// Não muda autenticação ou funções; reduz o JavaScript inicial da home.
+const ClubeNPV = lazy(() => import('./ClubeNPV.jsx'))
+const ClubeNPVOnline = lazy(() => import('./ClubeNPVOnline.jsx'))
 
 const params = new URLSearchParams(window.location.search)
 const isClubeRoute = window.location.pathname === '/clube' ||
@@ -40,5 +43,9 @@ const page = isClubeRoute
   : <App />
 
 createRoot(document.getElementById('root')).render(
-  <StrictMode>{page}</StrictMode>
+  <StrictMode>
+    {isClubeRoute
+      ? <Suspense fallback={<main style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', background: '#111913', color: '#f4f7ed', fontFamily: 'Inter,system-ui,sans-serif' }}>Carregando Clube NPV…</main>}>{page}</Suspense>
+      : page}
+  </StrictMode>
 )

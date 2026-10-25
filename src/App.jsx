@@ -50,10 +50,10 @@ import parceiro2 from "./assets/Parceiro2.PNG";
 import parceiro3 from "./assets/Parceiro3.PNG";
 import parceiro4 from "./assets/Parceiro4.PNG";
 import parceiro5 from "./assets/Parceiro5.PNG";
-import especialista1 from "./assets/Especialista1.PNG";
-import especialista2 from "./assets/Especialista2.PNG";
-import especialista3 from "./assets/Especialista3.PNG";
-import especialista4 from "./assets/Especialista4.PNG";
+import especialista1 from "./assets/npv-especialista-display-1.png";
+import especialista2 from "./assets/npv-especialista-display-2.png";
+import especialista3 from "./assets/npv-especialista-display-3.png";
+import especialista4 from "./assets/npv-especialista-display-4.png";
 import especialista5 from "./assets/Especialista5.PNG";
 import sobremim from "./assets/sobre-mim.JPG";
 import modulo1        from './assets/modulo1.jpg'
@@ -238,7 +238,8 @@ function BeforeAfter({ slides = [] }) {
               <img
                 src={img}
                 alt={`Transformação ${i + 1}`}
-                loading="lazy"
+                loading={i < 3 ? "eager" : "lazy"}
+                fetchPriority="low"
                 decoding="async"
                 className="w-full h-full object-cover"
                 draggable={false}
@@ -485,7 +486,7 @@ function App() {
           !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
         setHeroSlide(current => (current + 1) % 2)
       }
-    }, 7000)
+    }, 3000)
     return () => {
       window.clearInterval(timer)
       observer?.disconnect()
@@ -1036,7 +1037,7 @@ useEffect(() => {
        aria-hidden={heroSlide !== 1} inert={heroSlide !== 1}>
     <picture className="npv-hero-photo-picture">
       <source media="(max-width: 767px)" srcSet={heroPortrait} />
-      <img src={editorialMultisports} alt="" className="npv-hero-photo" decoding="async" />
+      <img src={editorialMultisports} alt="" className="npv-hero-photo" loading="eager" fetchPriority="high" decoding="async" />
     </picture>
     <div className="npv-hero-photo-copy">
       <span className="npv-hero-photo-eyebrow">NÃO PENSE, VAI! · PLATAFORMA DE TREINOS</span>
@@ -1118,7 +1119,8 @@ useEffect(() => {
           <img
             src={project}
             alt=""
-            loading="lazy"
+            loading={index < 4 ? "eager" : "lazy"}
+            fetchPriority="low"
             decoding="async"
             className="absolute inset-0 w-full h-full object-cover select-none pointer-events-none"
             draggable="false"
@@ -1177,7 +1179,10 @@ useEffect(() => {
           <img
             src={m.photo}
             alt={m.name}
-            loading="lazy"
+            loading="eager"
+            fetchPriority="low"
+            width={128}
+            height={128}
             decoding="async"
             className="w-32 h-32 rounded-full mx-auto mb-3 object-cover group-hover:scale-110 transition-transform duration-300 shadow-lg"
           />
@@ -1244,7 +1249,8 @@ useEffect(() => {
               <img
                 src={p.logo}
                 alt={copyIndex === 0 ? p.name : ''}
-                loading="eager"
+                loading={copyIndex === 0 ? "eager" : "lazy"}
+                fetchPriority="low"
                 decoding="async"
                 className="h-20 md:h-24 w-auto max-w-[160px] object-contain mx-auto transition duration-300 grayscale brightness-90 group-[:touched]:grayscale-0 group-[:touched]:brightness-100 md:group-hover:grayscale-0 md:group-hover:brightness-100"
               />
