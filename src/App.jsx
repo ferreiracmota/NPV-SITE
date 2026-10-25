@@ -432,43 +432,56 @@ function App() {
   const heroMobileVideoRef = useRef(null)
   const [mobileVideoSource, setMobileVideoSource] = useState(fundoMobileIOSVideo)
 
-  // Safari/iOS: vídeo sempre mudo, inline, com nova tentativa ao carregar,
-  // voltar para a página ou interagir. Nenhum controle visual adicional.
+  // Renderizar somente o vídeo do dispositivo atual evita downloads concorrentes.
+  const [isDesktopHero, setIsDesktopHero] = useState(() =>
+    typeof window !== 'undefined' && window.matchMedia('(min-width: 768px)').matches
+  )
   useEffect(() => {
-    const resumeHeroVideo = () => {
-      if (document.hidden || heroSlide !== 0) return
-      const video = window.matchMedia('(min-width: 768px)').matches
-        ? heroDesktopVideoRef.current
-        : heroMobileVideoRef.current
-      if (!video) return
-      video.defaultMuted = true
-      video.muted = true
-      video.setAttribute('muted', '')
-      video.setAttribute('playsinline', '')
-      video.setAttribute('webkit-playsinline', '')
-      if (!video.paused) return
-      const attempt = video.play()
-      if (attempt && typeof attempt.catch === 'function') {
-        attempt.catch(() => {
-          // O navegador pode proibir autoplay independentemente do código.
-          // Nesse caso, a imagem de capa do próprio vídeo evita fundo preto.
-        })
-      }
-    }
-    resumeHeroVideo()
-    document.addEventListener('visibilitychange', resumeHeroVideo)
-    window.addEventListener('pageshow', resumeHeroVideo)
-    window.addEventListener('focus', resumeHeroVideo)
-    window.addEventListener('pointerdown', resumeHeroVideo, { passive: true })
-    window.addEventListener('resize', resumeHeroVideo)
+    const media = window.matchMedia('(min-width: 768px)')
+    const sync = () => setIsDesktopHero(media.matches)
+    media.addEventListener?.('change', sync)
+    sync()
+    return () => media.removeEventListener?.('change', sync)
+  }, [])
+
+  const startHeroVideo = useCallback(video => {
+    if (!video || document.hidden) return
+    video.defaultMuted = true
+    video.muted = true
+    video.setAttribute('muted', '')
+    video.setAttribute('playsinline', '')
+    video.setAttribute('webkit-playsinline', '')
+    if (!video.paused) return
+    try {
+      const promise = video.play()
+      promise?.catch?.(() => { /* Respeitar bloqueio do navegador. */ })
+    } catch { /* Navegadores antigos podem rejeitar play imediatamente. */ }
+  }, [])
+
+  useEffect(() => {
+    if (heroSlide !== 0) return
+    const video = isDesktopHero ? heroDesktopVideoRef.current : heroMobileVideoRef.current
+    if (!video) return
+    const resume = () => startHeroVideo(video)
+    // Tentar na abertura e quando houver dados suficientes, mesmo sem interação.
+    video.addEventListener('loadedmetadata', resume)
+    video.addEventListener('loadeddata', resume)
+    video.addEventListener('canplay', resume)
+    document.addEventListener('visibilitychange', resume)
+    window.addEventListener('pageshow', resume)
+    window.addEventListener('focus', resume)
+    document.addEventListener('pointerdown', resume, { passive: true })
+    resume()
     return () => {
-      document.removeEventListener('visibilitychange', resumeHeroVideo)
-      window.removeEventListener('pageshow', resumeHeroVideo)
-      window.removeEventListener('focus', resumeHeroVideo)
-      window.removeEventListener('pointerdown', resumeHeroVideo)
-      window.removeEventListener('resize', resumeHeroVideo)
+      video.removeEventListener('loadedmetadata', resume)
+      video.removeEventListener('loadeddata', resume)
+      video.removeEventListener('canplay', resume)
+      document.removeEventListener('visibilitychange', resume)
+      window.removeEventListener('pageshow', resume)
+      window.removeEventListener('focus', resume)
+      document.removeEventListener('pointerdown', resume)
     }
-  }, [heroSlide])
+  }, [heroSlide, isDesktopHero, mobileVideoSource, startHeroVideo])
 
   // Preview: alternar somente o vídeo e a fotografia na abertura.
   // O restante do site é idêntico à versão oficial.
@@ -957,53 +970,23 @@ useEffect(() => {
 >
   {/* Vídeo original da home, sem alterações visuais ou de conteúdo. */}
   <div className={'absolute inset-0 z-0 overflow-hidden pointer-events-none npv-original-hero-video'+(heroSlide === 1 ? ' is-hidden' : '')}>
-    {/* Desktop / tablet (>= md) */}
-    <video
-      ref={heroDesktopVideoRef}
-      className="hidden md:block w-full h-full object-cover"
-      muted
-      playsInline
-      autoPlay
-      loop
-      preload="auto"
-      onCanPlay={(event) => {
-        if (event.currentTarget.paused) {
-          event.currentTarget.play().catch(() => {})
-        }
-      }}
-    >
-      <source src={fundoDesktopVideo} type="video/mp4" />
-    </video>
-    {/* Mobile (< md): MP4 H.264 sem áudio e capa estática em caso de bloqueio de autoplay. */}
-    <video
-      key={mobileVideoSource}
-      ref={heroMobileVideoRef}
-      className="md:hidden w-full h-full object-cover"
-      poster={fundoMobilePoster}
-      muted
-      playsInline
-      autoPlay
-      loop
-      preload="auto"
-      onLoadedData={(event) => {
-        const video = event.currentTarget
-        video.defaultMuted = true
-        video.muted = true
-        if (video.paused) video.play().catch(() => {})
-      }}
-      onCanPlay={(event) => {
-        const video = event.currentTarget
-        video.defaultMuted = true
-        video.muted = true
-        if (video.paused) video.play().catch(() => {})
-      }}
-      onError={() => {
-        // Fallback técnico caso a nova versão não carregue.
-        if (mobileVideoSource !== fundoMobileVideo) setMobileVideoSource(fundoMobileVideo)
-      }}
-    >
-      <source src={mobileVideoSource} type="video/mp4" />
-    </video>
+    {/* O navegador baixa apenas o vídeo correspondente à tela. */}
+    {isDesktopHero && (
+      <video ref={heroDesktopVideoRef} className="w-full h-full object-cover"
+        muted playsInline autoPlay loop preload="auto" aria-hidden="true">
+        <source src={fundoDesktopVideo} type="video/mp4" />
+      </video>
+    )}
+    {!isDesktopHero && (
+      <video key={mobileVideoSource} ref={heroMobileVideoRef}
+        className="w-full h-full object-cover" poster={fundoMobilePoster}
+        muted playsInline autoPlay loop preload="auto" aria-hidden="true"
+        onError={() => {
+          if (mobileVideoSource !== fundoMobileVideo) setMobileVideoSource(fundoMobileVideo)
+        }}>
+        <source src={mobileVideoSource} type="video/mp4" />
+      </video>
+    )}
   </div>
 
 {/* Conteúdo original do vídeo: preservado e visível no primeiro slide. */}
