@@ -1,0 +1,52 @@
+name: NPV - gerar retratos leves premium
+on:
+  push:
+    branches: [feature/npv-fluidez-final-20261025]
+permissions:
+  contents: write
+jobs:
+  create-high-density-expert-images:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Install image tools
+        run: python3 -m pip install --quiet Pillow==11.3.0
+      - name: Generate exact-display high-density PNG images
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from PIL import Image, ImageOps
+          from pathlib import Path
+          for i in range(1, 5):
+              source=Path(f"src/assets/Especialista{i}.PNG")
+              with Image.open(source) as image:
+                  dimensions=image.size
+                  image=ImageOps.exif_transpose(image)
+                  if image.mode not in ("RGB","RGBA"):
+                      image=image.convert("RGBA" if "A" in image.getbands() else "RGB")
+                  # Aspecto quadrado centrado idêntico ao object-cover dos retratos.
+                  display=ImageOps.fit(image, (512,512), method=Image.Resampling.LANCZOS, centering=(0.5,0.5))
+                  dest=source.parent/f"npv-especialista-display-{i}.png"
+                  display.save(dest,"PNG",optimize=True,compress_level=9,
+                      **({"icc_profile": image.info["icc_profile"]} if image.info.get("icc_profile") else {}))
+                  with Image.open(dest) as output:
+                      assert output.size==(512,512)
+                  assert dest.stat().st_size < source.stat().st_size
+                  print(source.name,dimensions,source.stat().st_size,"->",dest.name,dest.stat().st_size,flush=True)
+          
+          PY
+      - name: Store generated images and clean temporary workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/npv-experts-image-build.yml
+          git add src/assets/npv-especialista-display-{1,2,3,4}.png
+          git commit -m "perf(assets): optimized expert photos for high-density screens"
+          git push origin HEAD:feature/npv-fluidez-final-20261025
