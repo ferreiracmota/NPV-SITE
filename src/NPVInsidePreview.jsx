@@ -55,7 +55,7 @@ export default function NPVInsidePreview({academyImage, executionVideo, clubImag
         <div id="npv-inside-panel" role="tabpanel" aria-labelledby={'npv-inside-tab-'+active} tabIndex={0} className="npv-inside-panel" key={active}>
           {active==='treinos' && <>
             <div className="npv-inside-media">
-              <img src={academyImage} alt="Captura do material Academia Intermediário Emagrecimento, enviada para o Preview NPV" loading="lazy" decoding="async"/>
+              <img src={academyImage} alt="Captura do material Academia Intermediário Emagrecimento, enviada para o Preview NPV" loading="eager" decoding="async"/>
               <div className="npv-inside-media-tag">MATERIAL REAL DA PLATAFORMA <ArrowRight size={17} strokeWidth={2.3} aria-hidden="true" /></div>
             </div>
             <div className="npv-inside-copy">
@@ -80,7 +80,7 @@ export default function NPVInsidePreview({academyImage, executionVideo, clubImag
           </>}
           {active==='clube' && <>
             <div className="npv-inside-media npv-inside-media-clube">
-              <img src={clubImage} alt="Exemplo visual do painel do Clube de Benefícios NPV: atividades, pontos e recompensas" loading="lazy" decoding="async"/>
+              <img src={clubImage} alt="Exemplo visual do painel do Clube de Benefícios NPV: atividades, pontos e recompensas" loading="eager" decoding="async"/>
             </div>
             <div className="npv-inside-copy">
               <span className="npv-inside-step">03 / RECOMPENSAS</span>
