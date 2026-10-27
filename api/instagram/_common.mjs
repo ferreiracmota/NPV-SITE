@@ -80,6 +80,7 @@ export const signatureValid=(raw,header,secret)=>{
   return safeEqual(header.toLowerCase(),digest)
 }
 
+// Extraído de eventos de mensageria de Story Mention, não de marcações genéricas.
 export const extractEvents=payload=>{
   if(!payload||!['instagram','page'].includes(payload.object)||!Array.isArray(payload.entry))
     return []
@@ -98,12 +99,31 @@ export const extractEvents=payload=>{
       }
       const attachment=Array.isArray(message.attachments)
         ?message.attachments.find(a=>a?.type==='story_mention'):null
-      if(attachment&&id.length>=4&&id.length<=320){
-        const claimedStoryId=attachment.payload?.id||attachment.payload?.story_id||message.story?.id
-        const storyKey=claimedStoryId&&/^[\w.:-]{3,250}$/.test(String(claimedStoryId))
-          ?'story:'+claimedStoryId:'event:'+id
-        result.push({kind:'story',sender,recipient,id,storyKey})
+      const referral=item?.referral?.source==='STORY_MENTION'?item.referral:null
+      if((!attachment&&!referral)||id.length<4||id.length>320)continue
+      const declared=attachment?.payload?.id||attachment?.payload?.story_id
+        ||referral?.story?.id||message.story?.id
+      let storyKey='',verifiedStory=false
+      if(declared&&/^[\w.:-]{5,250}$/.test(String(declared))){
+        storyKey='story:'+declared
+        verifiedStory=true
+      }else{
+        const url=attachment?.payload?.url||referral?.story?.url
+        try{
+          if(typeof url==='string'&&url.length<3000){
+            const asset=new URL(url).searchParams.get('asset_id')
+            if(asset&&/^\d{5,40}$/.test(asset)){
+              storyKey='asset:'+asset
+              verifiedStory=true
+            }
+          }
+        }catch{}
       }
+      // Um message.mid identifica a entrega da notificação, mas não prova que
+      // duas notificações diferentes são Stories diferentes. Sem chave estável,
+      // a menção fica em análise e JAMAIS gera crédito automático.
+      result.push({kind:'story',sender,recipient,id,
+        storyKey:storyKey||'event:'+id,verifiedStory})
     }
   }
   return result
