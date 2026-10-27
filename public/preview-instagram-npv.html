@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>Prévia · Stories no Clube NPV</title>
+  <style>
+    :root{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#171c17;background:#f5f6f2}
+    *{box-sizing:border-box}body{margin:0}button,input{font:inherit}button{cursor:pointer}
+    .top{background:#111b14;color:#fff;border-bottom:1px solid #26372a}
+    .top-inner{max-width:1160px;margin:auto;min-height:82px;padding:18px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+    .brand{display:flex;align-items:center;gap:12px}.brandmark{background:#bedc58;border-radius:50%;height:46px;width:46px;display:grid;place-items:center;color:#1c2612;font-weight:1000;font-size:17px;letter-spacing:-2px}
+    .brand strong{font-size:14px;letter-spacing:1.1px}.brand span{display:block;color:#b8cbb6;font-size:10px;font-weight:750;letter-spacing:2px;margin-top:3px}
+    .tag{border:1px solid #6c794a;border-radius:25px;color:#daeba6;padding:8px 12px;font-size:12px;font-weight:800}
+    main{max-width:1160px;margin:0 auto;padding:34px 24px 80px}
+    .eyebrow{color:#587421;font-weight:850;font-size:11px;letter-spacing:1.8px;text-transform:uppercase}
+    h1{font-size:clamp(28px,4.2vw,45px);letter-spacing:-1.7px;line-height:1.1;margin:12px 0 10px}h1 em{font-style:normal;color:#7b9a2a}
+    .sub{color:#677066;line-height:1.55;font-size:15px;max-width:680px;margin:0 0 22px}
+    .notice{border:1px solid #e8d9a4;background:#fff9e7;color:#665622;border-radius:12px;padding:13px 16px;font-size:13px;line-height:1.5;margin-bottom:25px}
+    .switch{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px}.switch button{border:1px solid #d9dfd6;background:white;color:#465246;border-radius:10px;font-weight:750;padding:12px 18px}.switch button[aria-pressed="true"]{background:#1c2d20;color:#fff;border-color:#1c2d20}
+    .layout{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(290px,.85fr);gap:22px}
+    .card{background:#fff;border:1px solid #e4e8e1;border-radius:20px;padding:25px;box-shadow:0 8px 30px #27331908}
+    .card h2{font-size:20px;letter-spacing:-.5px;margin:0 0 7px}.muted{color:#778075;font-size:13px;line-height:1.55}.row{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+    .profile{display:flex;align-items:center;gap:13px;margin:23px 0}.avatar{background:#e7edce;color:#47631a;height:47px;width:47px;border-radius:50%;display:grid;place-items:center;font-size:15px;font-weight:850}
+    .profile strong{display:block;font-size:15px}.profile small{font-size:12px;color:#7a8478}.status{display:inline-block;border-radius:20px;background:#eef5d9;color:#54701e;padding:7px 11px;font-size:11px;font-weight:800}
+    .fieldlabel{display:block;font-size:12px;color:#596456;font-weight:800;margin:0 0 7px}
+    .fieldrow{display:flex;gap:9px}.fieldrow input{width:100%;min-width:0;border:1px solid #d8dfd5;border-radius:11px;padding:12px 13px;background:white;color:#243126}
+    .btn{border:0;border-radius:11px;padding:12px 15px;background:#bfdc57;color:#213015;font-weight:850;transition:filter .2s}.btn:hover{filter:brightness(.97)}.btn:disabled{opacity:.55;cursor:not-allowed}.btn-outline{background:#f2f5ea;color:#3f5b20;border:1px solid #d7e5b6}
+    .separator{height:1px;background:#e9ede6;margin:24px 0}.big{font-size:40px;font-weight:850;letter-spacing:-1.5px;margin:10px 0}.point{color:#75942d}
+    .flow{display:grid;gap:12px;margin-top:18px}.step{display:flex;gap:13px;align-items:flex-start}.num{height:28px;min-width:28px;border-radius:50%;background:#eaf2d5;color:#587526;font-weight:850;display:grid;place-items:center;font-size:12px}.step strong{font-size:13px}.step p{margin:4px 0 0;color:#7c857a;font-size:12px;line-height:1.45}
+    .metric{background:#f3f6ed;border-radius:14px;padding:18px;margin:18px 0}.metric label{color:#66765b;font-size:12px}.metric b{font-size:34px;display:block;margin-top:5px}
+    .pill{font-size:11px;border-radius:20px;padding:6px 9px;font-weight:850;background:#e9eee6;color:#62715e}.pill.ok{background:#e8f5da;color:#4c791f}.pill.pending{background:#fff1cb;color:#90661b}.pill.duplicate{background:#f5e8e7;color:#a34c44}
+    .event{padding:13px 0;border-bottom:1px solid #edf0ea;display:flex;justify-content:space-between;gap:12px;align-items:center}.event strong{font-size:13px}.event small{display:block;color:#879185;font-size:12px;margin-top:5px}
+    .sample{border:1px dashed #bbc9a7;background:#f8fbf2;border-radius:14px;padding:15px;margin:15px 0}.sample strong{display:block;font-size:13px;margin-bottom:7px}.sample code{font-size:12px;color:#43592a;overflow-wrap:anywhere}
+    .helper{font-size:12px;color:#747f70;line-height:1.5;margin:10px 0}.feedback{margin-top:15px;padding:13px;border-radius:11px;font-size:13px;font-weight:650;line-height:1.5;background:#edf4d9;color:#3f651d}
+    .footer{margin-top:27px;color:#879083;font-size:12px;text-align:center}
+    .hidden{display:none!important}
+    @media(max-width:780px){main{padding:25px 14px 65px}.top-inner{padding:15px}.top .tag{font-size:10px}.layout{grid-template-columns:1fr}.card{padding:19px}.fieldrow{flex-direction:column}.brand strong{font-size:12px}.brand span{font-size:8px}.sub{font-size:14px}}
+  </style>
+</head>
+<body>
+<header class="top"><div class="top-inner"><div class="brand"><div class="brandmark">VAI!</div><div><strong>NÃO PENSE, VAI!</strong><span>CLUBE DE BENEFÍCIOS</span></div></div><span class="tag">PREVIEW DE TESTE · 2.1.1</span></div></header>
+<main>
+  <div class="eyebrow">NOVA FUNCIONALIDADE · STORIES</div>
+  <h1>Marcou a NPV? <em>Vale pontos.</em></h1>
+  <p class="sub">Veja como seria a identificação de Stories que mencionam <strong>@naopensevai</strong>, o vínculo com a aluna e o lançamento de <strong>+200 pontos por Story válido</strong>.</p>
+  <div class="notice"><b>Ambiente de demonstração.</b> Nenhuma conta do Instagram está conectada. Nenhum Story é consultado e nenhum ponto real é lançado. As ações abaixo simulam o processo para aprovação do visual e da experiência.</div>
+  <div class="switch"><button id="studentTab" aria-pressed="true">👤 Visão da aluna</button><button id="adminTab" aria-pressed="false">⚙️ Painel administrativo</button><button id="reset" class="btn-outline">↺ Reiniciar teste</button></div>
+  <div id="studentView" class="layout">
+    <section class="card">
+      <div class="row"><h2>Meu Instagram</h2><span id="linkStatus" class="pill pending">Não vinculado</span></div>
+      <p class="muted">Associe seu Instagram à conta do Clube. No funcionamento real, o vínculo precisará ser confirmado por um método seguro.</p>
+      <div class="profile"><div class="avatar">LM</div><div><strong>Larissa Martins</strong><small>Aluna fictícia · Conta aprovada no Clube</small></div></div>
+      <label class="fieldlabel" for="username">Seu usuário do Instagram</label>
+      <div class="fieldrow"><input id="username" value="@lari.treina" autocomplete="off" placeholder="@seuinstagram"/><button class="btn" id="link">Simular vínculo</button></div>
+      <p class="helper" id="linkHelp">Neste teste o vínculo é apenas simulado, sem login do Instagram.</p>
+      <div class="separator"></div>
+      <div class="row"><h2>Stories com pontos</h2><span class="status">200 PTS / STORY</span></div>
+      <p class="muted">Publique um Story mencionando @naopensevai. Quando a notificação oficial estiver integrada e a autoria confirmada, o Clube poderá validar o crédito conforme as regras.</p>
+      <div class="metric"><label>Pontos de Stories nesta simulação</label><b id="myPoints">0 <span class="point">pts</span></b><label id="myCount">0 de 5 Stories válidos no mês</label></div>
+      <div class="row"><h2 style="font-size:16px">Meu extrato</h2></div>
+      <div id="myHistory" class="muted" style="margin-top:12px">Nenhuma pontuação de Story registrada neste teste.</div>
+    </section>
+    <aside class="card">
+      <h2>Como você ganha?</h2><p class="muted">A jornada que a aluna verá no Clube.</p>
+      <div class="flow"><div class="step"><div class="num">1</div><div><strong>Vincule seu Instagram</strong><p>Identificamos seu perfil e o relacionamos à sua conta do Clube.</p></div></div><div class="step"><div class="num">2</div><div><strong>Publique e marque @naopensevai</strong><p>O Story precisa conter uma menção verdadeira à conta NPV.</p></div></div><div class="step"><div class="num">3</div><div><strong>Recebemos e validamos</strong><p>Verificamos a conta, a elegibilidade e se o Story já foi pontuado.</p></div></div><div class="step"><div class="num">4</div><div><strong>Receba +200 pontos</strong><p>O crédito aparece no saldo e no extrato, quando a integração estiver ativa.</p></div></div></div>
+      <div class="separator"></div><p class="helper">Uma menção não identificada ou sem vínculo confirmado segue para análise administrativa. O sistema não deverá pontuar automaticamente apenas com o @ digitado.</p>
+    </aside>
+  </div>
+  <div id="adminView" class="layout hidden">
+    <section class="card">
+      <div class="row"><h2>Recebimento de menções</h2><span class="pill pending">Simulador</span></div>
+      <p class="muted">Teste situações do futuro webhook da Meta. Os eventos abaixo são fictícios e não saem do navegador.</p>
+      <div class="sample"><strong>Evento de exemplo</strong><code>Story de @lari.treina mencionando @naopensevai</code></div>
+      <div class="row" style="justify-content:flex-start"><button class="btn" id="simulate">Simular Story válido</button><button class="btn btn-outline" id="repeat">Repetir Story</button><button class="btn btn-outline" id="unknown">Simular perfil desconhecido</button></div>
+      <div id="adminFeedback" class="feedback">Use os botões acima para simular uma menção.</div>
+      <div class="separator"></div>
+      <div class="row"><h2>Registro de eventos</h2><span class="pill" id="allCount">0 eventos</span></div>
+      <div id="events" class="muted" style="margin-top:10px">Nenhuma notificação recebida neste teste.</div>
+    </section>
+    <aside class="card">
+      <h2>Proteções da pontuação</h2><p class="muted">Condições que deverão ser aplicadas no backend antes de creditar pontos reais.</p>
+      <div class="flow">
+        <div class="step"><div class="num">✓</div><div><strong>Conta vinculada e confirmada</strong><p>Relacionar a identidade retornada pela Meta ao cadastro autorizado.</p></div></div>
+        <div class="step"><div class="num">✓</div><div><strong>Story único</strong><p>Um mesmo evento não pode gerar pontos em duplicidade.</p></div></div>
+        <div class="step"><div class="num">✓</div><div><strong>Limite mensal</strong><p>Exemplo de regra atual: até cinco Stories válidos por mês.</p></div></div>
+        <div class="step"><div class="num">✓</div><div><strong>Pendências para conferência</strong><p>Eventos sem identificação ficam na fila, sem crédito.</p></div></div>
+      </div>
+      <div class="metric"><label>Pontos concedidos no teste</label><b id="totalPoints">0 <span class="point">pts</span></b></div>
+      <p class="helper">Próxima fase (fora deste preview): autorização e análise de disponibilidade da API Meta, webhook protegido e integração idempotente com Supabase.</p>
+    </aside>
+  </div>
+  <div class="footer">Não Pense, Vai! · Prévia isolada, sem conexão com as contas ou pontuações oficiais.</div>
+</main>
+<script>
+  (() => {
+    let linked = false, handle = "", seq = 0, lastStory = "", credits = [], events = [];
+    const el = id => document.getElementById(id);
+    const escapeText = s => String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const now = () => new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+    function update() {
+      el('linkStatus').textContent = linked ? 'Vínculo simulado' : 'Não vinculado';
+      el('linkStatus').className = linked ? 'pill ok' : 'pill pending';
+      el('linkHelp').textContent = linked ? 'Perfil de teste '+handle+' associado à Larissa (sem autenticação real).' : 'Neste teste o vínculo é apenas simulado, sem login do Instagram.';
+      el('myPoints').innerHTML = (credits.length*200)+' <span class="point">pts</span>';
+      el('totalPoints').innerHTML = (credits.length*200)+' <span class="point">pts</span>';
+      el('myCount').textContent = credits.length+' de 5 Stories válidos no mês';
+      el('allCount').textContent = events.length+' evento'+(events.length===1?'':'s');
+      el('myHistory').innerHTML = credits.length ? credits.slice().reverse().map(x=>'<div class="event"><div><strong>Story marcando @naopensevai</strong><small>'+escapeText(x.id)+' · '+escapeText(x.time)+'</small></div><strong class="point">+200 pts</strong></div>').join('') : 'Nenhuma pontuação de Story registrada neste teste.';
+      el('events').innerHTML = events.length ? events.slice().reverse().map(x=>'<div class="event"><div><strong>'+escapeText(x.handle)+'</strong><small>'+escapeText(x.id)+' · '+escapeText(x.time)+'</small></div><span class="pill '+escapeText(x.cls)+'">'+escapeText(x.status)+'</span></div>').join('') : 'Nenhuma notificação recebida neste teste.';
+    }
+    const feedback = msg => el('adminFeedback').textContent = msg;
+    function receive(kind) {
+      const id = kind==='repeat' ? lastStory || 'story-demo-001' : kind==='unknown' ? 'story-externo-'+(++seq) : 'story-npv-'+(++seq);
+      if(kind!=='repeat' && kind!=='unknown') lastStory=id;
+      const incomingHandle = kind==='unknown' ? '@perfil.sem.cadastro' : '@lari.treina';
+      let status='',cls='pending',message='';
+      if(events.some(e=>e.id===id)){status='Duplicado';cls='duplicate';message='Story já processado: nenhuma pontuação duplicada.'}
+      else if(!linked || handle.toLowerCase()!==incomingHandle.toLowerCase()){status='Pendente';message='Conta sem vínculo confirmado: nenhuma pontuação concedida.'}
+      else if(credits.length>=5){status='Limite atingido';message='Limite ilustrativo de cinco Stories no mês atingido: sem novos pontos.'}
+      else{status='Validado';cls='ok';credits.push({id,time:now()});message='+200 pontos simulados para Larissa Martins. Nenhum saldo real foi alterado.'}
+      events.push({id,handle:incomingHandle,time:now(),status,cls}); feedback(message);update();
+    }
+    function view(admin) {
+      el('studentView').classList.toggle('hidden',admin);
+      el('adminView').classList.toggle('hidden',!admin);
+      el('studentTab').setAttribute('aria-pressed',String(!admin));
+      el('adminTab').setAttribute('aria-pressed',String(admin));
+    }
+    el('studentTab').onclick=()=>view(false); el('adminTab').onclick=()=>view(true);
+    el('link').onclick=()=>{const h=el('username').value.trim().replace(/^@+/,'');if(!/^[a-zA-Z0-9._]{1,30}$/.test(h)){el('linkHelp').textContent='Informe um @ válido (letras, números, ponto ou sublinhado).';return}handle='@'+h;linked=true;update()};
+    el('simulate').onclick=()=>receive('valid');
+    el('repeat').onclick=()=>receive('repeat');
+    el('unknown').onclick=()=>receive('unknown');
+    el('reset').onclick=()=>{linked=false;handle='';seq=0;lastStory='';credits=[];events=[];el('username').value='@lari.treina';feedback('Use os botões acima para simular uma menção.');update();view(false)};
+    update();
+  })();
+</script>
+</body>
+</html>
