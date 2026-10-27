@@ -46,7 +46,7 @@ export default async function handler(req,res){
         const {error}=await db.rpc('clube_instagram_receive_story',{
           p_event_id:event.id,p_instagram_scoped_id:event.sender,
           p_story_key:event.storyKey,p_actor_id:cfg.actor,
-          p_award_enabled:cfg.award
+          p_award_enabled:cfg.award && event.verifiedStory === true
         })
         if(error)throw error
       }
