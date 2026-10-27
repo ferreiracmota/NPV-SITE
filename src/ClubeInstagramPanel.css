@@ -44,3 +44,9 @@
 
 /* Mesmo aspecto do link aprovado em Continue acumulando, sem moldura de botão. */
 .clube-shell button.npv-earn-challenge-link{background:transparent;border:0;padding:0;cursor:pointer;font-family:inherit}
+
+/* A barra do aluno passou de 4 para 5 opções; mantém uma só linha no celular. */
+@media(max-width:760px){
+  .clube-live-student .clube-live-tabs{grid-template-columns:repeat(5,minmax(0,1fr));gap:3px}
+  .clube-live-student .clube-live-tabs>button{font-size:clamp(8px,2.1vw,10px);min-width:0;padding:4px 1px}
+}
