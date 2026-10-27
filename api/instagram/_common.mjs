@@ -45,10 +45,15 @@ export async function authorizedMember(req,cfg){
   const {data,error}=await auth.auth.getUser(token)
   if(error||!data?.user?.id)return null
   const db=adminDb(cfg)
-  const {data:member,error:profileError}=await db.from('clube_profiles')
-    .select('id,approved').eq('id',data.user.id).maybeSingle()
-  if(profileError||!member?.approved)return null
-  return {id:data.user.id,db}
+  const [profileResult,adminResult]=await Promise.all([
+    db.from('clube_profiles').select('id,approved').eq('id',data.user.id).maybeSingle(),
+    db.from('clube_admins').select('user_id').eq('user_id',data.user.id).maybeSingle()
+  ])
+  if(profileResult.error||adminResult.error||!profileResult.data)return null
+  const isAdmin=Boolean(adminResult.data?.user_id===data.user.id)
+  const approved=Boolean(profileResult.data.approved)
+  if(!approved&&!isAdmin)return null
+  return {id:data.user.id,db,approved,isAdmin}
 }
 
 export const hashCode=code=>crypto.createHash('sha256').update(code).digest('hex')
