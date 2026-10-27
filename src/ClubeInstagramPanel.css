@@ -41,3 +41,6 @@
 .npv-ig-event>span.npv-ig-credit{color:#587c28}
 .npv-ig-empty{border:1px dashed #d7e4d3;background:#fafcf8;color:#8a9687;text-align:center;border-radius:9px;font-size:13px;padding:18px;margin:14px 0}
 @media(max-width:680px){.npv-ig-root{gap:14px}.npv-ig-card{padding:19px}.npv-ig-heading{gap:10px}.npv-ig-symbol{min-width:42px;height:42px;border-radius:12px}.npv-ig-heading h2{font-size:19px}.npv-ig-summary{gap:9px}.npv-ig-summary>div{padding:12px}.npv-ig-summary strong{font-size:22px}.npv-ig-code>strong{font-size:23px}.npv-ig-action{width:100%}}
+
+/* Mesmo aspecto do link aprovado em Continue acumulando, sem moldura de botão. */
+.clube-shell button.npv-earn-challenge-link{background:transparent;border:0;padding:0;cursor:pointer;font-family:inherit}
