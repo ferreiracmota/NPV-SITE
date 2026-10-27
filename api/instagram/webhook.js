@@ -7,18 +7,22 @@ import {
 export const config={api:{bodyParser:false}}
 
 export default async function handler(req,res){
-  const cfg=settings()
-  if(!cfg)return json(res,503,{status:'meta_configuration_required'})
+  // A Meta pode verificar a propriedade do callback antes de ativarmos a
+  // ingestão de mensagens. A verificação não grava eventos nem lança pontos.
   if(req.method==='GET'){
     const url=new URL(req.url||'/api/instagram/webhook','https://npv.local')
     const mode=url.searchParams.get('hub.mode')
     const token=url.searchParams.get('hub.verify_token')
     const challenge=url.searchParams.get('hub.challenge')
-    if(mode!=='subscribe'||!token||!safeEqual(token,cfg.verifyToken)
+    if(mode!=='subscribe'||!token||!process.env.INSTAGRAM_WEBHOOK_VERIFY_TOKEN
+       ||!safeEqual(token,process.env.INSTAGRAM_WEBHOOK_VERIFY_TOKEN)
        ||!challenge||challenge.length>256)return json(res,403,{status:'invalid_verification'})
     return res.writeHead(200,{'Content-Type':'text/plain','Cache-Control':'no-store'})
       .end(challenge)
   }
+  // Sem configuração completa, POSTs permanecem bloqueados.
+  const cfg=settings()
+  if(!cfg)return json(res,503,{status:'meta_configuration_required'})
   if(req.method!=='POST'){
     res.setHeader('Allow','GET, POST')
     return json(res,405,{status:'method_not_allowed'})
