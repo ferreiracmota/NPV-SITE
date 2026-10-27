@@ -46,6 +46,7 @@ export default async function handler(req,res){
       if(a.error||b.error)return json(res,503,{status:'unlink_failed'})
       return json(res,200,{connected:false,status:'disconnected'})
     }
+    if(!member.approved)return json(res,403,{status:'member_not_approved',message:'Seu perfil precisa estar aprovado antes de vincular o Instagram.'})
     const {data:existing,error:readError}=await db.from('clube_instagram_link_codes')
       .select('created_at').eq('student_id',id).maybeSingle()
     if(readError)return json(res,503,{status:'instagram_database_setup_required'})
