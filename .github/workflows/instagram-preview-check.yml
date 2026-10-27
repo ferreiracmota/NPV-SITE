@@ -1,0 +1,38 @@
+name: NPV Instagram — preview check
+on:
+  push:
+    branches: [preview/clube-instagram-stories-20261027]
+    paths:
+      - 'api/instagram/**'
+      - 'src/ClubeInstagramPreview*'
+      - 'src/ClubeInstagramPanel*'
+      - 'src/main.jsx'
+      - 'clube/instagram/**'
+      - 'clube/migrations/20261027_clube_instagram_stories_preparacao.sql'
+      - '.github/workflows/instagram-preview-check.yml'
+  pull_request:
+    paths:
+      - 'api/instagram/**'
+      - 'src/ClubeInstagramPreview*'
+      - 'src/ClubeInstagramPanel*'
+      - 'src/main.jsx'
+      - 'clube/instagram/**'
+      - 'clube/migrations/20261027_clube_instagram_stories_preparacao.sql'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: pnpm
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Testar integridade dos eventos do Instagram
+        run: node --test clube/instagram/instagram-webhook.test.mjs
+      - name: Compilar site e preview
+        run: pnpm run build

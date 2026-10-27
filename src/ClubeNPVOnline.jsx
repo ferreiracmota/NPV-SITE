@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   ArrowLeft, ArrowRight, Award, Check, Clock3, Gift, History, KeyRound, LockKeyhole,
   LogOut, Mail, Package, Plus, Search, ShieldCheck, Sparkles, TrendingUp,
-  UserRound, Users, Wallet, X, Shirt, CupSoda, Droplets, Ticket, Pencil, ImagePlus, SlidersHorizontal, ChevronDown, ChevronUp, CreditCard, Layers3
+  UserRound, Users, Wallet, X, Shirt, CupSoda, Droplets, Ticket, Pencil, ImagePlus, SlidersHorizontal, ChevronDown, ChevronUp, CreditCard, Layers3, Instagram
 } from 'lucide-react'
 import { clubeSupabase as supabase } from './clubeSupabase.js'
 import logoVaiCirculo from './assets/logo-vai-circular.webp'
@@ -19,6 +19,7 @@ import { currentNpvMonth } from '../clube/strava/challengeProgress.mjs'
 import ClubeSiteWidgetAdmin from './ClubeSiteWidgetAdmin.jsx'
 import ClubeHotmartAdmin from './ClubeHotmartAdmin.jsx'
 import ClubeVersionsAdmin from './ClubeVersionsAdmin.jsx'
+import ClubeInstagramPanel from './ClubeInstagramPanel.jsx'
 
 const format = value => Number(value||0).toLocaleString('pt-BR')
 const date = value => new Date(value).toLocaleDateString('pt-BR',{day:'2-digit',month:'short',year:'numeric'})
@@ -447,6 +448,7 @@ export default function ClubeNPVOnline() {
         <button type="button" className={tab==='historico'?'active':''} onClick={()=>setTab('historico')}><History size={17}/>Histórico</button>
         <button type="button" className={tab==='recompensas'?'active':''} onClick={()=>setTab('recompensas')}><Gift size={17}/>Recompensas</button>
         <button type="button" className={tab==='parceiros'?'active':''} onClick={()=>setTab('parceiros')}><Award size={17}/>Parceiros</button>
+        <button type="button" className={tab==='instagram'?'active':''} onClick={()=>setTab('instagram')}><Instagram size={17}/>Instagram</button>
       </nav>
     </section>}
     <div className="clube-container"><aside className="clube-sidebar">
@@ -458,6 +460,7 @@ export default function ClubeNPVOnline() {
         <button className={tab==='historico'?'active':''} onClick={()=>setTab('historico')}><History size={18}/>Histórico</button>
         <button className={tab==='recompensas'?'active':''} onClick={()=>setTab('recompensas')}><Gift size={18}/>Recompensas</button>
         <button className={tab==='parceiros'?'active':''} onClick={()=>setTab('parceiros')}><Award size={18}/>Parceiros</button>
+        <button className={tab==='instagram'?'active':''} onClick={()=>setTab('instagram')}><Instagram size={18}/>Instagram · Stories</button>
         {isAdmin&&<button className={tab==='widget'?'active':''} onClick={()=>setTab('widget')}><SlidersHorizontal size={18}/>Widget do site</button>}
         {isAdmin&&<button className={tab==='versoes'?'active':''} onClick={()=>setTab('versoes')}><Layers3 size={18}/>Versões e recursos</button>}
         {!isAdmin&&<button className="clube-nav-logout" type="button" onClick={signOut}><LogOut size={18}/>Sair</button>}
@@ -468,8 +471,8 @@ export default function ClubeNPVOnline() {
       {isAdmin&&<div className="clube-online-mobile-account"><span>Administrador · {user.email}</span><button onClick={signOut}><LogOut size={15}/> Sair</button></div>}
       {error&&<div className="clube-online-alert" role="alert">{error} <button onClick={refresh}>Tentar novamente</button></div>}
       {notice&&<div className="clube-feedback" role="status"><Check size={17}/>{notice}<button onClick={()=>setNotice('')}><X size={16}/></button></div>}
-      <div className="clube-intro"><div><div className="clube-eyebrow"><span/> {isAdmin?'PAINEL DE GESTÃO':'MINHA CONTA NPV'}</div><h1>{tab==='inicio'?(isAdmin?'Seu clube, sob controle.':'Sua evolução vale pontos.'):tab==='alunos'?'Alunos do Clube NPV':tab==='hotmart'?'Hotmart — Assinaturas':tab==='historico'?'Histórico de pontos':tab==='parceiros'?'Parceiros e descontos':tab==='widget'?'Widget do site':tab==='versoes'?'Versões e recursos':'Benefícios e recompensas'}</h1><p>{isAdmin?'Gerencie os cadastros, lançamentos e solicitações com segurança.':'Seu extrato de pontos e benefícios em um só lugar.'}</p></div>
-        {isAdmin&&tab!=='recompensas'&&tab!=='parceiros'&&tab!=='widget'&&tab!=='hotmart'&&tab!=='versoes'&&<button className="clube-btn clube-btn-primary" onClick={()=>newAward()}><Plus size={17}/> Lançar pontos</button>}
+      <div className="clube-intro"><div><div className="clube-eyebrow"><span/> {isAdmin?'PAINEL DE GESTÃO':'MINHA CONTA NPV'}</div><h1>{tab==='inicio'?(isAdmin?'Seu clube, sob controle.':'Sua evolução vale pontos.'):tab==='alunos'?'Alunos do Clube NPV':tab==='hotmart'?'Hotmart — Assinaturas':tab==='historico'?'Histórico de pontos':tab==='parceiros'?'Parceiros e descontos':tab==='instagram'?'Instagram e Stories':tab==='widget'?'Widget do site':tab==='versoes'?'Versões e recursos':'Benefícios e recompensas'}</h1><p>{isAdmin?'Gerencie os cadastros, lançamentos e solicitações com segurança.':'Seu extrato de pontos e benefícios em um só lugar.'}</p></div>
+        {isAdmin&&tab!=='recompensas'&&tab!=='parceiros'&&tab!=='widget'&&tab!=='hotmart'&&tab!=='versoes'&&tab!=='instagram'&&<button className="clube-btn clube-btn-primary" onClick={()=>newAward()}><Plus size={17}/> Lançar pontos</button>}
       </div>
       {loading&&<p className="clube-online-loading">Atualizando dados do clube...</p>}
       {tab==='inicio'&&isAdmin&&<>
@@ -482,6 +485,7 @@ export default function ClubeNPVOnline() {
       {tab==='widget'&&isAdmin&&<ClubeSiteWidgetAdmin rewards={data.rewards} partners={data.partners}/>}
       {tab==='hotmart'&&isAdmin&&<ClubeHotmartAdmin session={session} isAdmin={isAdmin} renewalPointRate={data.rules.find(rule=>rule.event_type==='renovacao')?.points ?? null}/>}
       {tab==='versoes'&&isAdmin&&<ClubeVersionsAdmin onNavigate={setTab}/>}
+      {tab==='instagram'&&<ClubeInstagramPanel session={session} isAdmin={isAdmin}/>}
       {tab==='inicio'&&!isAdmin&&<>
         <section className={`clube-student-summary clube-student-summary-statement${activitiesOpen?' is-open':''}`} aria-label="Seus pontos e extrato">
           <button type="button" className="clube-student-summary-trigger"
@@ -523,6 +527,8 @@ export default function ClubeNPVOnline() {
               <div className="npv-earn-rule-text"><strong>{ruleLabel(rule.event_type)}</strong>{info?.help&&<small>{info.help}</small>}</div>
               {rule.event_type==='desafio'&&hasActiveChallenge?
                 <a className="npv-earn-challenge-link" href="#npv-month-challenges-anchor">{value} <ArrowRight size={13}/></a>:
+                rule.event_type===STORY_RULE?
+                <button type="button" className="npv-earn-challenge-link" onClick={()=>{setTab('instagram');window.scrollTo({top:0,behavior:'smooth'})}}>{value} <ArrowRight size={13}/></button>:
                 <b>{value}</b>}
             </div>
           })}</div>

@@ -1,0 +1,52 @@
+.npv-ig-root{display:grid;gap:18px;max-width:1100px;margin:0 auto 38px}
+.npv-ig-root *{box-sizing:border-box}
+.npv-ig-card{background:#fff;border:1px solid #e3e8dd;border-radius:18px;padding:26px;box-shadow:0 8px 28px rgba(13,31,17,.035)}
+.npv-ig-heading{display:flex;gap:18px;align-items:flex-start;margin-bottom:22px}
+.npv-ig-symbol{display:grid;place-items:center;min-width:56px;height:56px;color:#425d24;background:#eff6e1;border-radius:16px}
+.npv-ig-overline{font-size:11px;color:#77902e;font-weight:850;letter-spacing:1.5px}
+.npv-ig-heading h2,.npv-ig-section-title h2{font-size:22px;letter-spacing:-.5px;color:#1b2b1d;margin:6px 0}
+.npv-ig-heading p,.npv-ig-paragraph{color:#6b776b;line-height:1.55;font-size:13px;margin:7px 0 0}
+.npv-ig-status{border:1px solid #e5e9df;background:#f7f9f3;border-radius:12px;padding:17px 18px;margin-bottom:20px}
+.npv-ig-status-head{display:flex;align-items:center;gap:9px;color:#576e36;font-size:14px}
+.npv-ig-status p{font-size:13px;color:#687766;line-height:1.6;margin:8px 0 0}
+.npv-ig-steps{display:grid;gap:12px;margin:22px 0}
+.npv-ig-steps>div{display:flex;gap:13px;align-items:center;font-size:13px;color:#576456;line-height:1.4}
+.npv-ig-steps strong{background:#eaf2da;color:#54722f;display:grid;place-items:center;width:32px;height:32px;border-radius:50%;font-size:11px;flex-shrink:0}
+.npv-ig-action{display:flex;align-items:center;justify-content:center;gap:10px;background:#bedd5b;color:#253514;font-size:14px;font-weight:850;border:0;padding:15px 19px;border-radius:10px}
+.npv-ig-code{background:#f7fbf2;border:1px dashed #abc687;border-radius:12px;padding:18px;margin-top:16px}
+.npv-ig-code small{display:block;letter-spacing:1.5px;color:#627a42;font-size:11px;font-weight:800}
+.npv-ig-code>strong{display:block;font-size:27px;color:#324626;margin:11px 0;font-weight:900}
+.npv-ig-code p{color:#6a7565;font-size:12px;line-height:1.6;margin:12px 0 0}
+.npv-ig-controls,.npv-ig-actions-row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.npv-ig-controls button,.npv-ig-controls a,.npv-ig-actions-row button{display:inline-flex;gap:8px;align-items:center;justify-content:center;background:#eef4e8;color:#355322;text-decoration:none;border:1px solid #dce9cf;padding:10px 13px;border-radius:10px;font-size:12px;font-weight:800}
+.npv-ig-actions-row{margin-top:21px}
+.npv-ig-root button{cursor:pointer}
+.npv-ig-root button:disabled{opacity:.5;cursor:not-allowed}
+.npv-ig-message{display:flex;align-items:center;gap:9px;background:#eef9e7;color:#417027;font-size:12px;padding:12px;border-radius:9px;margin:16px 0 0;line-height:1.5}
+.npv-ig-message.npv-ig-error{background:#fff0eb;color:#a34235}
+.npv-ig-privacy{font-size:12px!important;color:#889184!important;display:flex;gap:9px;align-items:flex-start;line-height:1.6!important;margin:22px 0 0!important}
+.npv-ig-privacy svg{flex-shrink:0;margin-top:1px}
+.npv-ig-section-title{display:flex;justify-content:space-between;align-items:center;gap:9px;flex-wrap:wrap}
+.npv-ig-section-title span{display:inline-flex;padding:7px 10px;background:#edf4df;border-radius:20px;color:#56782b;font-size:11px;font-weight:800}
+.npv-ig-summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px;margin:22px 0}
+.npv-ig-summary>div{background:#f3f7ec;border-radius:12px;padding:19px}
+.npv-ig-summary small{display:block;color:#66755a;font-size:12px;line-height:1.45}
+.npv-ig-summary strong{display:block;color:#304923;font-size:28px;letter-spacing:-.7px;margin-top:7px;font-weight:900}
+.npv-ig-summary strong span{font-size:14px;color:#82917d;font-weight:700}
+.npv-ig-events{margin-top:15px}
+.npv-ig-event{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 0;border-bottom:1px solid #edf0e9}
+.npv-ig-event strong{font-size:13px;color:#364a35;display:block}
+.npv-ig-event small{display:block;color:#899686;font-size:11px;margin-top:5px}
+.npv-ig-event>span{font-size:12px;font-weight:750;color:#94702a;text-align:right}
+.npv-ig-event>span.npv-ig-credit{color:#587c28}
+.npv-ig-empty{border:1px dashed #d7e4d3;background:#fafcf8;color:#8a9687;text-align:center;border-radius:9px;font-size:13px;padding:18px;margin:14px 0}
+@media(max-width:680px){.npv-ig-root{gap:14px}.npv-ig-card{padding:19px}.npv-ig-heading{gap:10px}.npv-ig-symbol{min-width:42px;height:42px;border-radius:12px}.npv-ig-heading h2{font-size:19px}.npv-ig-summary{gap:9px}.npv-ig-summary>div{padding:12px}.npv-ig-summary strong{font-size:22px}.npv-ig-code>strong{font-size:23px}.npv-ig-action{width:100%}}
+
+/* Mesmo aspecto do link aprovado em Continue acumulando, sem moldura de botão. */
+.clube-shell button.npv-earn-challenge-link{background:transparent;border:0;padding:0;cursor:pointer;font-family:inherit}
+
+/* A barra do aluno passou de 4 para 5 opções; mantém uma só linha no celular. */
+@media(max-width:760px){
+  .clube-live-student .clube-live-tabs{grid-template-columns:repeat(5,minmax(0,1fr));gap:3px}
+  .clube-live-student .clube-live-tabs>button{font-size:clamp(8px,2.1vw,10px);min-width:0;padding:4px 1px}
+}

@@ -8,6 +8,7 @@ import { clubeReady } from './clubeSupabase.js'
 // Não muda autenticação ou funções; reduz o JavaScript inicial da home.
 const ClubeNPV = lazy(() => import('./ClubeNPV.jsx'))
 const ClubeNPVOnline = lazy(() => import('./ClubeNPVOnline.jsx'))
+const ClubeInstagramPreview = lazy(() => import('./ClubeInstagramPreview.jsx'))
 
 const params = new URLSearchParams(window.location.search)
 const isClubeRoute = window.location.pathname === '/clube' ||
@@ -38,7 +39,7 @@ function ClubeIndisponivel() {
 }
 
 const page = isClubeRoute
-  ? (params.get('demo') === '1' ? <ClubeNPV /> :
+  ? (window.location.pathname === '/clube/instagram-teste' ? <ClubeInstagramPreview /> : params.get('demo') === '1' ? <ClubeNPV /> :
     clubeReady ? <ClubeNPVOnline /> : <ClubeIndisponivel />)
   : <App />
 
