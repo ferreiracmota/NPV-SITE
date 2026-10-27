@@ -30,7 +30,7 @@ test('Distingue código de DM e menção real; ignora respostas e mensagens comu
   ]}]}
   assert.deepEqual(extractEvents(data),[
     {kind:'code',sender:'77777777',recipient:'12345678',code:'NPV-012345ABCDEF'},
-    {kind:'story',sender:'77777777',recipient:'12345678',id:'m_003',storyKey:'story:story_9812'}
+    {kind:'story',sender:'77777777',recipient:'12345678',id:'m_003',storyKey:'story:story_9812',verifiedStory:true}
   ])
 })
 test('Não confunde uma resposta de Story com menção a @naopensevai',()=>{
@@ -43,4 +43,33 @@ test('Não confunde uma resposta de Story com menção a @naopensevai',()=>{
 test('Falha fechada sem credenciais e ativação explícita',()=>{
   assert.equal(settings({NPV_INSTAGRAM_ENABLED:'false'}),null)
   assert.equal(settings({NPV_INSTAGRAM_ENABLED:'true',INSTAGRAM_APP_SECRET:'x'}),null)
+})
+
+test('CDN do Story: usa asset_id estável; apenas MID exige revisão',()=>{
+  const payload={object:'instagram',entry:[{messaging:[
+    {sender:{id:'77777777'},recipient:{id:'12345678'},message:{
+      mid:'m_cdn',attachments:[{type:'story_mention',payload:{
+        url:'https://lookaside.fbsbx.com/ig_messaging_cdn/?asset_id=17988851035358143&signature=abc'
+      }}]
+    }},
+    {sender:{id:'77777777'},recipient:{id:'12345678'},message:{
+      mid:'m_unknown',attachments:[{type:'story_mention',payload:{url:'https://example.test/file'}}]
+    }}
+  ]}]}
+  const events=extractEvents(payload)
+  assert.equal(events[0].storyKey,'asset:17988851035358143')
+  assert.equal(events[0].verifiedStory,true)
+  assert.equal(events[1].storyKey,'event:m_unknown')
+  assert.equal(events[1].verifiedStory,false)
+})
+
+test('Evento de Story por referral só conta quando identificado inequivocamente',()=>{
+  const payload={object:'instagram',entry:[{messaging:[{
+    sender:{id:'77777777'},recipient:{id:'12345678'},
+    message:{mid:'m_referral'},referral:{source:'STORY_MENTION',story:{id:'17893310459898765'}}
+  }]}]}
+  assert.deepEqual(extractEvents(payload),[{
+    kind:'story',sender:'77777777',recipient:'12345678',id:'m_referral',
+    storyKey:'story:17893310459898765',verifiedStory:true
+  }])
 })
