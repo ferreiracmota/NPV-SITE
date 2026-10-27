@@ -10,7 +10,7 @@ regra de 200 pontos e teto de 5 Stories válidos/mês (horário de São Paulo).
 **Não pedir senha do Instagram**. Um campo livre `@username` não prova posse
 de conta. O aluno deve poder usar Instagram pessoal.
 
-## Entregue nesta branch
+## Entregue nesta branch e na preparação do banco
 - Página exclusiva `/clube/instagram-teste`: login do Clube, código temporário,
   abertura de DM, atualização do vínculo e visualização de Stories efetivamente
   recebidos; não contém simulador.
@@ -20,9 +20,10 @@ de conta. O aluno deve poder usar Instagram pessoal.
 - `GET/POST /api/instagram/webhook`: handshake Meta, assinatura HMAC
   `X-Hub-Signature-256`, validação do destinatário, distinção DM/Story e RPC.
 - `GET /api/instagram/activity`: apenas eventos da aluna autenticada.
-- Migração SQL **somente no repositório, não aplicada**, com RLS, identidade IG
+- Migração SQL **aplicada em 27/10/2026 no Supabase oficial**, apenas novas tabelas, com RLS, identidade IG
   exclusiva, código único, deduplicação de menções e RPC transacional de crédito.
-- Tudo desativado por padrão, sem mexer no saldo oficial do Clube.
+- Tabelas vazias após criação; 19 lançamentos de pontos preexistentes preservados. Integração e crédito automáticos DESLIGADOS por padrão.
+- Menu novo **Instagram · Stories** dentro do Clube oficial e acesso a partir de **Continue acumulando**.
 
 ## Bloqueios para teste de ponta a ponta com Story verdadeiro
 1. Autorizar a conta profissional **@naopensevai** em um app da Meta for Developers
@@ -37,9 +38,7 @@ de conta. O aluno deve poder usar Instagram pessoal.
    `INSTAGRAM_WEBHOOK_VERIFY_TOKEN`, `INSTAGRAM_BUSINESS_ID`.
    Já existe acesso ao Supabase por variáveis protegidas; confirmar o alvo correto.
    Nunca colar segredos no chat, no GitHub, nem em variáveis `VITE_*`.
-4. Após revisar segurança, executar a migração em **ambiente isolado de
-   homologação**, NÃO no banco oficial. O preview usa o mesmo projeto Vercel,
-   então evitar apontá-lo para dados reais até definir isolamento.
+4. **Banco oficial já preparado de forma aditiva**: as três tabelas têm RLS e políticas explícitas negando acesso anon/authenticated. Nenhum lançamento de ponto foi modificado. Para testes destrutivos de homologação, usar contas e dados isolados, nunca conferir com saldos reais.
 5. Vincular uma conta teste aprovada do Clube: entrar, gerar código, enviar DM.
    Verificar vínculo por IGSID. Publicar Story que mencione @naopensevai.
    Acompanhar notificação assinada e evento recebido.
@@ -61,5 +60,8 @@ de conta. O aluno deve poder usar Instagram pessoal.
   mesma coisa que os eventos de mensageria `story_mention`.
 
 ## Publicação
-Criar PR draft e manter sem merge até a Meta estar configurada, os testes
-reais estarem concluídos e o usuário aprovar explicitamente a produção.
+O usuário autorizou a instalação da área no Clube oficial em 27/10/2026.
+Pode publicar o menu e as APIs protegidas, **sem habilitar NPV_INSTAGRAM_ENABLED**
+até a autorização da Meta. O crédito automático só pode ser ligado após
+comprovação com Story real. Cópia de segurança do código em
+`backup/clube-antes-instagram-20261027`.
