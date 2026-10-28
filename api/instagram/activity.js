@@ -9,6 +9,8 @@ export default async function handler(req,res){
   try{member=await authorizedMember(req,cfg)}
   catch{return json(res,503,{status:'club_auth_unavailable'})}
   if(!member)return json(res,401,{status:'club_login_required'})
+  if(cfg.testOnly&&member.id!==cfg.testStudentId&&!member.isAdmin)
+    return json(res,200,{available:false,events:[]})
   try{
     const {data,error}=await member.db.from('clube_instagram_story_events')
       .select('event_id,created_at,status,points')

@@ -15,11 +15,19 @@ export const settings = (env=process.env) => {
   const secret=env.INSTAGRAM_APP_SECRET
   const verifyToken=env.INSTAGRAM_WEBHOOK_VERIFY_TOKEN
   const businessId=env.INSTAGRAM_BUSINESS_ID
+  // Evita autorizar por acidente a integração com o App ID legado.
+  const appId=env.INSTAGRAM_APP_ID
+  const testOnly=env.NPV_INSTAGRAM_TEST_MODE==='true'
+  const testStudentId=env.NPV_INSTAGRAM_TEST_STUDENT_ID||''
   if(env.NPV_INSTAGRAM_ENABLED!=='true'||!url||!publicKey||!serviceKey||!secret||!verifyToken
-     ||!/^\d{5,40}$/.test(businessId||''))return null
+     ||appId!=='1670483874468146'||!/^\d{5,40}$/.test(businessId||'')
+     ||(testOnly&&!/^[0-9a-f-]{36}$/i.test(testStudentId)))return null
   return {
-    url,publicKey,serviceKey,secret,verifyToken,businessId,
-    award:env.NPV_INSTAGRAM_AWARD_ENABLED==='true',
+    url,publicKey,serviceKey,secret,verifyToken,businessId,appId,testOnly,
+    testStudentId:testOnly?testStudentId:null,
+    // Modo de homologação impossibilita lançamento de pontos, mesmo se
+    // NPV_INSTAGRAM_AWARD_ENABLED for alterada equivocadamente.
+    award:env.NPV_INSTAGRAM_AWARD_ENABLED==='true'&&!testOnly,
     actor:/^[0-9a-f-]{36}$/i.test(env.NPV_INSTAGRAM_ACTOR_ID||'')?env.NPV_INSTAGRAM_ACTOR_ID:null
   }
 }

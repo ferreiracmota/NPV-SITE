@@ -18,6 +18,15 @@ export default async function handler(req,res){
   catch{return json(res,503,{status:'club_auth_unavailable'})}
   if(!member)return json(res,401,{status:'club_login_required',message:'Entre no Clube com sua conta aprovada.'})
   const {db,id}=member
+  // Homologação: somente a conta-aluno selecionada pode gerar/vincular códigos;
+  // o administrador mantém consulta de monitoramento, sem gerar vínculo próprio.
+  if(cfg.testOnly&&id!==cfg.testStudentId){
+    if(req.method!=='GET')return json(res,403,{status:'pilot_only'})
+    if(!member.isAdmin)return json(res,200,{
+      available:false,connected:false,status:'pilot_only',
+      message:'Integração em teste com uma conta autorizada.'
+    })
+  }
   try{
     if(req.method==='GET'){
       // Consulta apenas o mês civil de São Paulo. Os limites UTC são

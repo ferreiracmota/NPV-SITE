@@ -110,6 +110,7 @@ test('Webhook com integração simulada rejeita assinatura inválida sem acessar
     VITE_CLUBE_SUPABASE_URL:'https://example.supabase.co',
     VITE_CLUBE_SUPABASE_PUBLISHABLE_KEY:'publica-de-teste',
     SUPABASE_SERVICE_ROLE_KEY:'servidor-de-teste',
+    INSTAGRAM_APP_ID:'1670483874468146',
     INSTAGRAM_APP_SECRET:'segredo-ficticio-local',
     INSTAGRAM_WEBHOOK_VERIFY_TOKEN:'verificar-ficticio',
     INSTAGRAM_BUSINESS_ID:'17841461793945231'
@@ -133,6 +134,7 @@ test('Webhook autenticado ignora evento de outro destinatário sem consultar dad
     VITE_CLUBE_SUPABASE_URL:'https://example.supabase.co',
     VITE_CLUBE_SUPABASE_PUBLISHABLE_KEY:'publica-de-teste',
     SUPABASE_SERVICE_ROLE_KEY:'servidor-de-teste',
+    INSTAGRAM_APP_ID:'1670483874468146',
     INSTAGRAM_APP_SECRET:secret,
     INSTAGRAM_WEBHOOK_VERIFY_TOKEN:'verificar-ficticio',
     INSTAGRAM_BUSINESS_ID:'17841461793945231'
@@ -168,4 +170,38 @@ test('Duas notificações do mesmo Story compartilham chave estável para dedupl
   assert.equal(events[0].storyKey,events[1].storyKey)
   assert.equal(events[0].verifiedStory,true)
   assert.notEqual(events[0].id,events[1].id)
+})
+
+test('App ID incorreto não autoriza a integração, mesmo com as demais variáveis',()=>{
+  const base={
+    NPV_INSTAGRAM_ENABLED:'true',NPV_INSTAGRAM_AWARD_ENABLED:'false',
+    VITE_CLUBE_SUPABASE_URL:'https://example.supabase.co',
+    VITE_CLUBE_SUPABASE_PUBLISHABLE_KEY:'publica-de-teste',
+    SUPABASE_SERVICE_ROLE_KEY:'servidor-de-teste',
+    INSTAGRAM_APP_SECRET:'segredo-ficticio-local',
+    INSTAGRAM_WEBHOOK_VERIFY_TOKEN:'verificar-ficticio',
+    INSTAGRAM_BUSINESS_ID:'17841461793945231'
+  }
+  assert.equal(settings({...base,INSTAGRAM_APP_ID:'4205484039583967'}),null)
+  assert.equal(settings({...base,INSTAGRAM_APP_ID:''}),null)
+  assert.equal(settings({...base,INSTAGRAM_APP_ID:'1670483874468146'})?.appId,'1670483874468146')
+})
+
+test('Homologação exige UUID autorizado e proíbe pontos mesmo com flag indevida',()=>{
+  const base={
+    NPV_INSTAGRAM_ENABLED:'true',NPV_INSTAGRAM_AWARD_ENABLED:'true',
+    NPV_INSTAGRAM_TEST_MODE:'true',
+    VITE_CLUBE_SUPABASE_URL:'https://example.supabase.co',
+    VITE_CLUBE_SUPABASE_PUBLISHABLE_KEY:'publica-de-teste',
+    SUPABASE_SERVICE_ROLE_KEY:'servidor-de-teste',
+    INSTAGRAM_APP_ID:'1670483874468146',
+    INSTAGRAM_APP_SECRET:'segredo-ficticio-local',
+    INSTAGRAM_WEBHOOK_VERIFY_TOKEN:'verificar-ficticio',
+    INSTAGRAM_BUSINESS_ID:'17841461793945231'
+  }
+  assert.equal(settings({...base,NPV_INSTAGRAM_TEST_STUDENT_ID:'sem-id'}),null)
+  const cfg=settings({...base,NPV_INSTAGRAM_TEST_STUDENT_ID:'00000000-0000-4000-8000-000000000001'})
+  assert.equal(cfg.testOnly,true)
+  assert.equal(cfg.award,false)
+  assert.equal(cfg.testStudentId,'00000000-0000-4000-8000-000000000001')
 })

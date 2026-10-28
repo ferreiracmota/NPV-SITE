@@ -5,7 +5,7 @@ Data: 27/10/2026. Branch: `preview/clube-instagram-stories-20261027`.
 
 - App correto: **NPV Clube de Benefícios**, Meta App ID `1670483874468146`; Instagram profissional oficial **@naopensevai**, IG ID `17841461793945231`.
 - Domínio `naopensevai.com` confirmado como **Verified** na Meta. Metatag no `index.html`; site oficial exibe a empresa responsável em `/informacoes-da-empresa.html`.
-- Verificação empresarial de **VITRINE PUBLICIDADES LTDA** reenviada com razão social, CNPJ e endereço visíveis no site. A aprovação da Meta e a análise de permissões de mensageria **não foram concluídas**.
+- Verificação empresarial de **VITRINE PUBLICIDADES LTDA** e domínio oficial **aprovadas** na Meta conforme confirmação do responsável em 28/10/2026. A análise de permissões de mensageria **ainda está em Uso permitido / preparação de justificativa e vídeo**, e não deve ser tratada como concedida.
 - Handshake GET do callback `https://www.naopensevai.com/api/instagram/webhook` foi aceito pela Meta, mas **não confirma entrega de webhook POST com Story real**.
 - Vercel, **Production**: `NPV_INSTAGRAM_ENABLED=false` e `NPV_INSTAGRAM_AWARD_ENABLED=false` verificados; **não ativar** enquanto não houver webhook assinado de teste, vínculo seguro por DM, deduplicação e auditoria completos.
 - Configuração pendente: substituir `INSTAGRAM_APP_SECRET` legado pelo segredo do aplicativo Meta correto, através de variável de ambiente protegida, sem copiar dados sensíveis para código/chat; conferir autorização do Instagram e registro de webhook.
@@ -14,6 +14,26 @@ Data: 27/10/2026. Branch: `preview/clube-instagram-stories-20261027`.
 - Teste seguro no banco: em transação com `ROLLBACK`, a menção de perfil não vinculado não gerou pontos. Nenhum evento de teste permaneceu após o rollback.
 
 **Próximos bloqueios reais:** revisão/permissões do app e credencial correta, entrega de menção real assinada, confirmação do formato de identificador estável do Story, conta-teste aprovada e teste de duplicidade/limite mensal em ambiente isolado. Nunca apresentar uma tela local/mock como prova de integração real.
+
+## Homologação restrita à conta-aluno — PR de 28/10/2026
+
+A Meta confirmou a verificação empresarial da VITRINE PUBLICIDADES LTDA e do domínio naopensevai.com. A análise de `instagram_business_basic` e `instagram_business_manage_messages` em **Uso permitido** ainda exige justificativa e demonstração. Verificação empresarial não equivale a concessão dessas permissões.
+
+**Achado crítico:** o comentário da variável sensível `INSTAGRAM_APP_SECRET` na Vercel Production ainda menciona o app legado `4205484039583967`. O comentário pode estar desatualizado, então ele NÃO prova qual segredo está armazenado. Confirmar na Meta/Vercel que o segredo corresponde ao app oficial `1670483874468146`; se for legado, atualizar somente pelo painel protegido e redeployar o ambiente de teste. Não copiar o segredo para logs, navegador, chat ou código. Também é necessário conferir conta profissional autorizada na Meta e subscription do webhook.
+
+Para um teste real com o app correto (nunca ligar a pontuação):
+
+- `INSTAGRAM_APP_ID=1670483874468146` é obrigatório no backend, evitando ativação para outro aplicativo.
+- `NPV_INSTAGRAM_TEST_MODE=true` impõe teste exclusivo; informar `NPV_INSTAGRAM_TEST_STUDENT_ID` (UUID da conta de aluno aprovada) como variável do servidor, nunca no frontend ou commit.
+- `NPV_INSTAGRAM_ENABLED=true` só deve ser configurada após o segredo do aplicativo correto, identificador da conta, assinatura Meta e rota do webhook estarem confirmados.
+- `NPV_INSTAGRAM_AWARD_ENABLED=false` deve continuar; o código também força `award=false` em modo de teste, independentemente do valor da flag.
+- No modo de teste, geração de código e processamento de menções são restritos ao aluno autorizado; menções sem vínculo de terceiros são descartadas, sem gravá-las no banco.
+- O administrador conserva acesso de leitura ao monitoramento, sem poder gerar outro código enquanto o piloto estiver ativo.
+- Testar em `/clube/instagram-teste` ou na seção Instagram e Stories, com conta de aluno, e enviar o código à conta `@naopensevai` por DM. Conferir evento na tabela (status `review`, 0 pontos). Não demonstrar crédito fictício.
+- Preferir um callback público no domínio oficial com gate de teste no backend: previews da Vercel protegidos por SSO não recebem webhooks externos. Isso não autoriza desproteger o site todo.
+- Antes de trocar o modo de teste para produção geral, exigir confirmação documentada de DM real, identificação estável do Story, RLS, idempotência e limite mensal. Não alterar o Club 2.1.1, Strava, Hotmart ou pontuação de alunas para montar a prova.
+
+**Nota sobre análise do app Meta:** o fluxo de código por DM comprova propriedade da conta pessoal da aluna, mas NÃO equivale ao Instagram Login/OAuth da conta profissional `@naopensevai`. As permissões `instagram_business_basic` e `instagram_business_manage_messages` podem requerer demonstração da autorização profissional e de mensagens recebidas; confirmar exigência exata no formulário da Meta e não declarar OAuth implementado se não estiver.
 
 ## Objetivo
 Associar o sender.id (IGSID) que enviou um código único por DM ao id da aluna
@@ -79,3 +99,21 @@ Pode publicar o menu e as APIs protegidas, **sem habilitar NPV_INSTAGRAM_ENABLED
 até a autorização da Meta. O crédito automático só pode ser ligado após
 comprovação com Story real. Cópia de segurança do código em
 `backup/clube-antes-instagram-20261027`.
+
+## Instagram Login oficial e mensagem de demonstração (28/10/2026)
+
+A área do aluno usa **Instagram pessoal real**, sem necessidade de transformar a conta pessoal em comercial. A autorização de `instagram_business_basic` e `instagram_business_manage_messages` ocorre na conta **profissional @naopensevai**, iniciada pelo **administrador do Clube**, que é uma conta diferente do aluno.
+
+O PR #41 adiciona no painel do administrador (menu Instagram e Stories) o controle **Conectar @naopensevai na Meta**, que inicia OAuth profissional e valida o retorno. O backend exige a identidade oficial, mantém o token cifrado em tabela RLS restrita ao servidor e não expõe credenciais no browser. Após vincular a conta-aluno por código, o administrador pode enviar **uma mensagem de confirmação real** via Send API para o Direct da conta pessoal, demonstrando `instagram_business_manage_messages`. Envio restrito ao aluno piloto, com registro técnico e intervalo mínimo entre envios. Pontos continuam bloqueados.
+
+### Ação obrigatória no painel Meta / Vercel
+1. Na Meta for Developers, aplicativo **1670483874468146**, abrir **Instagram → Configuração da API → Instagram Login** e conferir o **ID e segredo do produto Instagram** (não presumir que sejam iguais ao ID/segredo do aplicativo Meta). Configurar somente no backend Vercel como `INSTAGRAM_OAUTH_CLIENT_ID` e `INSTAGRAM_OAUTH_CLIENT_SECRET`, no escopo Production, diretamente nas telas protegidas, sem compartilhar seus valores no chat ou GitHub.
+2. Registrar em **Valid OAuth Redirect URIs** exatamente `https://www.naopensevai.com/api/instagram/oauth-callback`. `INSTAGRAM_OAUTH_REDIRECT_URI`, `INSTAGRAM_OAUTH_STATE_SECRET` e `INSTAGRAM_TOKEN_ENCRYPTION_KEY` já foram preparados na Vercel.
+3. Conferir que `INSTAGRAM_APP_SECRET` para verificar assinatura de webhook é do **aplicativo Meta correto**. O comentário anterior menciona um aplicativo legado, mas não comprova o valor da credencial. Manter `INSTAGRAM_BUSINESS_ID` com o IG user ID da conta profissional real; confirmar também subscription de **messages**, webhook POST, e acesso às mensagens no Instagram.
+4. Na conta **administradora** do Clube, clicar em **Conectar @naopensevai na Meta**, fazer login profissional e conceder as duas permissões. Validar retorno pelo OAuth e status real no painel.
+5. Somente após o webhook estar configurado/corretamente assinado, ligar `NPV_INSTAGRAM_ENABLED=true` na Vercel, mantendo `NPV_INSTAGRAM_TEST_MODE=true`, `NPV_INSTAGRAM_TEST_STUDENT_ID` apontando para a conta original do aluno e `NPV_INSTAGRAM_AWARD_ENABLED=false`. Fazer novo deploy da main para capturar novas variáveis.
+6. Entrar com a conta **original de aluno** no Clube; gerar código, enviar DM pelo **Instagram pessoal original** para @naopensevai e aguardar vínculo real. Em seguida usar o botão de mensagem do administrador, verificar entrega no Instagram e publicar Story com menção. A menção elegível ficará em **review, 0 pontos**, enquanto a pontuação estiver bloqueada.
+7. Para Meta App Review, mostrar login/consentimento da conta profissional, mensagem enviada via aplicativo e recebida no Direct pessoal, e Auxiliar de Integração da API/cURL. O código do aluno e a menção ao Story são demonstrações adicionais; sozinhos não substituem a exigência de enviar mensagem da permissão `instagram_business_manage_messages`.
+
+**Dependências ainda não concluídas:** credenciais privadas específicas de Instagram Login no aplicativo correto, redirect registrado no painel Meta, OAuth real, subscription e webhook POST real. Sem autenticação Meta, nada deve ser rotulado como vínculo confirmado. A duração do token profissional é limitada; renovar antes do vencimento.
+
