@@ -127,6 +127,24 @@ export const signatureValid=(raw,header,secret)=>{
 }
 
 // Extraído de eventos de mensageria de Story Mention, não de marcações genéricas.
+// O produto Instagram Login possui credenciais próprias, distintas das do Meta App.
+// Valide a assinatura HMAC do corpo bruto contra APENAS as duas chaves oficiais
+// configuradas no servidor. A Meta pode usar qualquer uma das duas no webhook.
+// Nunca aceita segredo/campo indicado por mensagem, query ou navegador.
+export const webhookSignatureSource=(raw,header,metaSecret,instagramSecret)=>{
+  if(signatureValid(raw,header,metaSecret))return 'meta_app'
+  if(typeof instagramSecret==='string'&&instagramSecret.length>=16
+     &&instagramSecret!==metaSecret&&signatureValid(raw,header,instagramSecret))
+    return 'instagram_login'
+  return null
+}
+
+// Webhook Instagram Login pode ser assinado pela chave do produto Instagram.
+// Aceitar somente as duas chaves configuradas no backend e exigir HMAC válido.
+export const validInstagramWebhookSignature=(raw,header,appKey,loginKey)=>
+  signatureValid(raw,header,appKey)
+  || (typeof loginKey==='string'&&loginKey.length>=16&&signatureValid(raw,header,loginKey))
+
 export const extractEvents=payload=>{
   if(!payload||!['instagram','page'].includes(payload.object)||!Array.isArray(payload.entry))
     return []

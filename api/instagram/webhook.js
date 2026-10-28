@@ -1,7 +1,7 @@
 // Webhook autenticado da Meta. A assinatura HMAC é verificada ANTES de ler os eventos.
 // Sem app Meta + migration aprovada: endpoint fica desativado e nenhum ponto é criado.
 import {
-  json,settings,adminDb,hashCode,safeEqual,readRawBody,signatureValid,extractEvents
+  json,settings,adminDb,hashCode,safeEqual,readRawBody,validInstagramWebhookSignature,extractEvents
 } from './_common.mjs'
 
 export const config={api:{bodyParser:false}}
@@ -40,7 +40,10 @@ export default async function handler(req,res){
     audit('payload_too_large')
     return json(res,413,{status:'payload_too_large'})
   }
-  if(!signatureValid(raw,req.headers['x-hub-signature-256'],cfg.secret)){
+  if(!validInstagramWebhookSignature(
+    raw,req.headers['x-hub-signature-256'],
+    cfg.secret,process.env.INSTAGRAM_OAUTH_CLIENT_SECRET
+  )){
     audit('invalid_signature')
     return json(res,403,{status:'invalid_signature'})
   }

@@ -2,7 +2,7 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import crypto from 'node:crypto'
 import {
-  hashCode,makeCode,signatureValid,extractEvents,settings
+  hashCode,makeCode,signatureValid,validInstagramWebhookSignature,extractEvents,settings
 } from '../../api/instagram/_common.mjs'
 
 test('Código temporário é imprevisível e pode ser armazenado apenas como hash',()=>{
@@ -33,6 +33,16 @@ test('Distingue código de DM e menção real; ignora respostas e mensagens comu
     {kind:'story',sender:'77777777',recipient:'12345678',id:'m_003',storyKey:'story:story_9812',verifiedStory:true}
   ])
 })
+test('Webhook HMAC aceita apenas credenciais oficiais',()=>{
+  const body=Buffer.from('mensagem')
+  const sig=k=>'sha256='+crypto.createHmac('sha256',k).update(body).digest('hex')
+  const a='a'.repeat(32),b='b'.repeat(32),c='c'.repeat(32)
+  assert.equal(validInstagramWebhookSignature(body,sig(a),a,b),true)
+  assert.equal(validInstagramWebhookSignature(body,sig(b),a,b),true)
+  assert.equal(validInstagramWebhookSignature(body,sig(c),a,b),false)
+  assert.equal(validInstagramWebhookSignature(body,sig(b),a,null),false)
+})
+
 test('Não confunde uma resposta de Story com menção a @naopensevai',()=>{
   const data={object:'instagram',entry:[{messaging:[{
     sender:{id:'77777777'},recipient:{id:'12345678'},message:{mid:'m_004',
