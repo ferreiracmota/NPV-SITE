@@ -40,7 +40,11 @@ export default async function handler(req,res){
     audit('payload_too_large')
     return json(res,413,{status:'payload_too_large'})
   }
-  if(!signatureValid(raw,req.headers['x-hub-signature-256'],cfg.secret)){
+  const appKeyValid=signatureValid(raw,req.headers['x-hub-signature-256'],cfg.secret)
+  const loginKey=process.env.INSTAGRAM_OAUTH_CLIENT_SECRET
+  const loginKeyValid=!appKeyValid&&typeof loginKey==='string'&&loginKey.length>=16
+    &&signatureValid(raw,req.headers['x-hub-signature-256'],loginKey)
+  if(!appKeyValid&&!loginKeyValid){
     audit('invalid_signature')
     return json(res,403,{status:'invalid_signature'})
   }
