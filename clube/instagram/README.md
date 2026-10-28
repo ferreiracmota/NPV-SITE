@@ -19,7 +19,7 @@ Data: 27/10/2026. Branch: `preview/clube-instagram-stories-20261027`.
 
 A Meta confirmou a verificação empresarial da VITRINE PUBLICIDADES LTDA e do domínio naopensevai.com. A análise de `instagram_business_basic` e `instagram_business_manage_messages` em **Uso permitido** ainda exige justificativa e demonstração. Verificação empresarial não equivale a concessão dessas permissões.
 
-**Achado crítico:** o comentário da variável sensível `INSTAGRAM_APP_SECRET` na Vercel Production ainda menciona o app legado `4205484039583967`. Não verificar nem copiar o segredo para logs, navegador, chat ou código. O responsável deve substituir essa variável pelo segredo do app oficial `1670483874468146` diretamente no painel protegido da Vercel e redeployar o ambiente de teste. Também é necessário conferir conta profissional autorizada na Meta e subscription do webhook.
+**Achado crítico:** o comentário da variável sensível `INSTAGRAM_APP_SECRET` na Vercel Production ainda menciona o app legado `4205484039583967`. O comentário pode estar desatualizado, então ele NÃO prova qual segredo está armazenado. Confirmar na Meta/Vercel que o segredo corresponde ao app oficial `1670483874468146`; se for legado, atualizar somente pelo painel protegido e redeployar o ambiente de teste. Não copiar o segredo para logs, navegador, chat ou código. Também é necessário conferir conta profissional autorizada na Meta e subscription do webhook.
 
 Para um teste real com o app correto (nunca ligar a pontuação):
 
