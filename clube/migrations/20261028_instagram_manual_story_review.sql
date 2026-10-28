@@ -25,7 +25,7 @@ declare
   v_points integer;
 begin
   if p_event_id is null or length(p_event_id) not between 4 and 320
-    or p_decision not in ('approve','reject') or p_admin_id is null
+    or p_decision is null or p_decision not in ('approve','reject') or p_admin_id is null
   then return 'invalid_request'; end if;
 
   if not exists(select 1 from public.clube_admins where user_id=p_admin_id)
