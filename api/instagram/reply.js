@@ -35,7 +35,7 @@ export default async function handler(req,res){
       return json(res,429,{status:'too_soon'})
     const token=decryptToken(official.data.token_ciphertext,oauth)
     const result=await metaJson(
-      'https://graph.instagram.com/v25.0/'+encodeURIComponent(official.data.instagram_user_id)+'/messages',{
+      'https://graph.instagram.com/v26.0/'+encodeURIComponent(official.data.instagram_user_id)+'/messages',{
         method:'POST',
         headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},
         body:JSON.stringify({

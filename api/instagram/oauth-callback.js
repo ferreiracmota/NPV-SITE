@@ -1,7 +1,7 @@
 // OAuth de Instagram da conta PROFISSIONAL. Nunca retorna tokens ao browser.
 import {adminDb} from './_common.mjs'
 import {
-  oauthConfig,cookieNonce,checkOAuthState,exchangeProfessionalCode,encryptToken
+  oauthConfig,cookieNonce,checkOAuthState,exchangeProfessionalCode,encryptToken,metaJson
 } from './_oauth.mjs'
 
 const finish=(res,status)=>{
@@ -33,6 +33,14 @@ export default async function handler(req,res){
     const userId=String(profile.user_id||profile.id||'')
     if(profile.username?.toLowerCase()!=='naopensevai'||userId!==businessId
       ||profile.account_type==='PERSONAL')return finish(res,'error')
+    // O callback validado NÃO garante entrega de DMs: a conta profissional
+    // também precisa inscrever-se no campo messages usando o token OAuth.
+    const subscription=await metaJson('https://graph.instagram.com/v26.0/me/subscribed_apps',{
+      method:'POST',
+      headers:{Authorization:'Bearer '+token,'Content-Type':'application/x-www-form-urlencoded'},
+      body:new URLSearchParams({subscribed_fields:'messages'}).toString()
+    })
+    if(subscription.success!==true)return finish(res,'error')
     const {error}=await db.from('clube_instagram_business_auth').upsert({
       slot:'official',instagram_user_id:userId,
       username:profile.username,token_ciphertext:encryptToken(token,cfg),
