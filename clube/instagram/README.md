@@ -117,3 +117,12 @@ O PR #41 adiciona no painel do administrador (menu Instagram e Stories) o contro
 
 **Dependências ainda não concluídas:** credenciais privadas específicas de Instagram Login no aplicativo correto, redirect registrado no painel Meta, OAuth real, subscription e webhook POST real. Sem autenticação Meta, nada deve ser rotulado como vínculo confirmado. A duração do token profissional é limitada; renovar antes do vencimento.
 
+
+
+## Operação verificada em 28/10/2026 — autorização Meta e piloto com conta original
+
+- `@naopensevai` teve autorização **real** de Instagram Login registrada no Supabase em 28/10/2026, com validade consultada; o callback de autorização só registra a conta após confirmar a assinatura de mensagens (`messages`) na API Meta. Isso **não comprova** ainda a entrega end-to-end de Direct/Story de um aluno.
+- IDs: aplicativo Meta `1670483874468146`; produto Instagram Login `1695670631993225`; perfil Instagram profissional `17841461793945231`. Os segredos permanecem exclusivamente em variáveis **Sensitive** no Vercel, não no código.
+- Ambiente Production: `NPV_INSTAGRAM_ENABLED=true`, `NPV_INSTAGRAM_TEST_MODE=true`, `NPV_INSTAGRAM_AWARD_ENABLED=false`; o identificador do aluno piloto permanece guardado como variável sensível. Pontuação automática de Stories continua forçada a **zero** pelo backend.
+- Este registro operacional gera um novo build no fluxo GitHub → Vercel para aplicar as variáveis atualizadas. **Não** altera JSX, estilos, migrações, tabelas, regras ou saldos de pontos.
+- Próxima validação: aluno original gera um código de 10 minutos e envia por DM da conta Instagram pessoal para `@naopensevai`. Confirmar registro em `clube_instagram_links`; só depois testar Story marcado e botão administrativo de mensagem. Se o webhook não entregar o evento, não forçar confirmação fictícia nem lançar pontos.
