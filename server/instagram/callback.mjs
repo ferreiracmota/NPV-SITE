@@ -1,5 +1,5 @@
 // OAuth de Instagram da conta PROFISSIONAL. Nunca retorna tokens ao browser.
-import {adminDb} from './_common.mjs'
+import {adminDb} from '../../api/instagram/_common.mjs'
 import {
   oauthConfig,cookieNonce,checkOAuthState,exchangeProfessionalCode,encryptToken,metaJson
 } from './_oauth.mjs'

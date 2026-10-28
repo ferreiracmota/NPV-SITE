@@ -1,5 +1,5 @@
 import crypto from 'node:crypto'
-import {adminDb,authorizedMember,safeEqual} from './_common.mjs'
+import {adminDb,authorizedMember,safeEqual} from '../../api/instagram/_common.mjs'
 
 const APP_ID='1670483874468146'
 const CALLBACK='https://www.naopensevai.com/api/instagram/oauth-callback'

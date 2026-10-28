@@ -1,8 +1,18 @@
+import professional from '../../server/instagram/professional.mjs'
+import callback from '../../server/instagram/callback.mjs'
+import reply from '../../server/instagram/reply.mjs'
 // Dados operacionais acessíveis somente ao administrador autenticado.
 // Nunca inclui segredos da Meta, códigos temporários ou dados de outras contas ao aluno.
 import {json,settings,authorizedMember} from './_common.mjs'
 
 export default async function handler(req,res){
+  // Três URLs públicas mantidas por rewrites da Vercel, mas apenas UMA
+  // função serverless (limite do plano Hobby preservado).
+  const operation=new URL(req.url||'/', 'https://npv.local').searchParams.get('npv_ig_route')
+  if(operation==='professional')return professional(req,res)
+  if(operation==='callback')return callback(req,res)
+  if(operation==='reply')return reply(req,res)
+  if(operation)return json(res,404,{status:'route_not_found'})
   if(req.method!=='GET'){
     res.setHeader('Allow','GET')
     return json(res,405,{status:'method_not_allowed'})

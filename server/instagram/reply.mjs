@@ -1,6 +1,6 @@
 // Resposta de demonstração oficial, restrita a um único aluno já vinculado.
 // Não aceita destinatário ou texto arbitrário enviados pelo navegador.
-import {json,settings,checkOrigin,authorizedMember} from './_common.mjs'
+import {json,settings,checkOrigin,authorizedMember} from '../../api/instagram/_common.mjs'
 import {oauthConfig,officialRow,decryptToken,metaJson} from './_oauth.mjs'
 
 export default async function handler(req,res){
