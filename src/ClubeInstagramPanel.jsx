@@ -257,10 +257,14 @@ export default function ClubeInstagramPanel({session,isAdmin=false}){
           :official?.ready
           ?'Conecte a conta profissional @naopensevai para demonstrar o consentimento oficial à Meta.'
           :'Configure as credenciais privadas de Instagram Login no backend antes de iniciar a autorização.'}</p>
-        {official?.ready&&!official.connected&&
+        {official?.connected&&official?.username&&
+          <p>Perfil profissional identificado pela API oficial: <strong>@{official.username}</strong>.</p>}
+        {official?.ready&&
           <button type="button" className="npv-ig-action" disabled={officialBusy} onClick={authorizeOfficial}>
-            <Instagram size={18}/> Conectar @naopensevai na Meta
+            <Instagram size={18}/> {official?.connected?'Reautorizar @naopensevai na Meta':'Conectar @naopensevai na Meta'}
           </button>}
+        {official?.connected&&
+          <p>A reautorização é opcional e permite demonstrar o consentimento para a análise da Meta. Se cancelar, o vínculo atual continuará salvo; uma autorização nova só substitui a anterior depois de validada.</p>}
         {official?.connected&&
           <button type="button" className="npv-ig-action" disabled={officialBusy} onClick={sendDemoReply}>
             <Instagram size={18}/> Enviar mensagem de confirmação ao aluno vinculado
