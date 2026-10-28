@@ -40,6 +40,15 @@ export default async function handler(req,res){
   const db=adminDb(cfg)
   try{
     for(const event of events){
+      if(cfg.testOnly){
+        // Não registrar mensagens nem Stories de outras contas durante o piloto.
+        const table=event.kind==='code'?'clube_instagram_link_codes':'clube_instagram_links'
+        const key=event.kind==='code'?'code_hash':'instagram_scoped_id'
+        const value=event.kind==='code'?hashCode(event.code):event.sender
+        const {data,error}=await db.from(table).select('student_id').eq(key,value).maybeSingle()
+        if(error)throw error
+        if(data?.student_id!==cfg.testStudentId)continue
+      }
       if(event.kind==='code'){
         const {error}=await db.rpc('clube_instagram_claim_link',{
           p_code_hash:hashCode(event.code),p_instagram_scoped_id:event.sender
