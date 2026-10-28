@@ -5,7 +5,7 @@ Data: 27/10/2026. Branch: `preview/clube-instagram-stories-20261027`.
 
 - App correto: **NPV Clube de Benefícios**, Meta App ID `1670483874468146`; Instagram profissional oficial **@naopensevai**, IG ID `17841461793945231`.
 - Domínio `naopensevai.com` confirmado como **Verified** na Meta. Metatag no `index.html`; site oficial exibe a empresa responsável em `/informacoes-da-empresa.html`.
-- Verificação empresarial de **VITRINE PUBLICIDADES LTDA** reenviada com razão social, CNPJ e endereço visíveis no site. A aprovação da Meta e a análise de permissões de mensageria **não foram concluídas**.
+- Verificação empresarial de **VITRINE PUBLICIDADES LTDA** e domínio oficial **aprovadas** na Meta conforme confirmação do responsável em 28/10/2026. A análise de permissões de mensageria **ainda está em Uso permitido / preparação de justificativa e vídeo**, e não deve ser tratada como concedida.
 - Handshake GET do callback `https://www.naopensevai.com/api/instagram/webhook` foi aceito pela Meta, mas **não confirma entrega de webhook POST com Story real**.
 - Vercel, **Production**: `NPV_INSTAGRAM_ENABLED=false` e `NPV_INSTAGRAM_AWARD_ENABLED=false` verificados; **não ativar** enquanto não houver webhook assinado de teste, vínculo seguro por DM, deduplicação e auditoria completos.
 - Configuração pendente: substituir `INSTAGRAM_APP_SECRET` legado pelo segredo do aplicativo Meta correto, através de variável de ambiente protegida, sem copiar dados sensíveis para código/chat; conferir autorização do Instagram e registro de webhook.
