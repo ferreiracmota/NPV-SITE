@@ -384,7 +384,9 @@ export default function ClubeNPVOnline() {
     },'Benefícios e pontuações salvos. Seu histórico de pontos foi preservado.')
   }
   async function signOut(){
-    await supabase.auth.signOut()
+    // Encerrar apenas esta sessão: ao trocar de aluno para admin no Opera,
+    // não invalidar o login do mesmo usuário em outro dispositivo.
+    await supabase.auth.signOut({scope:'local'})
     setSession(null)
     window.scrollTo({top:0,left:0,behavior:'auto'})
   }
