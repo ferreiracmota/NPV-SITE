@@ -13,6 +13,18 @@
       "destination": "/api/instagram/admin?npv_ig_route=reply"
     },
     {
+      "source": "/api/instagram/deauthorize",
+      "destination": "/api/instagram/admin?npv_ig_route=deauthorize"
+    },
+    {
+      "source": "/api/instagram/data-deletion",
+      "destination": "/api/instagram/admin?npv_ig_route=data-deletion"
+    },
+    {
+      "source": "/api/instagram/data-deletion/status",
+      "destination": "/api/instagram/admin?npv_ig_route=deletion-status"
+    },
+    {
       "source": "/clube/instagram-teste",
       "destination": "/index.html"
     },
