@@ -1,6 +1,18 @@
 {
   "rewrites": [
     {
+      "source": "/api/instagram/professional",
+      "destination": "/api/instagram/admin?npv_ig_route=professional"
+    },
+    {
+      "source": "/api/instagram/oauth-callback",
+      "destination": "/api/instagram/admin?npv_ig_route=callback"
+    },
+    {
+      "source": "/api/instagram/reply",
+      "destination": "/api/instagram/admin?npv_ig_route=reply"
+    },
+    {
       "source": "/clube/instagram-teste",
       "destination": "/index.html"
     },
