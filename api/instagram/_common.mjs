@@ -56,6 +56,17 @@ export async function authorizedMember(req,cfg){
   return {id:data.user.id,db,approved,isAdmin}
 }
 
+// Mês civil brasileiro: a Vercel pode rodar em UTC, mas o limite de Stories
+// sempre acompanha o calendário de São Paulo (inclusive na virada do mês).
+const monthFormatter=new Intl.DateTimeFormat('en-US',{
+  timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit'
+})
+export const brazilMonthKey=(instant=new Date())=>{
+  const date=instant instanceof Date?instant:new Date(instant)
+  const parts=monthFormatter.formatToParts(date)
+  return parts.find(x=>x.type==='year').value+'-'+parts.find(x=>x.type==='month').value
+}
+
 export const hashCode=code=>crypto.createHash('sha256').update(code).digest('hex')
 export const makeCode=()=>('NPV-'+crypto.randomBytes(6).toString('hex').toUpperCase())
 export const safeEqual=(a,b)=>{

@@ -1,5 +1,5 @@
 // Vinculação verificável por DM oficial. Nunca pede senha do Instagram nem aceita @ como prova.
-import {json,settings,adminDb,authorizedMember,checkOrigin,hashCode,makeCode} from './_common.mjs'
+import {json,settings,adminDb,authorizedMember,checkOrigin,hashCode,makeCode,brazilMonthKey} from './_common.mjs'
 
 export default async function handler(req,res){
   if(!['GET','POST','DELETE'].includes(req.method)){
@@ -20,21 +20,26 @@ export default async function handler(req,res){
   const {db,id}=member
   try{
     if(req.method==='GET'){
+      // Consulta ampla e filtro pelo mês civil de São Paulo, em vez do mês UTC
+      // do servidor. Evita contagens erradas nas três horas após a virada.
+      const historySince=new Date(Date.now()-40*24*60*60*1000).toISOString()
+      const currentMonth=brazilMonthKey()
       const [linkResult,codeResult,historyResult]=await Promise.all([
         db.from('clube_instagram_links').select('verified_at').eq('student_id',id).maybeSingle(),
         db.from('clube_instagram_link_codes').select('expires_at').eq('student_id',id).maybeSingle(),
         db.from('clube_instagram_story_events').select('created_at,points,status')
           .eq('student_id',id).eq('status','credited')
-          .gte('created_at',new Date(Date.UTC(new Date().getFullYear(),new Date().getMonth(),1)).toISOString())
+          .gte('created_at',historySince)
       ])
       if(linkResult.error||codeResult.error||historyResult.error)
         return json(res,503,{status:'instagram_database_setup_required'})
+      const confirmedThisMonth=(historyResult.data||[]).filter(row=>brazilMonthKey(row.created_at)===currentMonth)
       return json(res,200,{
         available:true,connected:Boolean(linkResult.data),
         verified_at:linkResult.data?.verified_at||null,
         pending_until:codeResult.data?.expires_at||null,
-        credited_stories:(historyResult.data||[]).length,
-        credited_points:(historyResult.data||[]).reduce((s,x)=>s+x.points,0),
+        credited_stories:confirmedThisMonth.length,
+        credited_points:confirmedThisMonth.reduce((total,row)=>total+row.points,0),
         note:'Somente dados confirmados pelo servidor são exibidos.'
       })
     }
