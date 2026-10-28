@@ -1,6 +1,7 @@
 import React,{useCallback,useEffect,useState} from 'react'
 import {Instagram,ShieldCheck,Copy,ArrowUpRight,RefreshCw,Link2,Unplug,Clock3,CheckCircle2,AlertCircle,LockKeyhole} from 'lucide-react'
 import './ClubeInstagramPanel.css'
+import {clubeSupabase as supabase} from './clubeSupabase.js'
 
 const INSTAGRAM_DM='https://ig.me/m/naopensevai'
 const STORY_LABEL={credited:'Crédito confirmado',review:'Recebido · aguardando validação',unlinked:'Perfil não identificado',limit_reached:'Limite mensal atingido',disabled:'Automação desativada'}
@@ -21,23 +22,42 @@ export default function ClubeInstagramPanel({session,isAdmin=false}){
   const [loading,setLoading]=useState(false)
   const [notice,setNotice]=useState('')
   const [error,setError]=useState('')
+  const [needsLogin,setNeedsLogin]=useState(false)
 
   const request=useCallback(async(path,method='GET')=>{
     if(!session?.access_token)throw new Error('Acesse sua conta do Clube NPV.')
-    const response=await fetch(path,{
+    const fetchWithToken=token=>fetch(path,{
       method,cache:'no-store',
-      headers:{Authorization:'Bearer '+session.access_token}
+      headers:{Authorization:'Bearer '+token}
     })
-    const body=await response.json().catch(()=>({}))
+    let response=await fetchWithToken(session.access_token)
+    let body=await response.json().catch(()=>({}))
+    // Uma sessão antiga pode continuar no navegador mesmo após ser revogada,
+    // especialmente ao alternar aluno/admin em outro dispositivo.
+    // Renovar uma única vez antes de pedir novo login; nunca usar token público
+    // nem liberar acesso sem autenticação.
+    if(response.status===401&&body.status==='club_login_required'){
+      let token
+      try{
+        const refreshed=await supabase.auth.refreshSession()
+        if(!refreshed.error)token=refreshed.data?.session?.access_token
+      }catch{}
+      if(token&&token!==session.access_token){
+        response=await fetchWithToken(token)
+        body=await response.json().catch(()=>({}))
+      }
+    }
     if(!response.ok){
+      if(response.status===401&&body.status==='club_login_required')setNeedsLogin(true)
       const msg={
         too_soon:'Aguarde um minuto antes de gerar outro código.',
-        club_login_required:'Seu acesso ao Clube expirou. Entre novamente.',
+        club_login_required:'Sua sessão não está mais válida. Entre novamente no Clube para vincular seu Instagram.',
         instagram_database_setup_required:'O armazenamento do Instagram ainda não está pronto.',
         invalid_origin:'Atualize a página oficial do Clube para tentar novamente.'
       }[body.status]
       throw new Error(body.message||msg||'Não foi possível consultar a conexão com o Instagram.')
     }
+    setNeedsLogin(false)
     return body
   },[session?.access_token])
 
@@ -108,6 +128,16 @@ export default function ClubeInstagramPanel({session,isAdmin=false}){
     return()=>clearInterval(timer)
   },[code,data?.connected,data?.available,load])
 
+  async function restartLogin(){
+    setLoading(true);setError('')
+    try{
+      await supabase.auth.signOut({scope:'local'})
+      window.location.assign('/clube')
+    }catch{
+      setError('Não foi possível reiniciar seu login. Use a opção Sair do Clube e entre novamente.')
+      setLoading(false)
+    }
+  }
   async function connect(){
     setLoading(true);setError('');setNotice('')
     try{
@@ -138,10 +168,12 @@ export default function ClubeInstagramPanel({session,isAdmin=false}){
       </div>
       <div className="npv-ig-status">
         <div className="npv-ig-status-head">
-          {data?.connected?<CheckCircle2 size={18}/>:data?.available?<Link2 size={18}/>:<Clock3 size={18}/>}
-          <strong>{data?.connected?'Instagram vinculado':data?.available?'Vincule seu Instagram':'Integração em preparação'}</strong>
+          {needsLogin?<LockKeyhole size={18}/>:data?.connected?<CheckCircle2 size={18}/>:data?.available?<Link2 size={18}/>:<Clock3 size={18}/>}
+          <strong>{needsLogin?'Seu acesso precisa ser renovado':data?.connected?'Instagram vinculado':data?.available?'Vincule seu Instagram':'Integração em preparação'}</strong>
         </div>
-        {data?.connected?
+        {needsLogin?
+          <p>A integração está preparada, mas este dispositivo não tem uma sessão válida do Clube. Entre novamente para gerar o código de vinculação.</p>:
+          data?.connected?
           <p>Vinculação confirmada em {ago(data.verified_at)} pelo Instagram. Não precisamos da sua senha.</p>:
           data?.available?
           <p>Para confirmar que o perfil realmente é seu, envie um código temporário por mensagem direta ao Instagram oficial da NPV.</p>:
@@ -152,7 +184,10 @@ export default function ClubeInstagramPanel({session,isAdmin=false}){
         <div><strong>02</strong><span>Publique um Story marcando @naopensevai.</span></div>
         <div><strong>03</strong><span>Após validação, receba até 200 pontos por Story elegível.</span></div>
       </div>
-      {data?.available&&!data.connected&&<>
+      {needsLogin&&<button className="npv-ig-action" type="button" onClick={restartLogin} disabled={loading}>
+        <LockKeyhole size={18}/>{loading?'Reiniciando...':'Entrar novamente no Clube'}
+      </button>}
+      {!needsLogin&&data?.available&&!data.connected&&<>
         <button className="npv-ig-action" type="button" onClick={connect} disabled={loading}>
           <Instagram size={18}/>{loading?'Processando...':'Gerar código de vinculação'}
         </button>
