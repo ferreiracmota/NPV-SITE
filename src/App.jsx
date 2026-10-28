@@ -1597,6 +1597,9 @@ useEffect(() => {
           <p className="text-gray-500 text-sm">
             © {new Date().getFullYear()} Não Pense, Vai! – Todos os direitos reservados
           </p>
+          <p className="mt-2 text-xs text-gray-500 leading-relaxed">
+            Não Pense, Vai! — operação: <a href="/informacoes-da-empresa.html" className="underline underline-offset-2 hover:text-[#AFCB21] transition-colors">VITRINE PUBLICIDADES LTDA</a> · CNPJ 57.534.120/0001-96
+          </p>
         </div>
       </footer>
     </div>
