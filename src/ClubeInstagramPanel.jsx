@@ -18,6 +18,9 @@ export default function ClubeInstagramPanel({session,isAdmin=false}){
   const [official,setOfficial]=useState(null)
   const [officialBusy,setOfficialBusy]=useState(false)
   const [officialMessage,setOfficialMessage]=useState('')
+  const [webhookDiagnostic,setWebhookDiagnostic]=useState(null)
+  const [webhookBusy,setWebhookBusy]=useState(false)
+  const [webhookNote,setWebhookNote]=useState('')
   const [code,setCode]=useState('')
   const [loading,setLoading]=useState(false)
   const [notice,setNotice]=useState('')
@@ -113,6 +116,26 @@ export default function ClubeInstagramPanel({session,isAdmin=false}){
         throw new Error('A Meta não disponibilizou a autorização.')
       window.location.assign(result.authorization_url)
     }catch(e){setOfficialMessage(e.message);setOfficialBusy(false)}
+  }
+  async function diagnoseWebhook(repair=false){
+    setWebhookBusy(true);setWebhookNote('')
+    try{
+      const info=await request('/api/instagram/diagnostics',repair?'POST':'GET')
+      setWebhookDiagnostic(info)
+      if(info.status==='subscriptions_verified')
+        setWebhookNote('A Meta confirma as assinaturas. A entrega de um Direct real ainda precisa ser verificada.')
+      else if(info.status==='app_webhook_not_registered')
+        setWebhookNote('A Meta ainda não tem o webhook do Instagram cadastrado.')
+      else if(info.status==='app_messages_not_subscribed')
+        setWebhookNote('A Meta ainda não assina o campo messages no aplicativo.')
+      else if(info.status==='account_messages_not_subscribed')
+        setWebhookNote('A conta profissional ainda não está inscrita em messages.')
+      else if(info.status==='existing_callback_conflict')
+        setWebhookNote('Existe outro callback cadastrado. A configuração não foi alterada para proteger o webhook existente.')
+      else
+        setWebhookNote('Não foi possível confirmar todas as assinaturas. Verifique as permissões do aplicativo na Meta.')
+    }catch(e){setWebhookNote(e.message||'Não foi possível consultar a Meta.')}
+    finally{setWebhookBusy(false)}
   }
   async function sendDemoReply(){
     setOfficialBusy(true);setOfficialMessage('')
@@ -243,6 +266,24 @@ export default function ClubeInstagramPanel({session,isAdmin=false}){
             <Instagram size={18}/> Enviar mensagem de confirmação ao aluno vinculado
           </button>}
         {officialMessage&&<p className="npv-ig-message" role="status">{officialMessage}</p>}
+      </div>
+      <div className="npv-ig-status">
+        <div className="npv-ig-status-head"><Link2 size={18}/><strong>Diagnóstico da entrega de Directs</strong></div>
+        <p>Verifique a assinatura de mensagens na Meta. Se ela estiver ausente, o administrador poderá cadastrar somente o webhook oficial do Clube, sem alterar pontos.</p>
+        <div className="npv-ig-controls">
+          <button type="button" disabled={webhookBusy||!official?.connected} onClick={()=>diagnoseWebhook(false)}>
+            <RefreshCw size={16}/> {webhookBusy?'Conferindo...':'Verificar integração'}
+          </button>
+          <button type="button" disabled={webhookBusy||!official?.connected} onClick={()=>diagnoseWebhook(true)}>
+            <Link2 size={16}/> Corrigir assinatura Meta
+          </button>
+        </div>
+        {webhookDiagnostic&&<p role="status">
+          Conta profissional: {webhookDiagnostic.accountMessagesSubscribed===true?'mensagens inscritas':webhookDiagnostic.accountMessagesSubscribed===false?'mensagens não inscritas':'não confirmado'}.
+          Aplicativo: {webhookDiagnostic.appMessagesSubscribed===true?'messages inscrito':webhookDiagnostic.appMessagesSubscribed===false?'messages não inscrito':'não confirmado'}.
+          Callback: {webhookDiagnostic.callbackConfigured===true?'oficial':webhookDiagnostic.callbackConfigured===false?'divergente':'não confirmado'}.
+        </p>}
+        {webhookNote&&<p className="npv-ig-message" role="status">{webhookNote}</p>}
       </div>
       <div className="npv-ig-summary">
         <div><small>Menções recebidas</small><strong>{adminData?.available?(adminData.total_events||0):'—'}</strong></div>

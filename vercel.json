@@ -13,6 +13,10 @@
       "destination": "/api/instagram/admin?npv_ig_route=reply"
     },
     {
+      "source": "/api/instagram/diagnostics",
+      "destination": "/api/instagram/admin?npv_ig_route=diagnostics"
+    },
+    {
       "source": "/api/instagram/deauthorize",
       "destination": "/api/instagram/admin?npv_ig_route=deauthorize"
     },
