@@ -50,3 +50,40 @@
   .clube-live-student .clube-live-tabs{grid-template-columns:repeat(5,minmax(0,1fr));gap:3px}
   .clube-live-student .clube-live-tabs>button{font-size:clamp(8px,2.1vw,10px);min-width:0;padding:4px 1px}
 }
+
+/* Operação do administrador: moderação separada das ferramentas técnicas. */
+.npv-ig-admin-title{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;flex-wrap:wrap}
+.npv-ig-admin-title h2{font-size:25px;letter-spacing:-.8px;margin:5px 0 7px;color:#243b27}
+.npv-ig-admin-title p{margin:0;color:#758075;font-size:13px;max-width:570px;line-height:1.55}
+.npv-ig-admin-inbox{display:inline-flex;align-items:center;gap:7px;white-space:nowrap;background:#f2f7e9;border:1px solid #e1ebd2;color:#385923;border-radius:10px;padding:10px 13px;text-decoration:none;font-size:12px;font-weight:800}
+.npv-ig-review-heading{display:flex;justify-content:space-between;gap:12px;align-items:baseline;margin:26px 0 9px}
+.npv-ig-review-heading h3{margin:0;font-size:17px;color:#2d422b}
+.npv-ig-review-heading small{color:#7e897d;font-size:12px}
+.npv-ig-review-list{display:grid;gap:10px}
+.npv-ig-review-item{display:flex;align-items:center;justify-content:space-between;gap:16px;border:1px solid #e1e9d8;border-radius:14px;background:#fbfdf7;padding:16px}
+.npv-ig-review-info{display:grid;gap:5px;min-width:0}
+.npv-ig-review-info strong{font-size:14px;color:#2d422b}
+.npv-ig-review-info small{color:#778572;font-size:12px}
+.npv-ig-review-pending{display:inline-flex;align-items:center;gap:5px;color:#926d29;font-size:11px;font-weight:800;margin-top:4px}
+.npv-ig-review-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.npv-ig-review-actions button{display:inline-flex;align-items:center;gap:6px;border:1px solid #d9e7cd;padding:10px 12px;border-radius:9px;font-size:12px;font-weight:850}
+.npv-ig-review-actions .npv-ig-review-approve{background:#dff0bc;color:#335123}
+.npv-ig-review-actions .npv-ig-review-reject{background:#fff;color:#7b504c;border-color:#ecdedb}
+.npv-ig-review-help{font-size:12px;color:#886c3e;margin:14px 0}
+.npv-ig-admin-history,.npv-ig-technical{margin-top:19px;border:1px solid #e3e9df;border-radius:12px;background:#fbfcf9;overflow:hidden}
+.npv-ig-admin-history>summary,.npv-ig-technical>summary{display:flex;align-items:center;gap:9px;padding:16px;color:#42573a;font-size:13px;font-weight:800;cursor:pointer;list-style:none}
+.npv-ig-admin-history>summary::-webkit-details-marker,.npv-ig-technical>summary::-webkit-details-marker{display:none}
+.npv-ig-technical>summary svg:last-child{margin-left:auto;transition:transform .2s}
+.npv-ig-technical[open]>summary svg:last-child{transform:rotate(180deg)}
+.npv-ig-technical-content{padding:4px 17px 17px}
+.npv-ig-technical-content .npv-ig-status:last-child{margin-bottom:0}
+.npv-ig-admin-history>.npv-ig-events{padding:0 17px 15px;margin-top:0}
+.npv-ig-admin-history .npv-ig-event:last-child{border-bottom:none}
+@media(max-width:700px){
+  .npv-ig-admin-title{flex-direction:column;gap:12px}
+  .npv-ig-review-heading{display:block}
+  .npv-ig-review-heading small{display:block;margin-top:5px}
+  .npv-ig-review-item{align-items:stretch;flex-direction:column}
+  .npv-ig-review-actions{justify-content:flex-start}
+  .npv-ig-review-actions button{flex:1;justify-content:center}
+}

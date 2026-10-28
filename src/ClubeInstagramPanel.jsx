@@ -1,10 +1,10 @@
 import React,{useCallback,useEffect,useState} from 'react'
-import {Instagram,ShieldCheck,Copy,ArrowUpRight,RefreshCw,Link2,Unplug,Clock3,CheckCircle2,AlertCircle,LockKeyhole} from 'lucide-react'
+import {Instagram,ShieldCheck,Copy,ArrowUpRight,RefreshCw,Link2,Unplug,Clock3,CheckCircle2,AlertCircle,LockKeyhole,ChevronDown} from 'lucide-react'
 import './ClubeInstagramPanel.css'
 import {clubeSupabase as supabase} from './clubeSupabase.js'
 
 const INSTAGRAM_DM='https://ig.me/m/naopensevai'
-const STORY_LABEL={credited:'Crédito confirmado',review:'Recebido · aguardando validação',unlinked:'Perfil não identificado',limit_reached:'Limite mensal atingido',disabled:'Automação desativada'}
+const STORY_LABEL={credited:'Crédito confirmado',review:'Recebido · aguardando validação',unlinked:'Perfil não identificado',rejected:'Não aprovado',limit_reached:'Limite mensal atingido',disabled:'Automação desativada'}
 const ago = date => {
   if(!date)return ''
   const timestamp=new Date(date)
@@ -15,6 +15,7 @@ export default function ClubeInstagramPanel({session,isAdmin=false}){
   const [data,setData]=useState(null)
   const [events,setEvents]=useState([])
   const [adminData,setAdminData]=useState(null)
+  const [reviewBusy,setReviewBusy]=useState('')
   const [official,setOfficial]=useState(null)
   const [officialBusy,setOfficialBusy]=useState(false)
   const [officialMessage,setOfficialMessage]=useState('')
@@ -27,11 +28,12 @@ export default function ClubeInstagramPanel({session,isAdmin=false}){
   const [error,setError]=useState('')
   const [needsLogin,setNeedsLogin]=useState(false)
 
-  const request=useCallback(async(path,method='GET')=>{
+  const request=useCallback(async(path,method='GET',payload=null)=>{
     if(!session?.access_token)throw new Error('Acesse sua conta do Clube NPV.')
     const fetchWithToken=token=>fetch(path,{
       method,cache:'no-store',
-      headers:{Authorization:'Bearer '+token}
+      headers:{Authorization:'Bearer '+token,...(payload?{'Content-Type':'application/json'}:{})},
+      ...(payload?{body:JSON.stringify(payload)}:{})
     })
     let response=await fetchWithToken(session.access_token)
     let body=await response.json().catch(()=>({}))
@@ -183,6 +185,26 @@ export default function ClubeInstagramPanel({session,isAdmin=false}){
     }catch(e){setError(e.message)}
     finally{setLoading(false)}
   }
+  async function reviewStory(event,decision){
+    if(!isAdmin||reviewBusy)return
+    const approve=decision==='approve'
+    if(!window.confirm(approve
+      ?'Confirmou a menção no Instagram? Aprovar concede 200 pontos à aluna. Essa decisão não pode ser desfeita por aqui.'
+      :'Rejeitar esta menção sem conceder pontos?'))return
+    setReviewBusy(event.event_id);setError('');setNotice('')
+    try{
+      const result=await request('/api/instagram/review','POST',{
+        event_id:event.event_id,decision
+      })
+      setNotice(result.status==='credited'
+        ?'Story aprovado: 200 pontos lançados após sua confirmação.'
+        :result.status==='limit_reached'
+        ?'O limite de cinco Stories do mês foi atingido. Nenhum ponto adicional foi lançado.'
+        :'Story rejeitado e registrado sem lançamento de pontos.')
+      await load({quiet:true})
+    }catch(e){setError(e?.message||'Não foi possível concluir a análise do Story.')}
+    finally{setReviewBusy('')}
+  }
   return <div className="npv-ig-root">
     <section className="npv-ig-card">
       <div className="npv-ig-heading">
@@ -245,8 +267,51 @@ export default function ClubeInstagramPanel({session,isAdmin=false}){
       <p className="npv-ig-empty">Nenhum Story confirmado neste histórico.</p>}
     </section>
     {isAdmin&&<section className="npv-ig-card npv-ig-admin">
-      <div className="npv-ig-section-title"><h2>Monitoramento do Instagram</h2><span>Administração</span></div>
-      <p className="npv-ig-paragraph">A integração depende das permissões de mensagens e menções da conta @naopensevai no Meta for Developers. Quando ativa, notificações sem vínculo ficam pendentes para conferência.</p>
+      <div className="npv-ig-admin-title">
+        <div><span className="npv-ig-overline">CENTRAL DE MODERAÇÃO</span><h2>Menções de Stories</h2>
+        <p>Revise notificações reais recebidas pelo @naopensevai. A aprovação é manual; não existem créditos automáticos nesta etapa.</p></div>
+        <a className="npv-ig-admin-inbox" href="https://www.instagram.com/direct/inbox/" target="_blank" rel="noopener noreferrer"><Instagram size={16}/> Conferir no Instagram <ArrowUpRight size={15}/></a>
+      </div>
+      <div className="npv-ig-summary">
+        <div><small>Menções recebidas</small><strong>{adminData?.available?(adminData.total_events||0):'—'}</strong></div>
+        <div><small>Aguardando análise</small><strong>{adminData?.available?(adminData.pending_events||0):'—'}</strong></div>
+      </div>
+      <div className="npv-ig-review-heading"><h3>Para decidir</h3><small>Verifique a menção na conta oficial antes de aprovar</small></div>
+      {adminData?.events?.some(evt=>evt.status==='review')?
+        <div className="npv-ig-review-list">{adminData.events.filter(evt=>evt.status==='review').map(evt=>
+          <div className="npv-ig-review-item" key={evt.event_id}>
+            <div className="npv-ig-review-info">
+              <strong>{evt.student_name||'Perfil não identificado'}</strong>
+              <small>Menção recebida em {ago(evt.created_at)}</small>
+              <span className="npv-ig-review-pending"><Clock3 size={13}/> Aguardando decisão</span>
+            </div>
+            <div className="npv-ig-review-actions">
+              <button type="button" className="npv-ig-review-approve" disabled={Boolean(reviewBusy)} onClick={()=>reviewStory(evt,'approve')}>
+                <CheckCircle2 size={15}/> {reviewBusy===evt.event_id?'Salvando...':'Aprovar +200 pts'}
+              </button>
+              <button type="button" className="npv-ig-review-reject" disabled={Boolean(reviewBusy)} onClick={()=>reviewStory(evt,'reject')}>
+                <AlertCircle size={15}/> Rejeitar
+              </button>
+            </div>
+          </div>)}</div>:
+        <p className="npv-ig-empty">{adminData?.available?'Nenhuma menção vinculada aguardando decisão.':'A fila de menções ainda não está disponível.'}</p>}
+      {adminData?.events?.some(evt=>evt.status==='unlinked')&&
+        <p className="npv-ig-review-help">Existem notificações sem perfil vinculado. Elas não podem receber pontos antes da identificação da aluna.</p>}
+      {adminData?.events?.some(evt=>evt.status!=='review')&&
+        <details className="npv-ig-admin-history">
+          <summary>Ver histórico e outras notificações</summary>
+          <div className="npv-ig-events">
+            {adminData.events.filter(evt=>evt.status!=='review').map(evt=>
+              <div className="npv-ig-event" key={evt.event_id}>
+                <div><strong>{evt.student_name||'Instagram sem vínculo'}</strong><small>{ago(evt.created_at)}</small></div>
+                <span className={evt.status==='credited'?'npv-ig-credit':''}>{STORY_LABEL[evt.status]||evt.status}</span>
+              </div>)}
+          </div>
+        </details>}
+      <details className="npv-ig-technical">
+        <summary><Link2 size={17}/> Integração Meta e diagnóstico técnico <ChevronDown size={17}/></summary>
+        <div className="npv-ig-technical-content">
+          <p className="npv-ig-paragraph">Conexão e permissões da conta oficial @naopensevai. Use estes controles somente quando precisar verificar a integração.</p>
       <div className="npv-ig-status">
         <div className="npv-ig-status-head">
           {official?.connected?<CheckCircle2 size={18}/>:<LockKeyhole size={18}/>}
@@ -289,15 +354,9 @@ export default function ClubeInstagramPanel({session,isAdmin=false}){
         </p>}
         {webhookNote&&<p className="npv-ig-message" role="status">{webhookNote}</p>}
       </div>
-      <div className="npv-ig-summary">
-        <div><small>Menções recebidas</small><strong>{adminData?.available?(adminData.total_events||0):'—'}</strong></div>
-        <div><small>Aguardando análise</small><strong>{adminData?.available?(adminData.pending_events||0):'—'}</strong></div>
-      </div>
-      {adminData?.events?.length>0&&<div className="npv-ig-events">{adminData.events.map(evt=><div className="npv-ig-event" key={evt.event_id}>
-        <div><strong>{evt.student_name||'Instagram sem vínculo'}</strong><small>{ago(evt.created_at)} · {evt.event_id.slice(0,28)}</small></div>
-        <span>{STORY_LABEL[evt.status]||evt.status}</span>
-      </div>)}</div>}
-      <p className="npv-ig-privacy"><LockKeyhole size={15}/> Sem acesso à Meta, a plataforma não concede pontos nem apresenta dados fictícios como se fossem reais.</p>
+        </div>
+      </details>
+      <p className="npv-ig-privacy"><LockKeyhole size={15}/> Os pontos só são concedidos após a sua aprovação. Cada Story pode ser creditado uma vez, respeitando até cinco por mês.</p>
     </section>}
   </div>
 }

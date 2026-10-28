@@ -1,0 +1,49 @@
+
+/* Gestão 2.1: melhorias visuais exclusivas do administrador. */
+.clube-live-admin .npv-admin-nav-group-label{display:block;margin:16px 12px 4px;color:#a8c9b0;font-size:9px;font-weight:850;letter-spacing:1.5px;line-height:1.5}
+.clube-live-admin .clube-sidebar{background:linear-gradient(160deg,#142a20,#1b3625 75%)}
+.clube-live-admin .clube-nav>button.active{box-shadow:inset 3px 0 0 #c5ec85}
+.clube-live-admin .clube-intro{padding-top:4px}
+.clube-live-admin .clube-main>.clube-intro h1{letter-spacing:-.035em}
+.npv-admin-workspace{background:#fff;border:1px solid #dfe9dd;border-radius:18px;padding:24px;margin:7px 0 25px;box-shadow:0 8px 22px rgba(15,35,20,.035)}
+.npv-admin-workspace-header{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;margin-bottom:19px}
+.npv-admin-workspace-kicker{display:block;color:#79944a;letter-spacing:1.6px;font-size:10px;font-weight:850}
+.npv-admin-workspace-header h2{font-size:clamp(19px,2vw,25px);font-weight:850;color:#203a2a;letter-spacing:-.7px;margin:4px 0 5px}
+.npv-admin-workspace-header p{color:#6f7c71;font-size:12px;margin:0;line-height:1.55}
+.npv-admin-refresh{background:#f4f8f1;border:1px solid #e1eadd;border-radius:10px;display:flex;gap:7px;align-items:center;padding:10px 12px;color:#4f673b;font-size:12px;font-weight:800;cursor:pointer}
+.npv-admin-refresh:disabled{opacity:.6;cursor:wait}
+.npv-admin-spin{animation:npv-admin-rotate 1.2s linear infinite}
+@keyframes npv-admin-rotate{to{transform:rotate(360deg)}}
+.npv-admin-workspace-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
+.npv-admin-task{display:flex;align-items:flex-start;text-align:left;gap:12px;position:relative;padding:18px 16px;background:#f6f9f3;border:1px solid #e6ecdf;border-radius:13px;cursor:pointer;transition:transform .2s,border-color .2s,box-shadow .2s;font-family:inherit;min-width:0}
+.npv-admin-task:hover,.npv-admin-task:focus-visible{transform:translateY(-2px);border-color:#a6c17d;box-shadow:0 6px 18px #223a2410}
+.npv-admin-task-icon{display:grid;place-items:center;flex:0 0 40px;height:40px;border-radius:11px;background:#e7f2d9;color:#567a34}
+.npv-admin-task-data{display:grid;gap:4px;min-width:0}
+.npv-admin-task-data small{color:#74856e;font-weight:850;font-size:10px;letter-spacing:.9px}
+.npv-admin-task-data strong{font-size:29px;line-height:1.1;color:#27442a;font-weight:900}
+.npv-admin-task-data>span{color:#6f7c70;font-size:11px;line-height:1.35}
+.npv-admin-task-arrow{position:absolute;top:15px;right:13px;color:#78916e}
+.npv-admin-workspace-footnote{font-size:11px;color:#849284;margin:17px 0 0;line-height:1.55}
+@media(max-width:1080px){.npv-admin-workspace-grid{gap:9px}.npv-admin-task{padding:15px 11px;gap:9px}.npv-admin-task-icon{flex-basis:34px;height:34px}}
+@media(max-width:760px){
+  .clube-live-admin .npv-admin-nav-group-label{display:none}
+  .npv-admin-workspace{padding:17px;margin-bottom:17px;border-radius:14px}
+  .npv-admin-workspace-header{gap:9px;align-items:center}
+  .npv-admin-workspace-grid{grid-template-columns:1fr}
+  .npv-admin-task{min-height:75px;padding:13px;gap:13px}
+  .npv-admin-task-data{grid-template-columns:auto 1fr;column-gap:12px;align-items:center}
+  .npv-admin-task-data small{grid-column:2;grid-row:1}
+  .npv-admin-task-data strong{grid-column:1;grid-row:1/3}
+  .npv-admin-task-data>span{grid-column:2;grid-row:2}
+}
+
+.npv-admin-operations{border:1px solid #dfe8db;background:#fff;border-radius:15px;overflow:hidden;margin:22px 0}
+.npv-admin-operations>summary{display:flex;align-items:center;gap:12px;list-style:none;padding:20px 22px;cursor:pointer;color:#405c34}
+.npv-admin-operations>summary::-webkit-details-marker{display:none}
+.npv-admin-operations>summary>span{display:grid;gap:4px;flex:1}
+.npv-admin-operations>summary strong{color:#263e2d;font-size:14px}
+.npv-admin-operations>summary small{font-size:12px;color:#7c8976}
+.npv-admin-operations>summary svg:last-child{transition:transform .2s}
+.npv-admin-operations[open]>summary svg:last-child{transform:rotate(180deg)}
+.npv-admin-operations-content{padding:0 19px 20px}
+@media(max-width:760px){.npv-admin-operations>summary{padding:16px}.npv-admin-operations-content{padding:0 12px 15px}}
