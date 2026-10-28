@@ -15,6 +15,26 @@ Data: 27/10/2026. Branch: `preview/clube-instagram-stories-20261027`.
 
 **Próximos bloqueios reais:** revisão/permissões do app e credencial correta, entrega de menção real assinada, confirmação do formato de identificador estável do Story, conta-teste aprovada e teste de duplicidade/limite mensal em ambiente isolado. Nunca apresentar uma tela local/mock como prova de integração real.
 
+## Homologação restrita à conta-aluno — PR de 28/10/2026
+
+A Meta confirmou a verificação empresarial da VITRINE PUBLICIDADES LTDA e do domínio naopensevai.com. A análise de `instagram_business_basic` e `instagram_business_manage_messages` em **Uso permitido** ainda exige justificativa e demonstração. Verificação empresarial não equivale a concessão dessas permissões.
+
+**Achado crítico:** o comentário da variável sensível `INSTAGRAM_APP_SECRET` na Vercel Production ainda menciona o app legado `4205484039583967`. Não verificar nem copiar o segredo para logs, navegador, chat ou código. O responsável deve substituir essa variável pelo segredo do app oficial `1670483874468146` diretamente no painel protegido da Vercel e redeployar o ambiente de teste. Também é necessário conferir conta profissional autorizada na Meta e subscription do webhook.
+
+Para um teste real com o app correto (nunca ligar a pontuação):
+
+- `INSTAGRAM_APP_ID=1670483874468146` é obrigatório no backend, evitando ativação para outro aplicativo.
+- `NPV_INSTAGRAM_TEST_MODE=true` impõe teste exclusivo; informar `NPV_INSTAGRAM_TEST_STUDENT_ID` (UUID da conta de aluno aprovada) como variável do servidor, nunca no frontend ou commit.
+- `NPV_INSTAGRAM_ENABLED=true` só deve ser configurada após o segredo do aplicativo correto, identificador da conta, assinatura Meta e rota do webhook estarem confirmados.
+- `NPV_INSTAGRAM_AWARD_ENABLED=false` deve continuar; o código também força `award=false` em modo de teste, independentemente do valor da flag.
+- No modo de teste, geração de código e processamento de menções são restritos ao aluno autorizado; menções sem vínculo de terceiros são descartadas, sem gravá-las no banco.
+- O administrador conserva acesso de leitura ao monitoramento, sem poder gerar outro código enquanto o piloto estiver ativo.
+- Testar em `/clube/instagram-teste` ou na seção Instagram e Stories, com conta de aluno, e enviar o código à conta `@naopensevai` por DM. Conferir evento na tabela (status `review`, 0 pontos). Não demonstrar crédito fictício.
+- Preferir um callback público no domínio oficial com gate de teste no backend: previews da Vercel protegidos por SSO não recebem webhooks externos. Isso não autoriza desproteger o site todo.
+- Antes de trocar o modo de teste para produção geral, exigir confirmação documentada de DM real, identificação estável do Story, RLS, idempotência e limite mensal. Não alterar o Club 2.1.1, Strava, Hotmart ou pontuação de alunas para montar a prova.
+
+**Nota sobre análise do app Meta:** o fluxo de código por DM comprova propriedade da conta pessoal da aluna, mas NÃO equivale ao Instagram Login/OAuth da conta profissional `@naopensevai`. As permissões `instagram_business_basic` e `instagram_business_manage_messages` podem requerer demonstração da autorização profissional e de mensagens recebidas; confirmar exigência exata no formulário da Meta e não declarar OAuth implementado se não estiver.
+
 ## Objetivo
 Associar o sender.id (IGSID) que enviou um código único por DM ao id da aluna
 autenticada e aprovada no Clube; identificar exclusivamente notificações reais
