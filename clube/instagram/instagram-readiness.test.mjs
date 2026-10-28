@@ -200,8 +200,8 @@ test('Homologação exige UUID autorizado e proíbe pontos mesmo com flag indevi
     INSTAGRAM_BUSINESS_ID:'17841461793945231'
   }
   assert.equal(settings({...base,NPV_INSTAGRAM_TEST_STUDENT_ID:'sem-id'}),null)
-  const cfg=settings({...base,NPV_INSTAGRAM_TEST_STUDENT_ID:'aba72e3a-0f79-4c63-876a-140aee607837'})
+  const cfg=settings({...base,NPV_INSTAGRAM_TEST_STUDENT_ID:'00000000-0000-4000-8000-000000000001'})
   assert.equal(cfg.testOnly,true)
   assert.equal(cfg.award,false)
-  assert.equal(cfg.testStudentId,'aba72e3a-0f79-4c63-876a-140aee607837')
+  assert.equal(cfg.testStudentId,'00000000-0000-4000-8000-000000000001')
 })
