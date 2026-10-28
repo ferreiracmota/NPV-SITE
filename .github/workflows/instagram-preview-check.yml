@@ -1,7 +1,7 @@
 name: NPV Instagram — preview check
 on:
   push:
-    branches: [preview/clube-instagram-stories-20261027]
+    branches: [main, preview/clube-instagram-stories-20261027]
     paths:
       - 'api/instagram/**'
       - 'src/ClubeInstagramPreview*'
@@ -33,6 +33,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - name: Testar integridade dos eventos do Instagram
-        run: node --test clube/instagram/instagram-webhook.test.mjs
+        run: node --test clube/instagram/*.test.mjs
       - name: Compilar site e preview
         run: pnpm run build
