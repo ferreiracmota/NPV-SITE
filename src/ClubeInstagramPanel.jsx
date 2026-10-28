@@ -272,7 +272,7 @@ export default function ClubeInstagramPanel({session,isAdmin=false}){
         <p>Verifique a assinatura de mensagens na Meta. Se ela estiver ausente, o administrador poderá cadastrar somente o webhook oficial do Clube, sem alterar pontos.</p>
         <div className="npv-ig-controls">
           <button type="button" disabled={webhookBusy||!official?.connected} onClick={()=>diagnoseWebhook(false)}>
-            <RefreshCcw size={16}/> {webhookBusy?'Conferindo...':'Verificar integração'}
+            <RefreshCw size={16}/> {webhookBusy?'Conferindo...':'Verificar integração'}
           </button>
           <button type="button" disabled={webhookBusy||!official?.connected} onClick={()=>diagnoseWebhook(true)}>
             <Link2 size={16}/> Corrigir assinatura Meta
