@@ -2,6 +2,7 @@ import crypto from 'node:crypto'
 import {adminDb,authorizedMember,safeEqual} from '../../api/instagram/_common.mjs'
 
 const APP_ID='1670483874468146'
+const INSTAGRAM_LOGIN_CLIENT_ID='1695670631993225' // ID do produto Instagram Login, confirmado no painel Meta
 const CALLBACK='https://www.naopensevai.com/api/instagram/oauth-callback'
 
 export function baseConfig(env=process.env){
@@ -19,7 +20,7 @@ export function oauthConfig(env=process.env){
   const clientSecret=env.INSTAGRAM_OAUTH_CLIENT_SECRET
   const stateSecret=env.INSTAGRAM_OAUTH_STATE_SECRET
   const key=Buffer.from(env.INSTAGRAM_TOKEN_ENCRYPTION_KEY||'','base64')
-  if(!/^\d{5,40}$/.test(clientId||'')||!clientSecret||!stateSecret
+  if(clientId!==INSTAGRAM_LOGIN_CLIENT_ID||!clientSecret||!stateSecret
     ||stateSecret.length<32||key.length!==32
     ||env.INSTAGRAM_OAUTH_REDIRECT_URI!==CALLBACK)return null
   return {...base,clientId,clientSecret,stateSecret,key,redirectUri:CALLBACK}

@@ -62,6 +62,21 @@ export default function ClubeInstagramPanel({session,isAdmin=false}){
   },[session?.access_token,isAdmin,request])
 
   useEffect(()=>{load()},[load])
+  // Após o consentimento do Instagram profissional, retornar à mesma área do Clube
+  // com um aviso verificável sem registrar códigos de autorização no navegador.
+  useEffect(()=>{
+    if(!isAdmin)return
+    const params=new URLSearchParams(window.location.search)
+    const oauthStatus=params.get('ig_meta_status')
+    if(oauthStatus!=='connected'&&oauthStatus!=='error')return
+    setOfficialMessage(oauthStatus==='connected'
+      ?'Autorização do @naopensevai recebida e registrada. Confira a situação do painel.'
+      :'O Instagram não confirmou a autorização. Revise a conta profissional e as permissões na Meta.')
+    params.delete('ig_meta_status')
+    const search=params.toString()
+    window.history.replaceState(window.history.state,'',
+      window.location.pathname+(search?'?'+search:'')+window.location.hash)
+  },[isAdmin])
   useEffect(()=>{
     if(!isAdmin||!session?.access_token){setOfficial(null);return}
     let alive=true

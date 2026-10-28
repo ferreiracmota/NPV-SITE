@@ -9,7 +9,7 @@ const base={
   VITE_CLUBE_SUPABASE_URL:'https://example.supabase.co',
   VITE_CLUBE_SUPABASE_PUBLISHABLE_KEY:'local-public-key',
   SUPABASE_SERVICE_ROLE_KEY:'local-server-placeholder',
-  INSTAGRAM_OAUTH_CLIENT_ID:'1234567890987654',
+  INSTAGRAM_OAUTH_CLIENT_ID:'1695670631993225',
   INSTAGRAM_OAUTH_CLIENT_SECRET:'local-oauth-placeholder',
   INSTAGRAM_OAUTH_STATE_SECRET:'x'.repeat(64),
   INSTAGRAM_TOKEN_ENCRYPTION_KEY:Buffer.alloc(32,17).toString('base64'),
@@ -18,6 +18,8 @@ const base={
 
 test('Only expected app and configured redirect are accepted',()=>{
   assert.equal(oauthConfig({...base,INSTAGRAM_APP_ID:'4205484039583967'}),null)
+  assert.equal(oauthConfig({...base,INSTAGRAM_OAUTH_CLIENT_ID:'1670483874468146'}),null)
+  assert.equal(oauthConfig({...base,INSTAGRAM_OAUTH_CLIENT_ID:'1234567890987654'}),null)
   assert.equal(oauthConfig({...base,INSTAGRAM_OAUTH_REDIRECT_URI:'https://example.com/other'}),null)
   assert.ok(oauthConfig(base))
 })
