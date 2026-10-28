@@ -1,6 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import crypto from 'node:crypto'
+import adminHandler from '../../api/instagram/admin.js'
 import {oauthConfig,createOAuthState,checkOAuthState,encryptToken,decryptToken} from '../../server/instagram/_oauth.mjs'
 
 const base={
@@ -36,4 +37,16 @@ test('Encrypted backend data is only readable using matching key',()=>{
   assert.ok(!encrypted.includes(value))
   assert.equal(decryptToken(encrypted,cfg),value)
   assert.throws(()=>decryptToken(encrypted, {...cfg,key:crypto.randomBytes(32)}))
+})
+
+test('Roteador único rejeita caminhos desconhecidos antes de buscar credenciais',async()=>{
+  const req={method:'GET',url:'/api/instagram/admin?npv_ig_route=unknown',headers:{}}
+  const res={
+    statusCode:0,body:'',
+    writeHead(status){this.statusCode=status;return this},
+    end(body=''){this.body=String(body);return this}
+  }
+  await adminHandler(req,res)
+  assert.equal(res.statusCode,404)
+  assert.equal(JSON.parse(res.body).status,'route_not_found')
 })
