@@ -14,6 +14,9 @@ export default function ClubeInstagramPanel({session,isAdmin=false}){
   const [data,setData]=useState(null)
   const [events,setEvents]=useState([])
   const [adminData,setAdminData]=useState(null)
+  const [official,setOfficial]=useState(null)
+  const [officialBusy,setOfficialBusy]=useState(false)
+  const [officialMessage,setOfficialMessage]=useState('')
   const [code,setCode]=useState('')
   const [loading,setLoading]=useState(false)
   const [notice,setNotice]=useState('')
@@ -59,6 +62,31 @@ export default function ClubeInstagramPanel({session,isAdmin=false}){
   },[session?.access_token,isAdmin,request])
 
   useEffect(()=>{load()},[load])
+  useEffect(()=>{
+    if(!isAdmin||!session?.access_token){setOfficial(null);return}
+    let alive=true
+    request('/api/instagram/professional').then(result=>{if(alive)setOfficial(result)})
+      .catch(()=>{if(alive)setOfficial({ready:false,connected:false})})
+    return()=>{alive=false}
+  },[isAdmin,session?.access_token,request])
+
+  async function authorizeOfficial(){
+    setOfficialBusy(true);setOfficialMessage('')
+    try{
+      const result=await request('/api/instagram/professional','POST')
+      if(!result.authorization_url||!result.authorization_url.startsWith('https://www.instagram.com/oauth/authorize?'))
+        throw new Error('A Meta não disponibilizou a autorização.')
+      window.location.assign(result.authorization_url)
+    }catch(e){setOfficialMessage(e.message);setOfficialBusy(false)}
+  }
+  async function sendDemoReply(){
+    setOfficialBusy(true);setOfficialMessage('')
+    try{
+      const result=await request('/api/instagram/reply','POST')
+      if(result.sent)setOfficialMessage('Mensagem enviada pela API oficial. Confira o Direct da conta pessoal vinculada.')
+    }catch(e){setOfficialMessage(e.message)}
+    finally{setOfficialBusy(false)}
+  }
   useEffect(()=>{
     if(!code||data?.connected||!data?.available)return
     const timer=setInterval(()=>load({quiet:true}),8000)
@@ -146,6 +174,26 @@ export default function ClubeInstagramPanel({session,isAdmin=false}){
     {isAdmin&&<section className="npv-ig-card npv-ig-admin">
       <div className="npv-ig-section-title"><h2>Monitoramento do Instagram</h2><span>Administração</span></div>
       <p className="npv-ig-paragraph">A integração depende das permissões de mensagens e menções da conta @naopensevai no Meta for Developers. Quando ativa, notificações sem vínculo ficam pendentes para conferência.</p>
+      <div className="npv-ig-status">
+        <div className="npv-ig-status-head">
+          {official?.connected?<CheckCircle2 size={18}/>:<LockKeyhole size={18}/>}
+          <strong>{official?.connected?'@naopensevai autorizada na Meta':'Autorização da conta profissional'}</strong>
+        </div>
+        <p>{official?.connected
+          ?'A conta profissional foi autorizada por Instagram Login. O recebimento de mensagens ainda depende do webhook ativo.'
+          :official?.ready
+          ?'Conecte a conta profissional @naopensevai para demonstrar o consentimento oficial à Meta.'
+          :'Configure as credenciais privadas de Instagram Login no backend antes de iniciar a autorização.'}</p>
+        {official?.ready&&!official.connected&&
+          <button type="button" className="npv-ig-action" disabled={officialBusy} onClick={authorizeOfficial}>
+            <Instagram size={18}/> Conectar @naopensevai na Meta
+          </button>}
+        {official?.connected&&
+          <button type="button" className="npv-ig-action" disabled={officialBusy} onClick={sendDemoReply}>
+            <Instagram size={18}/> Enviar mensagem de confirmação ao aluno vinculado
+          </button>}
+        {officialMessage&&<p className="npv-ig-message" role="status">{officialMessage}</p>}
+      </div>
       <div className="npv-ig-summary">
         <div><small>Menções recebidas</small><strong>{adminData?.available?(adminData.total_events||0):'—'}</strong></div>
         <div><small>Aguardando análise</small><strong>{adminData?.available?(adminData.pending_events||0):'—'}</strong></div>
