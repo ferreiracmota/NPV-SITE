@@ -1,7 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import crypto from 'node:crypto'
-import {oauthConfig,createOAuthState,checkOAuthState,encryptToken,decryptToken} from '../../api/instagram/_oauth.mjs'
+import {oauthConfig,createOAuthState,checkOAuthState,encryptToken,decryptToken} from '../../server/instagram/_oauth.mjs'
 
 const base={
   INSTAGRAM_APP_ID:'1670483874468146',
