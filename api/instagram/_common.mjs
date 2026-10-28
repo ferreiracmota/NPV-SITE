@@ -67,6 +67,33 @@ export const brazilMonthKey=(instant=new Date())=>{
   return parts.find(x=>x.type==='year').value+'-'+parts.find(x=>x.type==='month').value
 }
 
+// Limites do mês no fuso de São Paulo, convertidos a UTC para consultas
+// timestamptz do Supabase. Calculamos o deslocamento por Intl em vez de
+// presumir que o fuso sempre terá UTC-3 (também cobre meses com DST histórico).
+const saoPauloClock=new Intl.DateTimeFormat('en-GB',{
+  timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit',
+  hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'
+})
+const saoPauloMonthStartUtc=(year,month)=>{
+  const localMidnightAsUtc=Date.UTC(year,month-1,1)
+  let utc=localMidnightAsUtc
+  for(let attempt=0;attempt<3;attempt++){
+    const parts=Object.fromEntries(saoPauloClock.formatToParts(new Date(utc))
+      .filter(x=>x.type!=='literal').map(x=>[x.type,Number(x.value)]))
+    const localClockAsUtc=Date.UTC(
+      parts.year,parts.month-1,parts.day,parts.hour,parts.minute,parts.second)
+    utc+=localMidnightAsUtc-localClockAsUtc
+  }
+  return new Date(utc).toISOString()
+}
+export const brazilMonthBounds=(instant=new Date())=>{
+  const [year,month]=brazilMonthKey(instant).split('-').map(Number)
+  return {
+    start:saoPauloMonthStartUtc(year,month),
+    end:saoPauloMonthStartUtc(year,month+1)
+  }
+}
+
 export const hashCode=code=>crypto.createHash('sha256').update(code).digest('hex')
 export const makeCode=()=>('NPV-'+crypto.randomBytes(6).toString('hex').toUpperCase())
 export const safeEqual=(a,b)=>{

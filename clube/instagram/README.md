@@ -1,6 +1,20 @@
 # NPV — Prévia real de Instagram por DM e Story
 Data: 27/10/2026. Branch: `preview/clube-instagram-stories-20261027`.
 
+## Estado auditado em 28/10/2026 — aguardando a Meta
+
+- App correto: **NPV Clube de Benefícios**, Meta App ID `1670483874468146`; Instagram profissional oficial **@naopensevai**, IG ID `17841461793945231`.
+- Domínio `naopensevai.com` confirmado como **Verified** na Meta. Metatag no `index.html`; site oficial exibe a empresa responsável em `/informacoes-da-empresa.html`.
+- Verificação empresarial de **VITRINE PUBLICIDADES LTDA** reenviada com razão social, CNPJ e endereço visíveis no site. A aprovação da Meta e a análise de permissões de mensageria **não foram concluídas**.
+- Handshake GET do callback `https://www.naopensevai.com/api/instagram/webhook` foi aceito pela Meta, mas **não confirma entrega de webhook POST com Story real**.
+- Vercel, **Production**: `NPV_INSTAGRAM_ENABLED=false` e `NPV_INSTAGRAM_AWARD_ENABLED=false` verificados; **não ativar** enquanto não houver webhook assinado de teste, vínculo seguro por DM, deduplicação e auditoria completos.
+- Configuração pendente: substituir `INSTAGRAM_APP_SECRET` legado pelo segredo do aplicativo Meta correto, através de variável de ambiente protegida, sem copiar dados sensíveis para código/chat; conferir autorização do Instagram e registro de webhook.
+- Supabase oficial: três tabelas com RLS ativo e funções RPC concedidas somente ao `service_role`; zero links, códigos e eventos registrados no momento desta auditoria; regra de Story encontrada com **200 pontos**.
+- A medição de Stories no painel considera os limites exatos do mês em **America/Sao_Paulo** (o banco mantém `timestamptz`).
+- Teste seguro no banco: em transação com `ROLLBACK`, a menção de perfil não vinculado não gerou pontos. Nenhum evento de teste permaneceu após o rollback.
+
+**Próximos bloqueios reais:** revisão/permissões do app e credencial correta, entrega de menção real assinada, confirmação do formato de identificador estável do Story, conta-teste aprovada e teste de duplicidade/limite mensal em ambiente isolado. Nunca apresentar uma tela local/mock como prova de integração real.
+
 ## Objetivo
 Associar o sender.id (IGSID) que enviou um código único por DM ao id da aluna
 autenticada e aprovada no Clube; identificar exclusivamente notificações reais

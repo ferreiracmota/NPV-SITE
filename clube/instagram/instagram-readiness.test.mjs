@@ -2,7 +2,7 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import crypto from 'node:crypto'
 import {Readable} from 'node:stream'
-import {brazilMonthKey,extractEvents,settings} from '../../api/instagram/_common.mjs'
+import {brazilMonthKey,brazilMonthBounds,extractEvents,settings} from '../../api/instagram/_common.mjs'
 import webhook from '../../api/instagram/webhook.js'
 import link from '../../api/instagram/link.js'
 import activity from '../../api/instagram/activity.js'
@@ -44,6 +44,30 @@ test('Virada do mês em São Paulo não é confundida com UTC da Vercel',()=>{
   assert.equal(brazilMonthKey('2026-11-01T03:00:00Z'),'2026-11')
   assert.equal(brazilMonthKey('2026-12-31T23:30:00Z'),'2026-12')
   assert.equal(brazilMonthKey('2027-01-01T02:59:59Z'),'2026-12')
+})
+
+test('Mês de Stories coincide com o calendário brasileiro, inclusive na virada',()=>{
+  assert.deepEqual(brazilMonthBounds('2026-10-01T02:59:59Z'),{
+    start:'2026-09-01T03:00:00.000Z',end:'2026-10-01T03:00:00.000Z'
+  })
+  assert.deepEqual(brazilMonthBounds('2026-10-01T03:00:00Z'),{
+    start:'2026-10-01T03:00:00.000Z',end:'2026-11-01T03:00:00.000Z'
+  })
+  assert.deepEqual(brazilMonthBounds('2026-11-01T02:59:59Z'),{
+    start:'2026-10-01T03:00:00.000Z',end:'2026-11-01T03:00:00.000Z'
+  })
+  assert.deepEqual(brazilMonthBounds('2026-11-01T03:00:00Z'),{
+    start:'2026-11-01T03:00:00.000Z',end:'2026-12-01T03:00:00.000Z'
+  })
+  assert.deepEqual(brazilMonthBounds('2027-01-01T00:00:00Z'),{
+    start:'2026-12-01T03:00:00.000Z',end:'2027-01-01T03:00:00.000Z'
+  })
+})
+
+test('Limites de meses históricos respeitam o fuso e não presumem UTC-3 permanente',()=>{
+  assert.deepEqual(brazilMonthBounds('2018-11-04T05:00:00Z'),{
+    start:'2018-11-01T03:00:00.000Z',end:'2018-12-01T02:00:00.000Z'
+  })
 })
 
 test('Webhook GET aceita o token de verificação e devolve o desafio exato',async()=>{
