@@ -139,6 +139,12 @@ export const webhookSignatureSource=(raw,header,metaSecret,instagramSecret)=>{
   return null
 }
 
+// Webhook Instagram Login pode ser assinado pela chave do produto Instagram.
+// Aceitar somente as duas chaves configuradas no backend e exigir HMAC válido.
+export const validInstagramWebhookSignature=(raw,header,appKey,loginKey)=>
+  signatureValid(raw,header,appKey)
+  || (typeof loginKey==='string'&&loginKey.length>=16&&signatureValid(raw,header,loginKey))
+
 export const extractEvents=payload=>{
   if(!payload||!['instagram','page'].includes(payload.object)||!Array.isArray(payload.entry))
     return []
