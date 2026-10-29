@@ -23,6 +23,7 @@ import ClubeVersionsAdmin from './ClubeVersionsAdmin.jsx'
 import ClubeInstagramPanel from './ClubeInstagramPanel.jsx'
 import ClubeInstagramAdminSummary from './ClubeInstagramAdminSummary.jsx'
 import ClubeEmailPreferences from './ClubeEmailPreferences.jsx'
+import ClubeStudentAdminDetail,{StudentConnectionBadge} from './ClubeStudentAdminDetail.jsx'
 import './ClubeAdminWorkspace.css'
 
 const format = value => Number(value||0).toLocaleString('pt-BR')
@@ -179,6 +180,9 @@ export default function ClubeNPVOnline() {
   const [hasActiveChallenge,setHasActiveChallenge]=useState(false)
   const [partnerDraft,setPartnerDraft]=useState(null)
   const [confirmedPendingIds,setConfirmedPendingIds]=useState(null)
+  const [selectedStudentId,setSelectedStudentId]=useState(null)
+  const [memberConnections,setMemberConnections]=useState({status:'idle',students:{}})
+  const [connectionRefresh,setConnectionRefresh]=useState(0)
   useEffect(()=>{
     if(!rewardImageFile){setImagePreviewUrl('');return}
     const objectUrl=URL.createObjectURL(rewardImageFile)
@@ -306,6 +310,28 @@ export default function ClubeNPVOnline() {
     })
     return()=>controller.abort()
   },[tab,isAdmin,approved,user?.id,session?.access_token])
+  // Consulta apenas quando o administrador abre Alunos; nunca envia credenciais
+  // do Strava nem dados sensíveis do Instagram ao navegador.
+  useEffect(()=>{
+    if(!isAdmin||tab!=='alunos'||!session?.access_token){
+      setMemberConnections({status:'idle',students:{}})
+      return
+    }
+    const controller=new AbortController()
+    setMemberConnections(prev=>({...prev,status:'loading'}))
+    fetch('/api/clube/admin-connections',{
+      method:'GET',cache:'no-store',
+      headers:{Authorization:'Bearer '+session.access_token},signal:controller.signal
+    }).then(async res=>{
+      if(!res.ok)throw new Error('connection_status_unavailable')
+      const payload=await res.json()
+      if(payload?.status!=='ok'||!payload.students||typeof payload.students!=='object')throw new Error('invalid_status')
+      if(!controller.signal.aborted)setMemberConnections({status:'ok',students:payload.students})
+    }).catch(()=>{
+      if(!controller.signal.aborted)setMemberConnections({status:'error',students:{}})
+    })
+    return()=>controller.abort()
+  },[isAdmin,tab,session?.access_token,connectionRefresh])
   const connectionsChecked=instagramConnection.checked&&stravaConnection.checked
   const connectionsComplete=connectionsChecked&&instagramConnection.connected&&stravaConnection.connected
   const balance=id=>data.events.filter(x=>x.student_id===id).reduce((acc,x)=>acc+x.points,0)
@@ -314,6 +340,7 @@ export default function ClubeNPVOnline() {
   const mineRequests=useMemo(()=>data.requests.filter(x=>x.student_id===user?.id),[data.requests,user?.id])
   const studentMembers=isAdmin?data.members.filter(x=>x.id!==user?.id &&
     (x.approved||confirmedPendingIds?.has(x.id))):data.members
+  const selectedStudent=isAdmin?data.members.find(x=>x.id===selectedStudentId)||null:null
   const catalogRewards=data.rewards.filter(x=>x.active||x.showcase)
   const totalPoints=data.events.filter(isThisYear).reduce((acc,x)=>acc+x.points,0)
   const pendingCount=data.requests.filter(x=>x.status==='pending').length
@@ -608,7 +635,50 @@ export default function ClubeNPVOnline() {
         </div>
         <PartnerCards partners={data.partners} admin={isAdmin} onEdit={setPartnerDraft}/>
       </section>}
-      {tab==='alunos'&&isAdmin&&<><div className="clube-toolbar"><label className="clube-search"><Search size={18}/><input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Buscar aluno ou e-mail"/></label></div><div className="clube-card clube-students">{studentMembers.filter(x=>`${x.full_name} ${x.email}`.toLowerCase().includes(search.toLowerCase())).map(x=><div className="clube-student-row" key={x.id}><span className="clube-avatar">{x.full_name?.charAt(0)||'A'}</span><div><strong>{x.full_name||x.email}</strong><small>{x.email} · {x.approved?'Aprovado':'Aguardando aprovação'}</small></div><span className="clube-student-saldo">{format(balance(x.id))} pts</span>{x.approved?<button className="clube-btn clube-btn-outline" onClick={()=>newAward(x.id)}><Plus size={15}/> Pontos</button>:<button disabled={busy} className="clube-btn clube-btn-primary" onClick={()=>approve(x.id)}><Check size={15}/> Aprovar</button>}</div>)}</div></>}
+      {tab==='alunos'&&isAdmin&&<>
+        <div className="clube-toolbar">
+          <label className="clube-search"><Search size={18}/>
+            <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Buscar aluno ou e-mail"/>
+          </label>
+          <button className="npv-admin-student-sync-btn" type="button" onClick={()=>setConnectionRefresh(x=>x+1)}
+            disabled={memberConnections.status==='loading'} aria-label="Atualizar status das conexões">
+            <Clock3 size={15}/> {memberConnections.status==='loading'?'Consultando':'Atualizar vínculos'}
+          </button>
+        </div>
+        {memberConnections.status==='error'&&<span className="npv-admin-student-error" role="status">
+          Não foi possível verificar as conexões agora. O saldo e o histórico continuam disponíveis.
+        </span>}
+        <div className="clube-card clube-students">
+          {studentMembers.filter(x=>`${x.full_name} ${x.email}`.toLowerCase().includes(search.toLowerCase())).map(x=>
+            <div className="clube-student-row npv-admin-student-row" key={x.id}>
+              <button type="button" className="npv-admin-student-open" onClick={()=>setSelectedStudentId(x.id)}
+                aria-label={`Ver ficha, extrato e resgates de ${x.full_name||x.email}`}>
+                <span className="clube-avatar">{x.full_name?.charAt(0)||'A'}</span>
+                <span className="npv-admin-student-body">
+                  <strong>{x.full_name||x.email}</strong>
+                  <small>{x.email} · {x.approved?'Aprovado':'Aguardando aprovação'}</small>
+                  <span className="npv-admin-student-meta">
+                    <StudentConnectionBadge channel="instagram" connection={memberConnections.students[x.id]?.instagram||(memberConnections.status==='ok'?{status:'disconnected'}:null)}
+                      loading={memberConnections.status==='loading'} unavailable={memberConnections.status==='error'}/>
+                    <StudentConnectionBadge channel="strava" connection={memberConnections.students[x.id]?.strava}
+                      loading={memberConnections.status==='loading'} unavailable={memberConnections.status==='error'}/>
+                  </span>
+                </span>
+                <span className="npv-admin-student-value"><strong>{format(balance(x.id))} pts</strong>
+                  <small>Ver extrato</small></span>
+                <ArrowRight size={16} className="npv-admin-student-chevron" aria-hidden="true"/>
+              </button>
+              <div className="npv-admin-student-actions">
+                {x.approved?<button className="clube-btn clube-btn-outline" type="button" onClick={()=>newAward(x.id)}>
+                  <Plus size={15}/> Pontos
+                </button>:<button disabled={busy} className="clube-btn clube-btn-primary" type="button" onClick={()=>approve(x.id)}>
+                  <Check size={15}/> Aprovar
+                </button>}
+              </div>
+            </div>
+          )}
+        </div>
+      </>}
       {tab==='historico'&&<div className="clube-card"><div className="clube-card-head"><div>{isAdmin?<h2>Extrato do Clube</h2>:<h1>Meu extrato</h1>}<p>{isAdmin?'Lançamentos com data e motivo':'Veja quando seus pontos entraram ou saíram do saldo.'}</p></div></div>{activityList(isAdmin?data.events:mine,isAdmin)}</div>}
       {tab==='recompensas'&&<section className="npv-shop"><div className="npv-shop-heading"><div>{isAdmin&&<div className="npv-shop-eyebrow"><Gift size={15}/> CLUBE NPV</div>}{isAdmin?<h2>Vitrine de recompensas ✦</h2>:<h1>Lojinha NPV ✦</h1>}<p>{isAdmin?'Prêmios, benefícios e pedidos de resgate.':'Troque seus pontos por prêmios e acompanhe seus resgates.'}</p></div>{isAdmin?<button className="clube-btn clube-btn-primary" onClick={()=>editReward({name:'',category:'Benefícios',description:'',points:500,stock:1,icon:'gift',theme:'lime',active:false,showcase:true,test_only:true,image_path:''})}><Plus size={16}/> Novo prêmio</button>:<div className="npv-shop-balance">Saldo disponível<strong>{format(Math.max(0,balance(user.id)-reserved(user.id)))} pts</strong></div>}</div>{rewardsGrid()}
         <div className="npv-shop-requests"><div className="npv-shop-requests-head"><div><h3>{isAdmin?'Solicitações para aprovação':'Meus resgates'}</h3><p>{isAdmin?'Pedidos feitos pelos alunos':'Acompanhe suas solicitações e entregas'}</p></div>{isAdmin&&<span className="npv-shop-pending-count">{pendingCount} pendentes</span>}</div>{(isAdmin?data.requests:mineRequests).length===0&&<p className="npv-shop-no-requests">Nenhum pedido por enquanto.</p>}{(isAdmin?data.requests:mineRequests).map(req=><div className="npv-shop-request-row" key={req.id}><span className="npv-shop-request-icon"><Gift size={19}/></span><div className="npv-shop-request-text"><strong>{req.reward_name}</strong>{isAdmin&&<span>{memberName(req.student_id)}</span>}<small>{date(req.created_at)} · {format(req.points)} pts</small></div>{req.is_test&&<span className="npv-shop-test-tag">TESTE</span>}<span className={`npv-shop-status npv-shop-status-${req.status}`}>{req.status==='pending'?'Aguardando':req.status==='approved'?'Aprovado':'Recusado'}</span>{isAdmin&&req.status==='pending'&&<div className="npv-shop-resolve"><button disabled={busy} onClick={()=>resolve(req,true)}>Aprovar</button><button disabled={busy} onClick={()=>resolve(req,false)}>Recusar</button></div>}</div>)}</div>
@@ -619,6 +689,18 @@ export default function ClubeNPVOnline() {
         <a className="clube-terms-link" href="/clube/termos-de-uso.html">Termos de Uso</a>
       </footer>
     </main></div>
+    {selectedStudent&&isAdmin&&<ClubeStudentAdminDetail
+      student={selectedStudent}
+      balance={balance(selectedStudent.id)} reserved={reserved(selectedStudent.id)}
+      events={data.events.filter(e=>e.student_id===selectedStudent.id)}
+      redemptions={data.requests.filter(r=>r.student_id===selectedStudent.id)}
+      labelEvent={ruleLabel}
+      connection={memberConnections.status==='ok'?{instagram:{status:'disconnected'},...memberConnections.students[selectedStudent.id]}:memberConnections.students[selectedStudent.id]}
+      connectionsLoading={memberConnections.status==='loading'}
+      connectionsUnavailable={memberConnections.status==='error'}
+      onClose={()=>setSelectedStudentId(null)}
+      onAddPoints={()=>{setSelectedStudentId(null);newAward(selectedStudent.id)}}
+    />}
     {award&&isAdmin&&<div className="clube-modal-backdrop" onMouseDown={e=>{if(e.target===e.currentTarget)setAward(null)}}><section className="clube-modal" role="dialog" aria-modal="true" aria-labelledby="award-title"><div className="clube-modal-top"><div><small>ADMINISTRAÇÃO</small><h2 id="award-title">Lançar pontos</h2></div><button onClick={()=>setAward(null)} aria-label="Fechar"><X size={20}/></button></div><form className="clube-form" onSubmit={submitAward}>
       <label>Aluno aprovado<select required value={award.studentId} onChange={e=>setAward(d=>({...d,studentId:e.target.value}))}><option value="">Selecione um aluno</option>{studentMembers.filter(x=>x.approved).map(x=><option value={x.id} key={x.id}>{x.full_name||x.email}</option>)}</select></label>
       <label>Atividade<select value={award.type} onChange={e=>setAward(d=>({...d,type:e.target.value,points:ruleDefaultPoints(data.rules,e.target.value)}))}>{data.rules.map(rule=><option value={rule.event_type} key={rule.event_type}>{ruleLabel(rule.event_type)}</option>)}<option value="ajuste">{ruleNames.ajuste}</option></select></label>
