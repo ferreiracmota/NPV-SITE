@@ -61,3 +61,39 @@
  .npv-admin-students-open{gap:6px}
  .npv-admin-students-identity>small{font-size:10px}
 }
+
+/* Histórico administrativo unificado: dados de pontos não são alterados. */
+.npv-admin-students-timeline{border:1px solid #e3e9df;border-radius:12px;background:#fff;overflow:hidden}
+.npv-admin-students-timeline-head{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:15px;border-bottom:1px solid #edf0eb}
+.npv-admin-students-timeline-head h3{display:flex;align-items:center;gap:8px;margin:0 0 5px;color:#273928;font-size:14px}
+.npv-admin-students-timeline-head p{color:#7d8b7c;font-size:11px;line-height:1.5;margin:0}
+.npv-admin-students-filters{display:flex;gap:4px;padding:3px;background:#f1f4ee;border-radius:9px}
+.npv-admin-students-filters button{border:0;border-radius:7px;background:transparent;color:#667565;cursor:pointer;padding:7px 11px;font-size:11px;font-weight:700}
+.npv-admin-students-filters button.is-selected{background:#fff;box-shadow:0 1px 3px #243c261b;color:#304a2f}
+.npv-admin-students-filters button:focus-visible{outline:2px solid #849b50;outline-offset:2px}
+.npv-admin-students-timeline-list{padding:2px 15px}
+.npv-admin-students-timeline-row{display:flex;align-items:flex-start;gap:10px;padding:13px 0;border-top:1px solid #edf1eb}
+.npv-admin-students-timeline-row:first-child{border-top:0}
+.npv-admin-students-timeline-icon{width:28px;height:28px;flex:none;display:grid;place-items:center;border-radius:8px;background:#eef3e9;color:#547743}
+.npv-admin-students-timeline-icon.is-approved{background:#e9f5e2;color:#477b39}
+.npv-admin-students-timeline-icon.is-rejected{background:#faefec;color:#a2534a}
+.npv-admin-students-timeline-icon.is-request{background:#f7f3e7;color:#907342}
+.npv-admin-students-timeline-content{display:flex;flex-direction:column;gap:3px;min-width:0;flex:1}
+.npv-admin-students-timeline-content strong{font-size:12px;line-height:1.35;overflow-wrap:anywhere}
+.npv-admin-students-timeline-content small{font-size:11px;color:#738173}
+.npv-admin-students-timeline-content p{margin:2px 0 0;font-size:11px;line-height:1.5;color:#627263;overflow-wrap:anywhere}
+.npv-admin-students-timeline-amount{display:flex;align-items:flex-end;flex-direction:column;gap:3px;flex:none;text-align:right;max-width:40%}
+.npv-admin-students-timeline-amount b{font-size:12px;color:#374b34;white-space:nowrap}
+.npv-admin-students-timeline-amount b.is-positive{color:#477c32}
+.npv-admin-students-timeline-amount b.is-negative{color:#a44949}
+.npv-admin-students-timeline-amount b.is-neutral{color:#697a69}
+.npv-admin-students-timeline-amount small{font-size:10px;color:#829080;line-height:1.3}
+@media(max-width:760px){
+ .npv-admin-students-timeline-head{padding:12px}
+ .npv-admin-students-filters{width:100%;justify-content:space-between}
+ .npv-admin-students-filters button{flex:1}
+ .npv-admin-students-timeline-list{padding:2px 12px}
+ .npv-admin-students-timeline-row{gap:8px}
+ .npv-admin-students-timeline-icon{width:24px;height:24px}
+ .npv-admin-students-timeline-amount{max-width:38%}
+}
