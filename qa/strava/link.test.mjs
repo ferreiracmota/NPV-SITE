@@ -1,8 +1,8 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { seal, unseal, settings, cookie, COOKIE_STATE, COOKIE_LINK } from './link-core.mjs'
-import connect from './connect.js'
-import status from './status.js'
+import { seal, unseal, settings, cookie, COOKIE_STATE, COOKIE_LINK } from '../../api/strava/link-core.mjs'
+import connect from '../../api/strava/connect.js'
+import status from '../../api/strava/status.js'
 
 const SECRET='long-fake-test-secret-a45e8f0d4782cf37'
 const OWNER='aaaaaaaa-aaaa-4aaa-aaaa-aaaaaaaaaaaa'
