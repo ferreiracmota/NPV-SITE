@@ -204,8 +204,8 @@ export default function ClubeHotmartAdmin({session,isAdmin,renewalPointRate=null
           <span><small>Vínculo NPV</small><strong>{LINK[group.link_status]||'Não verificado'}</strong></span>
           <span><small>Saldo real</small><strong>{group.linked&&Number.isSafeInteger(group.clube_balance)?fmtMetric(group.clube_balance)+' pts':'—'}</strong></span>
         </div>
-        {continuingById.get(group.subscriptions[0]?.id)&&<p className="npv-hotmart-return-total"><strong>{fmtMetric(continuingById.get(group.subscriptions[0].id).total)} pts calculados</strong> = {fmtMetric(continuingById.get(group.subscriptions[0].id).total-continuingById.get(group.subscriptions[0].id).returnBonus)} anteriores + {fmtMetric(continuingById.get(group.subscriptions[0].id).returnBonus)} pela recontratação. Não creditado no Clube.</p>}
       </div>
+      {continuingById.get(group.subscriptions[0]?.id)&&<p className="npv-hotmart-return-total"><strong>{fmtMetric(continuingById.get(group.subscriptions[0].id).total)} pts calculados</strong> = {fmtMetric(continuingById.get(group.subscriptions[0].id).total-continuingById.get(group.subscriptions[0].id).returnBonus)} anteriores + {fmtMetric(continuingById.get(group.subscriptions[0].id).returnBonus)} pela recontratação. Não creditado no Clube.</p>}
       <details className="npv-hotmart-person-history">
         <summary>Ver histórico de {group.subscriptions.length} {group.subscriptions.length===1?'assinatura':'assinaturas'} e pagamentos</summary>
         <div className="npv-hotmart-person-contracts">{group.subscriptions.map(item=>
