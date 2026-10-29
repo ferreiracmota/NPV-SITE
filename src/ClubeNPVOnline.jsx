@@ -22,6 +22,7 @@ import ClubeHotmartAdmin from './ClubeHotmartAdmin.jsx'
 import ClubeVersionsAdmin from './ClubeVersionsAdmin.jsx'
 import ClubeInstagramPanel from './ClubeInstagramPanel.jsx'
 import ClubeInstagramAdminSummary from './ClubeInstagramAdminSummary.jsx'
+import ClubeAdminStudents from './ClubeAdminStudents.jsx'
 import ClubeEmailPreferences from './ClubeEmailPreferences.jsx'
 import './ClubeAdminWorkspace.css'
 
@@ -608,7 +609,15 @@ export default function ClubeNPVOnline() {
         </div>
         <PartnerCards partners={data.partners} admin={isAdmin} onEdit={setPartnerDraft}/>
       </section>}
-      {tab==='alunos'&&isAdmin&&<><div className="clube-toolbar"><label className="clube-search"><Search size={18}/><input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Buscar aluno ou e-mail"/></label></div><div className="clube-card clube-students">{studentMembers.filter(x=>`${x.full_name} ${x.email}`.toLowerCase().includes(search.toLowerCase())).map(x=><div className="clube-student-row" key={x.id}><span className="clube-avatar">{x.full_name?.charAt(0)||'A'}</span><div><strong>{x.full_name||x.email}</strong><small>{x.email} · {x.approved?'Aprovado':'Aguardando aprovação'}</small></div><span className="clube-student-saldo">{format(balance(x.id))} pts</span>{x.approved?<button className="clube-btn clube-btn-outline" onClick={()=>newAward(x.id)}><Plus size={15}/> Pontos</button>:<button disabled={busy} className="clube-btn clube-btn-primary" onClick={()=>approve(x.id)}><Check size={15}/> Aprovar</button>}</div>)}</div></>}
+      {tab==='alunos'&&isAdmin&&<>
+        <div className="clube-toolbar"><label className="clube-search"><Search size={18}/><input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Buscar aluno ou e-mail"/></label></div>
+        <ClubeAdminStudents
+          session={session}
+          members={studentMembers.filter(x=>`${x.full_name} ${x.email}`.toLowerCase().includes(search.toLowerCase()))}
+          events={data.events} redemptions={data.requests} rules={data.rules}
+          busy={busy} onAward={newAward} onApprove={approve} onRefresh={refresh}
+        />
+      </>}
       {tab==='historico'&&<div className="clube-card"><div className="clube-card-head"><div>{isAdmin?<h2>Extrato do Clube</h2>:<h1>Meu extrato</h1>}<p>{isAdmin?'Lançamentos com data e motivo':'Veja quando seus pontos entraram ou saíram do saldo.'}</p></div></div>{activityList(isAdmin?data.events:mine,isAdmin)}</div>}
       {tab==='recompensas'&&<section className="npv-shop"><div className="npv-shop-heading"><div>{isAdmin&&<div className="npv-shop-eyebrow"><Gift size={15}/> CLUBE NPV</div>}{isAdmin?<h2>Vitrine de recompensas ✦</h2>:<h1>Lojinha NPV ✦</h1>}<p>{isAdmin?'Prêmios, benefícios e pedidos de resgate.':'Troque seus pontos por prêmios e acompanhe seus resgates.'}</p></div>{isAdmin?<button className="clube-btn clube-btn-primary" onClick={()=>editReward({name:'',category:'Benefícios',description:'',points:500,stock:1,icon:'gift',theme:'lime',active:false,showcase:true,test_only:true,image_path:''})}><Plus size={16}/> Novo prêmio</button>:<div className="npv-shop-balance">Saldo disponível<strong>{format(Math.max(0,balance(user.id)-reserved(user.id)))} pts</strong></div>}</div>{rewardsGrid()}
         <div className="npv-shop-requests"><div className="npv-shop-requests-head"><div><h3>{isAdmin?'Solicitações para aprovação':'Meus resgates'}</h3><p>{isAdmin?'Pedidos feitos pelos alunos':'Acompanhe suas solicitações e entregas'}</p></div>{isAdmin&&<span className="npv-shop-pending-count">{pendingCount} pendentes</span>}</div>{(isAdmin?data.requests:mineRequests).length===0&&<p className="npv-shop-no-requests">Nenhum pedido por enquanto.</p>}{(isAdmin?data.requests:mineRequests).map(req=><div className="npv-shop-request-row" key={req.id}><span className="npv-shop-request-icon"><Gift size={19}/></span><div className="npv-shop-request-text"><strong>{req.reward_name}</strong>{isAdmin&&<span>{memberName(req.student_id)}</span>}<small>{date(req.created_at)} · {format(req.points)} pts</small></div>{req.is_test&&<span className="npv-shop-test-tag">TESTE</span>}<span className={`npv-shop-status npv-shop-status-${req.status}`}>{req.status==='pending'?'Aguardando':req.status==='approved'?'Aprovado':'Recusado'}</span>{isAdmin&&req.status==='pending'&&<div className="npv-shop-resolve"><button disabled={busy} onClick={()=>resolve(req,true)}>Aprovar</button><button disabled={busy} onClick={()=>resolve(req,false)}>Recusar</button></div>}</div>)}</div>
