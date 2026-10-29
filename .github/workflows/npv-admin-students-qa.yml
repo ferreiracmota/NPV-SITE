@@ -1,0 +1,42 @@
+name: NPV Admin Students - QA temporario
+on:
+  push:
+    branches:
+      - feature/clube-admin-ficha-alunos-conexoes-20261029
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build-and-security:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: pnpm
+      - name: Instalar dependencias do lockfile
+        run: pnpm install --frozen-lockfile
+      - name: Validar compilacao React/Vite
+        run: pnpm run build
+      - name: Verificar protecao basica da API administrativa
+        run: |
+          node --input-type=module <<'JS'
+          import assert from 'node:assert/strict'
+          import handler from './api/clube/student-connections.js'
+          async function invoke(method,authorization){
+            let code=0;let answer=''
+            const req={method,headers:{...(authorization?{authorization}:{})}}
+            const res={writeHead(status){code=status;return this},end(payload){answer=payload;return this}}
+            await handler(req,res)
+            return {code,body:JSON.parse(answer)}
+          }
+          assert.equal((await invoke('POST')).code,405)
+          assert.equal((await invoke('GET')).code,401)
+          assert.equal((await invoke('GET','Bearer invalid')).code,401)
+          console.log('OK: metodos proibidos e chamadas sem credencial bloqueadas')
+          JS
+      - name: Confirmar testes das renovacoes Hotmart
+        run: node --test clube/hotmart-admin/pointsSync.test.mjs
