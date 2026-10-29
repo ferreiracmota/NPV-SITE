@@ -1,5 +1,6 @@
 import React,{useCallback,useEffect,useMemo,useState} from 'react'
-import {ArrowRight,Check,ChevronDown,ChevronUp,Gift,History,Instagram,Plus,RefreshCw,Footprints} from 'lucide-react'
+import {Check,ChevronDown,ChevronUp,Gift,History,Instagram,Plus,RefreshCw,Footprints,X} from 'lucide-react'
+import {buildStudentTimeline,studentPointSummary} from '../clube/admin-students/activityTimeline.mjs'
 import './ClubeAdminStudents.css'
 
 const fmt=n=>Number(n||0).toLocaleString('pt-BR')
@@ -11,8 +12,8 @@ export function connectionDisplay(kind,row,checkedAt=Date.now()){
   ?{label:'Sem verificação',tone:'neutral',help:'A conexão usa o navegador da aluna; aguarda uma verificação real no Clube.'}
   :{label:'Não vinculado',tone:'neutral',help:'Nenhum vínculo confirmado pelo Clube.'}
  if(kind==='instagram')return {
-  label:'Vinculado',tone:'ok',
-  help:'Vínculo de identidade confirmado em '+when(row.verified_at)+'. Não é uma consulta ao Instagram em tempo real.'
+  label:'Ativo no Clube',tone:'ok',
+  help:'Vínculo de identidade ativo e confirmado no Clube em '+when(row.verified_at)+'. Não comprova que a conta do Instagram esteja ativa neste instante.'
  }
  if(!row.connected)return {label:'Desconectado',tone:'off',help:'Desconexão registrada em '+when(row.verified_at)+'.'}
  const time=Date.parse(row.verified_at||'')
@@ -24,6 +25,7 @@ const redemptionStatus=s=>s==='pending'?'Aguardando aprovação':s==='approved'?
 
 export default function ClubeAdminStudents({session,members=[],events=[],redemptions=[],rules=[],busy,onAward,onApprove,onRefresh}){
  const [opened,setOpened]=useState(null)
+ const [historyView,setHistoryView]=useState('all')
  const [links,setLinks]=useState({status:'loading',instagram:new Map(),strava:new Map()})
  const [reload,setReload]=useState(0)
  const token=session?.access_token
@@ -52,18 +54,19 @@ export default function ClubeAdminStudents({session,members=[],events=[],redempt
   for(const person of members)m.set(person.id,{events:[],requests:[],balance:0,reserved:0})
   for(const event of events){
    const item=m.get(event.student_id)
-   if(item){item.events.push(event);item.balance+=Number(event.points)||0}
+   if(item){item.events.push(event)}
   }
   for(const req of redemptions){
    const item=m.get(req.student_id)
    if(item){
     item.requests.push(req)
-    if(req.status==='pending')item.reserved+=Number(req.points)||0
    }
   }
   for(const entry of m.values()){
    entry.events.sort((a,b)=>String(b.created_at||'').localeCompare(String(a.created_at||''))||String(b.id||'').localeCompare(String(a.id||'')))
    entry.requests.sort((a,b)=>String(b.created_at||'').localeCompare(String(a.created_at||'')))
+   Object.assign(entry,studentPointSummary(entry.events,entry.requests))
+   entry.timeline=buildStudentTimeline(entry.events,entry.requests)
   }
   return m
  },[members,events,redemptions])
@@ -89,13 +92,14 @@ export default function ClubeAdminStudents({session,members=[],events=[],redempt
   </div>
   {members.length===0&&<p className="clube-empty">Nenhuma aluna encontrada.</p>}
   {members.map(person=>{
-   const record=byMember.get(person.id)||{events:[],requests:[],balance:0,reserved:0}
+   const record=byMember.get(person.id)||{events:[],requests:[],timeline:[],balance:0,reserved:0,available:0}
+   const timeline=(record.timeline||[]).filter(entry=>historyView==='all'||(historyView==='points'?entry.kind==='points':entry.kind!=='points'))
    const expanded=opened===person.id
    const instagram=links.instagram.get(person.id)
    const strava=links.strava.get(person.id)
    return <div className={'npv-admin-students-item'+(expanded?' is-expanded':'')} key={person.id}>
     <div className="npv-admin-students-row">
-     <button type="button" className="npv-admin-students-open" onClick={()=>setOpened(expanded?null:person.id)}
+     <button type="button" className="npv-admin-students-open" onClick={()=>{setOpened(expanded?null:person.id);setHistoryView('all')}}
       aria-expanded={expanded} aria-controls={'npv-student-details-'+person.id}
       aria-label={(expanded?'Fechar':'Abrir')+' ficha de '+(person.full_name||person.email)}>
       <span className="clube-avatar" aria-hidden="true">{(person.full_name||person.email||'A').charAt(0)}</span>
@@ -118,7 +122,7 @@ export default function ClubeAdminStudents({session,members=[],events=[],redempt
      <div className="npv-admin-students-metrics">
       <div><small>Saldo no extrato</small><strong>{fmt(record.balance)} pts</strong></div>
       <div><small>Reservados em pedidos</small><strong>{fmt(record.reserved)} pts</strong></div>
-      <div><small>Disponíveis para resgate</small><strong>{fmt(Math.max(0,record.balance-record.reserved))} pts</strong></div>
+      <div><small>Disponíveis para resgate</small><strong>{fmt(record.available)} pts</strong></div>
      </div>
      <div className="npv-admin-students-connection-details">
       <p><Instagram size={16}/> <b>Instagram:</b> {links.status==='ready'?connectionDisplay('instagram',instagram).help:'Aguardando consulta administrativa dos vínculos.'}</p>
