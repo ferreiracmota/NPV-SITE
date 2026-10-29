@@ -40,5 +40,11 @@
       "source": "/clube/",
       "destination": "/index.html"
     }
+  ],
+  "crons": [
+    {
+      "path": "/api/clube/email-daily",
+      "schedule": "0 13 * * *"
+    }
   ]
 }
