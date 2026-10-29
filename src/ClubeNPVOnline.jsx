@@ -271,7 +271,7 @@ export default function ClubeNPVOnline() {
     if(!isAdmin||!session?.access_token){setConfirmedPendingIds(null);return}
     const controller=new AbortController()
     setConfirmedPendingIds(null)
-    fetch('/api/clube/verified-pending',{
+    fetch('/api/clube/hotmart-admin?pending=1',{
       headers:{Authorization:'Bearer '+session.access_token},cache:'no-store',signal:controller.signal
     }).then(async res=>{
       if(!res.ok)throw new Error('pending_verification_unavailable')

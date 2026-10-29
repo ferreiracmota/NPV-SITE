@@ -1,6 +1,6 @@
 import {createClient} from '@supabase/supabase-js'
 import {readLiveSnapshot} from './reader.mjs'
-import {verifiedMonthlyRenewalTargets,creditDifference} from './pointsSync.mjs'
+import {verifiedMonthlyRenewalTargets} from './pointsSync.mjs'
 
 const EMAIL_RX=/^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const trimmedEmail=e=>typeof e==='string'&&EMAIL_RX.test(e.trim().toLowerCase())?e.trim().toLowerCase():null
