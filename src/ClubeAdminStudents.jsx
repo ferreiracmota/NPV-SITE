@@ -128,27 +128,43 @@ export default function ClubeAdminStudents({session,members=[],events=[],redempt
       <p><Instagram size={16}/> <b>Instagram:</b> {links.status==='ready'?connectionDisplay('instagram',instagram).help:'Aguardando consulta administrativa dos vínculos.'}</p>
       <p><Footprints size={16}/> <b>Strava:</b> {links.status==='ready'?connectionDisplay('strava',strava).help:'Aguardando consulta administrativa dos vínculos.'}</p>
      </div>
-     <div className="npv-admin-students-history-grid">
-      <section>
-       <h3><History size={17}/> Extrato de pontos</h3>
-       {record.events.length===0&&<p className="npv-admin-students-empty">Nenhuma movimentação registrada.</p>}
-       {record.events.map(item=><div className="npv-admin-students-history-row" key={item.id}>
-        <div><strong>{ruleLabel(item.event_type)}</strong><small>{when(item.created_at)}</small>
-         {item.note&&<p>{item.note}</p>}</div>
-        <b className={item.points<0?'is-negative':'is-positive'}>{item.points>0?'+':''}{fmt(item.points)} pts</b>
-       </div>)}
-      </section>
-      <section>
-       <h3><Gift size={17}/> Solicitações e resgates</h3>
-       {record.requests.length===0&&<p className="npv-admin-students-empty">Nenhum resgate ou solicitação.</p>}
-       {record.requests.map(item=><div className="npv-admin-students-history-row" key={item.id}>
-        <div><strong>{item.reward_name}</strong><small>{when(item.created_at)} · {redemptionStatus(item.status)}{item.is_test?' · TESTE':''}</small>
-         {item.resolved_at&&<small>Decisão: {when(item.resolved_at)}</small>}</div>
-        <b>{fmt(item.points)} pts</b>
-       </div>)}
-      </section>
-     </div>
-     <p className="npv-admin-students-footnote">Pedidos pendentes reservam pontos; resgates aprovados já aparecem como desconto no extrato. As informações de conexão são verificações registradas, não acesso às contas externas.</p>
+     <section className="npv-admin-students-timeline" aria-label="Histórico completo de movimentações">
+      <div className="npv-admin-students-timeline-head">
+       <div><h3><History size={17}/> Histórico completo</h3><p>Créditos, débitos, pedidos e decisões em ordem cronológica.</p></div>
+       <div className="npv-admin-students-filters" role="group" aria-label="Filtrar histórico">
+        <button type="button" className={historyView==='all'?'is-selected':''} aria-pressed={historyView==='all'} onClick={()=>setHistoryView('all')}>Tudo</button>
+        <button type="button" className={historyView==='points'?'is-selected':''} aria-pressed={historyView==='points'} onClick={()=>setHistoryView('points')}>Pontos</button>
+        <button type="button" className={historyView==='redemptions'?'is-selected':''} aria-pressed={historyView==='redemptions'} onClick={()=>setHistoryView('redemptions')}>Resgates</button>
+       </div>
+      </div>
+      {timeline.length===0&&<p className="npv-admin-students-empty">Nenhuma movimentação neste filtro.</p>}
+      <div className="npv-admin-students-timeline-list">
+       {timeline.map(item=>{
+        const isPoint=item.kind==='points',isRequest=item.kind==='request',approved=item.status==='approved'
+        const label=isPoint?ruleLabel(item.eventType):isRequest?'Resgate solicitado':approved?'Resgate aprovado':'Resgate recusado'
+        const extra=isPoint?item.note:isRequest
+         ?item.rewardName+' · '+(item.status==='pending'?'Aguardando aprovação':'Pedido processado')
+         :item.rewardName
+        return <div className="npv-admin-students-timeline-row" key={item.key}>
+         <span className={'npv-admin-students-timeline-icon '+(isPoint?'is-points':approved?'is-approved':isRequest?'is-request':'is-rejected')} aria-hidden="true">
+          {isPoint?<History size={15}/>:isRequest?<Gift size={15}/>:approved?<Check size={15}/>:<X size={15}/>}
+         </span>
+         <div className="npv-admin-students-timeline-content">
+          <strong>{label}{item.isTest?' · TESTE':''}</strong>
+          <small>{item.at?when(item.at):'Data da decisão não registrada'}</small>
+          {extra&&<p>{extra}</p>}
+         </div>
+         <div className="npv-admin-students-timeline-amount">
+          {isPoint?<b className={item.points<0?'is-negative':'is-positive'}>{item.points>0?'+':''}{fmt(item.points)} pts</b>
+           :isRequest?<b>{fmt(item.points)} pts</b>
+           :<b className="is-neutral">Decisão</b>}
+          {!isPoint&&<small>{isRequest?'Reserva se pendente':'Sem débito adicional'}</small>}
+         </div>
+        </div>
+       })}
+      </div>
+     </section>
+     <p className="npv-admin-students-footnote">Pedidos pendentes reservam pontos; resgates aprovados são debitados pelo extrato, sem desconto duplicado. Vínculos refletem a última confirmação registrada e não uma consulta contínua às contas externas.</p>
     </div>}
    </div>
   })}
