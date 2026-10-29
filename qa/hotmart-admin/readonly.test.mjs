@@ -90,7 +90,11 @@ test('não criar vínculo por e-mail do assinante sem identidade Supabase confir
 test('vínculo e pendência restrita a assinaturas ativas quando Auth confirmado',async()=>{
  const list=[normalizeSubscription(raw[0]),normalizeSubscription(raw[1]),normalizeSubscription(raw[20])]
  const fakeSvc={
-  from:()=>({select:()=>({range:async()=>({data:[{id:'user-01',email:'fake0@example.invalid',approved:true}],error:null})})}),
+  from:table=>table==='clube_point_events'
+    ?{select:()=>({eq:()=>({order:()=>({order:()=>({
+      range:async()=>({data:[{id:'e1',points:820},{id:'e2',points:-150}],error:null})
+    })})})})}
+    :{select:()=>({range:async()=>({data:[{id:'user-01',email:'fake0@example.invalid',approved:true}],error:null})})},
   auth:{admin:{getUserById:async()=>({data:{user:{id:'user-01',email:'fake0@example.invalid',email_confirmed_at:'2026-01-01T00:00:00Z'}},error:null})}}
  }
  const state=await resolveVerifiedLinks(list,{env:{...env,SUPABASE_SERVICE_ROLE_KEY:'fixture'},createClientFn:()=>fakeSvc})
@@ -100,6 +104,7 @@ test('vínculo e pendência restrita a assinaturas ativas quando Auth confirmado
  assert.equal(result.linked,1)
  assert.equal(result.pending,1)
  assert.equal(list[0].link_status,'linked')
+ assert.equal(list[0].clube_balance,670)
  assert.equal(list[1].link_status,'pending_no_clube_profile')
 })
 test('conflito de e-mails e confirmação não atribuem vínculo incorreto',async()=>{
