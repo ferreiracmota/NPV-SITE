@@ -46,6 +46,29 @@ export async function handleHotmartAdminStatus(req,res,{
    .select('user_id').eq('user_id',user.id).maybeSingle()
   if(roleError)return respond(res,503,{status:'admin_authorization_unavailable'})
   if(admin?.user_id!==user.id)return respond(res,403,{status:'forbidden'})
+  const requestUrl=new URL(req.url||'/api/clube/hotmart-admin','https://npv.local')
+  if(requestUrl.searchParams.get('pending')==='1'){
+   if(!env.SUPABASE_SERVICE_ROLE_KEY)return respond(res,503,{status:'verification_unavailable'})
+   try{
+    const verified=[]
+    const svc=createClientFn(url,env.SUPABASE_SERVICE_ROLE_KEY,{
+      auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}})
+    for(let offset=0;offset<10000;offset+=250){
+      const {data,error}=await svc.from('clube_profiles').select('id,email')
+       .eq('approved',false).order('id',{ascending:true}).range(offset,offset+249)
+      if(error)throw Error('pending_query_failed')
+      for(const p of data||[]){
+       const {data:authUser,error:lookupError}=await svc.auth.admin.getUserById(p.id)
+       if(lookupError)throw Error('pending_user_unavailable')
+       const row=authUser?.user
+       if(row?.email?.trim().toLowerCase()===p.email?.trim().toLowerCase()
+        &&Boolean(row.email_confirmed_at||row.confirmed_at))verified.push(p.id)
+      }
+      if((data||[]).length<250)return respond(res,200,{status:'ok',verified_pending_ids:verified})
+    }
+    return respond(res,503,{status:'verification_too_many_profiles'})
+   }catch{return respond(res,503,{status:'verification_unavailable'})}
+  }
   // A feature nunca é ligada por ausência de variável, nem lê credenciais na main.
   if(env.HOTMART_ADMIN_READONLY_ENABLED!=='true')return respond(res,200,waiting())
   if(env.HOTMART_ALLOWED_PRODUCT_IDS!=='6304828')

@@ -2,7 +2,7 @@
 // Sem app Meta + migration aprovada: endpoint fica desativado e nenhum ponto é criado.
 import {
   json,settings,adminDb,hashCode,safeEqual,readRawBody,validInstagramWebhookSignature,extractEvents
-} from './_common.mjs'
+} from '../../server/instagram/common.mjs'
 
 export const config={api:{bodyParser:false}}
 

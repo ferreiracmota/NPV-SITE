@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Activity, AlertCircle, CheckCircle2, Clock3, CreditCard, RefreshCw, Search, ShieldCheck, Users } from 'lucide-react'
 import './ClubeHotmartAdmin.css'
 import { calculateRenewalPoints } from '../clube/hotmart-admin/renewalPoints.mjs'
@@ -36,12 +36,12 @@ function RenewalPointsCell({item,rate,continuity=null}) {
  return <td className="npv-hotmart-points-cell">
   <strong>{fmtMetric(calc.total)} pts</strong>
   <small>{fmtMetric(calc.renewals)} × {fmtMetric(calc.rate)} pontos por renovação</small>
-  {continuity&&<small>{fmtMetric(continuity.total-continuity.returnBonus)} anteriores + {fmtMetric(continuity.returnBonus)} pela volta com o mesmo e-mail. Cálculo não creditado.</small>}
-  <small>{calc.reason==='quarterly_installments'?'Trimestral: competências mensais precisam de liberação separada':calc.linked?'Cálculo confirmado; não lançado no extrato':'Aguardando vínculo com o Clube; não creditado'}</small>
+  {continuity&&<small>{fmtMetric(continuity.total-continuity.returnBonus)} anteriores + {fmtMetric(continuity.returnBonus)} pela volta com o mesmo e-mail. Consulte o saldo real do Clube.</small>}
+  <small>{calc.reason==='quarterly_installments'?'Trimestral: competências mensais precisam de liberação separada':item.linked?'Compare com o saldo real do Clube':'Aguardando vínculo confirmado com o Clube'}</small>
  </td>
 }
 
-export default function ClubeHotmartAdmin({session,isAdmin,renewalPointRate=null}){
+export default function ClubeHotmartAdmin({session,isAdmin,renewalPointRate=null,onPointsSynced}){
  const [status,setStatus]=useState('loading')
  const [data,setData]=useState(EMPTY)
  const [warning,setWarning]=useState(null)
@@ -49,6 +49,8 @@ export default function ClubeHotmartAdmin({session,isAdmin,renewalPointRate=null
  const [plan,setPlan]=useState('todos')
  const [situation,setSituation]=useState('todas')
  const [displayMode,setDisplayMode]=useState('pessoas')
+ const [syncState,setSyncState]=useState(null)
+ const syncOnce=useRef(false)
  const refresh=useCallback(async(signal,force=false)=>{
   if(!isAdmin||!session?.access_token){setStatus('unauthorized');setData(EMPTY);return}
   setStatus('loading')
@@ -91,6 +93,30 @@ export default function ClubeHotmartAdmin({session,isAdmin,renewalPointRate=null
   if(isAdmin&&session?.access_token)return
   setData(EMPTY);setWarning(null);setStatus('unauthorized')
  },[isAdmin,session?.access_token])
+
+ // Reconsulta da Hotmart no servidor: o navegador não fornece valores a creditar.
+ useEffect(()=>{
+  if(!isAdmin||!session?.access_token||data.status!=='synced'||status!=='ready'||syncOnce.current)return
+  syncOnce.current=true
+  let live=true
+  setSyncState('Verificando créditos de renovações...')
+  fetch('/api/clube/hotmart-points-sync',{
+   method:'POST',cache:'no-store',
+   headers:{Authorization:'Bearer '+session.access_token}
+  }).then(async response=>{
+   const result=await response.json()
+   if(!live)return
+   if(response.ok&&result.status==='synced'){
+    setSyncState('Renovações conferidas; '+result.credited+' conta(s) atualizada(s).')
+    if(result.credited>0||result.removed_invalid>0){
+     onPointsSynced?.()
+     void refresh(undefined,true)
+    }
+   }else if(result.status==='disabled')setSyncState(null)
+   else setSyncState('A conciliação automática está indisponível. Nenhum crédito foi presumido.')
+  }).catch(()=>{if(live)setSyncState('Não foi possível atualizar a pontuação agora.')})
+  return()=>{live=false}
+ },[data.status,status,isAdmin,session?.access_token,onPointsSynced,refresh])
 
  const rows=useMemo(()=>data.subscriptions.filter(item=>{
   const query=search.trim().toLocaleLowerCase('pt-BR')
@@ -145,6 +171,7 @@ export default function ClubeHotmartAdmin({session,isAdmin,renewalPointRate=null
     <div><strong>{data.status==='stale'||status==='error'?'Última leitura disponível':'Dados consultados na Hotmart'}</strong>
      <p>Assinaturas oficiais do produto NPV. Status financeiro não equivale a renovação bonificável.</p></div>
    </div>}
+  {syncState&&<div className="npv-hotmart-warning" role="status"><CheckCircle2 size={17}/><p>{syncState}</p></div>}
   {(warning||data.status==='stale')&&status!=='unauthorized'&&
    <div className="npv-hotmart-warning" role="alert"><AlertCircle size={18}/>
     <div><strong>{data.status==='stale'||status==='error'?'Dados possivelmente desatualizados':'Atenção à verificação de vínculo'}</strong>

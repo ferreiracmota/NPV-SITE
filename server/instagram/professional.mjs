@@ -1,6 +1,6 @@
 // A conta profissional @naopensevai é autorizada por Instagram Login.
 // O aluno usa código por DM; seu Instagram pessoal não precisa ser profissional.
-import {json,checkOrigin} from '../../api/instagram/_common.mjs'
+import {json,checkOrigin} from './common.mjs'
 import {
  baseConfig,oauthConfig,adminFromRequest,officialRow,
  randomNonce,createOAuthState

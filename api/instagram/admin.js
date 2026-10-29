@@ -5,7 +5,7 @@ import diagnostics from '../../server/instagram/diagnostics.mjs'
 import {metaCompliance} from '../../server/instagram/meta-compliance.mjs'
 // Dados operacionais acessíveis somente ao administrador autenticado.
 // Nunca inclui segredos da Meta, códigos temporários ou dados de outras contas ao aluno.
-import {json,settings,authorizedMember} from './_common.mjs'
+import {json,settings,authorizedMember} from '../../server/instagram/common.mjs'
 
 export default async function handler(req,res){
   // Três URLs públicas mantidas por rewrites da Vercel, mas apenas UMA

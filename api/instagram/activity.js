@@ -1,5 +1,5 @@
 // Consulta individual dos eventos de Instagram recebidos oficialmente.
-import {json,settings,authorizedMember} from './_common.mjs'
+import {json,settings,authorizedMember} from '../../server/instagram/common.mjs'
 
 export default async function handler(req,res){
   if(req.method!=='GET')return json(res,405,{status:'method_not_allowed'})
