@@ -1,0 +1,37 @@
+name: Clube NPV - Admin de Alunos
+on:
+  push:
+    branches:
+      - feature/clube-admin-alunos-extrato-conexoes-20261029
+    paths:
+      - 'clube/admin/**'
+      - 'api/clube/admin-student-connections.js'
+      - 'api/strava/connect.js'
+      - 'api/strava/status.js'
+      - 'src/ClubeAdminStudents.*'
+      - '.github/workflows/clube-admin-students.yml'
+  pull_request:
+    paths:
+      - 'clube/admin/**'
+      - 'api/clube/admin-student-connections.js'
+      - 'api/strava/connect.js'
+      - 'api/strava/status.js'
+      - 'src/ClubeAdminStudents.*'
+      - '.github/workflows/clube-admin-students.yml'
+permissions:
+  contents: read
+jobs:
+  verify-admin-students:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Testar classificacao de vinculos
+        run: node --test clube/admin/studentConnectionStatus.test.mjs
+      - name: Validar sintaxe das rotas protegidas
+        run: |
+          node --check api/clube/admin-student-connections.js
+          node --check api/strava/connect.js
+          node --check api/strava/status.js
