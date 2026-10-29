@@ -587,7 +587,8 @@ const beforeAfterSlides = [
   // Dados editáveis do site
   const siteData = {
     topBanner: {
-      text: "NÃO PENSE, VAI! • SUA EVOLUÇÃO COMEÇA AGORA"
+      // A faixa superior anuncia benefícios reais, em vez de repetir um slogan.
+      text: "TREINOS ATUALIZADOS A CADA 5 SEMANAS  ✦  CORRIDA E DESAFIOS  ✦  CLUBE NPV: PONTOS E RECOMPENSAS"
     },
     hero: {
       title: "SEU CORPO DOS SONHOS",
@@ -789,17 +790,12 @@ useEffect(() => {
 
   return (
     <div className="min-h-screen bg-black text-white font-inter">
-      {/* Top Banner Animado */}
-<div className="bg-[#AFCB21] text-black py-2 overflow-hidden">
-  <div className="inline-flex animate-marquee">
-    {/* Cópia 1 */}
-    <span className="text-sm font-medium px-4">
-      {siteData.topBanner.text} • {siteData.topBanner.text} • {siteData.topBanner.text}
-    </span>
-    {/* Cópia 2 (para loop contínuo) */}
-    <span className="text-sm font-medium px-4" aria-hidden="true">
-      {siteData.topBanner.text} • {siteData.topBanner.text} • {siteData.topBanner.text}
-    </span>
+      {/* Faixa editorial: um ciclo de benefícios, com cópia oculta apenas para leitores de tela. */}
+<div className="npv-top-announcement bg-[#AFCB21] text-black overflow-hidden" role="region" aria-label="Novidades da plataforma">
+  <span className="sr-only">{siteData.topBanner.text}</span>
+  <div className="npv-top-announcement-track animate-marquee" aria-hidden="true">
+    <span className="npv-top-announcement-set">{siteData.topBanner.text}  ✦  </span>
+    <span className="npv-top-announcement-set">{siteData.topBanner.text}  ✦  </span>
   </div>
 </div>
 
@@ -973,14 +969,20 @@ useEffect(() => {
     {/* O navegador baixa apenas o vídeo correspondente à tela. */}
     {isDesktopHero && (
       <video ref={heroDesktopVideoRef} className="w-full h-full object-cover"
-        muted playsInline autoPlay loop preload="auto" aria-hidden="true">
+        muted playsInline autoPlay loop preload="auto" controls={false}
+        disablePictureInPicture disableRemotePlayback
+        controlsList="nodownload nofullscreen noremoteplayback noplaybackrate"
+        tabIndex={-1} aria-hidden="true">
         <source src={fundoDesktopVideo} type="video/mp4" />
       </video>
     )}
     {!isDesktopHero && (
       <video key={mobileVideoSource} ref={heroMobileVideoRef}
         className="w-full h-full object-cover" poster={fundoMobilePoster}
-        muted playsInline autoPlay loop preload="auto" aria-hidden="true"
+        muted playsInline autoPlay loop preload="auto" controls={false}
+        disablePictureInPicture disableRemotePlayback
+        controlsList="nodownload nofullscreen noremoteplayback noplaybackrate"
+        tabIndex={-1} aria-hidden="true"
         onError={() => {
           if (mobileVideoSource !== fundoMobileVideo) setMobileVideoSource(fundoMobileVideo)
         }}>
@@ -1008,10 +1010,11 @@ useEffect(() => {
       href="https://pay.hotmart.com/J102054674M?off=g64ryxgr&checkoutMode=10"
       target="_blank"
       rel="noopener noreferrer"
-      className="block w-full max-w-md mx-auto text-center text-[20px] font-semibold text-black py-4 px-6 rounded-lg bg-[#AFCB21] glow-button mt-10"
+      className="npv-hero-primary-cta glow-button mt-10"
+      aria-label="Quero decolar — conhecer os planos na Hotmart"
     >
-
-      QUERO DECOLAR ➜
+      <span>QUERO DECOLAR</span>
+      <ArrowRight size={21} strokeWidth={2.6} aria-hidden="true"/>
     </a>
   </div>
 
