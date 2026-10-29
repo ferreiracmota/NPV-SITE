@@ -2,7 +2,7 @@
 // Mesmo com a integração de Stories desativada, o usuário consegue revogar
 // o acesso e exigir exclusão dos dados derivados do Instagram.
 import crypto from 'node:crypto'
-import {adminDb,json} from '../../api/instagram/_common.mjs'
+import {adminDb,json} from './common.mjs'
 import {baseConfig} from './_oauth.mjs'
 
 const SITE='https://www.naopensevai.com'

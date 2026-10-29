@@ -1,5 +1,5 @@
 // Vinculação verificável por DM oficial. Nunca pede senha do Instagram nem aceita @ como prova.
-import {json,settings,adminDb,authorizedMember,checkOrigin,hashCode,makeCode,brazilMonthBounds} from './_common.mjs'
+import {json,settings,adminDb,authorizedMember,checkOrigin,hashCode,makeCode,brazilMonthBounds} from '../../server/instagram/common.mjs'
 
 export default async function handler(req,res){
   if(!['GET','POST','DELETE'].includes(req.method)){

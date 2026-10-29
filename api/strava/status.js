@@ -1,10 +1,10 @@
 // Somente o aluno autenticado consegue consultar a própria conexão / atividade.
-import { sanitizeActivityList } from './pilot-core.mjs'
+import { sanitizeActivityList } from '../../clube/strava/pilot-core.mjs'
 import { activityWindow, monthlyActivitySummary, recentActivities } from '../../clube/strava/challengeProgress.mjs'
 import {
   settings,clubUser,seal,unseal,readCookie,cookie,COOKIE_LINK,
   checkOrigin,privateHeaders,writeJson,stravaToken
-} from './link-core.mjs'
+} from '../../clube/strava/link-core.mjs'
 
 export default async function handler(req,res){
   const cfg=settings()

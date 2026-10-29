@@ -1,10 +1,10 @@
 // OAuth do próprio aluno, restrito ao mesmo navegador onde está autenticado no Clube NPV.
 // O piloto de leitura antiga em /api/strava/pilot continua independente.
-import { newOAuthState, verifyOAuthState } from './pilot-core.mjs'
+import { newOAuthState, verifyOAuthState } from '../../clube/strava/pilot-core.mjs'
 import {
   settings,clubUser,seal,unseal,readCookie,cookie,COOKIE_STATE,COOKIE_LINK,
   checkOrigin,privateHeaders,writeJson,stravaToken
-} from './link-core.mjs'
+} from '../../clube/strava/link-core.mjs'
 
 const redirect=(res,location,extraCookies=[])=>{
   res.writeHead(303,{...privateHeaders,Location:location,...(extraCookies.length?{'Set-Cookie':extraCookies}:{})})

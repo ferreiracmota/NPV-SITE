@@ -1,5 +1,5 @@
 import crypto from 'node:crypto'
-import {adminDb,authorizedMember,safeEqual} from '../../api/instagram/_common.mjs'
+import {adminDb,authorizedMember,safeEqual} from './common.mjs'
 
 const APP_ID='1670483874468146'
 const INSTAGRAM_LOGIN_CLIENT_ID='1695670631993225' // ID do produto Instagram Login, confirmado no painel Meta

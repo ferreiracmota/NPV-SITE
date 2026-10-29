@@ -1,6 +1,6 @@
 // Diagnóstico protegido da assinatura do Instagram Login.
 // Não expõe tokens, IDs pessoais ou conteúdos de Direct.
-import {json,settings,authorizedMember,checkOrigin} from '../../api/instagram/_common.mjs'
+import {json,settings,authorizedMember,checkOrigin} from './common.mjs'
 import {oauthConfig,officialRow,decryptToken,metaJson} from './_oauth.mjs'
 
 export function hasMessageSubscription(source,objectType=null){

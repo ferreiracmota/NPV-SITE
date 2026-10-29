@@ -1,6 +1,6 @@
 // Teste individual Strava: 1 OAuth -> 1 consulta efêmera -> HTML privado do atleta.
 // NÃO calcula crédito, não grava tokens, não cruza Strava com aluno NPV e não executa cron.
-import { newOAuthState, verifyOAuthState, sanitizeActivityList, escapeHtml } from './pilot-core.mjs'
+import { newOAuthState, verifyOAuthState, sanitizeActivityList, escapeHtml } from '../../clube/strava/pilot-core.mjs'
 
 const OAUTH_AUTHORIZE = 'https://www.strava.com/oauth/authorize'
 const OAUTH_TOKEN = 'https://www.strava.com/oauth/token'

@@ -3,7 +3,7 @@ import assert from 'node:assert/strict'
 import crypto from 'node:crypto'
 import {
   hashCode,makeCode,signatureValid,validInstagramWebhookSignature,extractEvents,settings
-} from '../../api/instagram/_common.mjs'
+} from '../../server/instagram/common.mjs'
 
 test('Código temporário é imprevisível e pode ser armazenado apenas como hash',()=>{
   const a=makeCode(),b=makeCode()

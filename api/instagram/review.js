@@ -1,6 +1,6 @@
 // Decisão manual e auditável sobre menções recebidas pelo Instagram.
 // Protegida por autenticação de administrador, verificação de origem e RPC transacional.
-import {json,settings,authorizedMember,checkOrigin} from './_common.mjs'
+import {json,settings,authorizedMember,checkOrigin} from '../../server/instagram/common.mjs'
 
 export default async function handler(req,res){
   if(req.method!=='POST'){
