@@ -653,3 +653,106 @@
   .clube-shell.clube-live-student .clube-live-tabs>button{font-size:9px;gap:3px;padding:4px 0}
   .clube-shell.clube-live-student .clube-live-tabs>button svg{width:14px;height:14px}
 }
+
+
+/* NPV — saldo da aluna: cartão mais fino, acabamento metálico discreto.
+   Mantém a interação de abertura do extrato; não altera o administrativo. */
+.clube-shell.clube-live-student .clube-student-summary.clube-student-summary-statement{
+  position:relative;
+  isolation:isolate;
+  border:1px solid rgba(204,208,155,.62);
+  background:
+    radial-gradient(ellipse at 88% 10%,rgba(247,224,157,.23),transparent 34%),
+    linear-gradient(108deg,#0b211b 0%,#21442f 45%,#31513b 61%,#102a22 100%);
+  box-shadow:0 8px 22px rgba(17,43,29,.13),inset 0 1px 0 rgba(255,255,231,.28);
+  border-radius:17px;
+  margin-bottom:14px;
+}
+.clube-shell.clube-live-student .clube-student-summary.clube-student-summary-statement::before{
+  content:"";
+  position:absolute;inset:0;
+  z-index:0;pointer-events:none;
+  background:
+    linear-gradient(114deg,transparent 10%,rgba(247,234,184,.035) 32%,rgba(255,245,197,.19) 48%,rgba(255,255,234,.035) 59%,transparent 76%),
+    linear-gradient(180deg,rgba(255,255,242,.11),transparent 27%);
+}
+.clube-shell.clube-live-student .clube-student-summary-statement .clube-student-summary-trigger{
+  position:relative;z-index:1;
+  min-height:112px;
+  padding:12px 24px;
+  gap:14px;
+}
+.clube-shell.clube-live-student .clube-student-summary-statement .clube-student-hello{
+  margin:0 0 4px;
+  font-size:11px;
+  line-height:1.2;
+  color:#f5f6e6;
+}
+.clube-shell.clube-live-student .clube-student-summary-statement .clube-student-balance-label{
+  color:#d9e5cb;
+  font-size:9px;letter-spacing:.12em;
+  line-height:1.25;
+  margin-bottom:1px;
+}
+.clube-shell.clube-live-student .clube-student-summary-statement .clube-student-balance-value{
+  color:#f5df9b;
+  font-size:clamp(35px,4vw,42px);
+  line-height:1.08;
+  margin-top:1px;
+  text-shadow:0 1px 15px rgba(254,224,147,.16);
+}
+.clube-shell.clube-live-student .clube-student-summary-statement .clube-student-balance-value small{
+  color:#ebefce;
+  font-size:12px;
+}
+.clube-shell.clube-live-student .clube-student-summary-statement .clube-student-statement-action{
+  gap:2px;
+  max-width:125px;
+}
+.clube-shell.clube-live-student .clube-student-summary-statement .clube-student-statement-action>svg{
+  width:34px;height:34px;
+  color:#f0df9e;opacity:.95;
+  filter:drop-shadow(0 0 8px rgba(248,221,142,.20));
+}
+.clube-shell.clube-live-student .clube-student-summary-statement .clube-student-statement-cta{
+  color:#f4f3dd;
+  font-size:10px;
+}
+.clube-shell.clube-live-student .clube-student-summary-statement .clube-student-statement-cta svg{
+  color:#f2d990;
+}
+.clube-shell.clube-live-student .clube-student-summary-statement .clube-student-statement-body{
+  position:relative;z-index:1;
+}
+@media(max-width:760px){
+  .clube-shell.clube-live-student .clube-student-summary-statement .clube-student-summary-trigger{
+    min-height:105px;
+    padding:11px 16px;
+    gap:9px;
+  }
+  .clube-shell.clube-live-student .clube-student-summary-statement .clube-student-balance-value{
+    font-size:clamp(33px,8.5vw,39px);
+  }
+  .clube-shell.clube-live-student .clube-student-summary-statement .clube-student-statement-action{
+    max-width:106px;
+  }
+  .clube-shell.clube-live-student .clube-student-summary-statement .clube-student-statement-action>svg{
+    width:31px;height:31px;
+  }
+}
+@media(max-width:380px){
+  .clube-shell.clube-live-student .clube-student-summary-statement .clube-student-summary-trigger{
+    min-height:103px;
+    padding:10px 13px;
+    gap:7px;
+  }
+  .clube-shell.clube-live-student .clube-student-summary-statement .clube-student-statement-action{
+    max-width:88px;
+  }
+  .clube-shell.clube-live-student .clube-student-summary-statement .clube-student-statement-action>svg{
+    width:29px;height:29px;
+  }
+  .clube-shell.clube-live-student .clube-student-summary-statement .clube-student-statement-cta{
+    font-size:9px;gap:3px;
+  }
+}
