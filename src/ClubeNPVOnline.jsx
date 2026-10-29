@@ -488,9 +488,9 @@ export default function ClubeNPVOnline() {
       </div>
       <nav className="clube-live-tabs" aria-label="Navegação do Clube NPV">
         <button type="button" aria-label="Visão geral" aria-current={tab==='inicio'?'page':undefined} className={tab==='inicio'?'active':''} onClick={()=>setTab('inicio')}><Wallet size={17}/><span className="npv-nav-desktop">Visão geral</span><span className="npv-nav-mobile" aria-hidden="true">Início</span></button>
-        <button type="button" aria-label="Histórico de pontos" aria-current={tab==='historico'?'page':undefined} className={tab==='historico'?'active':''} onClick={()=>setTab('historico')}><History size={17}/><span className="npv-nav-desktop">Histórico</span><span className="npv-nav-mobile" aria-hidden="true">Extrato</span></button>
         <button type="button" aria-label="Recompensas" aria-current={tab==='recompensas'?'page':undefined} className={tab==='recompensas'?'active':''} onClick={()=>setTab('recompensas')}><Gift size={17}/><span className="npv-nav-desktop">Recompensas</span><span className="npv-nav-mobile" aria-hidden="true">Prêmios</span></button>
         <button type="button" aria-label="Parceiros" aria-current={tab==='parceiros'?'page':undefined} className={tab==='parceiros'?'active':''} onClick={()=>setTab('parceiros')}><Award size={17}/><span>Parceiros</span></button>
+        <button type="button" aria-label="Histórico de pontos" aria-current={tab==='historico'?'page':undefined} className={tab==='historico'?'active':''} onClick={()=>setTab('historico')}><History size={17}/><span className="npv-nav-desktop">Histórico</span><span className="npv-nav-mobile" aria-hidden="true">Extrato</span></button>
         <button type="button" aria-label="Instagram" aria-current={tab==='instagram'?'page':undefined} className={tab==='instagram'?'active':''} onClick={()=>setTab('instagram')}><Instagram size={17}/><span>Instagram</span></button>
       </nav>
     </section>}
