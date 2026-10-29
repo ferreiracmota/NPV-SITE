@@ -178,6 +178,7 @@ export default function ClubeNPVOnline() {
   const [kmRate,setKmRate]=useState(null)
   const [hasActiveChallenge,setHasActiveChallenge]=useState(false)
   const [partnerDraft,setPartnerDraft]=useState(null)
+  const [confirmedPendingIds,setConfirmedPendingIds]=useState(null)
   useEffect(()=>{
     if(!rewardImageFile){setImagePreviewUrl('');return}
     const objectUrl=URL.createObjectURL(rewardImageFile)
@@ -265,6 +266,20 @@ export default function ClubeNPVOnline() {
     }
   },[user?.id,profile?.id,profile?.approved,isAdmin])
   useEffect(()=>{refresh()},[refresh])
+  // A fila de aprovação exige confirmação do e-mail verificada no servidor.
+  useEffect(()=>{
+    if(!isAdmin||!session?.access_token){setConfirmedPendingIds(null);return}
+    const controller=new AbortController()
+    setConfirmedPendingIds(null)
+    fetch('/api/clube/verified-pending',{
+      headers:{Authorization:'Bearer '+session.access_token},cache:'no-store',signal:controller.signal
+    }).then(async res=>{
+      if(!res.ok)throw new Error('pending_verification_unavailable')
+      const payload=await res.json()
+      if(!controller.signal.aborted)setConfirmedPendingIds(new Set(payload.verified_pending_ids||[]))
+    }).catch(()=>{if(!controller.signal.aborted)setConfirmedPendingIds(null)})
+    return()=>controller.abort()
+  },[isAdmin,session?.access_token])
   const approved=profile?.approved || isAdmin
   // Uma leitura real por entrada na Visão geral: nenhuma conexão é presumida.
   // Assim o guia só vai para o fim após confirmação dos DOIS provedores.
@@ -297,7 +312,8 @@ export default function ClubeNPVOnline() {
   const reserved=id=>data.requests.filter(x=>x.student_id===id && x.status==='pending').reduce((acc,x)=>acc+x.points,0)
   const mine=useMemo(()=>data.events.filter(x=>x.student_id===user?.id),[data.events,user?.id])
   const mineRequests=useMemo(()=>data.requests.filter(x=>x.student_id===user?.id),[data.requests,user?.id])
-  const studentMembers=isAdmin?data.members.filter(x=>x.id!==user?.id):data.members
+  const studentMembers=isAdmin?data.members.filter(x=>x.id!==user?.id &&
+    (x.approved||confirmedPendingIds?.has(x.id))):data.members
   const catalogRewards=data.rewards.filter(x=>x.active||x.showcase)
   const totalPoints=data.events.filter(isThisYear).reduce((acc,x)=>acc+x.points,0)
   const pendingCount=data.requests.filter(x=>x.status==='pending').length
@@ -525,14 +541,14 @@ export default function ClubeNPVOnline() {
         <div className="npv-admin-rules-bar"><div><strong>Regras de pontuação</strong><span>Valores informativos apresentados aos alunos. Editáveis por você.</span></div><button className="clube-btn clube-btn-outline" onClick={()=>{setNotice('');setRuleDraft(data.rules.map(x=>({...x})))}}><SlidersHorizontal size={16}/> Gerenciar benefícios</button></div>
         <div className="clube-kpis"><div className="clube-kpi clube-kpi-dark"><span>PONTOS DISTRIBUÍDOS EM {YEAR}</span><strong>{format(totalPoints)}</strong><small><TrendingUp size={15}/> Saldo líquido dos lançamentos</small></div><div className="clube-kpi"><span>ALUNOS APROVADOS</span><strong>{studentMembers.filter(x=>x.approved).length}</strong><small>Perfis autorizados</small></div><div className="clube-kpi"><span>RESGATES PENDENTES</span><strong>{pendingCount}</strong><small>Aguardando decisão</small></div></div>
         <ClubeInstagramAdminSummary session={session} pendingRedemptions={pendingCount} pendingRegistrations={studentMembers.filter(x=>!x.approved).length} onNavigate={setTab}/>
-        <div className="clube-columns"><section className="clube-card"><div className="clube-card-head"><div><h2>Últimas movimentações</h2><p>Histórico do clube</p></div></div>{activityList(data.events.slice(0,6),true)}</section><section className="clube-card"><div className="clube-card-head"><div><h2>Novos cadastros</h2><p>Alunos aguardando aprovação</p></div></div>{studentMembers.filter(x=>!x.approved).slice(0,6).map(x=><div className="clube-online-member" key={x.id}><div><strong>{x.full_name}</strong><small>{x.email}</small></div><button disabled={busy} className="clube-btn clube-btn-outline" onClick={()=>approve(x.id)}><Check size={15}/> Aprovar</button></div>)}{studentMembers.every(x=>x.approved)&&<p className="clube-empty">Nenhum cadastro pendente.</p>}<button className="clube-btn clube-btn-outline clube-btn-full" onClick={()=>setTab('alunos')}>Gerenciar alunos</button></section></div>
+        <div className="clube-columns"><section className="clube-card"><div className="clube-card-head"><div><h2>Últimas movimentações</h2><p>Histórico do clube</p></div></div>{activityList(data.events.slice(0,6),true)}</section><section className="clube-card"><div className="clube-card-head"><div><h2>Novos cadastros</h2><p>Alunos aguardando aprovação</p></div></div>{studentMembers.filter(x=>!x.approved).slice(0,6).map(x=><div className="clube-online-member" key={x.id}><div><strong>{x.full_name}</strong><small>{x.email}</small></div><button disabled={busy} className="clube-btn clube-btn-outline" onClick={()=>approve(x.id)}><Check size={15}/> Aprovar</button></div>)}{confirmedPendingIds!==null&&studentMembers.every(x=>x.approved)&&<p className="clube-empty">Nenhum cadastro pendente com e-mail confirmado.</p>}{confirmedPendingIds===null&&<p className="clube-empty">Conferindo confirmação dos cadastros...</p>}<button className="clube-btn clube-btn-outline clube-btn-full" onClick={()=>setTab('alunos')}>Gerenciar alunos</button></section></div>
       </>}
       {tab==='inicio'&&isAdmin&&<details className="npv-admin-operations">
         <summary><SlidersHorizontal size={19}/><span><strong>Ferramentas de operação</strong><small>Regras de corrida, desafios mensais e atividades registradas</small></span><ChevronDown size={18}/></summary>
         <div className="npv-admin-operations-content"><ClubeKmSetup/><ClubeMonthlyChallengeAdmin/><ClubeRegisteredActivities session={session}/></div>
       </details>}
       {tab==='widget'&&isAdmin&&<ClubeSiteWidgetAdmin rewards={data.rewards} partners={data.partners}/>}
-      {tab==='hotmart'&&isAdmin&&<ClubeHotmartAdmin session={session} isAdmin={isAdmin} renewalPointRate={data.rules.find(rule=>rule.event_type==='renovacao')?.points ?? null}/>}
+      {tab==='hotmart'&&isAdmin&&<ClubeHotmartAdmin session={session} isAdmin={isAdmin} onPointsSynced={refresh} renewalPointRate={data.rules.find(rule=>rule.event_type==='renovacao')?.points ?? null}/>}
       {tab==='versoes'&&isAdmin&&<ClubeVersionsAdmin onNavigate={setTab}/>}
       {tab==='instagram'&&<ClubeInstagramPanel session={session} isAdmin={isAdmin}/>}
       {tab==='inicio'&&!isAdmin&&<>
