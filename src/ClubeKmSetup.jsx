@@ -122,7 +122,7 @@ export default function ClubeKmSetup() {
         <p>5 km de corrida + 7,5 km de corrida + 2,5 km de caminhada</p>
         <div className="npv-km-result">
           <span>{summary ? numberPt(summary.totalKm) : '—'} km elegíveis</span>
-          <strong>{summary ? '+' + numberPt(summary.candidatePoints) : '—'} pontos</strong>
+          <strong>{summary ? '+' + numberPt(Math.min(200,summary.candidatePoints)) : '—'} pontos</strong>
         </div>
         <small>Simulação (sem lançamentos): pontos inteiros por mês, limitados a 200 pts/mês. Não são dados de alunos.</small>
       </div>
