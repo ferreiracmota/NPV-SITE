@@ -234,11 +234,11 @@ export default function ClubeInstagramPanel({session,isAdmin=false}){
     }catch(e){setError(e?.message||'Não foi possível concluir a análise do Story.')}
     finally{setReviewBusy('')}
   }
-  return <div className="npv-ig-root">
+  return <div className={isAdmin?'npv-ig-root':'npv-ig-root npv-ig-student'}>
     <section className="npv-ig-card">
       <div className="npv-ig-heading">
         <span className="npv-ig-symbol"><Instagram size={25}/></span>
-        <div><span className="npv-ig-overline">CONEXÃO INSTAGRAM</span><h2>Seus Stories valem pontos ✦</h2><p>Vincule sua conta e marque <strong>@naopensevai</strong> nos Stories para participar.</p></div>
+        <div><span className="npv-ig-overline">CONEXÃO INSTAGRAM</span>{isAdmin?<h2>Seus Stories valem pontos ✦</h2>:<h1>Seus Stories valem pontos ✦</h1>}<p>Conecte sua conta e marque <strong>@naopensevai</strong> para participar.</p></div>
       </div>
       <div className={`npv-ig-status npv-ig-status-${instagramStatus}`} aria-label="Situação da conexão Instagram">
         <div className="npv-ig-status-head" role="status" aria-live="polite">
