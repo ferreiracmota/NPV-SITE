@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Activity, AlertCircle, CheckCircle2, Clock3, CreditCard, RefreshCw, Search, ShieldCheck, Users } from 'lucide-react'
 import './ClubeHotmartAdmin.css'
 import { calculateRenewalPoints } from '../clube/hotmart-admin/renewalPoints.mjs'
+import { groupSubscriberHistory } from '../clube/hotmart-admin/subscriberHistory.mjs'
 
 const EMPTY={status:'awaiting_integration',metrics:null,subscriptions:[],synced_at:null,identity_complete:false}
 const STATUS={
@@ -46,6 +47,7 @@ export default function ClubeHotmartAdmin({session,isAdmin,renewalPointRate=null
  const [search,setSearch]=useState('')
  const [plan,setPlan]=useState('todos')
  const [situation,setSituation]=useState('todas')
+ const [displayMode,setDisplayMode]=useState('pessoas')
  const refresh=useCallback(async(signal,force=false)=>{
   if(!isAdmin||!session?.access_token){setStatus('unauthorized');setData(EMPTY);return}
   setStatus('loading')
@@ -97,6 +99,14 @@ export default function ClubeHotmartAdmin({session,isAdmin,renewalPointRate=null
    (plan==='todos'||item.plan===plan)&&
    (situation==='todas'||item.status===situation)
  }),[data.subscriptions,plan,search,situation])
+ const groups=useMemo(()=>groupSubscriberHistory(data.subscriptions),[data.subscriptions])
+ const groupedRows=useMemo(()=>groups.filter(group=>group.subscriptions.some(item=>{
+  const query=search.trim().toLocaleLowerCase('pt-BR')
+  const haystack=[item.subscriber_name,item.subscriber_email,item.subscriber_code,item.product_name,item.plan_label].filter(Boolean).join(' ').toLocaleLowerCase('pt-BR')
+  return (!query||haystack.includes(query))&&
+    (plan==='todos'||item.plan===plan)&&
+    (situation==='todas'||item.status===situation)
+ })),[groups,search,plan,situation])
  const hasRows=data.subscriptions.length>0
  if(!isAdmin)return null
  return <section className="npv-hotmart-admin" aria-label="Administração de assinaturas Hotmart">
@@ -149,7 +159,7 @@ export default function ClubeHotmartAdmin({session,isAdmin,renewalPointRate=null
 
   <div className="npv-hotmart-panel">
    <div className="npv-hotmart-panel-head">
-    <div><h3>Assinaturas e histórico completo</h3>
+    <div><h3>Assinantes e histórico de contratos</h3>
      <p>{data.metrics?.total!=null?fmtMetric(data.metrics.total)+' assinaturas históricas disponíveis':'Pesquisa e filtros preparados para os registros oficiais da Hotmart.'}</p></div>
     <span className="npv-hotmart-sync"><Activity size={14}/>
      {data.synced_at?'Última sincronização: '+fmtDate(data.synced_at):'Ainda não sincronizado'}</span>
