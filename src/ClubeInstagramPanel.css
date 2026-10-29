@@ -134,3 +134,55 @@
 @media(prefers-reduced-motion:reduce){
   .npv-ig-card>.npv-ig-status{transition:none}
 }
+ 
+/* Instagram da aluna: entrada direta, sem duplicação da manchete da página. */
+.npv-ig-root.npv-ig-student{
+  margin-bottom:25px;
+  gap:15px;
+}
+.npv-ig-root.npv-ig-student .npv-ig-card{
+  padding:22px;
+}
+.npv-ig-root.npv-ig-student .npv-ig-heading{
+  margin-bottom:16px;
+  gap:13px;
+}
+.npv-ig-root.npv-ig-student .npv-ig-heading h1{
+  color:#1b3526;
+  font-size:clamp(24px,2.8vw,32px);
+  font-weight:900;
+  letter-spacing:-.046em;
+  line-height:1.14;
+  margin:5px 0 7px;
+}
+.npv-ig-root.npv-ig-student .npv-ig-heading p{
+  font-size:12px;
+  line-height:1.55;
+  margin:0;
+}
+.npv-ig-root.npv-ig-student .npv-ig-status{
+  margin-bottom:15px;
+}
+.npv-ig-root.npv-ig-student .npv-ig-steps{
+  margin:17px 0;
+  gap:10px;
+}
+.npv-ig-root.npv-ig-student .npv-ig-actions-row{
+  margin-top:16px;
+}
+@media(max-width:680px){
+  .npv-ig-root.npv-ig-student{
+    gap:13px;
+    margin-bottom:19px;
+  }
+  .npv-ig-root.npv-ig-student .npv-ig-card{
+    padding:17px;
+  }
+  .npv-ig-root.npv-ig-student .npv-ig-heading{
+    gap:10px;
+    margin-bottom:14px;
+  }
+  .npv-ig-root.npv-ig-student .npv-ig-heading h1{
+    font-size:clamp(22px,6.2vw,27px);
+  }
+}
