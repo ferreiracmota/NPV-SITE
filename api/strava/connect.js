@@ -5,6 +5,7 @@ import {
   settings,clubUser,seal,unseal,readCookie,cookie,COOKIE_STATE,COOKIE_LINK,
   checkOrigin,privateHeaders,writeJson,stravaToken
 } from '../../clube/strava/link-core.mjs'
+import {recordStravaConnectionStatus} from '../../clube/strava/connection-status.mjs'
 
 const redirect=(res,location,extraCookies=[])=>{
   res.writeHead(303,{...privateHeaders,Location:location,...(extraCookies.length?{'Set-Cookie':extraCookies}:{})})
@@ -60,6 +61,7 @@ export default async function handler(req,res) {
       connected:Date.now()
     },cfg.secret)
     res.setHeader('Set-Cookie',[endState,cookie(COOKIE_LINK,link,2592000)])
+    await recordStravaConnectionStatus(stateCookie.user,true)
     return redirect(res,'/clube?strava=connected')
   }catch{
     return redirect(res,'/clube?strava=failed',[endState])

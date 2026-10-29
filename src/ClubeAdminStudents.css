@@ -1,0 +1,63 @@
+/* Painel exclusivo de administração: não altera estilos da área da aluna. */
+.npv-admin-students{display:flex;flex-direction:column;gap:12px;margin-top:14px}
+.npv-admin-students-meta{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;color:#758077;font-size:12px;padding:0 4px}
+.npv-admin-students-meta button{display:inline-flex;align-items:center;gap:7px;border:1px solid #d8e0d5;background:#fff;border-radius:9px;padding:9px 12px;cursor:pointer;color:#304235;font-weight:700}
+.npv-admin-students-item{border:1px solid #e1e8df;border-radius:15px;background:#fff;overflow:hidden}
+.npv-admin-students-item.is-expanded{border-color:#becda9}
+.npv-admin-students-row{display:flex;align-items:center;gap:12px;padding:12px 15px}
+.npv-admin-students-open{display:flex;align-items:center;gap:14px;flex:1;min-width:0;background:transparent;border:0;color:inherit;text-align:left;padding:5px;cursor:pointer;border-radius:9px}
+.npv-admin-students-open:focus-visible{outline:2px solid #849b50;outline-offset:3px}
+.npv-admin-students-open>.clube-avatar{flex:none}
+.npv-admin-students-identity{display:flex;flex-direction:column;gap:3px;min-width:0;flex:1}
+.npv-admin-students-identity strong{font-size:14px;line-height:1.4;overflow-wrap:anywhere}
+.npv-admin-students-identity>small{font-size:11px;color:#6b786b;overflow-wrap:anywhere}
+.npv-admin-students-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.npv-admin-students-tag{display:inline-flex;align-items:center;gap:4px;border-radius:99px;border:1px solid #e0e4db;padding:4px 8px;background:#f6f8f5;font-size:10px;line-height:1.2;font-weight:700;color:#647064}
+.npv-admin-students-tag-ok{background:#ecf6e7;border-color:#cbe5bd;color:#3d722d}
+.npv-admin-students-tag-off{background:#fdf2ec;border-color:#efd3c7;color:#9a5345}
+.npv-admin-students-points{display:flex;align-items:flex-end;flex-direction:column;gap:2px;white-space:nowrap;margin:0 8px}
+.npv-admin-students-points b{font-size:17px;color:#263e25;letter-spacing:-.03em}
+.npv-admin-students-points small{font-size:10px;color:#849184}
+.npv-admin-students-actions{flex:none}
+.npv-admin-students-detail{border-top:1px solid #e7eae3;padding:20px;background:#fbfcfa}
+.npv-admin-students-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:18px}
+.npv-admin-students-metrics>div{padding:13px 14px;border:1px solid #e0e9da;border-radius:12px;background:#fff;display:flex;flex-direction:column;gap:5px}
+.npv-admin-students-metrics small{font-size:11px;line-height:1.4;color:#697a69}
+.npv-admin-students-metrics strong{font-size:20px;color:#253d27}
+.npv-admin-students-connection-details{border-radius:12px;background:#edf4e9;padding:12px 15px;margin:0 0 19px}
+.npv-admin-students-connection-details p{display:flex;align-items:flex-start;gap:7px;margin:7px 0;font-size:12px;line-height:1.6;color:#526552}
+.npv-admin-students-connection-details p svg{flex:none;margin-top:2px}
+.npv-admin-students-history-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.npv-admin-students-history-grid>section{min-width:0;border:1px solid #e3e9df;border-radius:12px;background:white;padding:14px}
+.npv-admin-students-history-grid h3{display:flex;align-items:center;gap:8px;margin:1px 0 9px;color:#273928;font-size:14px}
+.npv-admin-students-history-row{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;border-top:1px solid #eef1eb;padding:11px 0}
+.npv-admin-students-history-row>div{display:flex;flex-direction:column;gap:3px;min-width:0}
+.npv-admin-students-history-row strong{font-size:12px;overflow-wrap:anywhere}
+.npv-admin-students-history-row small{font-size:11px;color:#738173;line-height:1.5}
+.npv-admin-students-history-row p{font-size:11px;line-height:1.5;margin:3px 0;color:#657265;overflow-wrap:anywhere}
+.npv-admin-students-history-row b{font-size:12px;white-space:nowrap;color:#354b35}
+.npv-admin-students-history-row b.is-positive{color:#477c32}
+.npv-admin-students-history-row b.is-negative{color:#a44949}
+.npv-admin-students-empty{padding:12px 0;color:#8b9687;font-size:12px}
+.npv-admin-students-footnote{font-size:10px;line-height:1.65;margin:15px 0 0;color:#899489}
+@media(max-width:760px){
+ .npv-admin-students-row{flex-wrap:wrap;gap:7px;padding:10px}
+ .npv-admin-students-open{width:100%;flex-basis:100%;gap:8px}
+ .npv-admin-students-open>.clube-avatar{width:37px;height:37px}
+ .npv-admin-students-identity strong{font-size:13px}
+ .npv-admin-students-points{margin:0 4px}
+ .npv-admin-students-points b{font-size:14px}
+ .npv-admin-students-actions{padding-left:46px}
+ .npv-admin-students-actions .clube-btn{padding:8px 12px;font-size:11px}
+ .npv-admin-students-detail{padding:12px}
+ .npv-admin-students-metrics{gap:5px}
+ .npv-admin-students-metrics>div{padding:10px}
+ .npv-admin-students-metrics small{font-size:10px}
+ .npv-admin-students-metrics strong{font-size:14px}
+ .npv-admin-students-history-grid{grid-template-columns:1fr;gap:12px}
+}
+@media(max-width:390px){
+ .npv-admin-students-metrics{grid-template-columns:1fr}
+ .npv-admin-students-open{gap:6px}
+ .npv-admin-students-identity>small{font-size:10px}
+}

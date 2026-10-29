@@ -5,6 +5,7 @@ import {
   settings,clubUser,seal,unseal,readCookie,cookie,COOKIE_LINK,
   checkOrigin,privateHeaders,writeJson,stravaToken
 } from '../../clube/strava/link-core.mjs'
+import {recordStravaConnectionStatus} from '../../clube/strava/connection-status.mjs'
 
 export default async function handler(req,res){
   const cfg=settings()
@@ -42,6 +43,7 @@ export default async function handler(req,res){
       revoked=request.ok
     }catch{}
     res.setHeader('Set-Cookie',cookie(COOKIE_LINK,'',0))
+    await recordStravaConnectionStatus(user,false)
     return writeJson(res,200,{connected:false,revoked,activities:[]})
   }
   const expiresAt=Number(credential.expires||0)
@@ -72,6 +74,7 @@ export default async function handler(req,res){
       })
       if(result.status===401){
         res.setHeader('Set-Cookie',cookie(COOKIE_LINK,'',0))
+        await recordStravaConnectionStatus(user,false)
         return writeJson(res,200,{connected:false,activities:[],error:'A autorização do Strava expirou ou foi revogada.'})
       }
       if(!result.ok)throw new Error('strava request failed')
@@ -83,6 +86,7 @@ export default async function handler(req,res){
     }
     const activities=sanitizeActivityList(recentActivities(all,now))
     const monthly=monthlyActivitySummary(all,window.monthKey)
+    await recordStravaConnectionStatus(user,true)
     return writeJson(res,200,{
       connected:true,
       activities,
