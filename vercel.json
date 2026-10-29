@@ -40,5 +40,11 @@
       "source": "/clube/",
       "destination": "/index.html"
     }
+  ],
+  "crons": [
+    {
+      "path": "/api/clube/notification-cron",
+      "schedule": "0 13 * * *"
+    }
   ]
 }

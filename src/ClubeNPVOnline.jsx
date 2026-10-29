@@ -20,6 +20,7 @@ import { currentNpvMonth } from '../clube/strava/challengeProgress.mjs'
 import ClubeSiteWidgetAdmin from './ClubeSiteWidgetAdmin.jsx'
 import ClubeHotmartAdmin from './ClubeHotmartAdmin.jsx'
 import ClubeVersionsAdmin from './ClubeVersionsAdmin.jsx'
+import ClubeNotificationPreferences from './ClubeNotificationPreferences.jsx'
 import ClubeInstagramPanel from './ClubeInstagramPanel.jsx'
 import ClubeInstagramAdminSummary from './ClubeInstagramAdminSummary.jsx'
 import './ClubeAdminWorkspace.css'
@@ -555,6 +556,7 @@ export default function ClubeNPVOnline() {
           </div>}
         </section>
         <BenefitNotice rewards={data.rewards} points={Math.max(0,balance(user.id)-reserved(user.id))} onOpen={()=>setTab('recompensas')}/>
+        <ClubeNotificationPreferences userId={user.id}/>
         <div id="npv-month-challenges-anchor"><ClubeRegisteredActivities session={session} onConnectionStatusChange={setStravaConnection}/></div>
         <section className="npv-shop npv-shop-featured"><div className="npv-shop-heading"><div><div className="npv-shop-eyebrow"><Gift size={15}/>LOJINHA DO CLUBE NPV</div><h2>Troque seus pontos ✦</h2><p>Seu próximo objetivo pode estar aqui.</p></div><button className="npv-shop-view-all" onClick={()=>setTab('recompensas')}>Ver catálogo <ArrowRight size={16}/></button></div>{rewardsGrid(4)}<p className="npv-shop-demo-note">A disponibilidade real será confirmada após a aprovação do prêmio e dos parceiros.</p></section>
         {data.partners.some(x=>x.active)&&<section className="npv-partners-section">
