@@ -1,0 +1,31 @@
+name: NPV — QA Strava vinculo e pontuacao
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'api/strava/**'
+      - 'clube/strava/**'
+      - 'src/ClubeRegisteredActivities.jsx'
+      - 'src/ClubeNPVOnline.jsx'
+      - 'src/ClubeKmSetup.jsx'
+      - 'docs/strava-auto-credit-20261029.sql'
+      - '.github/workflows/strava-points-qa.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  strava-tests-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: pnpm
+      - name: Instalar dependencias sem alterar o lockfile
+        run: pnpm install --frozen-lockfile
+      - name: Testar filtro de atividades e calendario
+        run: node --test clube/strava/*.test.mjs
+      - name: Compilar site e endpoints
+        run: pnpm run build
