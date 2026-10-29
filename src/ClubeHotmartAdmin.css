@@ -125,3 +125,7 @@
 .clube-shell .npv-hotmart-empty-person{font-size:12px;color:#7a8d7b;padding:18px;text-align:center}
 @media(max-width:950px){.clube-shell .npv-hotmart-person-main{display:block}.clube-shell .npv-hotmart-person-name{max-width:none;margin-bottom:15px}.clube-shell .npv-hotmart-person-facts{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}}
 @media(max-width:580px){.clube-shell .npv-hotmart-person-facts>span{padding-left:9px}.clube-shell .npv-hotmart-person-contract{display:block}.clube-shell .npv-hotmart-person-contract>div+div{margin-top:8px}}
+
+/* Total calculado para assinante que retorna com o mesmo e-mail. */
+.clube-shell .npv-hotmart-return-total{margin:14px 0 0;padding:10px 12px;background:#f0f7e8;border:1px solid #dcebd2;border-radius:9px;color:#57704a;font-size:11px;line-height:1.6}
+.clube-shell .npv-hotmart-return-total strong{font-size:14px;color:#3d692c}
