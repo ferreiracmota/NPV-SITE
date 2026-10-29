@@ -133,3 +133,20 @@
 /* A arte vertical enviada entra no mobile; desktop mantém a peça horizontal aprovada. */
 .npv-only-hero-carousel .npv-hero-photo-picture{position:absolute;inset:0;display:block;width:100%;height:100%}
 .npv-only-hero-carousel .npv-hero-photo-picture>.npv-hero-photo{display:block;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center center}
+/* Vídeo de fundo decorativo: desabilita controles nativos e PiP do elemento.
+   Uma extensão do navegador ainda pode injetar sua própria interface. */
+.npv-only-hero-carousel .npv-original-hero-video,
+.npv-only-hero-carousel .npv-original-hero-video video{
+  pointer-events:none!important;
+  -webkit-user-select:none;
+  user-select:none;
+}
+.npv-only-hero-carousel .npv-original-hero-video video::-webkit-media-controls,
+.npv-only-hero-carousel .npv-original-hero-video video::-webkit-media-controls-enclosure{
+  display:none!important;
+  opacity:0!important;
+}
+.npv-only-hero-carousel .npv-original-hero-video video{
+  -webkit-appearance:none;
+  appearance:none;
+}
