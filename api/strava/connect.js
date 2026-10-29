@@ -1,6 +1,7 @@
 // OAuth do próprio aluno, restrito ao mesmo navegador onde está autenticado no Clube NPV.
 // O piloto de leitura antiga em /api/strava/pilot continua independente.
 import { newOAuthState, verifyOAuthState } from '../../clube/strava/pilot-core.mjs'
+import { recordStravaConnection } from '../../clube/strava/connectionMirror.mjs'
 import {
   settings,clubUser,seal,unseal,readCookie,cookie,COOKIE_STATE,COOKIE_LINK,
   checkOrigin,privateHeaders,writeJson,stravaToken
@@ -60,6 +61,8 @@ export default async function handler(req,res) {
       connected:Date.now()
     },cfg.secret)
     res.setHeader('Set-Cookie',[endState,cookie(COOKIE_LINK,link,2592000)])
+    // Espelho sem token para o admin. Falha de gravação não impede o login da aluna.
+    await recordStravaConnection(stateCookie.user,true)
     return redirect(res,'/clube?strava=connected')
   }catch{
     return redirect(res,'/clube?strava=failed',[endState])

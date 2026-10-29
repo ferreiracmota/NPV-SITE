@@ -1,0 +1,54 @@
+/* Administração NPV - status e extrato individual, sem afetar a interface das alunas. */
+.npv-admin-students{margin:0 0 20px}
+.npv-admin-students-tools{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.npv-admin-students-tools .clube-search{flex:1 1 280px}
+.npv-admin-students-refresh{display:inline-flex;align-items:center;gap:7px;border:1px solid #dce4d7;background:#fff;border-radius:10px;padding:11px 14px;font-size:12px;font-weight:750;cursor:pointer;color:#344334}
+.npv-admin-students-refresh:disabled{opacity:.6;cursor:default}
+.npv-admin-students-warning{font-size:12px;color:#8b652a;padding:10px 14px;background:#fbf7eb;border:1px solid #e8d8ab;border-radius:9px}
+.npv-admin-students-list{display:grid;gap:12px}
+.npv-admin-student-item{border:1px solid #e3e9df;border-radius:15px;overflow:hidden;background:#fff}
+.npv-admin-student-item.is-open{border-color:#afc08e;box-shadow:0 10px 30px #273b1112}
+.npv-admin-student-heading{display:flex;align-items:center;gap:12px;padding:15px;flex-wrap:wrap}
+.npv-admin-student-opener{display:flex;align-items:center;gap:10px;flex:1 1 240px;min-width:180px;text-align:left;background:transparent;border:0;padding:0;cursor:pointer;color:#202b20}
+.npv-admin-student-opener .clube-avatar{flex:none}
+.npv-admin-student-identity{display:grid;gap:4px;min-width:0;flex:1}
+.npv-admin-student-identity>strong{font-size:13px;overflow-wrap:anywhere}
+.npv-admin-student-identity>small{font-size:11px;color:#798277;overflow-wrap:anywhere}
+.npv-admin-student-open-hint{font-size:11px;color:#6d8a2f;font-weight:800}
+.npv-admin-student-opener>svg{flex:none;color:#738170}
+.npv-admin-student-states{display:flex;gap:7px;flex-wrap:wrap}
+.npv-admin-link-state{display:flex;gap:6px;align-items:center;padding:7px 9px;background:#f5f7f4;border:1px solid #e5e9e1;border-radius:9px;color:#626d60}
+.npv-admin-link-state span{display:grid;gap:2px}
+.npv-admin-link-state small{font-size:9px;color:inherit;font-weight:700}
+.npv-admin-link-state strong{font-size:11px;color:inherit}
+.npv-admin-link-state em{display:none}
+.npv-admin-link-state.is-connected{background:#ecf6e5;color:#4a712c;border-color:#d4e6c5}
+.npv-admin-link-state.is-stale{background:#fff8e5;color:#8b7425;border-color:#f0e4bf}
+.npv-admin-student-total{font-size:16px;white-space:nowrap;color:#2c3c27}
+.npv-admin-student-total small{font-size:11px;font-weight:600;color:#6c7d66}
+.npv-admin-student-award{flex:none}
+.npv-admin-student-detail{padding:17px;border-top:1px solid #e8ede5;background:#fbfcfa}
+.npv-admin-student-overview{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:18px}
+.npv-admin-student-overview>div{background:#fff;border:1px solid #e6ebe4;border-radius:11px;padding:14px;display:grid;gap:5px}
+.npv-admin-student-overview small{font-size:11px;color:#737f70}
+.npv-admin-student-overview strong{font-size:19px;color:#293c25}
+.npv-admin-student-history-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+.npv-admin-student-history-col{background:#fff;border:1px solid #e7ece3;border-radius:12px;overflow:hidden;min-width:0}
+.npv-admin-student-history-col h3{display:flex;align-items:center;gap:8px;padding:15px;margin:0;border-bottom:1px solid #e6ebe2;font-size:14px;color:#283b29}
+.npv-admin-student-history-col h3 span{margin-left:auto;font-size:11px;color:#72816d}
+.npv-admin-student-entry{display:flex;gap:10px;align-items:flex-start;padding:13px 14px;border-bottom:1px solid #f0f2ee}
+.npv-admin-student-entry:last-child{border-bottom:0}
+.npv-admin-entry-symbol{flex:none;display:grid;place-items:center;background:#eef6e9;color:#59823f;border-radius:9px;width:29px;height:29px}
+.npv-admin-entry-symbol.is-debit{background:#fff0e6;color:#a65a35}
+.npv-admin-entry-symbol.is-gift{background:#f0f1f9;color:#737ba3}
+.npv-admin-entry-description{flex:1;min-width:0;display:grid;gap:4px}
+.npv-admin-entry-description strong{font-size:12px;color:#2d362a;overflow-wrap:anywhere}
+.npv-admin-entry-description small{font-size:10px;color:#7b8579}
+.npv-admin-entry-description p{margin:0;line-height:1.5;font-size:11px;color:#677466;overflow-wrap:anywhere}
+.npv-admin-student-entry>b{font-size:11px;color:#4f782e;white-space:nowrap}
+.npv-admin-student-entry>b.is-debit{color:#a65a35}
+.npv-admin-student-no-rows,.npv-admin-students-empty{padding:20px 16px;margin:0;color:#7a8578;font-size:12px}
+.npv-admin-student-detail-note{display:flex;gap:6px;align-items:flex-start;line-height:1.6;margin:15px 0 0;font-size:11px;color:#71806e}
+.npv-admin-student-detail-note svg{flex:none;margin-top:2px}
+@media(max-width:980px){.npv-admin-student-states{flex:1 1 250px}.npv-admin-student-history-grid{grid-template-columns:1fr}}
+@media(max-width:600px){.npv-admin-student-heading{gap:10px;padding:13px}.npv-admin-student-opener{flex-basis:100%}.npv-admin-student-states{flex:1 1 100%}.npv-admin-student-total{margin-right:auto}.npv-admin-student-detail{padding:12px}.npv-admin-student-overview{grid-template-columns:1fr}.npv-admin-student-overview>div{padding:11px}.npv-admin-student-overview strong{font-size:17px}}
