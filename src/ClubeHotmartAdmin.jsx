@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Activity, AlertCircle, CheckCircle2, Clock3, CreditCard, RefreshCw, Search, ShieldCheck, Users } from 'lucide-react'
 import './ClubeHotmartAdmin.css'
 import { calculateRenewalPoints } from '../clube/hotmart-admin/renewalPoints.mjs'
-import { groupSubscriberHistory } from '../clube/hotmart-admin/subscriberHistory.mjs'
+import { groupSubscriberHistory,calculateReturningSubscriberPoints } from '../clube/hotmart-admin/subscriberHistory.mjs'
 
 const EMPTY={status:'awaiting_integration',metrics:null,subscriptions:[],synced_at:null,identity_complete:false}
 const STATUS={
@@ -30,12 +30,13 @@ const fmtDate=value=>{
 }
 const fmtMetric=value=>Number.isFinite(value)?value.toLocaleString('pt-BR'):'—'
 
-function RenewalPointsCell({item,rate}) {
- const calc=calculateRenewalPoints(item,rate)
+function RenewalPointsCell({item,rate,continuity=null}) {
+ const calc=continuity||calculateRenewalPoints(item,rate)
  if(calc.total===null)return <td className="npv-hotmart-points-cell">—<small>{calc.reason==='rule_unavailable'?'Regra de pontos não carregada':'Renovação ainda não comprovada'}</small></td>
  return <td className="npv-hotmart-points-cell">
   <strong>{fmtMetric(calc.total)} pts</strong>
   <small>{fmtMetric(calc.renewals)} × {fmtMetric(calc.rate)} pontos por renovação</small>
+  {continuity&&<small>{fmtMetric(continuity.total-continuity.returnBonus)} anteriores + {fmtMetric(continuity.returnBonus)} pela volta com o mesmo e-mail. Cálculo não creditado.</small>}
   <small>{calc.reason==='quarterly_installments'?'Trimestral: competências mensais precisam de liberação separada':calc.linked?'Cálculo confirmado; não lançado no extrato':'Aguardando vínculo com o Clube; não creditado'}</small>
  </td>
 }
@@ -107,6 +108,14 @@ export default function ClubeHotmartAdmin({session,isAdmin,renewalPointRate=null
     (plan==='todos'||item.plan===plan)&&
     (situation==='todas'||item.status===situation)
  })),[groups,search,plan,situation])
+ const continuingById=useMemo(()=>{
+  const byId=new Map()
+  for(const group of groups){
+   const calculated=calculateReturningSubscriberPoints(group,renewalPointRate)
+   if(calculated)byId.set(calculated.currentSubscriptionId,calculated)
+  }
+  return byId
+ },[groups,renewalPointRate])
  const hasRows=data.subscriptions.length>0
  if(!isAdmin)return null
  return <section className="npv-hotmart-admin" aria-label="Administração de assinaturas Hotmart">
@@ -195,6 +204,7 @@ export default function ClubeHotmartAdmin({session,isAdmin,renewalPointRate=null
           <span><small>Vínculo NPV</small><strong>{LINK[group.link_status]||'Não verificado'}</strong></span>
           <span><small>Saldo real</small><strong>{group.linked&&Number.isSafeInteger(group.clube_balance)?fmtMetric(group.clube_balance)+' pts':'—'}</strong></span>
         </div>
+        {continuingById.get(group.subscriptions[0]?.id)&&<p className="npv-hotmart-return-total"><strong>{fmtMetric(continuingById.get(group.subscriptions[0].id).total)} pts calculados</strong> = {fmtMetric(continuingById.get(group.subscriptions[0].id).total-continuingById.get(group.subscriptions[0].id).returnBonus)} anteriores + {fmtMetric(continuingById.get(group.subscriptions[0].id).returnBonus)} pela recontratação. Não creditado no Clube.</p>}
       </div>
       <details className="npv-hotmart-person-history">
         <summary>Ver histórico de {group.subscriptions.length} {group.subscriptions.length===1?'assinatura':'assinaturas'} e pagamentos</summary>
@@ -226,7 +236,7 @@ export default function ClubeHotmartAdmin({session,isAdmin,renewalPointRate=null
       <td>{fmtMetric(item.renewal_cycles)}<small>{item.renewal_cycles===null?'Aguardando prova de recorrência':'Ciclos após primeira compra; crédito sujeito à conferência'}</small></td>
       <td>{fmtDate(item.last_paid_at)}<small>{item.last_paid_at?'Pagamento confirmado; elegibilidade não verificada':'Sem pagamento confirmado no histórico'}</small></td>
       <td>{fmtDate(item.next_charge_at)}</td>
-      <RenewalPointsCell item={item} rate={renewalPointRate}/>
+      <RenewalPointsCell item={item} rate={renewalPointRate} continuity={continuingById.get(item.id)||null}/>
      </tr>):<tr><td colSpan="11" className="npv-hotmart-empty">
       <div><CreditCard size={26}/><strong>{data.status==='awaiting_integration'?'Aguardando integração com a Hotmart':'Nenhuma assinatura disponível'}</strong>
        <p>{search||plan!=='todos'||situation!=='todas'?'Nenhum registro encontrado para os filtros selecionados.':
@@ -234,7 +244,7 @@ export default function ClubeHotmartAdmin({session,isAdmin,renewalPointRate=null
      </td></tr>}</tbody>
     </table>
    </div></>}
-   <p className="npv-hotmart-footnote">* Fórmula exibida: renovações identificadas × pontos da regra atual do Clube. A primeira compra é excluída. Pagamentos sem número de recorrência validado não geram cálculo. Trimestrais exigem liberação das três competências em meses diferentes; a multiplicação é apenas referência por ciclo, não total liberável. Valor calculado NÃO é saldo creditado. A tabela é apenas consulta e não lança pontos; crédito exige vínculo confirmado e deduplicação por transação.</p>
+   <p className="npv-hotmart-footnote">* Fórmula exibida: renovações identificadas × pontos da regra atual do Clube. A primeira compra de uma pessoa é excluída; se a mesma pessoa recontratar o plano mensal após cancelamento, a primeira compra paga do novo contrato conta como renovação da pessoa, somente quando os históricos e o e-mail coincidem. Pagamentos sem número de recorrência validado não geram cálculo. Trimestrais exigem liberação das três competências em meses diferentes; a multiplicação é apenas referência por ciclo, não total liberável. Valor calculado NÃO é saldo creditado. A tabela é apenas consulta e não lança pontos; crédito exige vínculo confirmado e deduplicação por transação.</p>
   </div>
  </section>
 }
