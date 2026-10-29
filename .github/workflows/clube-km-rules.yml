@@ -5,6 +5,7 @@ on:
     paths:
       - clube/strava/**
       - api/strava/**
+      - qa/strava/**
       - src/ClubeKmSetup.*
       - src/ClubeRegisteredActivities.*
       - src/ClubeNPVOnline.jsx
@@ -15,6 +16,7 @@ on:
     paths:
       - clube/strava/**
       - api/strava/**
+      - qa/strava/**
       - src/ClubeKmSetup.*
       - src/ClubeRegisteredActivities.*
       - src/ClubeNPVOnline.jsx
@@ -31,4 +33,4 @@ jobs:
         with:
           node-version: '22'
       - name: Testar quilometragem, periodo, duplicidade e vinculo
-        run: node --test clube/strava/monthlyCandidate.test.mjs api/strava/pilot.test.mjs api/strava/link.test.mjs clube/strava/challengeProgress.test.mjs
+        run: node --test clube/strava/monthlyCandidate.test.mjs qa/strava/pilot.test.mjs qa/strava/link.test.mjs clube/strava/challengeProgress.test.mjs
