@@ -1,6 +1,8 @@
 // Somente o aluno autenticado consegue consultar a própria conexão / atividade.
 import { sanitizeActivityList } from '../../clube/strava/pilot-core.mjs'
-import { activityWindow, monthlyActivitySummary, recentActivities } from '../../clube/strava/challengeProgress.mjs'
+import { activityWindow, recentActivities } from '../../clube/strava/challengeProgress.mjs'
+import {eligibleMonthMetrics} from '../../clube/strava/auto-credit.mjs'
+import {reconcileStravaPoints} from '../../clube/strava/credit-server.mjs'
 import {
   settings,clubUser,seal,unseal,readCookie,cookie,COOKIE_LINK,
   checkOrigin,privateHeaders,writeJson,stravaToken
@@ -85,14 +87,22 @@ export default async function handler(req,res){
       if(page===MAX_PAGES)throw new Error('incomplete Strava pagination')
     }
     const activities=sanitizeActivityList(recentActivities(all,now))
-    const monthly=monthlyActivitySummary(all,window.monthKey)
-    await recordStravaConnectionStatus(user,true)
+    // A mesma lista de atividades alimenta barra de progresso e creditos auditaveis.
+    // Falhas na conciliacao nunca ocultam os treinos: a aluna podera tentar novamente.
+    let monthly=eligibleMonthMetrics(all,window.monthKey)
+    const connectionRecorded=await recordStravaConnectionStatus(user,true)
+    let credit={status:'retry',credited_now:0,challenge_credited_now:0}
+    try{
+      const reconciled=await reconcileStravaPoints(user,all,window.monthKey)
+      monthly=reconciled.monthly
+      credit=reconciled.credit
+    }catch(error){
+      console.error('[strava] monthly credit not synchronized',error?.message||'unknown')
+    }
     return writeJson(res,200,{
-      connected:true,
-      activities,
-      rangeDays:7,
-      monthly,
-      note:'Consulta individual. Sem créditos de pontos, armazenamento de treinos ou aprovação automática.'
+      connected:true,connectionRecorded,activities,rangeDays:7,
+      monthly:{monthKey:monthly.monthKey,km:monthly.km,activityCount:monthly.activityCount},
+      credit,note:'Apenas corrida, caminhada e bicicleta validas. Credito de pontos auditado pelo Clube.'
     })
   }catch{
     return writeJson(res,200,{connected:true,activities:[],error:'Conectado, mas a consulta de atividades está temporariamente indisponível.'})

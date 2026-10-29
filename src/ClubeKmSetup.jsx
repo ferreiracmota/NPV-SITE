@@ -85,7 +85,7 @@ export default function ClubeKmSetup() {
         .single()
       if (dbError) throw dbError
       setConfig({ points_per_km: String(data.points_per_km), eligible_sports: data.eligible_sports })
-      setSuccess('Regra de pontos por km salva. Nenhuma pontuação foi lançada.')
+      setSuccess('Regra salva. A nova taxa valerá nas próximas conciliações de quilômetros, respeitando o limite mensal.')
     } catch {
       setError('Não foi possível salvar. Confira sua permissão de administrador e tente novamente.')
     } finally {
@@ -99,7 +99,7 @@ export default function ClubeKmSetup() {
       <div>
         <span className="npv-km-overline">REGRAS DO CLUBE NPV</span>
         <h2 id="npv-km-heading">Pontos por quilômetro</h2>
-        <p>Prepare a regra de conversão do Clube. A conexão com atividades externas permanece desativada.</p>
+        <p>Configure a pontuação automática para corrida, caminhada e bicicleta verificadas no Strava.</p>
       </div>
     </div>
     <form onSubmit={save} className="npv-km-form">
@@ -111,7 +111,7 @@ export default function ClubeKmSetup() {
           onChange={e => { setSuccess(''); setConfig(p => ({ ...p, points_per_km: e.target.value })) }}/>
       </label>
       <fieldset className="npv-km-sports" disabled={isLoading || !available || isSaving}>
-        <legend>Modalidades que poderão pontuar</legend>
+        <legend>Modalidades que geram pontos</legend>
         {SPORTS.map(sport => <label key={sport.id}>
           <input type="checkbox" checked={config.eligible_sports.includes(sport.id)}
             onChange={() => toggleSport(sport.id)}/> {sport.label}
@@ -122,14 +122,14 @@ export default function ClubeKmSetup() {
         <p>5 km de corrida + 7,5 km de corrida + 2,5 km de caminhada</p>
         <div className="npv-km-result">
           <span>{summary ? numberPt(summary.totalKm) : '—'} km elegíveis</span>
-          <strong>{summary ? '+' + numberPt(summary.candidatePoints) : '—'} pontos</strong>
+          <strong>{summary ? '+' + numberPt(Math.min(200,summary.candidatePoints)) : '—'} pontos</strong>
         </div>
-        <small>Simulação: pontos inteiros arredondados para baixo uma vez no total mensal. Não são dados de alunos.</small>
+        <small>Simulação (sem lançamentos): pontos inteiros por mês, limitados a 200 pts/mês. Não são dados de alunos.</small>
       </div>
       {error && <p className="npv-km-error" role="alert">{error}</p>}
       {success && <p className="npv-km-success" role="status"><Check size={15}/> {success}</p>}
       <div className="npv-km-foot">
-        <span><Info size={16}/> Não consulta o Strava e não altera saldos.</span>
+        <span><Info size={16}/> Este editor não consulta o Strava nem altera saldos. O crédito ocorre após a consulta real da conta da aluna.</span>
         <button type="submit" className="clube-btn clube-btn-primary" disabled={!valid || !available || isSaving}>
           <Save size={16}/> {isSaving ? 'Salvando...' : 'Salvar regra'}
         </button>

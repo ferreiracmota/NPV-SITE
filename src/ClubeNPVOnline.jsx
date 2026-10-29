@@ -131,7 +131,7 @@ const STORY_RULE='extra_22222222222222222222222222222222'
 const earningCopy={
   renovacao:{help:'Por mensalidade paga e confirmada'},
   desafio:{help:'Pontuação definida no desafio ativo'},
-  [STRAVA_RULE]:{help:'Até 200 pontos por mês; crédito após validação'},
+  [STRAVA_RULE]:{help:'Corrida, caminhada e bicicleta verificadas no Strava; até 200 pts/mês, crédito automático'},
   [STORY_RULE]:{help:'Até 5 Stories válidos por mês'},
   foto:{help:'Intervalo mínimo de 3 meses'},
   aniversario:{help:'Uma vez ao ano'},
@@ -546,7 +546,7 @@ export default function ClubeNPVOnline() {
       </>}
       {tab==='inicio'&&isAdmin&&<details className="npv-admin-operations">
         <summary><SlidersHorizontal size={19}/><span><strong>Ferramentas de operação</strong><small>Regras de corrida, desafios mensais e atividades registradas</small></span><ChevronDown size={18}/></summary>
-        <div className="npv-admin-operations-content"><ClubeKmSetup/><ClubeMonthlyChallengeAdmin/><ClubeRegisteredActivities session={session}/></div>
+        <div className="npv-admin-operations-content"><ClubeKmSetup/><ClubeMonthlyChallengeAdmin/><ClubeRegisteredActivities session={session} onPointsSynced={refresh}/></div>
       </details>}
       {tab==='widget'&&isAdmin&&<ClubeSiteWidgetAdmin rewards={data.rewards} partners={data.partners}/>}
       {tab==='hotmart'&&isAdmin&&<ClubeHotmartAdmin session={session} isAdmin={isAdmin} onPointsSynced={refresh} renewalPointRate={data.rules.find(rule=>rule.event_type==='renovacao')?.points ?? null}/>}
@@ -574,7 +574,7 @@ export default function ClubeNPVOnline() {
         </section>
         <BenefitNotice rewards={data.rewards} points={Math.max(0,balance(user.id)-reserved(user.id))} onOpen={()=>setTab('recompensas')}/>
         <ClubeEmailPreferences studentId={user.id}/>
-        <div id="npv-month-challenges-anchor"><ClubeRegisteredActivities session={session} onConnectionStatusChange={setStravaConnection}/></div>
+        <div id="npv-month-challenges-anchor"><ClubeRegisteredActivities session={session} onConnectionStatusChange={setStravaConnection} onPointsSynced={refresh}/></div>
         <section className="npv-shop npv-shop-featured"><div className="npv-shop-heading"><div><div className="npv-shop-eyebrow"><Gift size={15}/>LOJINHA DO CLUBE NPV</div><h2>Troque seus pontos ✦</h2><p>Seu próximo objetivo pode estar aqui.</p></div><button className="npv-shop-view-all" onClick={()=>setTab('recompensas')}>Ver catálogo <ArrowRight size={16}/></button></div>{rewardsGrid(4)}<p className="npv-shop-demo-note">A disponibilidade real será confirmada após a aprovação do prêmio e dos parceiros.</p></section>
         {data.partners.some(x=>x.active)&&<section className="npv-partners-section">
           <div className="npv-shop-heading"><div><div className="npv-shop-eyebrow"><Award size={15}/> PARCERIAS NPV</div><h2>Benefícios de parceiros ✦</h2><p>Explore os parceiros e consulte os descontos disponíveis.</p></div>

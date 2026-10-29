@@ -17,7 +17,7 @@ const sportIcon={Run:'🏃',Walk:'🚶',Ride:'🚴',VirtualRun:'🏃',VirtualRid
 const readableDate=v=>/^\d{4}-\d{2}-\d{2}$/.test(v||'')
   ? v.split('-').reverse().join('/') : 'Data indisponível'
 
-export default function ClubeRegisteredActivities({session,onConnectionStatusChange}) {
+export default function ClubeRegisteredActivities({session,onConnectionStatusChange,onPointsSynced}) {
   const [expanded,setExpanded]=useState(()=>new URLSearchParams(window.location.search).has('strava'))
   const [preview,setPreview]=useState(false)
   const [status,setStatus]=useState({connected:false,disabled:false,activities:[]})
@@ -25,6 +25,7 @@ export default function ClubeRegisteredActivities({session,onConnectionStatusCha
   const [loading,setLoading]=useState(false)
   const [goalState,setGoalState]=useState({loaded:false,items:[]})
   const [error,setError]=useState('')
+  const [creditState,setCreditState]=useState(null)
   const token=session?.access_token
   const activities=Array.isArray(status.activities)?status.activities:[]
   const totalKm=activities.reduce((sum,a)=>sum+Number(a.km||0),0)
@@ -63,7 +64,13 @@ export default function ClubeRegisteredActivities({session,onConnectionStatusCha
       if(!signal?.aborted){
         setStatus({connected:!!data.connected,disabled:!!data.disabled,activities:data.activities||[],monthly:data.monthly||null})
         onConnectionStatusChange?.({checked:true,connected:!!data.connected,disabled:!!data.disabled})
+        setCreditState(data.credit||null)
         if(data.error)setError(data.error)
+        else if(data.connected&&data.connectionRecorded===false)
+          setError('Strava conectado, mas a confirmacao do vinculo no administrativo ainda esta pendente. Tente Atualizar atividades.')
+        if(data.credit?.status==='ok'&&
+          Number(data.credit.credited_now||0)+Number(data.credit.challenge_credited_now||0)>0)
+          onPointsSynced?.()
       }
     }catch(e){
       if(e?.name!=='AbortError'&&!signal?.aborted){
@@ -151,7 +158,7 @@ export default function ClubeRegisteredActivities({session,onConnectionStatusCha
           </span>
           <span className="npv-strava-challenge-caption">
             {progress.valid?(progress.completed
-              ?'Desafio concluído! +'+formatPoints(goal.reward_points)+' pts previstos (crédito não automático).'
+              ?'Desafio concluído! '+(creditState?.status==='ok'?'Recompensa conciliada no seu extrato.':'Crédito aguardando sincronização.')
               :'Faltam '+format(monthlyGoal-monthKm>0?Math.max(0,monthlyGoal-monthKm):0)+' km para sua meta')
               :(!goalState.loaded?'Carregando meta do desafio...':monthlyGoal===null?'Meta mensal a definir pelo clube':!status.connected?status.disabled?'Integração com Strava em preparação.': 'Conecte-se para acompanhar sua evolução':monthKm===null?'Aguardando dados reais do Strava':'Atualize as atividades para conferir o progresso')}
           </span>
@@ -186,7 +193,7 @@ export default function ClubeRegisteredActivities({session,onConnectionStatusCha
             <span className="npv-strava-challenge-caption">
               {extraProgress.valid
                 ?(extraProgress.completed
-                   ?'Desafio concluído! +'+formatPoints(item.reward_points)+' pts previstos (crédito não automático).'
+                   ?'Desafio concluído! '+(creditState?.status==='ok'?'Recompensa conciliada no seu extrato.':'Crédito aguardando sincronização.')
                    :'Faltam '+format(Math.max(0,extraKmGoal-monthKm))+' km para sua meta')
                 :monthKm!==null
                   ?'Acompanhe sua evolução com o Strava'
@@ -204,10 +211,20 @@ export default function ClubeRegisteredActivities({session,onConnectionStatusCha
       <div className={'npv-strava-connection'+(status.connected?' npv-strava-connected':'')} role="status">
         <div className="npv-strava-status-icon">{status.connected?<CheckCircle2 size={19}/>:<LockKeyhole size={19}/>}</div>
         <div><strong>{loading?'Verificando suas atividades...':status.connected?'Sua conta Strava está conectada':status.disabled?'Strava ainda não disponível nesta versão':'Strava ainda não conectado'}</strong>
-          <p>{status.connected?'Atividades consultadas diretamente da sua conta. Nenhum ponto é gerado automaticamente nesta fase.':status.disabled?'O painel do desafio está ativo; a leitura automática do Strava será habilitada após configurar e homologar a integração oficial.':'Você pode conectar sua conta para consultar suas atividades reais nesta área.'}</p>
+          <p>{status.connected?'Atividades consultadas diretamente da sua conta. Quilômetros válidos e metas são conciliados automaticamente com seu extrato.':status.disabled?'O painel do desafio está ativo; a leitura automática do Strava será habilitada após configurar e homologar a integração oficial.':'Você pode conectar sua conta para consultar suas atividades reais nesta área.'}</p>
         </div>
       </div>
       {error&&<p className="npv-strava-feedback" role="alert">{error}</p>}
+      {status.connected&&creditState&&<p className="npv-strava-pilot-note" role="status">
+        {creditState.status==='ok'
+          ?'Pontos por km neste mês: '+formatPoints(creditState.month_credited_km_points||0)+
+            ' de 200 possíveis. Créditos nesta atualização: +'+
+            formatPoints(Number(creditState.credited_now||0)+Number(creditState.challenge_credited_now||0))+
+            ' pontos (incluindo desafios concluídos).'
+          :creditState.status==='not_eligible'
+            ?'Crédito de pontos disponível somente para cadastros aprovados no Clube.'
+            :'Sua atividade foi lida. Os pontos ainda não foram sincronizados; utilize Atualizar atividades novamente.'}
+      </p>}
       {status.connected?<>
         <div className="npv-strava-example-head npv-strava-live-heading"><span><Footprints size={17}/> ÚLTIMOS 7 DIAS</span><strong>{format(totalKm)} km</strong></div>
         {activities.length?activities.map((item,i)=><div className="npv-strava-example-row" key={i}>
