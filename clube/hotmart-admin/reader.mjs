@@ -212,6 +212,7 @@ export async function resolveVerifiedLinks(subscriptions,{env,createClientFn,adm
   byEmail.set(email,[...(byEmail.get(email)||[]),profile])
  }
  const confirmed=new Map()
+ const subscriptionProfiles=new Map()
  for(const record of subscriptions){
   const email=record.subscriber_email
   const matched=email?byEmail.get(email)||[]:[]
@@ -230,6 +231,28 @@ export async function resolveVerifiedLinks(subscriptions,{env,createClientFn,adm
    record.link_status='pending_email_confirmation';continue
   }
   record.link_status='linked';record.linked=true
+  subscriptionProfiles.set(record.id,profile.id)
+ }
+ // O saldo não depende do status da assinatura (ativa ou cancelada).
+ // Ler o extrato real e agregar inclusive lançamentos de anos anteriores.
+ // Nunca apresentar zero quando a leitura é incompleta ou falha.
+ const uniqueIds=[...new Set(subscriptionProfiles.values())]
+ const sums=await mapLimited(uniqueIds,async id=>{
+  let points=0
+  for(let page=0;page<100;page++){
+   const {data,error}=await svc.from('clube_point_events')
+     .select('id,points').eq('student_id',id)
+     .order('id',{ascending:true}).range(page*500,page*500+499)
+   if(error)return null
+   for(const row of data||[])points+=Number(row.points)||0
+   if((data||[]).length<500)return Number.isSafeInteger(points)?points:null
+  }
+  return null
+ })
+ const byId=new Map(uniqueIds.map((id,index)=>[id,sums[index]]))
+ for(const record of subscriptions){
+  const id=subscriptionProfiles.get(record.id)
+  if(id)record.clube_balance=byId.get(id)??null
  }
  return {complete:true}
 }

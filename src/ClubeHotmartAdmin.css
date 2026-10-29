@@ -98,3 +98,30 @@
 /* Cálculo de renovações: apenas informativo, não lança no saldo do aluno. */
 .clube-shell .npv-hotmart-points-cell strong{display:block;color:#416d31;font-size:15px;font-weight:850;font-variant-numeric:tabular-nums;white-space:nowrap}
 .clube-shell .npv-hotmart-points-cell small{display:block;color:#6f8071;font-size:10px;line-height:1.55;margin-top:5px;max-width:225px}
+
+/* Histórico por assinante: mesma pessoa identificada pelo e-mail da Hotmart,
+   com vínculos do Clube verificados separadamente. */
+.clube-shell .npv-hotmart-view-toggle{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 12px}
+.clube-shell .npv-hotmart-view-toggle button{font:inherit;font-size:12px;font-weight:800;padding:9px 13px;border-radius:9px;border:1px solid #dbe8d5;background:#f6faf2;color:#5c7759;cursor:pointer}
+.clube-shell .npv-hotmart-view-toggle button.active{background:#2d4c35;color:#fff;border-color:#2d4c35}
+.clube-shell .npv-hotmart-identity-note{font-size:11px;color:#7e8b7d;line-height:1.55;margin:0 0 18px}
+.clube-shell .npv-hotmart-people{display:grid;gap:10px}
+.clube-shell .npv-hotmart-person{border:1px solid #e0e9dc;border-radius:13px;background:#fff;overflow:hidden}
+.clube-shell .npv-hotmart-person-main{display:flex;gap:17px;align-items:center;justify-content:space-between;padding:17px}
+.clube-shell .npv-hotmart-person-name{display:grid;gap:5px;min-width:160px;max-width:275px}
+.clube-shell .npv-hotmart-person-name strong{font-size:14px;color:#2c472e}
+.clube-shell .npv-hotmart-person-name small{color:#809080;font-size:11px;overflow-wrap:anywhere}
+.clube-shell .npv-hotmart-returning{display:inline-flex;color:#4a713e;background:#ebf6e2;border-radius:7px;font-size:10px;font-weight:800;padding:5px 7px}
+.clube-shell .npv-hotmart-person-facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;flex:1}
+.clube-shell .npv-hotmart-person-facts>span{display:grid;align-content:center;gap:6px;border-left:1px solid #e8eee5;padding-left:12px}
+.clube-shell .npv-hotmart-person-facts small{font-size:10px;color:#839083}
+.clube-shell .npv-hotmart-person-facts strong{font-size:12px;color:#334c38;overflow-wrap:anywhere}
+.clube-shell .npv-hotmart-person-history{border-top:1px solid #edf1eb;background:#fafcf8}
+.clube-shell .npv-hotmart-person-history summary{padding:12px 17px;font-size:11px;color:#4b713e;font-weight:800;cursor:pointer}
+.clube-shell .npv-hotmart-person-contracts{padding:0 17px 11px;display:grid;gap:8px}
+.clube-shell .npv-hotmart-person-contract{display:flex;justify-content:space-between;gap:15px;align-items:center;border:1px solid #e4ebe1;padding:11px;border-radius:8px;background:white}
+.clube-shell .npv-hotmart-person-contract strong{display:block;font-size:11px;color:#38523b}
+.clube-shell .npv-hotmart-person-contract small{display:block;font-size:10px;color:#82917e;line-height:1.6;margin-top:5px}
+.clube-shell .npv-hotmart-empty-person{font-size:12px;color:#7a8d7b;padding:18px;text-align:center}
+@media(max-width:950px){.clube-shell .npv-hotmart-person-main{display:block}.clube-shell .npv-hotmart-person-name{max-width:none;margin-bottom:15px}.clube-shell .npv-hotmart-person-facts{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}}
+@media(max-width:580px){.clube-shell .npv-hotmart-person-facts>span{padding-left:9px}.clube-shell .npv-hotmart-person-contract{display:block}.clube-shell .npv-hotmart-person-contract>div+div{margin-top:8px}}
