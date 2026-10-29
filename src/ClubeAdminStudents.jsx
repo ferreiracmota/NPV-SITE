@@ -1,6 +1,6 @@
-import React,{useCallback,useEffect,useMemo,useState} from 'react'
+import {useCallback,useEffect,useMemo,useState} from 'react'
 import {ArrowDownRight,ArrowUpRight,Check,ChevronDown,ChevronUp,Clock3,
-  Gift,History,Instagram,Plus,RefreshCw,Search,ShieldCheck,Wallet} from 'lucide-react'
+  Gift,History,Instagram,Plus,RefreshCw,Search,ShieldCheck} from 'lucide-react'
 import {instagramAdminStatus,stravaAdminStatus} from '../clube/admin/studentConnectionStatus.mjs'
 import './ClubeAdminStudents.css'
 
@@ -12,7 +12,7 @@ const fmtDate=value=>{
 const redemptionLabels={pending:'Solicitado · aguardando',approved:'Aprovado',rejected:'Recusado'}
 function ConnectionTag({type,status,verifiedAt}){
  const Icon=type==='instagram'?Instagram:ShieldCheck
- return <span className={'npv-admin-link-state is-'+status.key} title={status.help}>
+ return <span className={'npv-admin-link-state is-'+status.key} title={verifiedAt&&status.key==='connected'?status.help+' · Última confirmação: '+fmtDate(verifiedAt):status.help}>
   <Icon size={14}/>
   <span><small>{type==='instagram'?'Instagram':'Strava'}</small><strong>{status.label}</strong></span>
   {verifiedAt&&status.key==='connected'&&<em>{fmtDate(verifiedAt)}</em>}

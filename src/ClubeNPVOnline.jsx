@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   ArrowLeft, ArrowRight, Award, Check, Clock3, Gift, History, KeyRound, LockKeyhole,
-  LogOut, Mail, Package, Plus, Search, ShieldCheck, Sparkles, TrendingUp,
+  LogOut, Mail, Package, Plus, ShieldCheck, Sparkles, TrendingUp,
   UserRound, Users, Wallet, X, Shirt, CupSoda, Droplets, Ticket, Pencil, ImagePlus, SlidersHorizontal, ChevronDown, ChevronUp, CreditCard, Layers3, Instagram
 } from 'lucide-react'
 import { clubeSupabase as supabase } from './clubeSupabase.js'
