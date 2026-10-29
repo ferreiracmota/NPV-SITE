@@ -224,7 +224,7 @@ export default function ClubeRegisteredActivities({session,onConnectionStatusCha
           :creditState.status==='not_eligible'
             ?'Crédito de pontos disponível somente para cadastros aprovados no Clube.'
             :'Sua atividade foi lida. Os pontos ainda não foram sincronizados; utilize Atualizar atividades novamente.'}
-      </p>
+      </p>}
       {status.connected?<>
         <div className="npv-strava-example-head npv-strava-live-heading"><span><Footprints size={17}/> ÚLTIMOS 7 DIAS</span><strong>{format(totalKm)} km</strong></div>
         {activities.length?activities.map((item,i)=><div className="npv-strava-example-row" key={i}>
