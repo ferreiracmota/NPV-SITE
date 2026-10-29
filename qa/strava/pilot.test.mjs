@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { newOAuthState, verifyOAuthState, sanitizeActivityList, escapeHtml } from '../../api/strava/pilot-core.mjs'
+import { newOAuthState, verifyOAuthState, sanitizeActivityList, escapeHtml } from '../../clube/strava/pilot-core.mjs'
 import pilot from '../../api/strava/pilot.js'
 
 test('state OAuth válido expira e nunca aceita cookie de outro navegador', () => {
