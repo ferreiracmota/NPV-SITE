@@ -1,4 +1,4 @@
-import React,{useCallback,useEffect,useState} from 'react'
+import React,{useCallback,useEffect,useRef,useState} from 'react'
 import {Instagram,ShieldCheck,Copy,ArrowUpRight,RefreshCw,Link2,Unplug,Clock3,CheckCircle2,AlertCircle,LockKeyhole,ChevronDown} from 'lucide-react'
 import './ClubeInstagramPanel.css'
 import {clubeSupabase as supabase} from './clubeSupabase.js'
@@ -27,6 +27,10 @@ export default function ClubeInstagramPanel({session,isAdmin=false}){
   const [notice,setNotice]=useState('')
   const [error,setError]=useState('')
   const [needsLogin,setNeedsLogin]=useState(false)
+  const pendingLinkRef=useRef(false)
+  const pendingUntil=Date.parse(data?.pending_until||'')
+  const waitingForCode=Boolean(!data?.connected&&data?.available&&Number.isFinite(pendingUntil)&&pendingUntil>Date.now())
+  const instagramStatus=needsLogin?'neutral':data?.connected?'connected':waitingForCode?'pending':data?.available?'disconnected':'neutral'
 
   const request=useCallback(async(path,method='GET',payload=null)=>{
     if(!session?.access_token)throw new Error('Acesse sua conta do Clube NPV.')
@@ -72,7 +76,13 @@ export default function ClubeInstagramPanel({session,isAdmin=false}){
     try{
       const status=await request('/api/instagram/link')
       setData(status)
-      if(status.connected)setCode('')
+      if(status.connected){
+        setCode('')
+        if(pendingLinkRef.current){
+          pendingLinkRef.current=false
+          setNotice('Instagram vinculado com sucesso! Sua conexão já está confirmada no Clube NPV.')
+        }
+      }
       if(status.available){
         const next=await request('/api/instagram/activity')
         setEvents(Array.isArray(next.events)?next.events:[])
@@ -147,11 +157,28 @@ export default function ClubeInstagramPanel({session,isAdmin=false}){
     }catch(e){setOfficialMessage(e.message)}
     finally{setOfficialBusy(false)}
   }
+  // O vínculo é confirmado pelo servidor. A consulta continua enquanto houver
+  // código válido no banco, mesmo após recarregar a página no celular.
   useEffect(()=>{
-    if(!code||data?.connected||!data?.available)return
+    if(!waitingForCode||document.visibilityState==='hidden')return
     const timer=setInterval(()=>load({quiet:true}),8000)
     return()=>clearInterval(timer)
-  },[code,data?.connected,data?.available,load])
+  },[waitingForCode,load])
+
+  // Ao retornar do Instagram/Direct (ou voltar à aba), consultar o estado real
+  // sem depender de resposta manual do perfil @naopensevai.
+  useEffect(()=>{
+    if(!session?.access_token||isAdmin)return
+    const verifyWhenBack=()=>{
+      if(document.visibilityState!=='hidden')load({quiet:true})
+    }
+    window.addEventListener('focus',verifyWhenBack)
+    document.addEventListener('visibilitychange',verifyWhenBack)
+    return()=>{
+      window.removeEventListener('focus',verifyWhenBack)
+      document.removeEventListener('visibilitychange',verifyWhenBack)
+    }
+  },[isAdmin,session?.access_token,load])
 
   async function restartLogin(){
     setLoading(true);setError('')
@@ -169,7 +196,8 @@ export default function ClubeInstagramPanel({session,isAdmin=false}){
       const answer=await request('/api/instagram/link','POST')
       if(answer.status!=='pending'||!answer.code)throw new Error('Não foi possível iniciar a vinculação.')
       setCode(answer.code)
-      setNotice('Código gerado. Envie-o por mensagem direta para @naopensevai. Ele expira em 10 minutos.')
+      pendingLinkRef.current=true
+      setNotice('Código gerado! Envie pelo Direct para @naopensevai e depois volte ao Clube. Não precisa esperar uma resposta no Instagram.')
       await load({quiet:true})
     }catch(e){setError(e.message)}
     finally{setLoading(false)}
@@ -180,6 +208,7 @@ export default function ClubeInstagramPanel({session,isAdmin=false}){
     try{
       await request('/api/instagram/link','DELETE')
       setCode('')
+      pendingLinkRef.current=false
       setNotice('Conta Instagram desvinculada do Clube.')
       await load({quiet:true})
     }catch(e){setError(e.message)}
@@ -211,18 +240,22 @@ export default function ClubeInstagramPanel({session,isAdmin=false}){
         <span className="npv-ig-symbol"><Instagram size={25}/></span>
         <div><span className="npv-ig-overline">CONEXÃO INSTAGRAM</span><h2>Seus Stories valem pontos ✦</h2><p>Vincule sua conta e marque <strong>@naopensevai</strong> nos Stories para participar.</p></div>
       </div>
-      <div className="npv-ig-status">
-        <div className="npv-ig-status-head">
-          {needsLogin?<LockKeyhole size={18}/>:data?.connected?<CheckCircle2 size={18}/>:data?.available?<Link2 size={18}/>:<Clock3 size={18}/>}
-          <strong>{needsLogin?'Seu acesso precisa ser renovado':data?.connected?'Instagram vinculado':data?.available?'Vincule seu Instagram':'Integração em preparação'}</strong>
+      <div className={`npv-ig-status npv-ig-status-${instagramStatus}`} aria-label="Situação da conexão Instagram">
+        <div className="npv-ig-status-head" role="status" aria-live="polite">
+          <span className="npv-ig-status-icon" aria-hidden="true">
+            {needsLogin?<LockKeyhole size={20}/>:data?.connected?<CheckCircle2 size={20}/>:waitingForCode?<Clock3 size={20}/>:data?.available?<AlertCircle size={20}/>:<Clock3 size={20}/>}
+          </span>
+          <strong>{needsLogin?'Seu acesso precisa ser renovado':data?.connected?'Instagram vinculado ✓':waitingForCode?'Aguardando confirmação':data?.available?'Instagram não vinculado':'Integração em preparação'}</strong>
         </div>
         {needsLogin?
-          <p>A integração está preparada, mas este dispositivo não tem uma sessão válida do Clube. Entre novamente para gerar o código de vinculação.</p>:
+          <p>Este dispositivo precisa entrar novamente no Clube para gerar o código de vinculação.</p>:
           data?.connected?
-          <p>Vinculação confirmada em {ago(data.verified_at)} pelo Instagram. Não precisamos da sua senha.</p>:
+          <p>Conexão confirmada em {ago(data.verified_at)}. Pronto! Não é necessário fazer mais nada para vincular seu perfil.</p>:
+          waitingForCode?
+          <p>Envie o código por Direct para <strong>@naopensevai</strong> e volte a esta página. O Clube verifica a confirmação automaticamente; não precisa esperar nossa resposta no Instagram.</p>:
           data?.available?
-          <p>Para confirmar que o perfil realmente é seu, envie um código temporário por mensagem direta ao Instagram oficial da NPV.</p>:
-          <p>Estamos habilitando a comunicação oficial com o Instagram. Ainda não é possível verificar marcações nem lançar pontos automaticamente.</p>}
+          <p>Vincule sua conta para participar dos Stories. Gere o código e envie por Direct para <strong>@naopensevai</strong>.</p>:
+          <p>Não foi possível disponibilizar a vinculação agora. Atualize a situação ou tente novamente mais tarde.</p>}
       </div>
       <div className="npv-ig-steps">
         <div><strong>01</strong><span>Conecte sua conta pelo código enviado por DM.</span></div>
@@ -242,7 +275,7 @@ export default function ClubeInstagramPanel({session,isAdmin=false}){
             <button type="button" onClick={async()=>{try{await navigator.clipboard.writeText(code);setNotice('Código copiado.')}catch{setNotice('Copie o código manualmente.')}}}><Copy size={16}/> Copiar</button>
             <a href={INSTAGRAM_DM} target="_blank" rel="noopener noreferrer"><Instagram size={16}/> Abrir direct <ArrowUpRight size={13}/></a>
           </div>
-          <p>A confirmação aparece automaticamente quando a mensagem é recebida. Código válido por 10 minutos.</p>
+          <p><strong>Depois de enviar:</strong> volte ao Clube NPV. A conexão será verificada automaticamente quando o Direct for recebido e processado. Não é necessário receber uma resposta manual. O código vale por 10 minutos.</p>
         </div>}
       </>}
       <div className="npv-ig-actions-row">
