@@ -541,13 +541,11 @@ export default function ClubeNPVOnline() {
             aria-expanded={activitiesOpen} aria-controls="clube-points-statement-content"
             onClick={()=>setActivitiesOpen(open=>!open)}>
             <span className="clube-student-balance-group">
-              <span className="clube-student-hello">OLÁ, {profile?.full_name?.split(' ')[0]?.toUpperCase()||'ALUNO'}! ✦</span>
               <span className="clube-student-balance-label">SEUS PONTOS EM {YEAR}</span>
               <strong className="clube-student-balance-value">{format(balance(user.id))} <small>pontos</small></strong>
             </span>
             <span className="clube-student-statement-action">
-              <Award size={72} aria-hidden="true"/>
-              <span className="clube-student-statement-cta">Extrato de pontos {activitiesOpen?<ChevronUp size={18}/>:<ChevronDown size={18}/>}</span>
+              <span className="clube-student-statement-cta">Extrato {activitiesOpen?<ChevronUp size={16}/>:<ChevronDown size={16}/>}</span>
             </span>
           </button>
           {activitiesOpen&&<div id="clube-points-statement-content" className="clube-student-statement-body">

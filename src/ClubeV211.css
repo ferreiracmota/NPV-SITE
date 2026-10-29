@@ -756,3 +756,81 @@
     font-size:9px;gap:3px;
   }
 }
+
+
+/* Saldo ultra-compacto aprovado em 29/10/2026: ~metade da altura do cartão anterior.
+   Apenas na Visão geral da aluna; mantém extrato expansível e brilho metalizado. */
+.clube-shell.clube-live-student .clube-student-summary.clube-student-summary-statement{
+  min-height:0;
+  padding:0;
+  border-radius:14px;
+  margin-bottom:11px;
+}
+.clube-shell.clube-live-student .clube-student-summary-statement .clube-student-summary-trigger{
+  min-height:68px;
+  padding:9px 19px;
+  gap:12px;
+  align-items:center;
+}
+.clube-shell.clube-live-student .clube-student-summary-statement .clube-student-balance-group{
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:1px;
+}
+.clube-shell.clube-live-student .clube-student-summary-statement .clube-student-balance-label{
+  margin:0;
+  font-size:9px;
+  line-height:1.15;
+  letter-spacing:.115em;
+}
+.clube-shell.clube-live-student .clube-student-summary-statement .clube-student-balance-value{
+  margin:0;
+  font-size:clamp(27px,3vw,33px);
+  line-height:1.03;
+  letter-spacing:-.045em;
+}
+.clube-shell.clube-live-student .clube-student-summary-statement .clube-student-balance-value small{
+  font-size:11px;
+  letter-spacing:0;
+}
+.clube-shell.clube-live-student .clube-student-summary-statement .clube-student-statement-action{
+  flex-direction:row;
+  justify-content:flex-end;
+  gap:0;
+  max-width:none;
+}
+.clube-shell.clube-live-student .clube-student-summary-statement .clube-student-statement-cta{
+  white-space:nowrap;
+  font-size:11px;
+  font-weight:800;
+  gap:5px;
+}
+.clube-shell.clube-live-student .clube-student-summary-statement .clube-student-statement-cta svg{
+  width:15px;
+  height:15px;
+}
+@media(max-width:760px){
+  .clube-shell.clube-live-student .clube-student-summary-statement .clube-student-summary-trigger{
+    min-height:63px;
+    padding:8px 14px;
+    gap:8px;
+  }
+  .clube-shell.clube-live-student .clube-student-summary-statement .clube-student-balance-value{
+    font-size:clamp(26px,7.4vw,31px);
+  }
+  .clube-shell.clube-live-student .clube-student-summary-statement .clube-student-statement-cta{
+    font-size:10px;
+    gap:3px;
+  }
+}
+@media(max-width:380px){
+  .clube-shell.clube-live-student .clube-student-summary-statement .clube-student-summary-trigger{
+    min-height:62px;
+    padding:7px 11px;
+    gap:6px;
+  }
+  .clube-shell.clube-live-student .clube-student-summary-statement .clube-student-balance-value{
+    font-size:clamp(24px,7vw,28px);
+  }
+}
