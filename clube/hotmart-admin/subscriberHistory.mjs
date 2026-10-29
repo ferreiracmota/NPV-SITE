@@ -4,7 +4,7 @@ export function groupSubscriberHistory(subscriptions=[]){
   const groups=new Map()
   for(const row of subscriptions){
     const email=typeof row.subscriber_email==='string'?row.subscriber_email.trim().toLowerCase():''
-    const key=email&&/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)
+    const key=email&&email.includes('@')
       ?'email:'+email
       :'subscription:'+String(row.subscriber_code||row.id)
     const group=groups.get(key)||{
