@@ -162,6 +162,7 @@ export default function ClubeNPVOnline() {
   const [tab,setTab]=useState('inicio')
   const [activitiesOpen,setActivitiesOpen]=useState(false)
   const [stravaConnection,setStravaConnection]=useState({checked:false,connected:false,disabled:false})
+  const [instagramConnection,setInstagramConnection]=useState({checked:false,connected:false,available:false})
   const [notice,setNotice]=useState('')
   const [error,setError]=useState('')
   const [busy,setBusy]=useState(false)
@@ -264,6 +265,33 @@ export default function ClubeNPVOnline() {
   },[user?.id,profile?.id,profile?.approved,isAdmin])
   useEffect(()=>{refresh()},[refresh])
   const approved=profile?.approved || isAdmin
+  // Uma leitura real por entrada na Visão geral: nenhuma conexão é presumida.
+  // Assim o guia só vai para o fim após confirmação dos DOIS provedores.
+  useEffect(()=>{
+    if(tab!=='inicio'||isAdmin||!approved||!session?.access_token)return
+    const controller=new AbortController()
+    setInstagramConnection({checked:false,connected:false,available:false})
+    setStravaConnection({checked:false,connected:false,disabled:false})
+    fetch('/api/instagram/link',{
+      method:'GET',
+      headers:{Authorization:'Bearer '+session.access_token},
+      credentials:'same-origin',
+      signal:controller.signal
+    }).then(async response=>{
+      if(!response.ok)throw new Error('instagram_status_unavailable')
+      const data=await response.json()
+      if(!controller.signal.aborted)setInstagramConnection({
+        checked:true,connected:!!data.connected,available:!!data.available
+      })
+    }).catch(()=>{
+      if(!controller.signal.aborted)setInstagramConnection({
+        checked:true,connected:false,available:false,error:true
+      })
+    })
+    return()=>controller.abort()
+  },[tab,isAdmin,approved,user?.id,session?.access_token])
+  const connectionsChecked=instagramConnection.checked&&stravaConnection.checked
+  const connectionsComplete=connectionsChecked&&instagramConnection.connected&&stravaConnection.connected
   const balance=id=>data.events.filter(x=>x.student_id===id).reduce((acc,x)=>acc+x.points,0)
   const reserved=id=>data.requests.filter(x=>x.student_id===id && x.status==='pending').reduce((acc,x)=>acc+x.points,0)
   const mine=useMemo(()=>data.events.filter(x=>x.student_id===user?.id),[data.events,user?.id])
@@ -507,7 +535,7 @@ export default function ClubeNPVOnline() {
       {tab==='versoes'&&isAdmin&&<ClubeVersionsAdmin onNavigate={setTab}/>}
       {tab==='instagram'&&<ClubeInstagramPanel session={session} isAdmin={isAdmin}/>}
       {tab==='inicio'&&!isAdmin&&<>
-        <ClubeConnectionGuide session={session} strava={stravaConnection} onInstagram={()=>{setTab('instagram');window.scrollTo({top:0,behavior:'smooth'})}} onStrava={openStravaFromGuide}/>
+        {connectionsChecked&&!connectionsComplete&&<ClubeConnectionGuide instagram={instagramConnection} strava={stravaConnection} onInstagram={()=>{setTab('instagram');window.scrollTo({top:0,behavior:'smooth'})}} onStrava={openStravaFromGuide}/>}
         <section className={`clube-student-summary clube-student-summary-statement${activitiesOpen?' is-open':''}`} aria-label="Seus pontos e extrato">
           <button type="button" className="clube-student-summary-trigger"
             aria-expanded={activitiesOpen} aria-controls="clube-points-statement-content"
@@ -555,6 +583,7 @@ export default function ClubeNPVOnline() {
           })}</div>
           <p className="clube-micro">Atividades sujeitas à confirmação.</p>
         </section>
+        {connectionsComplete&&<ClubeConnectionGuide instagram={instagramConnection} strava={stravaConnection} onInstagram={()=>{setTab('instagram');window.scrollTo({top:0,behavior:'smooth'})}} onStrava={openStravaFromGuide}/>}
       </>}
       {tab==='parceiros'&&<section className="npv-partners-section">
         <div className="npv-shop-heading">

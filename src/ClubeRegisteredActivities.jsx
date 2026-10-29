@@ -68,7 +68,7 @@ export default function ClubeRegisteredActivities({session,onConnectionStatusCha
     }catch(e){
       if(e?.name!=='AbortError'&&!signal?.aborted){
         setError('Não foi possível verificar a conexão. Tente atualizar.')
-        onConnectionStatusChange?.({checked:false,connected:false,disabled:false})
+        onConnectionStatusChange?.({checked:true,connected:false,disabled:false,error:true})
       }
     }finally{if(!signal?.aborted)setLoading(false)}
   }
