@@ -176,6 +176,38 @@ export default function ClubeHotmartAdmin({session,isAdmin,renewalPointRate=null
      {Object.entries(STATUS).map(([key,label])=><option key={key} value={key}>{label}</option>)}
     </select></label>
    </div>
+   <div className="npv-hotmart-view-toggle" role="group" aria-label="Modo de visualização">
+    <button type="button" aria-pressed={displayMode==='pessoas'} className={displayMode==='pessoas'?'active':''} onClick={()=>setDisplayMode('pessoas')}>Por assinante</button>
+    <button type="button" aria-pressed={displayMode==='assinaturas'} className={displayMode==='assinaturas'?'active':''} onClick={()=>setDisplayMode('assinaturas')}>Todas as assinaturas</button>
+   </div>
+   <p className="npv-hotmart-identity-note">Registros com o mesmo e-mail são agrupados apenas para consulta. O vínculo com a conta do Clube exige confirmação separada. O saldo real preserva lançamentos antigos e nunca equivale ao cálculo de renovações.</p>
+   {displayMode==='pessoas'?<div className="npv-hotmart-people">
+    {groupedRows.length?groupedRows.map(group=><div className="npv-hotmart-person" key={group.key}>
+      <div className="npv-hotmart-person-main">
+        <div className="npv-hotmart-person-name">
+          <strong>{group.subscriber_name||'Nome não informado'}</strong>
+          <small>{group.subscriber_email||'E-mail não disponível: contratos separados'}</small>
+          {group.returning&&<span className="npv-hotmart-returning">Nova assinatura após cancelamento · mesmo e-mail</span>}
+        </div>
+        <div className="npv-hotmart-person-facts">
+          <span><small>Contratos</small><strong>{group.subscriptions.length}</strong></span>
+          <span><small>Situação</small><strong>{group.active?'Ativa':STATUS[group.subscriptions[0]?.status]||'Outra'}</strong></span>
+          <span><small>Vínculo NPV</small><strong>{LINK[group.link_status]||'Não verificado'}</strong></span>
+          <span><small>Saldo real</small><strong>{group.linked&&Number.isSafeInteger(group.clube_balance)?fmtMetric(group.clube_balance)+' pts':'—'}</strong></span>
+        </div>
+      </div>
+      <details className="npv-hotmart-person-history">
+        <summary>Ver histórico de {group.subscriptions.length} {group.subscriptions.length===1?'assinatura':'assinaturas'} e pagamentos</summary>
+        <div className="npv-hotmart-person-contracts">{group.subscriptions.map(item=>
+          <div key={item.id} className="npv-hotmart-person-contract">
+            <div><strong>{item.plan_label||'Plano não informado'} · {STATUS[item.status]||item.status}</strong>
+              <small>Início: {fmtDate(item.accession_at)} · Pagamentos aprovados: {fmtMetric(item.confirmed_payments)} · Renovações verificadas: {fmtMetric(item.renewal_cycles)}</small>
+            </div>
+            <div><strong>{LINK[item.link_status]||'Vínculo não verificado'}</strong><small>Referência: {item.subscriber_code}</small></div>
+          </div>)}</div>
+      </details>
+    </div>):<p className="npv-hotmart-empty-person">Nenhum assinante encontrado para os filtros selecionados.</p>}
+   </div>:<>
    <p className="npv-hotmart-swipe-hint">Deslize a tabela para os lados para ver todas as colunas.</p>
    <div className="npv-hotmart-table-wrap" role="region" tabIndex={0} aria-label="Tabela de assinaturas com rolagem horizontal">
     <table className="npv-hotmart-table">
