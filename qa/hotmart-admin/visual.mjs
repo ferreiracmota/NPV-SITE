@@ -27,6 +27,8 @@ for(const [browserName,browserType] of [['chromium',chromium],['webkit',webkit]]
    await page.goto(base,{waitUntil:'networkidle'})
    await page.locator('.npv-hotmart-pending').getByText('Aguardando integração com a Hotmart').waitFor()
    assert.equal(await page.getByRole('heading',{name:'Hotmart — Assinaturas'}).count(),1)
+   assert.equal(await page.getByRole('button',{name:'Por assinante'}).getAttribute('aria-pressed'),'true')
+   await page.getByRole('button',{name:'Todas as assinaturas'}).click()
    assert.equal(await page.getByRole('region',{name:'Tabela de assinaturas com rolagem horizontal'}).count(),1)
    if(width<=768){
      const scrolling=await page.locator('.npv-hotmart-table-wrap').evaluate(element=>{
@@ -91,6 +93,8 @@ for(const [browserName,browserType] of [['chromium',chromium],['webkit',webkit]]
   await page2.goto(base,{waitUntil:'networkidle'})
   await page2.getByText('Dados consultados na Hotmart').waitFor()
   assert.deepEqual((await page2.locator('.npv-hotmart-metric>strong').allTextContents()),['2','1','1','—'])
+  assert.equal(await page2.locator('.npv-hotmart-person').count(),3)
+  await page2.getByRole('button',{name:'Todas as assinaturas'}).click()
   assert.equal(await page2.locator('.npv-hotmart-table tbody tr').count(),3)
   assert.equal(await page2.locator('.npv-hotmart-row-active').count(),2)
   await page2.getByLabel('Filtrar por situação').selectOption('CANCELLED_BY_ADMIN')
