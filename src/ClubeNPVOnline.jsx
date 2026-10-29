@@ -14,6 +14,7 @@ import './ClubeV211.css'
 import { BenefitNotice, PartnerCards, PartnerEditor, safePartnerUrl } from './ClubeExtras.jsx'
 import ClubeKmSetup from './ClubeKmSetup.jsx'
 import ClubeRegisteredActivities from './ClubeRegisteredActivities.jsx'
+import ClubeConnectionGuide from './ClubeConnectionGuide.jsx'
 import ClubeMonthlyChallengeAdmin from './ClubeMonthlyChallengeAdmin.jsx'
 import { currentNpvMonth } from '../clube/strava/challengeProgress.mjs'
 import ClubeSiteWidgetAdmin from './ClubeSiteWidgetAdmin.jsx'
@@ -160,6 +161,7 @@ export default function ClubeNPVOnline() {
   const [data,setData]=useState(emptyState)
   const [tab,setTab]=useState('inicio')
   const [activitiesOpen,setActivitiesOpen]=useState(false)
+  const [stravaConnection,setStravaConnection]=useState({checked:false,connected:false,disabled:false})
   const [notice,setNotice]=useState('')
   const [error,setError]=useState('')
   const [busy,setBusy]=useState(false)
@@ -181,6 +183,15 @@ export default function ClubeNPVOnline() {
     return ()=>URL.revokeObjectURL(objectUrl)
   },[rewardImageFile])
   const user=session?.user
+  useEffect(()=>{
+    setStravaConnection({checked:false,connected:false,disabled:false})
+  },[user?.id])
+  const openStravaFromGuide=()=>{
+    const anchor=document.getElementById('npv-month-challenges-anchor')
+    const trigger=anchor?.querySelector('.npv-strava-hero-trigger')
+    if(trigger?.getAttribute('aria-expanded')==='false')trigger.click()
+    requestAnimationFrame(()=>anchor?.scrollIntoView({behavior:'smooth',block:'start'}))
+  }
   useEffect(()=>{
     if(!user?.id)return
     let live=true
@@ -448,11 +459,11 @@ export default function ClubeNPVOnline() {
         <button type="button" className="clube-live-signout" onClick={signOut}><LogOut size={16}/> Sair</button>
       </div>
       <nav className="clube-live-tabs" aria-label="Navegação do Clube NPV">
-        <button type="button" className={tab==='inicio'?'active':''} onClick={()=>setTab('inicio')}><Wallet size={17}/>Visão geral</button>
-        <button type="button" className={tab==='historico'?'active':''} onClick={()=>setTab('historico')}><History size={17}/>Histórico</button>
-        <button type="button" className={tab==='recompensas'?'active':''} onClick={()=>setTab('recompensas')}><Gift size={17}/>Recompensas</button>
-        <button type="button" className={tab==='parceiros'?'active':''} onClick={()=>setTab('parceiros')}><Award size={17}/>Parceiros</button>
-        <button type="button" className={tab==='instagram'?'active':''} onClick={()=>setTab('instagram')}><Instagram size={17}/>Instagram</button>
+        <button type="button" aria-label="Visão geral" aria-current={tab==='inicio'?'page':undefined} className={tab==='inicio'?'active':''} onClick={()=>setTab('inicio')}><Wallet size={17}/><span className="npv-nav-desktop">Visão geral</span><span className="npv-nav-mobile" aria-hidden="true">Início</span></button>
+        <button type="button" aria-label="Histórico de pontos" aria-current={tab==='historico'?'page':undefined} className={tab==='historico'?'active':''} onClick={()=>setTab('historico')}><History size={17}/><span className="npv-nav-desktop">Histórico</span><span className="npv-nav-mobile" aria-hidden="true">Extrato</span></button>
+        <button type="button" aria-label="Recompensas" aria-current={tab==='recompensas'?'page':undefined} className={tab==='recompensas'?'active':''} onClick={()=>setTab('recompensas')}><Gift size={17}/><span className="npv-nav-desktop">Recompensas</span><span className="npv-nav-mobile" aria-hidden="true">Prêmios</span></button>
+        <button type="button" aria-label="Parceiros" aria-current={tab==='parceiros'?'page':undefined} className={tab==='parceiros'?'active':''} onClick={()=>setTab('parceiros')}><Award size={17}/><span>Parceiros</span></button>
+        <button type="button" aria-label="Instagram" aria-current={tab==='instagram'?'page':undefined} className={tab==='instagram'?'active':''} onClick={()=>setTab('instagram')}><Instagram size={17}/><span>Instagram</span></button>
       </nav>
     </section>}
     <div className="clube-container"><aside className="clube-sidebar">
@@ -496,6 +507,7 @@ export default function ClubeNPVOnline() {
       {tab==='versoes'&&isAdmin&&<ClubeVersionsAdmin onNavigate={setTab}/>}
       {tab==='instagram'&&<ClubeInstagramPanel session={session} isAdmin={isAdmin}/>}
       {tab==='inicio'&&!isAdmin&&<>
+        <ClubeConnectionGuide session={session} strava={stravaConnection} onInstagram={()=>{setTab('instagram');window.scrollTo({top:0,behavior:'smooth'})}} onStrava={openStravaFromGuide}/>
         <section className={`clube-student-summary clube-student-summary-statement${activitiesOpen?' is-open':''}`} aria-label="Seus pontos e extrato">
           <button type="button" className="clube-student-summary-trigger"
             aria-expanded={activitiesOpen} aria-controls="clube-points-statement-content"
@@ -517,7 +529,7 @@ export default function ClubeNPVOnline() {
           </div>}
         </section>
         <BenefitNotice rewards={data.rewards} points={Math.max(0,balance(user.id)-reserved(user.id))} onOpen={()=>setTab('recompensas')}/>
-        <div id="npv-month-challenges-anchor"><ClubeRegisteredActivities session={session}/></div>
+        <div id="npv-month-challenges-anchor"><ClubeRegisteredActivities session={session} onConnectionStatusChange={setStravaConnection}/></div>
         <section className="npv-shop npv-shop-featured"><div className="npv-shop-heading"><div><div className="npv-shop-eyebrow"><Gift size={15}/>LOJINHA DO CLUBE NPV</div><h2>Troque seus pontos ✦</h2><p>Seu próximo objetivo pode estar aqui.</p></div><button className="npv-shop-view-all" onClick={()=>setTab('recompensas')}>Ver catálogo <ArrowRight size={16}/></button></div>{rewardsGrid(4)}<p className="npv-shop-demo-note">A disponibilidade real será confirmada após a aprovação do prêmio e dos parceiros.</p></section>
         {data.partners.some(x=>x.active)&&<section className="npv-partners-section">
           <div className="npv-shop-heading"><div><div className="npv-shop-eyebrow"><Award size={15}/> PARCERIAS NPV</div><h2>Benefícios de parceiros ✦</h2><p>Explore os parceiros e consulte os descontos disponíveis.</p></div>

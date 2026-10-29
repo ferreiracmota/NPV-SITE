@@ -1,0 +1,81 @@
+/* Painel de conexões da aluna. Isolado do admin e dos cards de pontos. */
+.clube-live-student .npv-connect-guide{
+  margin:0 0 19px; padding:20px 22px 17px;
+  border:1px solid #dbe8d6;border-radius:20px;
+  background:linear-gradient(118deg,#fbfdf9 0%,#f0f7eb 100%);
+  box-shadow:0 9px 28px rgba(22,60,31,.055); color:#203728;
+}
+.clube-live-student .npv-connect-heading{display:flex;align-items:flex-start;gap:13px}
+.clube-live-student .npv-connect-symbol{
+  width:40px;height:40px;display:grid;place-items:center;flex:none;
+  border-radius:13px;background:#dff0bc;color:#315329;
+}
+.clube-live-student .npv-connect-heading-text{flex:1;min-width:0}
+.clube-live-student .npv-connect-kicker{
+  display:block;font-size:10px;letter-spacing:.15em;font-weight:850;color:#597549;margin:0 0 3px;
+}
+.clube-live-student .npv-connect-heading h2{font-size:clamp(18px,2.1vw,23px);font-weight:850;letter-spacing:-.035em;line-height:1.15;margin:0}
+.clube-live-student .npv-connect-heading p{margin:6px 0 0;color:#607361;font-size:12px;line-height:1.5;max-width:650px}
+.clube-live-student .npv-connect-count{
+  flex:none;margin-left:auto;white-space:nowrap;border-radius:999px;
+  background:#e8f0e1;color:#345238;padding:7px 10px;font-size:12px;font-weight:800;
+}
+.clube-live-student .npv-connect-count span{font-weight:600;font-size:11px}
+.clube-live-student .npv-connect-items{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:16px}
+.clube-live-student .npv-connect-item{
+  display:flex;gap:11px;align-items:center;min-width:0;padding:13px 13px;
+  background:#fff;border:1px solid #e2e9dd;border-radius:14px;min-height:88px;
+}
+.clube-live-student .npv-connect-item.is-connected{background:rgba(240,248,235,.9)}
+.clube-live-student .npv-connect-app-icon{
+  width:39px;height:39px;display:grid;place-items:center;flex:none;
+  border:1px solid #dfebd8;border-radius:12px;background:#f1f7ed;color:#2a5938;
+}
+.clube-live-student .npv-connect-copy{flex:1;min-width:0}
+.clube-live-student .npv-connect-title-row{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.clube-live-student .npv-connect-title-row strong{font-size:13px;font-weight:800}
+.clube-live-student .npv-connect-state{
+  display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:700;
+  color:#788475;white-space:nowrap;
+}
+.clube-live-student .npv-connect-state.is-connected{color:#357b45}
+.clube-live-student .npv-connect-copy p{margin:6px 0 0;font-size:11px;line-height:1.4;color:#6a786a}
+.clube-live-student .npv-connect-action{
+  border:0;background:#244534;color:#fff;border-radius:9px;display:inline-flex;align-items:center;
+  justify-content:center;gap:4px;flex:none;padding:9px 10px;cursor:pointer;
+  font-size:11px;font-weight:800;white-space:nowrap;transition:background .18s ease;
+}
+.clube-live-student .npv-connect-action:hover{background:#365e37}
+.clube-live-student .npv-connect-footnote{margin:11px 0 0;display:flex;align-items:flex-start;gap:6px;color:#738371;font-size:10px;line-height:1.5}
+.clube-live-student .npv-connect-footnote svg{flex:none;margin-top:1px}
+.clube-live-student .npv-connect-complete{padding-bottom:13px}
+.clube-live-student .npv-connect-complete .npv-connect-items{margin-top:11px}
+.clube-live-student .npv-connect-complete .npv-connect-item{min-height:56px;padding:8px 11px}
+.clube-live-student .npv-connect-complete .npv-connect-app-icon{width:32px;height:32px}
+@media(max-width:900px){
+  .clube-live-student .npv-connect-item{flex-wrap:wrap}
+  .clube-live-student .npv-connect-action{margin-left:50px}
+}
+@media(max-width:760px){
+  .clube-live-student .npv-connect-guide{margin-bottom:15px;padding:16px 13px 13px;border-radius:17px}
+  .clube-live-student .npv-connect-heading{gap:9px}
+  .clube-live-student .npv-connect-symbol{width:35px;height:35px;border-radius:11px}
+  .clube-live-student .npv-connect-heading h2{font-size:18px}
+  .clube-live-student .npv-connect-heading p{font-size:11px}
+  .clube-live-student .npv-connect-count{padding:6px 7px;font-size:11px}
+  .clube-live-student .npv-connect-count span{display:none}
+  .clube-live-student .npv-connect-items{grid-template-columns:1fr;margin-top:13px;gap:8px}
+  .clube-live-student .npv-connect-item{flex-wrap:nowrap;min-height:73px;padding:11px}
+  .clube-live-student .npv-connect-action{margin-left:0;font-size:10px;padding:8px 8px}
+  .clube-live-student .npv-connect-app-icon{width:36px;height:36px}
+  .clube-live-student .npv-connect-title-row{gap:5px}
+  .clube-live-student .npv-connect-copy p{font-size:10px}
+  .clube-live-student .npv-connect-footnote{font-size:10px}
+}
+@media(max-width:365px){
+  .clube-live-student .npv-connect-item{gap:7px;padding:9px}
+  .clube-live-student .npv-connect-app-icon{width:30px;height:30px}
+  .clube-live-student .npv-connect-action{padding:7px 5px;font-size:9px}
+  .clube-live-student .npv-connect-title-row strong{font-size:12px}
+}
+@media(prefers-reduced-motion:reduce){.clube-live-student .npv-connect-action{transition:none}}

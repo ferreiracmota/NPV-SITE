@@ -17,7 +17,7 @@ const sportIcon={Run:'🏃',Walk:'🚶',Ride:'🚴',VirtualRun:'🏃',VirtualRid
 const readableDate=v=>/^\d{4}-\d{2}-\d{2}$/.test(v||'')
   ? v.split('-').reverse().join('/') : 'Data indisponível'
 
-export default function ClubeRegisteredActivities({session}) {
+export default function ClubeRegisteredActivities({session,onConnectionStatusChange}) {
   const [expanded,setExpanded]=useState(()=>new URLSearchParams(window.location.search).has('strava'))
   const [preview,setPreview]=useState(false)
   const [status,setStatus]=useState({connected:false,disabled:false,activities:[]})
@@ -62,10 +62,14 @@ export default function ClubeRegisteredActivities({session}) {
       const data=await response.json()
       if(!signal?.aborted){
         setStatus({connected:!!data.connected,disabled:!!data.disabled,activities:data.activities||[],monthly:data.monthly||null})
+        onConnectionStatusChange?.({checked:true,connected:!!data.connected,disabled:!!data.disabled})
         if(data.error)setError(data.error)
       }
     }catch(e){
-      if(e?.name!=='AbortError'&&!signal?.aborted)setError('Não foi possível verificar a conexão. Tente atualizar.')
+      if(e?.name!=='AbortError'&&!signal?.aborted){
+        setError('Não foi possível verificar a conexão. Tente atualizar.')
+        onConnectionStatusChange?.({checked:false,connected:false,disabled:false})
+      }
     }finally{if(!signal?.aborted)setLoading(false)}
   }
 
@@ -107,6 +111,7 @@ export default function ClubeRegisteredActivities({session}) {
       const data=await response.json()
       if(!response.ok)throw new Error('Não foi possível desconectar')
       setStatus({connected:false,activities:[]})
+      onConnectionStatusChange?.({checked:true,connected:false,disabled:false})
       if(!data.revoked)setError('Desconectado deste navegador. Você também pode revogar o acesso em strava.com/settings/apps.')
     }catch(e){setError(e.message||'Erro ao desconectar.')}finally{setBusy(false)}
   }
