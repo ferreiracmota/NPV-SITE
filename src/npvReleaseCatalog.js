@@ -8,18 +8,21 @@ export const NPV_RELEASES = Object.freeze([
   {
     id: 'clube',
     title: 'Clube de Benefícios',
-    version: '2.1.1',
+    version: '2.1.2',
     versionKind: 'Versão visual aprovada',
-    date: '19/10/2026',
-    description: 'Área exclusiva para alunos e administração de benefícios do Não Pense, Vai!. A interface v2.1.1 é a referência visual atual; melhorias funcionais posteriores não alteram automaticamente essa numeração.',
+    date: '29/10/2026',
+    description: 'Atualização aprovada da experiência do aluno no Clube NPV. A edição v2.1.2 reúne navegação mais intuitiva, melhor leitura do saldo e do extrato, acesso aos prêmios e parceiros e orientação de conexão com Instagram e Strava.',
     features: [
       'Login e perfis protegidos pelo Supabase, com área do aluno e painel administrativo.',
       'Saldo de pontos, extrato de movimentações e regras de pontuação configuráveis.',
       'Corridas e caminhadas consultadas no Strava, com acompanhamento de quilômetros e desafios.',
+      'Vinculação de Instagram com código por Direct, status de conexão e confirmação consultada automaticamente, sem crédito automático de Stories.',
       'Catálogo de recompensas, resgates sujeitos à aprovação e benefícios de parceiros.',
       'Consulta administrativa de assinaturas Hotmart e vínculos confirmados, sem conceder pontos automaticamente.'
     ],
     history: [
+      { date: '29/10/2026', text: 'v2.1.2 — experiência da aluna refinada: cinco abas em uma linha, títulos e espaços mais objetivos, saldo compacto metalizado e extrato com contraste aprimorado.' },
+      { date: '29/10/2026', text: 'Conexões de Instagram e Strava destacadas até serem concluídas; status visual do Instagram e confirmação ao voltar do Direct.' },
       { date: '21/10/2026', text: 'Integração administrativa Hotmart somente leitura e verificação de vínculos.' },
       { date: '20/10/2026', text: 'Refinos do painel de benefícios, atividades e termos do Clube.' },
       { date: '19/10/2026', text: 'Referência visual v2.1.1 para desktop e celular.' }

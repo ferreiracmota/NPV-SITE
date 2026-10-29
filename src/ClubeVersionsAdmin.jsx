@@ -26,8 +26,8 @@ export default function ClubeVersionsAdmin({ onNavigate }) {
       <h2>Mapa de versões e funcionalidades</h2>
       <p>Uma referência única para saber qual edição visual está aprovada, quais recursos cada parte oferece e qual código está publicado nesta página.</p>
       <div className="npv-releases-summary" aria-label="Visão rápida das versões">
-        <span><Layers3 size={16} aria-hidden="true" /> Clube <strong>v2.1.1</strong></span>
-        <span><PanelTop size={16} aria-hidden="true" /> Widget <strong>v2.1.1</strong></span>
+        <span><Layers3 size={16} aria-hidden="true" /> Clube <strong>v{NPV_RELEASES.find(item => item.id === 'clube')?.version || '—'}</strong></span>
+        <span><PanelTop size={16} aria-hidden="true" /> Widget <strong>v{NPV_RELEASES.find(item => item.id === 'widget')?.version || '—'}</strong></span>
         <span><GitCommitHorizontal size={16} aria-hidden="true" /> Site <strong>v{NPV_RELEASES.find(item => item.id === 'site')?.version || '—'}</strong></span>
       </div>
     </div>
@@ -79,7 +79,7 @@ export default function ClubeVersionsAdmin({ onNavigate }) {
 
     <div className="npv-releases-note"><Info size={19} aria-hidden="true" />
       <div><strong>Como manter este registro confiável</strong>
-        <p>Clube, widget e site usam versões de referência aprovadas, atualizadas quando houver uma nova versão definida. Cada parte pode evoluir separadamente a partir da v2.1.1. O identificador técnico do site muda automaticamente em cada build. O histórico acima é uma seleção documentada, não um histórico completo de commits.</p>
+        <p>Clube, widget e site usam versões de referência aprovadas, atualizadas quando houver uma nova versão definida. Cada parte evolui separadamente e seu número de versão só é atualizado quando um novo ciclo é aprovado. O identificador técnico do site muda automaticamente em cada build. O histórico acima é uma seleção documentada, não um histórico completo de commits.</p>
         {typeof onNavigate === 'function' && <button type="button" onClick={() => onNavigate('widget')}>Abrir configurações do widget <ExternalLink size={14} aria-hidden="true" /></button>}
       </div>
     </div>

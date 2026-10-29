@@ -318,3 +318,77 @@
   .npv-floating-club .npv-fw-reward{min-height:145px}
   .npv-floating-club .npv-fw-reward-copy{padding:30px 8px 9px}
 }
+
+
+/* Widget NPV — CTA mais visível no vidro fumê, sem alterar o painel glass.
+   Foco/hover acessíveis; sem pulso, autoplay ou mudança no destino do link. */
+.npv-floating-club .npv-fw-primary.npv-fw-cta-top{
+  position:relative;
+  isolation:isolate;
+  overflow:hidden;
+  min-height:49px;
+  padding:11px 15px;
+  border-radius:13px;
+  border:1px solid rgba(240,255,171,.88);
+  background:linear-gradient(110deg,#d7f178 0%,#c2e65d 48%,#a8d342 100%);
+  color:#16371f!important;
+  font-size:12px;
+  font-weight:900;
+  letter-spacing:.005em;
+  text-shadow:none;
+  box-shadow:
+    0 7px 19px rgba(8,30,11,.23),
+    0 2px 10px rgba(188,230,82,.22),
+    inset 0 1px 0 rgba(255,255,229,.78);
+  transition:background .2s ease,box-shadow .2s ease,transform .2s ease;
+}
+.npv-floating-club .npv-fw-primary.npv-fw-cta-top::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:-1;
+  pointer-events:none;
+  background:linear-gradient(155deg,rgba(255,255,255,.28),transparent 45%);
+}
+.npv-floating-club .npv-fw-primary.npv-fw-cta-top>svg{
+  flex:none;
+  width:19px;
+  height:19px;
+  color:#173b21;
+  stroke-width:2.4;
+  padding:3px;
+  box-sizing:content-box;
+  border-radius:50%;
+  background:rgba(20,60,26,.10);
+  transition:transform .2s ease,background .2s ease;
+}
+.npv-floating-club .npv-fw-primary.npv-fw-cta-top:hover{
+  background:linear-gradient(110deg,#e1f890,#cdee70 50%,#b2de4e);
+  box-shadow:0 9px 24px rgba(8,30,11,.29),0 2px 13px rgba(197,240,90,.30),inset 0 1px 0 rgba(255,255,241,.85);
+  transform:translateY(-1px);
+}
+.npv-floating-club .npv-fw-primary.npv-fw-cta-top:hover>svg{
+  transform:translateX(2px);
+  background:rgba(20,60,26,.15);
+}
+.npv-floating-club .npv-fw-primary.npv-fw-cta-top:active{
+  transform:translateY(0);
+}
+.npv-floating-club .npv-fw-primary.npv-fw-cta-top:focus-visible{
+  outline:3px solid #eaff93;
+  outline-offset:3px;
+}
+@media(max-width:767px){
+  .npv-floating-club .npv-fw-primary.npv-fw-cta-top{
+    min-height:47px;
+    font-size:12px;
+    padding:10px 12px;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .npv-floating-club .npv-fw-primary.npv-fw-cta-top,
+  .npv-floating-club .npv-fw-primary.npv-fw-cta-top>svg{
+    transition:none;
+    transform:none;
+  }
+}
