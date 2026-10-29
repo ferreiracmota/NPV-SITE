@@ -91,9 +91,9 @@ test('vínculo e pendência restrita a assinaturas ativas quando Auth confirmado
  const list=[normalizeSubscription(raw[0]),normalizeSubscription(raw[1]),normalizeSubscription(raw[20])]
  const fakeSvc={
   from:table=>table==='clube_point_events'
-    ?{select:()=>({eq:()=>({order:()=>({order:()=>({
+    ?{select:()=>({eq:()=>({order:()=>({
       range:async()=>({data:[{id:'e1',points:820},{id:'e2',points:-150}],error:null})
-    })})})})}
+    })})})}
     :{select:()=>({range:async()=>({data:[{id:'user-01',email:'fake0@example.invalid',approved:true}],error:null})})},
   auth:{admin:{getUserById:async()=>({data:{user:{id:'user-01',email:'fake0@example.invalid',email_confirmed_at:'2026-01-01T00:00:00Z'}},error:null})}}
  }
