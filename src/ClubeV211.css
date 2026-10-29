@@ -927,3 +927,30 @@
     font-size:26px;
   }
 }
+
+
+/* Contraste do extrato expandido sobre o fundo verde do saldo.
+   A regra editorial geral de .clube-activity-description strong, carregada
+   depois de ClubeNPVOnline.css, não deve escurecer estes lançamentos. */
+.clube-shell.clube-live-student .clube-student-summary-statement .clube-student-statement-body .clube-activity-description strong{
+  color:#f5faef;
+  font-size:12px;
+  font-weight:800;
+  line-height:1.45;
+  text-shadow:0 1px 2px rgba(4,20,10,.24);
+}
+.clube-shell.clube-live-student .clube-student-summary-statement .clube-student-statement-body .clube-activity-description>span{
+  color:#e3eee0;
+}
+.clube-shell.clube-live-student .clube-student-summary-statement .clube-student-statement-body .clube-activity-description small{
+  color:#c9d8c7;
+}
+.clube-shell.clube-live-student .clube-student-summary-statement .clube-student-statement-body .clube-activity-points{
+  color:#ddf278;
+}
+.clube-shell.clube-live-student .clube-student-summary-statement .clube-student-statement-body .clube-activity-points.clube-negative{
+  color:#ffbcb4;
+}
+.clube-shell.clube-live-student .clube-student-summary-statement .clube-student-statement-body .clube-activity{
+  border-top-color:rgba(237,248,228,.20);
+}
