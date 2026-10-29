@@ -253,7 +253,7 @@ export default function ClubeNPVOnline() {
   },[user?.id,profile?.id,profile?.approved,isAdmin])
   useEffect(()=>{refresh()},[refresh])
   const approved=profile?.approved || isAdmin
-  const balance=id=>data.events.filter(x=>x.student_id===id && isThisYear(x)).reduce((acc,x)=>acc+x.points,0)
+  const balance=id=>data.events.filter(x=>x.student_id===id).reduce((acc,x)=>acc+x.points,0)
   const reserved=id=>data.requests.filter(x=>x.student_id===id && x.status==='pending').reduce((acc,x)=>acc+x.points,0)
   const mine=useMemo(()=>data.events.filter(x=>x.student_id===user?.id),[data.events,user?.id])
   const mineRequests=useMemo(()=>data.requests.filter(x=>x.student_id===user?.id),[data.requests,user?.id])
