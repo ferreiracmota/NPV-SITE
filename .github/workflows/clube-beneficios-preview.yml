@@ -29,3 +29,5 @@ jobs:
         run: pnpm install --frozen-lockfile --ignore-scripts
       - name: Build React/Vite app
         run: pnpm run build
+      - name: Test Clube email notification candidates
+        run: node --test clube/email/notificationCandidates.test.mjs
