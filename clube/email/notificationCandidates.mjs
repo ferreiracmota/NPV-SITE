@@ -9,15 +9,20 @@ export function eligibleClubeEmails({profiles=[],preferences=[],admins=[],reward
   const result=[]
   for(const member of approved){
     const pref=opt.get(member.id)
-    if(!pref||(!pref.notify_unlocks&&!pref.notify_new_rewards))continue
+    // Avisos operacionais habilitados para alunos aprovados por padrão.
+    // Preferências registradas de cancelamento continuam sendo respeitadas.
+    const notifyUnlocks=pref?.notify_unlocks!==false
+    const notifyNewRewards=pref?.notify_new_rewards!==false
+    if(!notifyUnlocks&&!notifyNewRewards)continue
     const studentEvents=events.filter(e=>e.student_id===member.id&&e.is_test!==true)
     const total=studentEvents.reduce((s,e)=>s+Number(e.points||0),0)
     const reserved=redemptions.filter(e=>e.student_id===member.id&&e.status==='pending'&&e.is_test!==true)
       .reduce((s,e)=>s+Number(e.points||0),0)
     const available=Math.max(0,total-reserved)
     const common={studentId:member.id,email:member.email,firstName:(member.full_name||'').trim().split(/\s+/)[0]||'Aluna',available}
-    if(pref.notify_new_rewards){
-      const since=Math.max(Date.parse(settings.catalog_since||'')||0,Date.parse(pref.created_at||'')||now)
+    if(notifyNewRewards){
+      // Marco de ativação evita qualquer disparo retroativo de prêmios antigos.
+      const since=Math.max(Date.parse(settings.catalog_since||'')||now,Date.parse(pref?.created_at||'')||0)
       const fresh=liveRewards.filter(r=>(Date.parse(r.created_at||'')||0)>since)
         .sort((a,b)=>String(b.created_at||'').localeCompare(String(a.created_at||'')))
       const reward=fresh.find(r=>!sent.has('new:'+member.id+':'+r.id))
@@ -25,10 +30,10 @@ export function eligibleClubeEmails({profiles=[],preferences=[],admins=[],reward
         result.push({...common,kind:'new_reward',reward,duplicateKey:'new:'+member.id+':'+reward.id})
       }
     }
-    if(pref.notify_unlocks){
-      // Não notificar recompensas já acessíveis ANTES da opção de receber avisos.
-      // O evento real após o consentimento precisa cruzar a meta de pontos.
-      const since=Date.parse(pref.updated_at||pref.created_at||'')||now
+    if(notifyUnlocks){
+      // Só um ganho real após a ativação pode cruzar o limiar de pontos.
+      // Não notificar premiações já disponíveis antes de ligar a rotina.
+      const since=Math.max(Date.parse(settings.catalog_since||'')||now,Date.parse(pref?.created_at||'')||0)
       const recentGain=studentEvents.filter(e=>(Date.parse(e.created_at||'')||0)>since)
         .reduce((s,e)=>s+Number(e.points||0),0)
       const previous=Math.max(0,available-recentGain)
@@ -44,7 +49,7 @@ export function eligibleClubeEmails({profiles=[],preferences=[],admins=[],reward
   // Um aviso de cada tipo por pessoa a cada execução; máximo global antes do envio.
   return result.slice(0,80)
 }
-export function emailContent(candidate){
+export function emailContent(candidate,{unsubscribeUrl=''}={}){
   const escape=s=>String(s??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]))
   const name=escape(candidate.firstName),prize=escape(candidate.reward.name)
   const points=Number(candidate.reward.points).toLocaleString('pt-BR')
@@ -56,6 +61,9 @@ export function emailContent(candidate){
     :`O prêmio <strong>${prize}</strong> chegou à lojinha por ${points} pontos. Confira no Clube se você já pode resgatar!`
   const text=unlocked?`Oi, ${candidate.firstName}! Você tem ${available} pontos e já pode solicitar o prêmio ${candidate.reward.name} (${points} pontos). Acesse https://www.naopensevai.com/clube. A disponibilidade é confirmada no momento do pedido.`
     :`Oi, ${candidate.firstName}! Chegou à lojinha do Clube NPV: ${candidate.reward.name}, por ${points} pontos. Acesse https://www.naopensevai.com/clube para conferir.`
-  const html=`<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"></head><body style="margin:0;background:#f4f4f1;font-family:Arial,Helvetica,sans-serif;color:#111"><main style="max-width:560px;margin:32px auto;padding:32px;background:#fff;border-radius:16px"><p style="font-size:12px;letter-spacing:1px;font-weight:700">NÃO PENSE, VAI! ✦ CLUBE DE BENEFÍCIOS</p><h1 style="font-size:28px;line-height:1.2">${title}</h1><p>Oi, ${name}! 💚</p><p style="line-height:1.7">${phrase}</p><a href="https://www.naopensevai.com/clube" style="display:inline-block;background:#131313;color:#fff;text-decoration:none;padding:14px 20px;border-radius:8px;font-weight:bold">Ver a lojinha do Clube</a><p style="font-size:12px;color:#666;line-height:1.6;margin-top:28px">Prêmios sujeitos à disponibilidade e confirmação do pedido. Você recebeu este aviso porque optou por notificações no Clube NPV. Para parar de recebê-las, acesse o Clube e desative os avisos na sua área.</p></main></body></html>`
-  return {subject,html,text}
+  const safeUnsubscribe=unsubscribeUrl&&/^https:\/\/www\.naopensevai\.com\/api\/clube\/email-unsubscribe\?/.test(unsubscribeUrl)?escape(unsubscribeUrl):''
+  const footer=safeUnsubscribe?`<a href="${safeUnsubscribe}" style="color:#555">Cancelar avisos por e-mail</a>`:''
+  const textWithOptout= text+(safeUnsubscribe?' Para cancelar estes avisos: '+unsubscribeUrl:'')
+  const html=`<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"></head><body style="margin:0;background:#f4f4f1;font-family:Arial,Helvetica,sans-serif;color:#111"><main style="max-width:560px;margin:32px auto;padding:32px;background:#fff;border-radius:16px"><p style="font-size:12px;letter-spacing:1px;font-weight:700">NÃO PENSE, VAI! ✦ CLUBE DE BENEFÍCIOS</p><h1 style="font-size:28px;line-height:1.2">${title}</h1><p>Oi, ${name}! 💚</p><p style="line-height:1.7">${phrase}</p><a href="https://www.naopensevai.com/clube" style="display:inline-block;background:#131313;color:#fff;text-decoration:none;padding:14px 20px;border-radius:8px;font-weight:bold">Ver a lojinha do Clube</a><p style="font-size:12px;color:#666;line-height:1.6;margin-top:28px">Prêmios sujeitos à disponibilidade e confirmação do pedido. Este é um aviso sobre os benefícios do seu Clube NPV. ${footer}</p></main></body></html>`
+  return {subject,html,text:textWithOptout}
 }

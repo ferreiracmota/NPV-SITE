@@ -1,5 +1,6 @@
 import {createClient} from '@supabase/supabase-js'
 import {eligibleClubeEmails,emailContent} from '../../clube/email/notificationCandidates.mjs'
+import {emailUnsubscribeUrl} from '../../clube/email/unsubscribe.mjs'
 export const config={maxDuration:60}
 const respond=(res,status,payload)=>res.writeHead(status,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff'}).end(JSON.stringify(payload))
 async function allRows(db,table,columns){
@@ -49,11 +50,16 @@ export default async function handler(req,res){
         throw new Error('dispatch_log_unavailable')
       }
       try{
-        const message=emailContent(item)
+        const unsubscribeUrl=emailUnsubscribeUrl(item.studentId,secret)
+        const message=emailContent(item,{unsubscribeUrl})
         const response=await fetch('https://api.resend.com/emails',{
           method:'POST',headers:{Authorization:`Bearer ${resend}`,'Content-Type':'application/json'},
           body:JSON.stringify({from:'Não Pense, Vai! <clube@naopensevai.com>',
-            to:[item.email],subject:message.subject,html:message.html,text:message.text})
+            to:[item.email],subject:message.subject,html:message.html,text:message.text,
+            headers:{
+              'List-Unsubscribe':'<'+unsubscribeUrl+'>',
+              'List-Unsubscribe-Post':'List-Unsubscribe=One-Click'
+            }})
         })
         if(!response.ok){
           await db.from('clube_email_dispatches').update({status:'failed',error_code:`resend_http_${response.status}`})
