@@ -7,12 +7,12 @@ import './ClubeStudentProfile.css'
 const fmt=n=>Number(n||0).toLocaleString('pt-BR')
 const joined=date=>date?new Date(date).toLocaleDateString('pt-BR',{month:'short',year:'numeric'}):'—'
 const CARD_IMAGES={
-  1:'/clube/cards/bronze.webp',
-  2:'/clube/cards/prata.webp',
-  3:'/clube/cards/ouro.webp',
-  4:'/clube/cards/platinum.webp',
-  5:'/clube/cards/diamante.webp',
-  6:'/clube/cards/black.webp'
+  1:'/clube/cards/bronze.webp?v=20261030-clean',
+  2:'/clube/cards/prata.webp?v=20261030-clean',
+  3:'/clube/cards/ouro.webp?v=20261030-clean',
+  4:'/clube/cards/platinum.webp?v=20261030-clean',
+  5:'/clube/cards/diamante.webp?v=20261030-clean',
+  6:'/clube/cards/black.webp?v=20261030-clean'
 }
 function memberDisplayName(name){
   const parts=String(name||'').trim().split(/\s+/).filter(Boolean)
