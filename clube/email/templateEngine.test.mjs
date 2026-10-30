@@ -42,7 +42,20 @@ test('desafio exige confirmação real strava:challenge:',()=>{
  assert.equal(eligibleClubeEmails({...base,templates:[template],events:[{...e,reference_id:'strava:challenge:2026-11'}]},now).length,1)
 })
 test('tipos adicionais são suportados com gatilhos fixos e não criam novas funções',()=>{
- assert.deepEqual(Object.keys(EMAIL_PRESETS).sort(),['birthday','challenge_completed','new_reward','referral','renewal','reward_unlocked'].sort())
+ assert.deepEqual(Object.keys(EMAIL_PRESETS).sort(),['birthday','birthday_inactive','challenge_completed','new_reward','referral','renewal','reward_unlocked'].sort())
  const cfg=JSON.parse(readFileSync(new URL('../../vercel.json',import.meta.url),'utf8'))
  assert.ok(cfg.rewrites.some(r=>r.source==='/api/clube/email-admin'&&r.destination==='/api/clube/student-connections?npv_admin_route=email'))
+})
+
+test('aniversário de ex-aluna nunca concede pontos nem dispara como aniversário ativo',()=>{
+ const template=defaultFor('birthday_inactive')
+ assert.equal(template.enabled,false)
+ assert.equal(validateTemplate(template),'')
+ const rendered=renderTemplateEmail({firstName:'Maria',eventPoints:100,available:0},{template})
+ assert.match(rendered.html,/Maria/)
+ assert.match(rendered.html,/https:\/\/www\.naopensevai\.com\//)
+ assert.doesNotMatch(rendered.text,/100 pontos|recebeu .* pontos/i)
+ assert.doesNotMatch(rendered.html,/Prêmios sujeitos à disponibilidade/)
+ const adminRecords=eligibleClubeEmails({...base,templates:[{...template,enabled:true,active_since:'2026-11-01T00:00:00Z'}]},now)
+ assert.equal(adminRecords.some(x=>x.kind==='birthday_inactive'),false)
 })
