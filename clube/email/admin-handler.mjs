@@ -36,6 +36,18 @@ export async function handleClubeEmailAdmin(req,res){
   }
   if(!req.body||typeof req.body!=='object'||JSON.stringify(req.body).length>7500)return reply(res,400,{status:'invalid_payload'})
   const mode=clean(req.body.action)
+  if(req.method==='POST'&&mode==='free_access'){
+   const id=clean(req.body.student_id)
+   const enabled=req.body.enabled
+   if(!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)||typeof enabled!=='boolean')return reply(res,400,{status:'invalid_access_data'})
+   const {data:profile,error:profileError}=await db.from('clube_profiles').select('id,approved').eq('id',id).maybeSingle()
+   if(profileError||!profile?.approved)return reply(res,403,{status:'profile_not_approved'})
+   const {data:adminTarget}=await db.from('clube_admins').select('user_id').eq('user_id',id).maybeSingle()
+   if(adminTarget)return reply(res,403,{status:'cannot_grant_admin'})
+   const {error}=await db.from('clube_birthday_free_access').upsert({student_id:id,enabled,updated_by:auth.user.id,updated_at:new Date().toISOString()},{onConflict:'student_id'})
+   if(error)return reply(res,503,{status:'free_access_save_failed'})
+   return reply(res,200,{status:'saved',student_id:id,enabled})
+  }
   if(req.method==='POST'&&mode==='create'){
    const key=clean(req.body.key)
    if(!SUPPORTED_NEW_EMAILS.includes(key))return reply(res,400,{status:'unsupported_trigger'})
@@ -48,9 +60,6 @@ export async function handleClubeEmailAdmin(req,res){
    const body=req.body.template
    const err=validateTemplate(body)
    if(err)return reply(res,400,{status:'invalid_template',message:err})
-   // Segurança: um modelo para ex-alunas nunca é ativado sem consulta de assinatura
-   // e consentimento de comunicação implementados e verificados no backend.
-   if(body.key==='birthday_inactive'&&body.enabled)return reply(res,409,{status:'inactive_birthday_automation_not_ready',message:'O aviso de ex-alunas permanece desativado até a integração de assinatura e permissão de contato.'})
    const {data:old,error:fetchError}=await db.from('clube_email_templates').select('enabled').eq('key',body.key).maybeSingle()
    if(fetchError||!old)return reply(res,404,{status:'template_not_found'})
    const next={name:clean(body.name),subject:clean(body.subject),headline:clean(body.headline),body:clean(body.body),button_label:clean(body.button_label),enabled:body.enabled,updated_at:new Date().toISOString()}
