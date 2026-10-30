@@ -1,0 +1,6 @@
+/* Dia/mês do aniversário: cadastro e Minha Conta, desktop e mobile. */
+.npv-birthday-inputs{display:grid!important;grid-template-columns:minmax(88px,110px) minmax(0,1fr);gap:9px;width:100%;min-width:0}
+.npv-birthday-inputs select{width:100%;min-width:0;min-height:44px;border:1px solid #d7e1d5;background:#fff;border-radius:9px;padding:10px 12px;font-family:inherit;font-size:13px;color:#24332a;box-sizing:border-box}
+.npv-birthday-inputs select:focus{outline:2px solid #a3be3a66;border-color:#88a635}
+.clube-form label>small,.npv-profile-form label>small{font-size:11px;line-height:1.5;font-weight:450;color:#758270}
+@media(max-width:460px){.npv-birthday-inputs{grid-template-columns:minmax(75px,100px) minmax(0,1fr)}.npv-birthday-inputs select{padding:10px 8px}}
