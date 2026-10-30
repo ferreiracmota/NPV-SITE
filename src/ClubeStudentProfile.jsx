@@ -15,7 +15,7 @@ const CARD_IMAGES={
   6:'/clube/cards/black.webp'
 }
 function memberDisplayName(name){
-  const parts=String(name||'').trim().split(/\\s+/).filter(Boolean)
+  const parts=String(name||'').trim().split(/\s+/).filter(Boolean)
   return parts.length>1?parts[0]+' '+parts[parts.length-1]:(parts[0]||'Aluna NPV')
 }
 async function drawCard(name,progress){
