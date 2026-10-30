@@ -1,0 +1,47 @@
+.npv-email-center{display:grid;gap:20px;min-width:0}
+.npv-email-heading{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.npv-email-heading h2{font-size:23px;letter-spacing:-.8px;color:#203a2a;margin:4px 0}
+.npv-email-heading p{font-size:12px;color:#6f7c71;line-height:1.6;max-width:620px;margin:0}
+.npv-email-layout{display:grid;grid-template-columns:minmax(210px,.76fr) minmax(0,2fr);align-items:start;gap:16px}
+.npv-email-list,.npv-email-editor,.npv-email-history{background:#fff;border:1px solid #dfe9dd;border-radius:16px;padding:19px;min-width:0}
+.npv-email-list>h3,.npv-email-section-title h3{font-size:15px;color:#29432e;margin:0 0 12px}
+.npv-email-list-item{display:grid;gap:6px;width:100%;text-align:left;background:#f9fbf8;border:1px solid #e4ebdf;border-radius:12px;padding:13px;margin:0 0 10px;font:inherit;cursor:pointer}
+.npv-email-list-item.is-current{background:#eff6e9;border-color:#8eb978;box-shadow:inset 3px 0 #719c5c}
+.npv-email-list-name{display:flex;gap:8px;align-items:center;color:#324c34;font-size:13px}
+.npv-email-list-item small,.npv-email-new small,.npv-email-event,.npv-email-muted{color:#778775;font-size:11px;line-height:1.5}
+.npv-email-status{font-size:10px;font-weight:750;border-radius:30px;padding:3px 9px;background:#eef0ec;color:#647262;justify-self:start}
+.npv-email-status.is-active{background:#e7f4dc;color:#46752c}
+.npv-email-new{display:grid;gap:10px;border-top:1px solid #e3e9df;padding-top:17px;margin-top:9px}
+.npv-email-new>strong{color:#29432e;font-size:13px}
+.npv-email-new>label{font-size:11px;color:#72806e}
+.npv-email-new select,.npv-email-fields input:not([type=checkbox]),.npv-email-fields textarea{font:inherit;font-size:13px;width:100%;border:1px solid #d8e2d6;border-radius:9px;padding:11px 12px;background:#fff;color:#26372b}
+.npv-email-new select{min-height:42px}
+.npv-email-editor{display:grid;gap:16px}
+.npv-email-section-title{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.npv-email-section-title h3{display:flex;align-items:center;gap:7px;margin:0}
+.npv-email-fields{display:grid;gap:13px}
+.npv-email-fields>label:not(.npv-email-toggle){display:grid;gap:6px;color:#374b39;font-size:12px;font-weight:750}
+.npv-email-fields textarea{line-height:1.6;resize:vertical;min-height:130px}
+.npv-email-tokens{font-size:11px;color:#6e7d6b;line-height:2.5}
+.npv-email-tokens code{background:#f0f5eb;border:1px solid #e3eadc;border-radius:5px;font-size:11px;padding:4px;margin:0 2px;white-space:nowrap;color:#36552e}
+.npv-email-toggle{display:flex;align-items:center;gap:12px;background:#f3f8ef;border:1px solid #e5eddf;border-radius:10px;padding:13px;cursor:pointer}
+.npv-email-toggle input{width:17px;height:17px;accent-color:#4c7839}
+.npv-email-toggle span{display:grid;gap:2px}.npv-email-toggle strong{font-size:12px;color:#29452e}.npv-email-toggle small{font-size:10px;color:#7a8676}
+.npv-email-actions{display:flex;gap:9px;flex-wrap:wrap}.npv-email-actions button{font-size:12px}
+.npv-email-preview-head h3{display:flex;align-items:center;gap:8px;font-size:14px;margin:0;color:#29452e}
+.npv-email-preview-head small{font-size:11px;color:#7a8a76}
+.npv-email-preview-frame{width:100%;height:510px;border:1px solid #e4e4e1;border-radius:12px;background:#f4f4f1}
+.npv-email-alert,.npv-email-success{display:flex;gap:8px;align-items:center;padding:12px 14px;font-size:12px;border-radius:10px;margin:0}
+.npv-email-alert{background:#fdf1ed;color:#963d29}.npv-email-success{background:#edf7e7;color:#3d672b}
+.npv-email-history-scroll{overflow-x:auto}.npv-email-history table{width:100%;border-collapse:collapse;font-size:12px;text-align:left;min-width:460px}
+.npv-email-history th{font-size:10px;color:#81917e;text-transform:uppercase;letter-spacing:.5px}.npv-email-history td,.npv-email-history th{padding:12px 8px;border-bottom:1px solid #edf0ea}
+.npv-email-empty{padding:50px 8px;text-align:center;color:#7f8b7d;font-size:13px}
+.npv-admin-connections-tabs{display:flex;gap:8px;margin:0 0 18px;flex-wrap:wrap}
+.npv-admin-connections-tabs button{display:flex;align-items:center;gap:7px;background:#f4f7f1;color:#5d7658;border:1px solid #dce7d7;border-radius:10px;padding:11px 17px;font:inherit;font-size:13px;font-weight:800;cursor:pointer}
+.npv-admin-connections-tabs button.active{background:#27442f;color:#fff;border-color:#27442f}
+.clube-live-admin .npv-admin-settings-nav{margin:5px 0 0;border-top:1px solid #ffffff20;padding-top:7px}
+.clube-live-admin .npv-admin-settings-nav>summary{display:flex;align-items:center;gap:10px;padding:11px 12px;cursor:pointer;color:#e1f0dd;font-size:13px;font-weight:700;list-style:none}
+.clube-live-admin .npv-admin-settings-nav>summary::-webkit-details-marker{display:none}
+.clube-live-admin .npv-admin-settings-nav>button{width:100%;padding-left:34px}
+@media(max-width:900px){.npv-email-layout{grid-template-columns:1fr}.npv-email-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.npv-email-list>h3,.npv-email-new{grid-column:1/-1}.npv-email-list-item{margin:0}}
+@media(max-width:760px){.npv-email-center{gap:13px}.npv-email-heading{align-items:start}.npv-email-heading h2{font-size:20px}.npv-email-heading>button{flex-shrink:0}.npv-email-list,.npv-email-editor,.npv-email-history{padding:15px}.npv-email-list{grid-template-columns:1fr}.npv-email-list>h3{margin-bottom:1px}.npv-email-new{grid-column:auto}.npv-email-preview-frame{height:430px}.npv-email-actions button{flex:1}.clube-live-admin .npv-admin-settings-nav{margin:0;padding-top:0;border-top:0}}
