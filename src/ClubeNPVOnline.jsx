@@ -522,12 +522,11 @@ export default function ClubeNPVOnline() {
         {isAdmin&&<button className={tab==='alunos'?'active':''} onClick={()=>setTab('alunos')}><Users size={18}/>Alunos</button>}
         {isAdmin&&<button className={tab==='hotmart'?'active':''} onClick={()=>setTab('hotmart')}><CreditCard size={18}/>Hotmart — Assinaturas</button>}
         {!isAdmin&&<button className={tab==='perfil'?'active':''} onClick={()=>setTab('perfil')}><UserRound size={18}/>Meu perfil</button>}
-        <button className={tab==='historico'?'active':''} onClick={()=>setTab('historico')}><History size={18}/>Histórico</button>
+        <button className={tab==='historico'?'active':''} onClick={()=>setTab('historico')}><History size={18}/>{isAdmin?'Pontos e histórico':'Histórico'}</button>
         {isAdmin&&<span className="npv-admin-nav-group-label">BENEFÍCIOS E COMUNIDADE</span>}
         <button className={tab==='recompensas'?'active':''} onClick={()=>setTab('recompensas')}><Gift size={18}/>Recompensas</button>
         <button className={tab==='parceiros'?'active':''} onClick={()=>setTab('parceiros')}><Award size={18}/>Parceiros</button>
         {isAdmin?<button className={tab==='conexoes'?'active':''} onClick={()=>setTab('conexoes')}><Link2 size={18}/>Conexões · Instagram / Strava</button>:<button className={tab==='instagram'?'active':''} onClick={()=>setTab('instagram')}><Instagram size={18}/>Instagram · Stories</button>}
-        {isAdmin&&<span className="npv-admin-nav-group-label">CONFIGURAÇÕES</span>}
         {isAdmin&&<details className="npv-admin-settings-nav" defaultOpen={['email','widget','versoes'].includes(tab)}><summary><Settings2 size={18}/>Configurações <ChevronDown size={14}/></summary>
           <button className={tab==='email'?'active':''} onClick={()=>setTab('email')}><Mail size={17}/>E-mails automáticos</button>
           <button className={tab==='widget'?'active':''} onClick={()=>setTab('widget')}><SlidersHorizontal size={17}/>Widget do site</button>
