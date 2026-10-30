@@ -48,6 +48,9 @@ export async function handleClubeEmailAdmin(req,res){
    const body=req.body.template
    const err=validateTemplate(body)
    if(err)return reply(res,400,{status:'invalid_template',message:err})
+   // Segurança: um modelo para ex-alunas nunca é ativado sem consulta de assinatura
+   // e consentimento de comunicação implementados e verificados no backend.
+   if(body.key==='birthday_inactive'&&body.enabled)return reply(res,409,{status:'inactive_birthday_automation_not_ready',message:'O aviso de ex-alunas permanece desativado até a integração de assinatura e permissão de contato.'})
    const {data:old,error:fetchError}=await db.from('clube_email_templates').select('enabled').eq('key',body.key).maybeSingle()
    if(fetchError||!old)return reply(res,404,{status:'template_not_found'})
    const next={name:clean(body.name),subject:clean(body.subject),headline:clean(body.headline),body:clean(body.body),button_label:clean(body.button_label),enabled:body.enabled,updated_at:new Date().toISOString()}
