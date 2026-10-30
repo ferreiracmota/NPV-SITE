@@ -1,0 +1,28 @@
+name: NPV — QA notificacoes automaticas por e-mail
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'api/clube/email-*.js'
+      - 'clube/email/**'
+      - 'src/ClubeNPVOnline.jsx'
+      - '.github/workflows/clube-email-auto-qa.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  email-tests-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: pnpm
+      - name: Instalar dependencias sem alterar lockfile
+        run: pnpm install --frozen-lockfile
+      - name: Testar regras de email, preferencia e cancelamento
+        run: node --test clube/email/*.test.mjs
+      - name: Compilar site completo
+        run: pnpm run build
