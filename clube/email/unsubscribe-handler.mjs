@@ -26,7 +26,7 @@ export async function handleClubeEmailUnsubscribe(req,res){
     return page(res,400,'Link inválido','Não foi possível validar o cancelamento.')
   if(req.method==='GET'){
     const action='/api/clube/email-unsubscribe?student='+encodeURIComponent(student)+'&token='+encodeURIComponent(token)
-    return page(res,200,'Avisos por e-mail','Deseja deixar de receber os avisos de pontos e novos prêmios do Clube NPV?',
+    return page(res,200,'Avisos por e-mail','Deseja deixar de receber e-mails do Clube NPV, incluindo avisos de pontos, prêmios e aniversários?',
       '<form method="post" action="'+action+'"><button type="submit" style="border:0;background:#171717;color:white;padding:14px 20px;border-radius:8px;cursor:pointer">Cancelar avisos por e-mail</button></form>')
   }
   const dbUrl=process.env.VITE_CLUBE_SUPABASE_URL||process.env.SUPABASE_URL
@@ -39,7 +39,7 @@ export async function handleClubeEmailUnsubscribe(req,res){
       updated_at:new Date().toISOString()
     },{onConflict:'student_id'})
     if(error)throw error
-    return page(res,200,'Avisos cancelados','Você não receberá mais e-mails de pontos suficientes ou novos prêmios. Seus pontos e o acesso ao Clube continuam iguais.')
+    return page(res,200,'Avisos cancelados','Você não receberá mais avisos automáticos do Clube NPV, inclusive de aniversários. Seus pontos e o acesso continuam iguais.')
   }catch{
     return page(res,503,'Não foi possível cancelar','Tente novamente mais tarde.')
   }

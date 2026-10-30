@@ -302,3 +302,17 @@ export async function readLiveSnapshot(env,{fetcher=fetch,createClientFn,adminCl
   complete:true
  }
 }
+
+// Consulta leve e completa dos STATUS atuais para aniversários: não consulta pagamentos,
+// não classifica cobranças como renovação e não persiste dados pessoais.
+export async function readBirthdaySubscriptionSnapshot(env,{fetcher=fetch}={}){
+ if(env.HOTMART_ALLOWED_PRODUCT_IDS!=='6304828')throw new Error('hotmart_product_allowlist_missing')
+ if(!env.HOTMART_CLIENT_ID||!env.HOTMART_CLIENT_SECRET||!env.HOTMART_BASIC_TOKEN)
+  throw new Error('hotmart_credentials_missing')
+ const token=await oauth(env,fetcher)
+ const raw=await pageAll(HOTMART_API+'/payments/api/v1/subscriptions?product_id=6304828&accession_date=1',token,fetcher)
+ const subscriptions=raw.map(normalizeSubscription).filter(Boolean)
+ if(raw.length!==subscriptions.length||new Set(subscriptions.map(x=>x.id)).size!==subscriptions.length)
+  throw new Error('hotmart_status_snapshot_incomplete')
+ return {complete:true,subscriptions,synced_at:new Date().toISOString()}
+}

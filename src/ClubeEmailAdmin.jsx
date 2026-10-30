@@ -66,12 +66,12 @@ export default function ClubeEmailAdmin({session}){
   <div className="npv-email-layout">
    <div className="npv-email-list">
     <h3>Modelos cadastrados</h3>
-    {items.map(t=><button type="button" key={t.key} className={'npv-email-list-item'+(chosen===t.key?' is-current':'')} onClick={()=>select(t)}><span className="npv-email-list-name"><Mail size={17}/><strong>{t.name}</strong></span><small>{EMAIL_PRESETS[t.key]?.event}</small><span className={'npv-email-status'+(t.enabled?' is-active':'')}>{t.key==='birthday_inactive'?'Preparando':t.enabled?'Ativo':'Desativado'}</span></button>)}
+    {items.map(t=><button type="button" key={t.key} className={'npv-email-list-item'+(chosen===t.key?' is-current':'')} onClick={()=>select(t)}><span className="npv-email-list-name"><Mail size={17}/><strong>{t.name}</strong></span><small>{EMAIL_PRESETS[t.key]?.event}</small><span className={'npv-email-status'+(t.enabled?' is-active':'')}>{t.enabled?'Ativo':'Desativado'}</span></button>)}
     {available.length>0&&<div className="npv-email-new"><strong>Adicionar outro aviso</strong><label htmlFor="npv-email-event">Acontecimento que autoriza o envio</label><select id="npv-email-event" value={newKind} onChange={e=>setNewKind(e.target.value)}><option value="">Selecionar acontecimento</option>{available.map(k=><option key={k} value={k}>{EMAIL_PRESETS[k].name}</option>)}</select><button className="clube-btn clube-btn-outline" type="button" onClick={create} disabled={!newKind||!!busy}><Plus size={15}/> Adicionar desativado</button><small>Não são enviados e-mails sem um gatilho real registrado.</small></div>}
    </div>
    <div className="npv-email-editor">
     {draft?<><div className="npv-email-section-title"><h3>Editar modelo</h3><span className="npv-email-event">Gatilho: {EMAIL_PRESETS[draft.key]?.event}</span></div>
-      {draft.key==='birthday_inactive'&&<p className="npv-email-muted">Este modelo está pronto para editar, visualizar e testar. O envio real permanece bloqueado até validarmos a assinatura inativa e a autorização para receber e-mails. Nenhum ponto será concedido.</p>}
+      {draft.key==='birthday_inactive'&&<p className="npv-email-muted">Este modelo envia apenas se a Hotmart confirmar a assinatura encerrada, não houver assinatura ativa nem acesso gratuito, e a ex-aluna tiver autorizado os parabéns no perfil. Não concede pontos; sem confirmação, não envia.</p>}
       <div className="npv-email-fields">
        <label>Nome interno<input value={draft.name} maxLength={80} onChange={e=>set('name',e.target.value)}/></label>
        <label>Assunto do e-mail<input value={draft.subject} maxLength={180} onChange={e=>set('subject',e.target.value)}/></label>
@@ -79,7 +79,7 @@ export default function ClubeEmailAdmin({session}){
        <label>Texto da mensagem<textarea rows={6} maxLength={2000} value={draft.body} onChange={e=>set('body',e.target.value)}/></label>
        <label>Texto do botão<input value={draft.button_label} maxLength={60} onChange={e=>set('button_label',e.target.value)}/></label>
        <div className="npv-email-tokens">Campos automáticos: <code>{'{{primeiro_nome}}'}</code> <code>{'{{premio}}'}</code> <code>{'{{pontos}}'}</code> <code>{'{{saldo}}'}</code> <code>{'{{pontos_evento}}'}</code></div>
-       <label className="npv-email-toggle"><input type="checkbox" checked={draft.enabled} disabled={draft.key==='birthday_inactive'} onChange={e=>set('enabled',e.target.checked)}/><span><strong>Envio automático ativo</strong><small>{draft.key==='birthday_inactive'?'Bloqueado até validar status na Hotmart e permissão de contato.':'Somente após evento real e sem repetir o mesmo aviso.'}</small></span></label>
+       <label className="npv-email-toggle"><input type="checkbox" checked={draft.enabled} onChange={e=>set('enabled',e.target.checked)}/><span><strong>Envio automático ativo</strong><small>{draft.key==='birthday_inactive'?'Somente após confirmação da Hotmart e consentimento da ex-aluna.':'Somente após evento real e sem repetir o mesmo aviso.'}</small></span></label>
       </div>
       <div className="npv-email-actions"><button className="clube-btn clube-btn-primary" onClick={save} disabled={!!busy||loading||!edited}><Save size={16}/> {busy==='save'?'Salvando...':'Salvar alterações'}</button><button className="clube-btn clube-btn-outline" onClick={sendTest} disabled={!!busy||loading}><Send size={16}/> {busy==='test'?'Enviando...':'Enviar teste para mim'}</button></div>
       <div className="npv-email-preview-head"><h3><Eye size={17}/> Prévia real da mensagem</h3><small>Exemplo com dados fictícios. Ao enviar, os dados são personalizados para a aluna.</small></div>
