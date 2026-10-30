@@ -10,18 +10,19 @@ export async function handleClubeProfileUpdate(req,res){
   const url=process.env.VITE_CLUBE_SUPABASE_URL||process.env.SUPABASE_URL
   const key=process.env.SUPABASE_SERVICE_ROLE_KEY
   if(!url||!key)return reply(res,503,{error:'server_unavailable'})
-  const {full_name,phone,birthday_mmdd}=req.body||{}
-  if(!nameValid(full_name)||!validOptionalPhone(phone)||(birthday_mmdd!==undefined&&!validBirthday(birthday_mmdd)))return reply(res,400,{error:'invalid_profile_data'})
+  const {full_name,phone,birthday_mmdd,birthday_exstudent_opt_in}=req.body||{}
+  if(!nameValid(full_name)||!validOptionalPhone(phone)||(birthday_mmdd!==undefined&&!validBirthday(birthday_mmdd))||(birthday_exstudent_opt_in!==undefined&&typeof birthday_exstudent_opt_in!=='boolean'))return reply(res,400,{error:'invalid_profile_data'})
   try{
     const db=createClient(url,key,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}})
     const {data:{user},error:userError}=await db.auth.getUser(token)
     if(userError||!user?.id)return reply(res,401,{error:'invalid_session'})
     const updates={full_name:full_name.trim().replace(/\s+/g,' '),phone:phone.trim()||null}
     if(birthday_mmdd!==undefined)updates.birthday_mmdd=birthday_mmdd
+    if(birthday_exstudent_opt_in!==undefined)updates.birthday_exstudent_opt_in=birthday_exstudent_opt_in
     const {data,error}=await db.from('clube_profiles')
       .update(updates)
       .eq('id',user.id).eq('approved',true)
-      .select('id,full_name,phone,birthday_mmdd').maybeSingle()
+      .select('id,full_name,phone,birthday_mmdd,birthday_exstudent_opt_in').maybeSingle()
     if(error)return reply(res,503,{error:'profile_update_failed'})
     if(!data)return reply(res,403,{error:'profile_not_approved'})
     return reply(res,200,{status:'updated',profile:data})
