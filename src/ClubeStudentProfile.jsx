@@ -96,9 +96,9 @@ export default function ClubeStudentProfile({profile,email,events=[],session,onS
     finally{setExporting(false)}
   }
   return <section className="npv-profile-page" aria-label="Meu perfil NPV">
-    <header className="npv-profile-heading"><span>MINHA CONTA NPV ✦</span><h1>Meu perfil</h1><p>Suas conquistas, seu ritmo e sua história no Clube.</p></header>
+    <header className="npv-profile-heading"><h1>Meu perfil</h1><p>Seu nível e suas conquistas.</p></header>
     <section className="npv-membership-section" aria-label="Evolução e cartão de membro NPV">
-      <ClubeWalletCard profile={profile} email={email} session={session} achievements={achievements}/>
+      <ClubeWalletCard profile={profile} achievements={achievements}/>
       <div className="npv-membership-stats">
         <div className="npv-profile-progress">
           <div className="npv-profile-progress-line"><strong>{fmt(achievements.earned)} pontos conquistados</strong><span>{achievements.next===null?'Nível máximo':achievements.progress+'%'}</span></div>
