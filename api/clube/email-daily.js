@@ -1,6 +1,7 @@
 import {createClient} from '@supabase/supabase-js'
 import {eligibleClubeEmails,emailContent} from '../../clube/email/notificationCandidates.mjs'
 import {renderTemplateEmail} from '../../clube/email/templateEngine.mjs'
+import {runBirthdayDay} from '../../clube/email/birthdayRunner.mjs'
 import {handleClubeEmailUnsubscribe} from '../../clube/email/unsubscribe-handler.mjs'
 import {emailUnsubscribeUrl} from '../../clube/email/unsubscribe.mjs'
 export const config={maxDuration:60}
@@ -21,14 +22,18 @@ export default async function handler(req,res){
   const secret=process.env.CRON_SECRET
   if(!secret||secret.length<16)return respond(res,503,{status:'cron_secret_missing'})
   if(req.headers.authorization!==`Bearer ${secret}`)return respond(res,401,{status:'unauthorized'})
-  // Dupla trava para que a migração e o deploy nunca iniciem disparos.
-  if(process.env.CLUBE_EMAIL_SEND_ENABLED!=='true')return respond(res,200,{status:'disabled',sent:0})
   const dbUrl=process.env.VITE_CLUBE_SUPABASE_URL||process.env.SUPABASE_URL
   const dbKey=process.env.SUPABASE_SERVICE_ROLE_KEY
-  const resend=process.env.RESEND_API_KEY
-  if(!dbUrl||!dbKey||!resend)return respond(res,503,{status:'missing_server_config'})
+  if(!dbUrl||!dbKey)return respond(res,503,{status:'missing_server_config'})
   try{
     const db=createClient(dbUrl,dbKey,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}})
+    // Pontos de aniversário independem da preferência por e-mail; snapshot da Hotmart é obrigatório.
+    let birthdayContext={activeIds:[],inactive:[],credited:0,status:'unavailable'}
+    try{birthdayContext=await runBirthdayDay(db,process.env)}catch{/* Hotmart indisponível: falha fechada apenas para aniversários. */}
+    // O switch global protege só os envios. Nunca deixa de creditar pontos já verificados.
+    if(process.env.CLUBE_EMAIL_SEND_ENABLED!=='true')return respond(res,200,{status:'disabled',sent:0,birthday_credited:birthdayContext.credited,birthday_status:birthdayContext.status})
+    const resend=process.env.RESEND_API_KEY
+    if(!resend)return respond(res,503,{status:'mail_not_configured',birthday_credited:birthdayContext.credited})
     const {data:settings,error:settingsError}=await db.from('clube_email_settings').select('enabled,catalog_since').eq('singleton',true).single()
     if(settingsError)return respond(res,503,{status:'settings_unavailable'})
     if(settings?.enabled!==true)return respond(res,200,{status:'disabled',sent:0})
@@ -42,7 +47,7 @@ export default async function handler(req,res){
       allRows(db,'clube_email_dispatches','dedupe_key'),
       allRows(db,'clube_email_templates','key,name,enabled,subject,headline,body,button_label,active_since')
     ])
-    const candidates=eligibleClubeEmails({profiles,preferences,admins,rewards,events,redemptions,dispatches,settings,templates})
+    const candidates=eligibleClubeEmails({profiles,preferences,admins,rewards,events,redemptions,dispatches,settings,templates,birthdayContext})
     const templateByKey=new Map(templates.map(t=>[t.key,t]))
     let sent=0,failed=0,skipped=0
     // 80/dia reserva margem dentro da cota de 100 envios diários do plano gratuito.
@@ -83,7 +88,7 @@ export default async function handler(req,res){
         failed++
       }
     }
-    return respond(res,200,{status:'processed',considered:candidates.length,sent,failed,skipped})
+    return respond(res,200,{status:'processed',considered:candidates.length,sent,failed,skipped,birthday_credited:birthdayContext.credited,birthday_status:birthdayContext.status})
   }catch{
     return respond(res,503,{status:'processing_unavailable'})
   }
