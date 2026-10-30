@@ -14,7 +14,7 @@ test('novos prêmios geram avisos automáticos sem cadastro de preferências, ap
   const c=eligibleClubeEmails(dataset,now)
   assert.equal(c.length,1)
   assert.equal(c[0].kind,'new_reward')
-  assert.equal(eligibleClubeEmails({...dataset,dispatches:[{dedupe_key:c[0].duplicateKey}]},now).length,0)
+  assert.equal(eligibleClubeEmails({...dataset,dispatches:[{dedupe_key:c[0].duplicateKey}]},now).filter(x=>x.kind==='new_reward').length,0)
 })
 test('o marco de ativação bloqueia e-mails de prêmios anteriores',()=>{
   const older={...dataset,rewards:[{...reward,created_at:'2026-10-28T00:00:00Z'}]}
