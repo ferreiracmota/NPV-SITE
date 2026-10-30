@@ -1,0 +1,79 @@
+/* Apenas a nova aba Meu perfil; não altera espaçamentos da Visão geral. */
+.clube-shell.clube-live-student .npv-profile-page{max-width:1000px;margin:0 auto;display:grid;gap:18px;color:#1e3022}
+.npv-profile-heading>span{font-size:10px;font-weight:850;letter-spacing:.17em;color:#5d815c}
+.npv-profile-heading h1{font-size:clamp(28px,3.5vw,40px);letter-spacing:-.05em;line-height:1.08;margin:5px 0}
+.npv-profile-heading p,.npv-profile-panel-title p{color:#67796b;font-size:13px;margin:0}
+.npv-profile-hero{color:#fff;position:relative;overflow:hidden;border-radius:21px;border:1px solid #30563a;background:radial-gradient(circle at 90% 0,rgba(179,221,113,.16),transparent 48%),linear-gradient(122deg,#101b14,#294b35);padding:29px 33px;box-shadow:0 15px 36px rgba(18,49,28,.16)}
+.npv-profile-hero-head,.npv-profile-card-foot,.npv-profile-progress-line{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.npv-profile-hero-head{color:#dfedd6;font-size:11px;font-weight:800;letter-spacing:.07em}
+.npv-profile-hero-head b{font-weight:500;opacity:.75}
+.npv-profile-identity{display:flex;align-items:center;gap:19px;margin:30px 0 24px;min-width:0}
+.npv-profile-initial{display:grid;place-items:center;flex:none;width:80px;height:80px;border-radius:50%;background:#49664d;color:#e6f9bb;font-weight:900;font-size:41px;border:1px solid rgba(255,255,255,.25)}
+.npv-profile-identity>div{min-width:0}
+.npv-profile-kicker{font-weight:700;font-size:10px;color:#bad5a7;letter-spacing:.09em}
+.npv-profile-identity h2{margin:4px 0;font-size:clamp(22px,3.8vw,35px);line-height:1.15;letter-spacing:-.03em;overflow-wrap:anywhere;color:#fff}
+.npv-profile-level{font-size:14px;color:#d5f094;font-weight:750}
+.npv-profile-progress-line strong{font-size:14px;color:#eff7ed}
+.npv-profile-progress-line span{font-size:12px;color:#d6f398}
+.npv-profile-track{height:9px;border-radius:99px;background:rgba(255,255,255,.2);overflow:hidden;margin:11px 0 6px}
+.npv-profile-track>span{display:block;height:100%;border-radius:inherit;background:#c4e451;transition:width .25s}
+.npv-profile-progress small{color:#d6dfd3;font-size:12px}
+.npv-profile-stat-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;border-top:1px solid rgba(255,255,255,.17);margin-top:25px;padding-top:24px}
+.npv-profile-stat-grid>div{display:flex;flex-direction:column;align-items:flex-start;gap:7px;min-width:0}
+.npv-profile-stat-grid svg{color:#c9eb8d}
+.npv-profile-stat-grid strong{font-size:31px;line-height:1.1;color:#e3f2b6}
+.npv-profile-stat-grid strong.npv-profile-date{font-size:22px;text-transform:capitalize}
+.npv-profile-stat-grid small{font-size:11px;color:#e2eadf}
+.npv-profile-card-foot{border-top:1px solid rgba(255,255,255,.14);margin-top:22px;padding-top:17px;font-size:12px;color:#d9e5d1}
+.npv-profile-card-foot strong{font-size:18px;color:#c4e451;white-space:nowrap}
+.npv-profile-share{display:flex;align-items:center;justify-content:space-between;gap:15px}
+.npv-profile-share p{margin:0;color:#637364;font-size:12px;max-width:580px;line-height:1.6}
+.npv-profile-share button,.npv-profile-save{display:inline-flex;align-items:center;justify-content:center;gap:9px;border:1px solid #294b32;background:#173522;color:#fff;padding:12px 16px;border-radius:11px;font-weight:750;font-size:12px;cursor:pointer;white-space:nowrap}
+.npv-profile-share button:disabled,.npv-profile-save:disabled{opacity:.55;cursor:wait}
+.npv-profile-panel{padding:24px 27px;border-radius:18px;background:#fff;border:1px solid #e3eadd;box-shadow:0 6px 20px rgba(25,54,27,.045)}
+.npv-profile-panel-title{display:flex;justify-content:space-between;align-items:start;gap:15px;margin-bottom:19px}
+.npv-profile-panel-title h2{font-size:21px;letter-spacing:-.03em;margin:0 0 5px;color:#233f2b}
+.npv-profile-panel-title>svg{color:#7a9b6b}
+.npv-profile-trophies{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+.npv-profile-trophy{display:flex;flex-direction:column;align-items:center;text-align:center;gap:7px;border:1px solid #e1e6dd;background:#f6f7f5;color:#879287;padding:16px 8px;border-radius:13px;min-width:0}
+.npv-profile-trophy>span{display:grid;place-items:center;width:39px;height:39px;border-radius:50%;background:#e7ebe5;color:#9ca99c}
+.npv-profile-trophy.is-earned{color:#284b28;background:#f2f8eb;border-color:#c9dcad}
+.npv-profile-trophy.is-earned>span{background:#d8ecb0;color:#355622}
+.npv-profile-trophy strong{font-size:12px;line-height:1.25}
+.npv-profile-trophy small{font-size:10px;line-height:1.25}
+.npv-profile-form{max-width:650px;display:grid;gap:14px}
+.npv-profile-form label{display:grid;gap:6px;color:#344d36;font-size:12px;font-weight:750}
+.npv-profile-form label span{color:#738275;font-weight:500}
+.npv-profile-form input,.npv-profile-readonly{width:100%;border:1px solid #d7e1d5;background:#fbfcfa;border-radius:10px;padding:12px 13px;min-height:44px;font-size:14px;color:#24332a;box-sizing:border-box}
+.npv-profile-readonly{display:flex;align-items:center;gap:10px;color:#647266;overflow-wrap:anywhere}
+.npv-profile-save{justify-self:start}
+.npv-profile-notice{font-size:12px;color:#446b34;margin:0}
+.npv-profile-connections{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.npv-profile-connections button{display:flex;align-items:center;gap:10px;border:1px solid #d9e3d3;border-radius:11px;background:#f9fbf7;padding:15px;text-align:left;font-weight:700;color:#2c4933;cursor:pointer}
+.npv-profile-connections button svg:last-child{margin-left:auto}
+@media(max-width:760px){
+  .clube-shell.clube-live-student .npv-profile-page{gap:14px}
+  .npv-profile-hero{padding:22px 19px;border-radius:18px}
+  .npv-profile-hero-head{font-size:9px}
+  .npv-profile-hero-head b{display:none}
+  .npv-profile-identity{margin:24px 0 20px;gap:13px}
+  .npv-profile-initial{width:62px;height:62px;font-size:33px}
+  .npv-profile-level{font-size:12px}
+  .npv-profile-stat-grid{gap:8px;margin-top:20px;padding-top:19px}
+  .npv-profile-stat-grid strong{font-size:25px}
+  .npv-profile-stat-grid strong.npv-profile-date{font-size:16px}
+  .npv-profile-stat-grid small{font-size:10px}
+  .npv-profile-share{flex-direction:column;align-items:stretch}
+  .npv-profile-share button{width:100%}
+  .npv-profile-panel{padding:20px 17px}
+  .npv-profile-trophies{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .npv-profile-connections{grid-template-columns:1fr}
+}
+
+/* Saudação personalizada usa espaço já existente: título no desktop,
+   texto curto no subtítulo do celular, sem mudar margens da home. */
+.clube-shell.clube-live-student .npv-profile-greeting-mobile{display:none}
+@media(max-width:760px){
+ .clube-shell.clube-live-student .npv-profile-greeting-desktop{display:none}
+ .clube-shell.clube-live-student .npv-profile-greeting-mobile{display:inline}
+}
