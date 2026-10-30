@@ -26,6 +26,7 @@ import ClubeAdminStudents from './ClubeAdminStudents.jsx'
 import ClubeStudentProfile from './ClubeStudentProfile.jsx'
 import ClubeEmailAdmin from './ClubeEmailAdmin.jsx'
 import {firstNameOf} from '../clube/profile/achievements.mjs'
+import {BIRTHDAY_MONTHS,BIRTHDAY_DAYS,birthdayFromParts,validOptionalPhone} from '../clube/profile/birthday.mjs'
 import './ClubeAdminWorkspace.css'
 
 const format = value => Number(value||0).toLocaleString('pt-BR')
@@ -48,6 +49,9 @@ function ShellHeader() {
 function AuthPage({onLoggedIn,onResetDone,defaultMode='login'}) {
   const [mode,setMode]=useState(defaultMode)
   const [fullName,setFullName]=useState('')
+  const [birthdayDay,setBirthdayDay]=useState('')
+  const [birthdayMonth,setBirthdayMonth]=useState('')
+  const [phone,setPhone]=useState('')
   const [email,setEmail]=useState('')
   const [password,setPassword]=useState('')
   const [show,setShow]=useState('')
@@ -83,10 +87,13 @@ function AuthPage({onLoggedIn,onResetDone,defaultMode='login'}) {
       }
       if(mode==='signup'){
         if(fullName.trim().length<3) throw new Error('Informe seu nome completo.')
+        const birthday=birthdayFromParts(birthdayDay,birthdayMonth)
+        if(!birthday) throw new Error('Informe um dia e mês de nascimento válidos.')
+        if(!validOptionalPhone(phone)) throw new Error('Confira o número de WhatsApp informado.')
         if(password.length<8) throw new Error('A senha precisa ter pelo menos 8 caracteres.')
         const {error}=await supabase.auth.signUp({
           email:email.trim().toLowerCase(),password,
-          options:{data:{full_name:fullName.trim()},emailRedirectTo:window.location.origin+'/clube'}
+          options:{data:{full_name:fullName.trim(),birthday_mmdd:birthday,phone:phone.trim()||null},emailRedirectTo:window.location.origin+'/clube'}
         })
         if(error) throw error
         setPassword('');setMode('login')
@@ -113,6 +120,8 @@ function AuthPage({onLoggedIn,onResetDone,defaultMode='login'}) {
       <p>{mode==='signup'?'Crie sua conta. A participação é liberada após aprovação.':mode==='forgot'?'Informe seu e-mail para receber o link de recuperação.':mode==='reset'?'Crie sua nova senha para continuar.':'Entre com seu e-mail e senha para acessar seus pontos.'}</p>
       <form onSubmit={submit} className="clube-form clube-auth-form">
         {mode==='signup'&&<label>Nome completo<input autoComplete="name" required value={fullName} onChange={e=>setFullName(e.target.value)} placeholder="Seu nome"/></label>}
+        {mode==='signup'&&<label>Data de nascimento <span>(dia e mês)</span><span className="npv-birthday-inputs"><select aria-label="Dia do nascimento" required value={birthdayDay} onChange={e=>setBirthdayDay(e.target.value)}><option value="">Dia</option>{BIRTHDAY_DAYS.map(d=><option key={d} value={d}>{d}</option>)}</select><select aria-label="Mês do nascimento" required value={birthdayMonth} onChange={e=>setBirthdayMonth(e.target.value)}><option value="">Mês</option>{BIRTHDAY_MONTHS.map((m,i)=><option key={m} value={String(i+1).padStart(2,'0')}>{m}</option>)}</select></span><small>Usamos somente dia e mês para lembrar do seu aniversário.</small></label>}
+        {mode==='signup'&&<label>WhatsApp <span>(opcional)</span><input type="tel" autoComplete="tel" inputMode="tel" maxLength={24} value={phone} onChange={e=>setPhone(e.target.value)} placeholder="(31) 99999-9999"/></label>}
         {mode!=='reset'&&<label>E-mail<input type="email" autoComplete="email" required value={email} onChange={e=>setEmail(e.target.value)} placeholder="voce@email.com"/></label>}
         {mode!=='forgot'&&<label>Senha <input type="password" autoComplete={mode==='login'?'current-password':'new-password'} minLength={mode==='login'?undefined:8} required value={password} onChange={e=>setPassword(e.target.value)} placeholder={mode==='login'?'Sua senha':'Mínimo de 8 caracteres'}/></label>}
         {show&&<div className="clube-auth-message" role="status">{show}</div>}
