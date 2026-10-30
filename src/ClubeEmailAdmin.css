@@ -45,3 +45,10 @@
 .clube-live-admin .npv-admin-settings-nav>button{width:100%;padding-left:34px}
 @media(max-width:900px){.npv-email-layout{grid-template-columns:1fr}.npv-email-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.npv-email-list>h3,.npv-email-new{grid-column:1/-1}.npv-email-list-item{margin:0}}
 @media(max-width:760px){.npv-email-center{gap:13px}.npv-email-heading{align-items:start}.npv-email-heading h2{font-size:20px}.npv-email-heading>button{flex-shrink:0}.npv-email-list,.npv-email-editor,.npv-email-history{padding:15px}.npv-email-list{grid-template-columns:1fr}.npv-email-list>h3{margin-bottom:1px}.npv-email-new{grid-column:auto}.npv-email-preview-frame{height:430px}.npv-email-actions button{flex:1}.clube-live-admin .npv-admin-settings-nav{margin:0;padding-top:0;border-top:0}}
+
+
+.clube-live-admin .npv-admin-settings-nav>button{display:flex;align-items:center;gap:10px;height:42px;border:0;border-radius:8px;background:transparent;color:#d6e6d3;font:inherit;font-size:12px;font-weight:750;text-align:left;cursor:pointer;margin:2px 0}
+.clube-live-admin .npv-admin-settings-nav>button:hover{background:#ffffff13}
+.clube-live-admin .npv-admin-settings-nav>button.active{background:#d5eeba;color:#284128;box-shadow:inset 3px 0 #8db55e}
+.clube-live-admin .npv-admin-settings-nav>summary svg:last-child{margin-left:auto;transition:transform .2s}
+.clube-live-admin .npv-admin-settings-nav[open]>summary svg:last-child{transform:rotate(180deg)}
