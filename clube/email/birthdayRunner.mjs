@@ -23,8 +23,13 @@ export async function runBirthdayDay(db,env,{loadSnapshot=readBirthdaySubscripti
  const todays=profiles.filter(p=>p.approved&&!adminIds.has(p.id)&&(p.birthday_mmdd===today.mmdd||(today.alsoFeb29&&p.birthday_mmdd==='29-02')))
  if(!todays.length)return {status:'no_birthdays',credited:0,activeIds:[],inactive:[]}
  // Sem snapshot completo não declaramos assinaturas inativas e não creditamos.
- const snapshot=await loadSnapshot(env)
- if(!snapshot?.complete||!Array.isArray(snapshot.subscriptions))throw Error('hotmart_birthday_unavailable')
+ let snapshot,hotmartUnavailable=false
+ try{snapshot=await loadSnapshot(env)
+  if(!snapshot?.complete||!Array.isArray(snapshot.subscriptions))throw Error('incomplete_snapshot')
+ }catch{
+  // Acesso grátis previamente autorizado não depende da Hotmart. Demais casos falham fechados.
+  snapshot={complete:true,subscriptions:[]};hotmartUnavailable=true
+ }
  const {choices,year}=classifyBirthdayMembers({profiles:todays,subscriptions:snapshot.subscriptions,
   admins,freeAccess,preferences},now)
  const activeIds=[],inactive=[]
@@ -41,5 +46,5 @@ export async function runBirthdayDay(db,env,{loadSnapshot=readBirthdaySubscripti
    if(result==='credited'||result==='already_awarded')activeIds.push(person.id)
   }else if(person.kind==='inactive')inactive.push(person.id)
  }
- return {status:'checked',credited,activeIds,inactive,year}
+ return {status:hotmartUnavailable?'free_only_hotmart_unavailable':'checked',credited,activeIds,inactive,year}
 }
