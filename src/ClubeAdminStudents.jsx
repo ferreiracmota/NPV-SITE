@@ -26,11 +26,13 @@ const redemptionStatus=s=>s==='pending'?'Aguardando aprovação':s==='approved'?
 export default function ClubeAdminStudents({session,members=[],events=[],redemptions=[],rules=[],busy,onAward,onApprove,onRefresh}){
  const [opened,setOpened]=useState(null)
  const [historyView,setHistoryView]=useState('all')
- const [links,setLinks]=useState({status:'loading',instagram:new Map(),strava:new Map()})
+ const [links,setLinks]=useState({status:'loading',instagram:new Map(),strava:new Map(),birthdayFree:new Map()})
+ const [accessBusy,setAccessBusy]=useState('')
+ const [accessNotice,setAccessNotice]=useState('')
  const [reload,setReload]=useState(0)
  const token=session?.access_token
  useEffect(()=>{
-  if(!token){setLinks({status:'loading',instagram:new Map(),strava:new Map()});return}
+  if(!token){setLinks({status:'loading',instagram:new Map(),strava:new Map(),birthdayFree:new Map()});return}
   const controller=new AbortController()
   setLinks(v=>({...v,status:'loading'}))
   fetch('/api/clube/student-connections',{
@@ -38,17 +40,29 @@ export default function ClubeAdminStudents({session,members=[],events=[],redempt
   }).then(async res=>{
    if(!res.ok)throw new Error('unavailable')
    const body=await res.json()
-   if(body.status!=='ok'||!Array.isArray(body.instagram)||!Array.isArray(body.strava))throw new Error('invalid_response')
+   if(body.status!=='ok'||!Array.isArray(body.instagram)||!Array.isArray(body.strava)||!Array.isArray(body.birthday_free_access))throw new Error('invalid_response')
    if(controller.signal.aborted)return
    setLinks({
     status:'ready',
     instagram:new Map(body.instagram.map(v=>[v.student_id,v])),
-    strava:new Map(body.strava.map(v=>[v.student_id,v]))
+    strava:new Map(body.strava.map(v=>[v.student_id,v])),
+    birthdayFree:new Map(body.birthday_free_access.map(v=>[v.student_id,v.enabled===true]))
    })
-  }).catch(()=>{if(!controller.signal.aborted)setLinks({status:'error',instagram:new Map(),strava:new Map()})})
+  }).catch(()=>{if(!controller.signal.aborted)setLinks({status:'error',instagram:new Map(),strava:new Map(),birthdayFree:new Map()})})
   return ()=>controller.abort()
  },[token,reload])
 
+ async function setBirthdayFreeAccess(person,enabled){
+  if(!token||accessBusy)return
+  setAccessBusy(person.id);setAccessNotice('')
+  try{
+   const res=await fetch('/api/clube/email-admin',{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({action:'free_access',student_id:person.id,enabled})})
+   if(!res.ok)throw Error('save_failed')
+   setLinks(old=>({...old,birthdayFree:new Map(old.birthdayFree).set(person.id,enabled)}))
+   setAccessNotice('Acesso gratuito para aniversário atualizado. Este controle não libera assinatura ou treinos.')
+  }catch{setAccessNotice('Não foi possível atualizar. Tente novamente.')}
+  finally{setAccessBusy('')}
+ }
  const byMember=useMemo(()=>{
   const m=new Map()
   for(const person of members)m.set(person.id,{events:[],requests:[],balance:0,reserved:0})
@@ -126,6 +140,9 @@ export default function ClubeAdminStudents({session,members=[],events=[],redempt
      </div>
      <div className="npv-admin-students-connection-details">
       <p><b>Aniversário:</b> {person.birthday_mmdd?person.birthday_mmdd.replace('-','/'):'Não informado'} <b> · WhatsApp:</b> {person.phone||'Não informado'}</p>
+      <p><b>Acesso gratuito autorizado:</b> {links.status==='ready'?(links.birthdayFree.get(person.id)?'Sim':'Não'):'Aguardando consulta'}</p>
+      {person.approved&&links.status==='ready'&&<button type="button" className="clube-btn clube-btn-outline" disabled={!!accessBusy} onClick={()=>setBirthdayFreeAccess(person,!links.birthdayFree.get(person.id))}>{accessBusy===person.id?'Salvando...':links.birthdayFree.get(person.id)?'Desmarcar acesso gratuito':'Marcar acesso gratuito'}</button>}
+      {accessNotice&&<p role="status">{accessNotice}</p>}
       <p><Instagram size={16}/> <b>Instagram:</b> {links.status==='ready'?connectionDisplay('instagram',instagram).help:'Aguardando consulta administrativa dos vínculos.'}</p>
       <p><Footprints size={16}/> <b>Strava:</b> {links.status==='ready'?connectionDisplay('strava',strava).help:'Aguardando consulta administrativa dos vínculos.'}</p>
      </div>
