@@ -3,6 +3,10 @@ on:
   pull_request:
     branches: [main]
     paths:
+      - 'vercel.json'
+      - 'qa/vercel/**'
+      - 'api/clube/student-connections.js'
+      - 'api/clube/email-daily.js'
       - 'src/ClubeStudentProfile.*'
       - 'src/ClubeNPVOnline.jsx'
       - 'clube/profile/**'
@@ -22,6 +26,8 @@ jobs:
           node-version: '22'
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: node --test clube/profile/*.test.mjs
+      - run: node --test clube/profile/*.test.mjs qa/vercel/*.test.mjs
+      - run: node --check api/clube/student-connections.js
+      - run: node --check api/clube/email-daily.js
       - run: node --check clube/profile/profile-handler.mjs
       - run: pnpm run build
