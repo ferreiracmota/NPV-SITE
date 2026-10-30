@@ -1,6 +1,7 @@
 import React,{useEffect,useState} from 'react'
 import {Check,ChevronDown,Lock,LockKeyhole,QrCode,RotateCw,Trophy} from 'lucide-react'
 import {MEMBER_LEVELS} from '../clube/profile/memberCardIdentity.mjs'
+import {birthdayParts} from '../clube/profile/birthday.mjs'
 import './ClubeWalletCard.css'
 
 const images={
@@ -12,60 +13,26 @@ const images={
   6:'/clube/cards/black.webp?v=20261030-clean'
 }
 const accents={1:'#e6ad76',2:'#d5e1ed',3:'#e5c378',4:'#b8d0d9',5:'#7de1c5',6:'#e9cf8c'}
-const statusText={
-  loading:'Consultando assinatura',active:'Assinatura ativa',delayed:'Pagamento em atraso',
-  inactive:'Assinatura inativa',unlinked:'Sem vínculo confirmado',unavailable:'Consulta indisponível'
-}
 const fmt=n=>Number(n||0).toLocaleString('pt-BR')
 const displayName=name=>{
   const parts=String(name||'').trim().split(/\s+/).filter(Boolean)
   return parts.length>1?parts[0]+' '+parts[parts.length-1]:(parts[0]||'Aluna NPV')
 }
-const nextCharge=value=>{
-  if(!value)return 'Não informada'
-  const date=new Date(value)
-  return Number.isFinite(date.getTime())?
-    date.toLocaleDateString('pt-BR',{timeZone:'America/Sao_Paulo',day:'2-digit',month:'2-digit',year:'numeric'}):
-    'Não informada'
+const memberBirthday=value=>{
+  const {day,month}=birthdayParts(value)
+  return day&&month?`${day}/${month}`:'Não informada'
 }
-export default function ClubeWalletCard({profile,email,session,achievements}){
+export default function ClubeWalletCard({profile,achievements}){
   const [flipped,setFlipped]=useState(false)
   const [galleryOpen,setGalleryOpen]=useState(false)
   const [selectedTier,setSelectedTier]=useState(achievements.level||1)
-  const [subscription,setSubscription]=useState({status:'loading',next_charge_at:null})
   const otherTiers=MEMBER_LEVELS.filter(item=>item.level!==achievements.level).slice().reverse()
   const choice=MEMBER_LEVELS.find(item=>item.level===selectedTier)||MEMBER_LEVELS[0]
   useEffect(()=>{
     setFlipped(false)
     setSelectedTier(achievements.level||1)
   },[profile?.id,achievements.level])
-  useEffect(()=>{
-    const controller=new AbortController()
-    if(!session?.access_token||!profile?.id){
-      setSubscription({status:'unavailable',next_charge_at:null})
-      return()=>controller.abort()
-    }
-    setSubscription({status:'loading',next_charge_at:null})
-    fetch('/api/clube/member-card',{
-      headers:{Authorization:'Bearer '+session.access_token},signal:controller.signal,cache:'no-store'
-    }).then(async response=>{
-      if(!response.ok)throw Error('unavailable')
-      return response.json()
-    }).then(body=>{
-      if(controller.signal.aborted)return
-      setSubscription({
-        status:statusText[body.status]?body.status:'unavailable',
-        next_charge_at:body.status==='active'?body.next_charge_at||null:null
-      })
-    }).catch(()=>{if(!controller.signal.aborted)setSubscription({status:'unavailable',next_charge_at:null})})
-    return()=>controller.abort()
-  },[profile?.id,session?.access_token])
   return <div className="npv-wallet">
-    <header className="npv-wallet-intro">
-      <div><span>CARTEIRA DIGITAL NPV ✦</span><h2>Minha coleção de cartões</h2>
-        <p>Conquiste novos níveis e descubra suas próximas vantagens.</p></div>
-      {achievements.level>0&&<span className="npv-wallet-current-tag">Nível {achievements.level} · {achievements.levelName}</span>}
-    </header>
     {achievements.level>0?<React.Fragment>
       <div className="npv-wallet-stack" style={{'--npv-band-count':otherTiers.length,'--npv-accent':accents[achievements.level]}}>
         {otherTiers.map((tier,index)=><button type="button" key={tier.level}
@@ -88,9 +55,7 @@ export default function ClubeWalletCard({profile,email,session,achievements}){
               <span className="npv-wallet-back-head"><strong>NPV ✦ CLUBE</strong><span>{achievements.levelName.toUpperCase()}</span></span>
               <span className="npv-wallet-back-grid">
                 <span><small>NOME COMPLETO</small><strong>{profile?.full_name||'Aluna NPV'}</strong></span>
-                <span><small>E-MAIL DE ACESSO</small><strong>{email||'Não informado'}</strong></span>
-                <span><small>SITUAÇÃO NA HOTMART</small><strong>{statusText[subscription.status]||statusText.unavailable}</strong></span>
-                <span><small>PRÓXIMA COBRANÇA</small><strong>{subscription.status==='active'?nextCharge(subscription.next_charge_at):'Não informada'}</strong></span>
+                <span><small>DATA DE NASCIMENTO</small><strong>{memberBirthday(profile?.birthday_mmdd)}</strong></span>
               </span>
               <span className="npv-wallet-back-bottom">
                 <span className="npv-wallet-qr"><QrCode size={26}/><small>QR CODE EM BREVE</small></span>
