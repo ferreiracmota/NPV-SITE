@@ -11,7 +11,7 @@ export function firstNameOf(fullName){
 }
 export function memberAchievements(events=[],studentId){
   const real=(events||[]).filter(e=>e.student_id===studentId&&e.is_test!==true)
-  const earned=real.reduce((s,e)=>s+(e.event_type!=='resgate'?Math.max(0,Number(e.points)||0):0),0)
+  const earned=Math.max(0,real.reduce((s,e)=>s+(e.event_type!=='resgate'?(Number(e.points)||0):0),0))
   // O registro automático do desafio confirma o cumprimento, não só a participação.
   const challengeKeys=new Set(real.filter(e=>e.event_type==='desafio'&&Number(e.points)>0&&
     String(e.reference_id||'').startsWith('strava:challenge:'))
