@@ -1,7 +1,7 @@
 // Solicitação de cancelamento por link assinado; GET apenas exibe confirmação
 // (prefetch de provedores não cancela) e POST confirma inclusive via one-click.
 import {createClient} from '@supabase/supabase-js'
-import {validEmailUnsubscribeToken} from '../../clube/email/unsubscribe.mjs'
+import {validEmailUnsubscribeToken} from './unsubscribe.mjs'
 const headers={
   'Content-Type':'text/html; charset=utf-8',
   'Cache-Control':'private, no-store, max-age=0',
@@ -13,7 +13,7 @@ function page(res,code,title,body,form=''){
   res.writeHead(code,headers)
   return res.end(`<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body style="font:16px system-ui;background:#f5f5f3;color:#171717;display:grid;place-items:center;min-height:95vh"><main style="background:white;border-radius:16px;max-width:460px;padding:30px;margin:20px"><h1 style="font-size:24px">${title}</h1><p>${body}</p>${form}<p><a href="https://www.naopensevai.com/clube">Voltar ao Clube NPV</a></p></main></body></html>`)
 }
-export default async function handler(req,res){
+export default async function handleClubeEmailUnsubscribe(req,res){
   if(req.method!=='GET'&&req.method!=='POST'){
     res.writeHead(405,{...headers,Allow:'GET, POST'});return res.end('Método não permitido')
   }

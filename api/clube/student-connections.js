@@ -1,6 +1,7 @@
 // Consulta exclusivamente administrativa dos vínculos do Clube NPV.
 // Não retorna tokens, identificadores externos ou dados do Strava.
 import {createClient} from '@supabase/supabase-js'
+import {handleClubeProfileUpdate} from '../../clube/profile/profile-handler.mjs'
 export const config={maxDuration:30}
 const reply=(res,status,data)=>res.writeHead(status,{
  'Content-Type':'application/json; charset=utf-8',
@@ -19,6 +20,7 @@ async function rows(db,table,columns){
  throw new Error('source_incomplete')
 }
 export default async function handler(req,res){
+ if(new URL(req.url||'/api/clube/student-connections','https://npv.local').searchParams.get('npv_profile_route')==='update')return handleClubeProfileUpdate(req,res)
  if(req.method!=='GET')return reply(res,405,{status:'method_not_allowed'})
  const bearer=req.headers?.authorization||''
  if(typeof bearer!=='string'||!/^Bearer [A-Za-z0-9._~-]{16,4096}$/.test(bearer))

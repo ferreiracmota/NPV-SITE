@@ -3,7 +3,7 @@ import {createClient} from '@supabase/supabase-js'
 const reply=(res,code,body)=>res.writeHead(code,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff'}).end(JSON.stringify(body))
 const nameValid=s=>typeof s==='string'&&s.trim().replace(/\s+/g,' ').length>=3&&s.trim().length<=80&&!/[<>\x00-\x1f\x7f]/.test(s)
 const phoneValid=s=>typeof s==='string'&&s.length<=24&&(!s.trim()||(/^[+()0-9\s-]+$/.test(s)&&s.replace(/\D/g,'').length>=10&&s.replace(/\D/g,'').length<=15))
-export default async function handler(req,res){
+export default async function handleClubeProfileUpdate(req,res){
   if(req.method!=='PATCH')return reply(res,405,{error:'method_not_allowed'})
   const token=(req.headers.authorization||'').match(/^Bearer\s+([^\s]+)$/i)?.[1]
   if(!token)return reply(res,401,{error:'authentication_required'})
