@@ -1,6 +1,7 @@
 // Lógica pura: nenhuma consulta ou envio de e-mail neste arquivo.
-export function eligibleClubeEmails({profiles=[],preferences=[],admins=[],rewards=[],events=[],redemptions=[],dispatches=[],settings={}},now=Date.now()){
+export function eligibleClubeEmails({profiles=[],preferences=[],admins=[],rewards=[],events=[],redemptions=[],dispatches=[],settings={},templates=[]},now=Date.now()){
   if(settings?.enabled!==true)return []
+  const templateByKey=new Map(templates.map(t=>[t.key,t]))
   const opt=new Map(preferences.map(p=>[p.student_id,p]))
   const adminsSet=new Set(admins.map(x=>x.user_id))
   const sent=new Set(dispatches.map(x=>x.dedupe_key))
@@ -20,7 +21,7 @@ export function eligibleClubeEmails({profiles=[],preferences=[],admins=[],reward
       .reduce((s,e)=>s+Number(e.points||0),0)
     const available=Math.max(0,total-reserved)
     const common={studentId:member.id,email:member.email,firstName:(member.full_name||'').trim().split(/\s+/)[0]||'Aluna',available}
-    if(notifyNewRewards){
+    if(notifyNewRewards&&templateByKey.get('new_reward')?.enabled!==false){
       // Marco de ativação evita qualquer disparo retroativo de prêmios antigos.
       const since=Math.max(Date.parse(settings.catalog_since||'')||now,Date.parse(pref?.created_at||'')||0)
       const fresh=liveRewards.filter(r=>(Date.parse(r.created_at||'')||0)>since)
@@ -30,7 +31,7 @@ export function eligibleClubeEmails({profiles=[],preferences=[],admins=[],reward
         result.push({...common,kind:'new_reward',reward,duplicateKey:'new:'+member.id+':'+reward.id})
       }
     }
-    if(notifyUnlocks){
+    if(notifyUnlocks&&templateByKey.get('reward_unlocked')?.enabled!==false){
       // Só um ganho real após a ativação pode cruzar o limiar de pontos.
       // Não notificar premiações já disponíveis antes de ligar a rotina.
       const since=Math.max(Date.parse(settings.catalog_since||'')||now,Date.parse(pref?.created_at||'')||0)
@@ -45,8 +46,22 @@ export function eligibleClubeEmails({profiles=[],preferences=[],admins=[],reward
         result.push({...common,kind:'reward_unlocked',reward,duplicateKey:'unlock:'+member.id+':'+reward.id})
       }
     }
+    // Novos modelos só disparam após a sua ativação, sobre eventos reais já registrados.
+    const extraTriggers={challenge_completed:'desafio',birthday:'aniversario',renewal:'renovacao',referral:'indicacao'}
+    for(const [kind,eventType] of Object.entries(extraTriggers)){
+      const template=templateByKey.get(kind)
+      if(!template?.enabled)continue
+      const since=Math.max(Date.parse(settings.catalog_since||'')||now,Date.parse(template.active_since||'')||now,Date.parse(pref?.created_at||'')||0)
+      for(const event of studentEvents.filter(e=>e.event_type===eventType&&Number(e.points)>0&&Date.parse(e.created_at||'')>since)){
+        // Para desafios, exigir confirmação da meta mensal do Strava.
+        if(kind==='challenge_completed'&&!String(event.reference_id||'').startsWith('strava:challenge:'))continue
+        const duplicateKey='event:'+kind+':'+event.id
+        if(sent.has(duplicateKey))continue
+        result.push({...common,kind,eventPoints:Number(event.points),reward:{id:null,name:template.name,points:0},duplicateKey})
+      }
+    }
   }
-  // Um aviso de cada tipo por pessoa a cada execução; máximo global antes do envio.
+  // No máximo 80 avisos por execução; nenhuma comunicação diária sem evento.
   return result.slice(0,80)
 }
 export function emailContent(candidate,{unsubscribeUrl=''}={}){
