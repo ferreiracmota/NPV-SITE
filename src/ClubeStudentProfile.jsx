@@ -1,6 +1,7 @@
 import React,{useEffect,useMemo,useState} from 'react'
 import {ArrowRight,Check,Download,Instagram,Mail,Phone,ShieldCheck,Trophy,UserRound,Wallet,Medal,Footprints,CalendarDays,Activity} from 'lucide-react'
 import {firstNameOf,memberAchievements} from '../clube/profile/achievements.mjs'
+import {BIRTHDAY_MONTHS,BIRTHDAY_DAYS,birthdayParts,birthdayFromParts,validOptionalPhone} from '../clube/profile/birthday.mjs'
 import './ClubeStudentProfile.css'
 
 const fmt=n=>Number(n||0).toLocaleString('pt-BR')
@@ -40,23 +41,28 @@ function drawCard(name,progress,date){
 export default function ClubeStudentProfile({profile,email,events=[],session,onSaved,onInstagram,onStrava}){
   const [name,setName]=useState(profile?.full_name||'')
   const [phone,setPhone]=useState(profile?.phone||'')
+  const [birthdayDay,setBirthdayDay]=useState(birthdayParts(profile?.birthday_mmdd).day)
+  const [birthdayMonth,setBirthdayMonth]=useState(birthdayParts(profile?.birthday_mmdd).month)
   const [saving,setSaving]=useState(false)
   const [notice,setNotice]=useState('')
   const [exporting,setExporting]=useState(false)
-  useEffect(()=>{setName(profile?.full_name||'');setPhone(profile?.phone||'');setNotice('')},[profile?.id,profile?.full_name,profile?.phone])
+  useEffect(()=>{setName(profile?.full_name||'');setPhone(profile?.phone||'');setBirthdayDay(birthdayParts(profile?.birthday_mmdd).day);setBirthdayMonth(birthdayParts(profile?.birthday_mmdd).month);setNotice('')},[profile?.id,profile?.full_name,profile?.phone,profile?.birthday_mmdd])
   const achievements=useMemo(()=>memberAchievements(events,profile?.id),[events,profile?.id])
   const yearJoined=joined(profile?.created_at)
   async function save(e){
     e.preventDefault()
     if(saving||!session?.access_token)return
+    const birthday=birthdayFromParts(birthdayDay,birthdayMonth)
+    if(!birthday){setNotice('Informe um dia e mês de nascimento válidos.');return}
+    if(!validOptionalPhone(phone)){setNotice('Confira o WhatsApp informado.');return}
     setSaving(true);setNotice('')
     try{
-      const response=await fetch('/api/clube/profile',{method:'PATCH',headers:{Authorization:'Bearer '+session.access_token,'Content-Type':'application/json'},body:JSON.stringify({full_name:name.trim(),phone:phone.trim()})})
+      const response=await fetch('/api/clube/profile',{method:'PATCH',headers:{Authorization:'Bearer '+session.access_token,'Content-Type':'application/json'},body:JSON.stringify({full_name:name.trim(),phone:phone.trim(),birthday_mmdd:birthday})})
       const payload=await response.json()
       if(!response.ok)throw new Error(payload.error||'profile_update_failed')
       onSaved?.(payload.profile)
       setNotice('Seu perfil foi atualizado!')
-    }catch{setNotice('Não foi possível salvar. Confira o nome e o telefone e tente novamente.')}
+    }catch{setNotice('Não foi possível salvar. Confira seus dados e tente novamente.')}
     finally{setSaving(false)}
   }
   async function downloadCard(){
@@ -88,9 +94,9 @@ export default function ClubeStudentProfile({profile,email,events=[],session,onS
       </div>
       <div className="npv-profile-card-foot"><span>Sua evolução é sua conquista.</span><strong>NPV ✦</strong></div>
     </div>
-    <div className="npv-profile-share"><p>Esse cartão mostra apenas suas conquistas. Nome, nível e marcos de progresso são visíveis; seu e-mail e telefone nunca entram na imagem.</p><button type="button" onClick={downloadCard} disabled={exporting}><Download size={16}/>{exporting?'Preparando imagem...':'Compartilhar / baixar cartão'}</button></div>
+    <div className="npv-profile-share"><p>Esse cartão mostra apenas suas conquistas. Nome, nível e marcos de progresso são visíveis; seu e-mail, telefone e aniversário nunca entram na imagem.</p><button type="button" onClick={downloadCard} disabled={exporting}><Download size={16}/>{exporting?'Preparando imagem...':'Compartilhar / baixar cartão'}</button></div>
     <section className="npv-profile-panel" aria-label="Troféus e conquistas"><div className="npv-profile-panel-title"><div><h2>Minhas conquistas</h2><p>Os troféus aparecem conforme os registros reais do Clube.</p></div><Trophy size={20}/></div><div className="npv-profile-trophies">{achievements.badges.map(t=><div key={t.id} className={'npv-profile-trophy'+(t.earned?' is-earned':'')}><span><Medal size={20}/></span><strong>{t.name}</strong><small>{t.help}</small></div>)}</div></section>
-    <section className="npv-profile-panel" aria-label="Meus dados pessoais"><div className="npv-profile-panel-title"><div><h2>Meus dados</h2><p>Essas informações ficam na sua conta e não aparecem no cartão.</p></div><UserRound size={20}/></div><form className="npv-profile-form" onSubmit={save}><label>Nome completo<input required minLength={3} maxLength={80} autoComplete="name" value={name} onChange={e=>setName(e.target.value)}/></label><label>E-mail de acesso <span>(não editável aqui)</span><div className="npv-profile-readonly"><Mail size={16}/>{email||'—'}</div></label><label>Telefone <span>(opcional)</span><input type="tel" autoComplete="tel" maxLength={24} placeholder="(31) 99999-9999" value={phone} onChange={e=>setPhone(e.target.value)}/></label><button type="submit" className="npv-profile-save" disabled={saving}><Check size={16}/>{saving?'Salvando...':'Salvar meus dados'}</button>{notice&&<p className="npv-profile-notice" role="status">{notice}</p>}</form></section>
+    <section className="npv-profile-panel" aria-label="Meus dados pessoais"><div className="npv-profile-panel-title"><div><h2>Meus dados</h2><p>Essas informações ficam na sua conta e não aparecem no cartão.</p></div><UserRound size={20}/></div><form className="npv-profile-form" onSubmit={save}><label>Nome completo<input required minLength={3} maxLength={80} autoComplete="name" value={name} onChange={e=>setName(e.target.value)}/></label><label>E-mail de acesso <span>(não editável aqui)</span><div className="npv-profile-readonly"><Mail size={16}/>{email||'—'}</div></label><label>Data de nascimento <span>(dia e mês)</span><span className="npv-birthday-inputs"><select aria-label="Dia do nascimento" required value={birthdayDay} onChange={e=>setBirthdayDay(e.target.value)}><option value="">Dia</option>{BIRTHDAY_DAYS.map(d=><option key={d} value={d}>{d}</option>)}</select><select aria-label="Mês do nascimento" required value={birthdayMonth} onChange={e=>setBirthdayMonth(e.target.value)}><option value="">Mês</option>{BIRTHDAY_MONTHS.map((m,i)=><option key={m} value={String(i+1).padStart(2,'0')}>{m}</option>)}</select></span><small>Usaremos esta data para lembrar do seu aniversário.</small></label><label>WhatsApp <span>(opcional)</span><input type="tel" autoComplete="tel" maxLength={24} placeholder="(31) 99999-9999" value={phone} onChange={e=>setPhone(e.target.value)}/></label><button type="submit" className="npv-profile-save" disabled={saving}><Check size={16}/>{saving?'Salvando...':'Salvar meus dados'}</button>{notice&&<p className="npv-profile-notice" role="status">{notice}</p>}</form></section>
     <section className="npv-profile-panel" aria-label="Conexões do Clube"><div className="npv-profile-panel-title"><div><h2>Minhas conexões</h2><p>Gerencie suas atividades e Stories.</p></div><Activity size={20}/></div><div className="npv-profile-connections"><button onClick={onInstagram} type="button"><Instagram size={19}/> Instagram e Stories <ArrowRight size={17}/></button><button onClick={onStrava} type="button"><Footprints size={19}/> Strava e desafios <ArrowRight size={17}/></button></div></section>
   </section>
 }
