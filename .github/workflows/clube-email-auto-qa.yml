@@ -6,6 +6,9 @@ on:
       - 'api/clube/email-*.js'
       - 'clube/email/**'
       - 'src/ClubeNPVOnline.jsx'
+      - 'src/ClubeEmailAdmin.*'
+      - 'api/clube/student-connections.js'
+      - 'vercel.json'
       - '.github/workflows/clube-email-auto-qa.yml'
   workflow_dispatch:
 permissions:
@@ -24,7 +27,12 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Testar regras de email, preferencia e cancelamento
         run: node --test clube/email/*.test.mjs
-      - name: Verificar rota de cancelamento
-        run: node --check clube/email/unsubscribe-handler.mjs
+      - name: Verificar rotas e modelos do administrador
+        run: |
+          node --check clube/email/unsubscribe-handler.mjs
+          node --check clube/email/admin-handler.mjs
+          node --check api/clube/email-daily.js
+          node --check api/clube/student-connections.js
+          node --test qa/vercel/*.test.mjs
       - name: Compilar site completo
         run: pnpm run build
