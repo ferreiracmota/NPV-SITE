@@ -125,6 +125,7 @@ export default function ClubeAdminStudents({session,members=[],events=[],redempt
       <div><small>Disponíveis para resgate</small><strong>{fmt(record.available)} pts</strong></div>
      </div>
      <div className="npv-admin-students-connection-details">
+      <p><b>Aniversário:</b> {person.birthday_mmdd?person.birthday_mmdd.replace('-','/'):'Não informado'} <b> · WhatsApp:</b> {person.phone||'Não informado'}</p>
       <p><Instagram size={16}/> <b>Instagram:</b> {links.status==='ready'?connectionDisplay('instagram',instagram).help:'Aguardando consulta administrativa dos vínculos.'}</p>
       <p><Footprints size={16}/> <b>Strava:</b> {links.status==='ready'?connectionDisplay('strava',strava).help:'Aguardando consulta administrativa dos vínculos.'}</p>
      </div>
