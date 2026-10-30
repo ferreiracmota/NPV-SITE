@@ -1,9 +1,12 @@
 // Progresso demonstrativo, sempre derivado do extrato real; nunca grava pontos.
 const STEPS=[
-  {level:1,label:'Em movimento',minimum:0,next:2000},
-  {level:2,label:'Constância',minimum:2000,next:5000},
-  {level:3,label:'Determinação',minimum:5000,next:10000},
-  {level:4,label:'Sem limites',minimum:10000,next:null}
+  {level:0,label:'Sem nível',minimum:0,next:2000},
+  {level:1,label:'Bronze',minimum:2000,next:5000},
+  {level:2,label:'Prata',minimum:5000,next:10000},
+  {level:3,label:'Ouro',minimum:10000,next:15000},
+  {level:4,label:'Platinum',minimum:15000,next:20000},
+  {level:5,label:'Diamante',minimum:20000,next:25000},
+  {level:6,label:'Black',minimum:25000,next:null}
 ]
 export function firstNameOf(fullName){
   const first=String(fullName||'').trim().split(/\s+/).find(Boolean)
