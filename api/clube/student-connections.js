@@ -44,13 +44,15 @@ export default async function handler(req,res){
   if(roleError)return reply(res,503,{status:'authorization_unavailable'})
   if(admin?.user_id!==auth.user.id)return reply(res,403,{status:'forbidden'})
   const db=createClient(url,svcKey,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}})
-  const [instagram,strava]=await Promise.all([
+  const [instagram,strava,birthdayFreeAccess]=await Promise.all([
    rows(db,'clube_instagram_links','student_id,verified_at'),
-   rows(db,'clube_strava_connection_status','student_id,connected,verified_at')
+   rows(db,'clube_strava_connection_status','student_id,connected,verified_at'),
+   rows(db,'clube_birthday_free_access','student_id,enabled')
   ])
   return reply(res,200,{
    status:'ok',
    instagram:instagram.map(x=>({student_id:x.student_id,verified_at:x.verified_at})),
+   birthday_free_access:birthdayFreeAccess.map(x=>({student_id:x.student_id,enabled:x.enabled===true})),
    strava:strava.map(x=>({student_id:x.student_id,connected:x.connected===true,verified_at:x.verified_at}))
   })
  }catch{
