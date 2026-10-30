@@ -26,7 +26,7 @@ export async function handleClubeEmailUnsubscribe(req,res){
     return page(res,400,'Link inválido','Não foi possível validar o cancelamento.')
   if(req.method==='GET'){
     const action='/api/clube/email-unsubscribe?student='+encodeURIComponent(student)+'&token='+encodeURIComponent(token)
-    return page(res,200,'Avisos por e-mail','Deseja deixar de receber os avisos de pontos e novos prêmios do Clube NPV?',
+    return page(res,200,'Avisos por e-mail','Deseja deixar de receber e-mails do Clube NPV, incluindo avisos de pontos, prêmios e aniversários?',
       '<form method="post" action="'+action+'"><button type="submit" style="border:0;background:#171717;color:white;padding:14px 20px;border-radius:8px;cursor:pointer">Cancelar avisos por e-mail</button></form>')
   }
   const dbUrl=process.env.VITE_CLUBE_SUPABASE_URL||process.env.SUPABASE_URL
