@@ -69,3 +69,11 @@
   .npv-profile-trophies{grid-template-columns:repeat(2,minmax(0,1fr))}
   .npv-profile-connections{grid-template-columns:1fr}
 }
+
+/* Saudação personalizada usa espaço já existente: título no desktop,
+   texto curto no subtítulo do celular, sem mudar margens da home. */
+.clube-shell.clube-live-student .npv-profile-greeting-mobile{display:none}
+@media(max-width:760px){
+ .clube-shell.clube-live-student .npv-profile-greeting-desktop{display:none}
+ .clube-shell.clube-live-student .npv-profile-greeting-mobile{display:inline}
+}
