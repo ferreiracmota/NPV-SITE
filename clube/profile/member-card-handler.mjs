@@ -1,6 +1,6 @@
 import {createClient} from '@supabase/supabase-js'
-import {readBirthdaySubscriptionSnapshot} from '../../clube/hotmart-admin/reader.mjs'
-import {chooseOwnSubscription} from '../../clube/profile/memberCardIdentity.mjs'
+import {readBirthdaySubscriptionSnapshot} from '../hotmart-admin/reader.mjs'
+import {chooseOwnSubscription} from './memberCardIdentity.mjs'
 export const config={maxDuration:60}
 const respond=(res,code,data)=>res.writeHead(code,{
  'Content-Type':'application/json; charset=utf-8','Cache-Control':'private, no-store, max-age=0',

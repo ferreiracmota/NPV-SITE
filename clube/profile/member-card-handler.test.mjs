@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import {handleMemberCard} from './member-card.js'
+import {handleMemberCard} from './member-card-handler.mjs'
 const makeResponse=()=>({code:0,headers:{},body:null,writeHead(code,headers){this.code=code;this.headers=headers;return this},end(body){this.body=JSON.parse(body);return this}})
 const mockClient=({id='u1',email='maria@example.com',approved=true,profileEmail=email}={})=>({
  auth:{getUser:async()=>({data:{user:{id,email}},error:null})},

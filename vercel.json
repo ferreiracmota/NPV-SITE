@@ -2,6 +2,7 @@
   "rewrites": [
     {"source":"/api/clube/email-admin","destination":"/api/clube/student-connections?npv_admin_route=email"},
     {"source":"/api/clube/profile","destination":"/api/clube/student-connections?npv_profile_route=update"},
+    {"source":"/api/clube/member-card","destination":"/api/clube/student-connections?npv_profile_route=card"},
     {"source":"/api/clube/email-unsubscribe","destination":"/api/clube/email-daily?npv_email_route=unsubscribe"},
     {
       "source": "/api/instagram/professional",
