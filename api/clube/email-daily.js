@@ -1,5 +1,6 @@
 import {createClient} from '@supabase/supabase-js'
 import {eligibleClubeEmails,emailContent} from '../../clube/email/notificationCandidates.mjs'
+import {handleClubeEmailUnsubscribe} from '../../clube/email/unsubscribe-handler.mjs'
 import {emailUnsubscribeUrl} from '../../clube/email/unsubscribe.mjs'
 export const config={maxDuration:60}
 const respond=(res,status,payload)=>res.writeHead(status,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff'}).end(JSON.stringify(payload))
@@ -14,6 +15,7 @@ async function allRows(db,table,columns){
   throw new Error('too_many_rows')
 }
 export default async function handler(req,res){
+  if(new URL(req.url||'/api/clube/email-daily','https://npv.local').searchParams.get('npv_email_route')==='unsubscribe')return handleClubeEmailUnsubscribe(req,res)
   if(req.method!=='GET')return respond(res,405,{status:'method_not_allowed'})
   const secret=process.env.CRON_SECRET
   if(!secret||secret.length<16)return respond(res,503,{status:'cron_secret_missing'})
