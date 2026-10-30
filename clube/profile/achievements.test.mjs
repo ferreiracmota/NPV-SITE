@@ -27,7 +27,9 @@ test('somente desafios concluídos de fato e do titular geram contagem',()=>{
  assert.equal(p.earned,900)
  assert.equal(p.trophies,2)
 })
-test('pontos negativos nao diminuem conquistas e limite do nivel final',()=>{
- const p=memberAchievements([paid(12000),paid(-4000,{event_type:'ajuste'})],student)
- assert.equal(p.earned,12000);assert.equal(p.level,4);assert.equal(p.next,null);assert.equal(p.progress,100)
+test('resgates nao reduzem nivel; ajustes corretivos alteram progresso e nivel maximo',()=>{
+ const corrected=memberAchievements([paid(12000),paid(-4000,{event_type:'ajuste'}),paid(-9000,{event_type:'resgate'})],student)
+ assert.equal(corrected.earned,8000);assert.equal(corrected.level,3);assert.equal(corrected.remaining,2000)
+ const max=memberAchievements([paid(12000),paid(-9000,{event_type:'resgate'})],student)
+ assert.equal(max.earned,12000);assert.equal(max.level,4);assert.equal(max.next,null);assert.equal(max.progress,100)
 })
