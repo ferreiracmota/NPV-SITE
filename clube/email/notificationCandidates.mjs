@@ -1,7 +1,10 @@
 // Lógica pura: nenhuma consulta ou envio de e-mail neste arquivo.
-export function eligibleClubeEmails({profiles=[],preferences=[],admins=[],rewards=[],events=[],redemptions=[],dispatches=[],settings={},templates=[]},now=Date.now()){
+export function eligibleClubeEmails({profiles=[],preferences=[],admins=[],rewards=[],events=[],redemptions=[],dispatches=[],settings={},templates=[],birthdayContext={}},now=Date.now()){
   if(settings?.enabled!==true)return []
   const templateByKey=new Map(templates.map(t=>[t.key,t]))
+  const eligibleActiveBirthdays=new Set(birthdayContext.activeIds||[])
+  const eligibleInactiveBirthdays=new Set(birthdayContext.inactive||[])
+  const birthdayYear=birthdayContext.year
   const opt=new Map(preferences.map(p=>[p.student_id,p]))
   const adminsSet=new Set(admins.map(x=>x.user_id))
   const sent=new Set(dispatches.map(x=>x.dedupe_key))
@@ -51,6 +54,7 @@ export function eligibleClubeEmails({profiles=[],preferences=[],admins=[],reward
     for(const [kind,eventType] of Object.entries(extraTriggers)){
       const template=templateByKey.get(kind)
       if(!template?.enabled)continue
+      if(kind==='birthday'&&!eligibleActiveBirthdays.has(member.id))continue
       const since=Math.max(Date.parse(settings.catalog_since||'')||now,Date.parse(template.active_since||'')||now,Date.parse(pref?.created_at||'')||0)
       for(const event of studentEvents.filter(e=>e.event_type===eventType&&Number(e.points)>0&&Date.parse(e.created_at||'')>since)){
         // Para desafios, exigir confirmação da meta mensal do Strava.
@@ -59,6 +63,12 @@ export function eligibleClubeEmails({profiles=[],preferences=[],admins=[],reward
         if(sent.has(duplicateKey))continue
         result.push({...common,kind,eventPoints:Number(event.points),reward:{id:null,name:template.name,points:0},duplicateKey})
       }
+    }
+    const inactiveTemplate=templateByKey.get('birthday_inactive')
+    if(inactiveTemplate?.enabled&&eligibleInactiveBirthdays.has(member.id)&&Number.isSafeInteger(birthdayYear)){
+      const duplicateKey='birthday:inactive:'+birthdayYear+':'+member.id
+      if(!sent.has(duplicateKey))result.push({...common,kind:'birthday_inactive',eventPoints:0,
+        reward:{id:null,name:inactiveTemplate.name,points:0},duplicateKey})
     }
   }
   // No máximo 80 avisos por execução; nenhuma comunicação diária sem evento.
