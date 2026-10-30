@@ -4,3 +4,9 @@
 .npv-birthday-inputs select:focus{outline:2px solid #a3be3a66;border-color:#88a635}
 .clube-form label>small,.npv-profile-form label>small{font-size:11px;line-height:1.5;font-weight:450;color:#758270}
 @media(max-width:460px){.npv-birthday-inputs{grid-template-columns:minmax(75px,100px) minmax(0,1fr)}.npv-birthday-inputs select{padding:10px 8px}}
+
+/* Consentimento de felicitações após o encerramento (opcional). */
+.clube-form label.npv-birthday-optin,.npv-profile-form label.npv-birthday-optin{display:flex;flex-direction:row;align-items:flex-start;gap:10px;font-size:12px;font-weight:600;line-height:1.5;cursor:pointer}
+.clube-form label.npv-birthday-optin input,.npv-profile-form label.npv-birthday-optin input{width:18px;height:18px;min-height:18px;flex:0 0 18px;accent-color:#7a9944;margin:0;padding:0}
+.npv-birthday-optin span{flex:1}
+.npv-birthday-optin small{display:block;font-weight:400;opacity:.76;margin-top:3px}
