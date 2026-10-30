@@ -26,14 +26,16 @@ test('sem evento elegível ou com modelo desativado, nenhum aviso é enviado',()
 })
 test('novo aviso só usa evento posterior à ativação e é deduplicado',()=>{
  const template={key:'birthday',enabled:true,active_since:'2026-11-02T10:00:00Z'}
- const matches=eligibleClubeEmails({...base,templates:[template]},now)
+ const authorized={...base,birthdayContext:{activeIds:['u1'],inactive:[],year:2026}}
+ assert.equal(eligibleClubeEmails({...base,templates:[template]},now).length,0)
+ const matches=eligibleClubeEmails({...authorized,templates:[template]},now)
  assert.equal(matches.length,1)
  assert.equal(matches[0].kind,'birthday')
  assert.equal(matches[0].duplicateKey,'event:birthday:e1')
  assert.equal(matches[0].reward.id,null)
- assert.equal(eligibleClubeEmails({...base,templates:[template],dispatches:[{dedupe_key:matches[0].duplicateKey}]},now).length,0)
- assert.equal(eligibleClubeEmails({...base,templates:[{...template,active_since:'2026-11-02T13:00:00Z'}]},now).length,0)
- assert.equal(eligibleClubeEmails({...base,templates:[template],events:[{...event,is_test:true}]},now).length,0)
+ assert.equal(eligibleClubeEmails({...authorized,templates:[template],dispatches:[{dedupe_key:matches[0].duplicateKey}]},now).length,0)
+ assert.equal(eligibleClubeEmails({...authorized,templates:[{...template,active_since:'2026-11-02T13:00:00Z'}]},now).length,0)
+ assert.equal(eligibleClubeEmails({...authorized,templates:[template],events:[{...event,is_test:true}]},now).length,0)
 })
 test('desafio exige confirmação real strava:challenge:',()=>{
  const template={key:'challenge_completed',enabled:true,active_since:'2026-11-02T10:00:00Z'}
