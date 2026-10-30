@@ -4,7 +4,7 @@ export const EMAIL_PRESETS={
  new_reward:{name:'Prêmio novo na lojinha',event:'Novo prêmio disponível no catálogo'},
  challenge_completed:{name:'Desafio concluído',event:'Desafio mensal confirmado'},
  birthday:{name:'Aniversário',event:'Pontos de aniversário registrados'},
- birthday_inactive:{name:'Aniversário — Ex-aluna',event:'Mensagem de carinho para ex-aluna · envio em preparação'},
+ birthday_inactive:{name:'Aniversário — Ex-aluna',event:'Mensagem anual com consentimento, sem pontos'},
  renewal:{name:'Renovação confirmada',event:'Pontos de renovação registrados'},
  referral:{name:'Indicação convertida',event:'Pontos de indicação registrada'}
 }
