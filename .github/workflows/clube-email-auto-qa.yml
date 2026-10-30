@@ -24,5 +24,7 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Testar regras de email, preferencia e cancelamento
         run: node --test clube/email/*.test.mjs
+      - name: Verificar rota de cancelamento
+        run: node --check clube/email/unsubscribe-handler.mjs
       - name: Compilar site completo
         run: pnpm run build
