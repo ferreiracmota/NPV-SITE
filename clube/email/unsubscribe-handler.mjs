@@ -39,7 +39,7 @@ export async function handleClubeEmailUnsubscribe(req,res){
       updated_at:new Date().toISOString()
     },{onConflict:'student_id'})
     if(error)throw error
-    return page(res,200,'Avisos cancelados','Você não receberá mais e-mails de pontos suficientes ou novos prêmios. Seus pontos e o acesso ao Clube continuam iguais.')
+    return page(res,200,'Avisos cancelados','Você não receberá mais avisos automáticos do Clube NPV, inclusive de aniversários. Seus pontos e o acesso continuam iguais.')
   }catch{
     return page(res,503,'Não foi possível cancelar','Tente novamente mais tarde.')
   }
