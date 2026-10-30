@@ -28,6 +28,7 @@ import ClubeEmailAdmin from './ClubeEmailAdmin.jsx'
 import {firstNameOf} from '../clube/profile/achievements.mjs'
 import {BIRTHDAY_MONTHS,BIRTHDAY_DAYS,birthdayFromParts,validOptionalPhone} from '../clube/profile/birthday.mjs'
 import './ClubeAdminWorkspace.css'
+import './ClubeBirthday.css'
 
 const format = value => Number(value||0).toLocaleString('pt-BR')
 const date = value => new Date(value).toLocaleDateString('pt-BR',{day:'2-digit',month:'short',year:'numeric'})
