@@ -58,6 +58,12 @@ export function eligibleClubeEmails({profiles=[],preferences=[],admins=[],reward
       const since=Math.max(Date.parse(settings.catalog_since||'')||now,Date.parse(template.active_since||'')||now,Date.parse(pref?.created_at||'')||0)
       for(const event of studentEvents.filter(e=>e.event_type===eventType&&Number(e.points)>0&&Date.parse(e.created_at||'')>since)){
         // Para desafios, exigir confirmação da meta mensal do Strava.
+        if(kind==='birthday'){
+          // Não reenviar aniversário de outro dia ou ano, mesmo que haja crédito histórico.
+          const currentDate=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(now))
+          const eventDate=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(event.created_at))
+          if(eventDate!==currentDate)continue
+        }
         if(kind==='challenge_completed'&&!String(event.reference_id||'').startsWith('strava:challenge:'))continue
         const duplicateKey='event:'+kind+':'+event.id
         if(sent.has(duplicateKey))continue
