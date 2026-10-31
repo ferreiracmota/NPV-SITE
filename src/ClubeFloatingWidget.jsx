@@ -21,6 +21,7 @@ function RankingPreview({compact=false,ranking=[]}){
       <span className="npv-fw-rank-name">{entry.name}</span>
       <strong>{points(entry.points)} <small>pts</small></strong>
     </div>)}
+    <span className="npv-fw-ranking-disclaimer">Ranking ilustrativo · participantes fictícios</span>
   </div>
 }
 
@@ -130,10 +131,10 @@ export default function ClubeFloatingWidget({configOverride=null,forceVisible=fa
       </div>}
       <div id={panelId} className="npv-fw-expanded-content" aria-hidden={!open} inert={!open?'':undefined}>
         <div className="npv-fw-expanded-inner">
-          <a className="npv-fw-primary npv-fw-cta-top" href="/clube">{authenticated?'Acessar meus pontos':'Conhecer o Clube NPV'} <ArrowRight size={16}/></a>
+          <a className="npv-fw-primary npv-fw-cta-top" href={authenticated?'/clube':'/clube/conheca'}>{authenticated?'Acessar meus pontos':'Conhecer o Clube NPV'} <ArrowRight size={16}/></a>
           <div className="npv-fw-section-head" title="Participantes e pontuações de exemplo, não representam alunos reais."><span><Crown size={16}/> Ranking do Clube</span></div>
           <RankingPreview ranking={config.ranking}/>
-          <p className="npv-fw-disclaimer">E você? Quantos pontos já acumulou?</p>
+          <p className="npv-fw-disclaimer">Veja como funciona e descubra como participar.</p>
           <div className="npv-fw-divider"/>
           <div className="npv-fw-section-head"><span><Gift size={16}/> Lojinha & recompensas</span></div>
           <div className="npv-fw-rewards">{rewardList.map(item=>{
