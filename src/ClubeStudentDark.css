@@ -1,0 +1,95 @@
+/* Tema opcional do Clube — somente área autenticada do aluno.
+   Não muda o administrativo, as fotografias nem as artes dos cartões. */
+.clube-shell.clube-live-student.npv-theme-dark{
+  --c-ink:#f5f7f1;--c-muted:#acb7ad;--c-line:#3a4540;--c-soft:#1d2420;
+  --npv-v211-shadow:0 10px 32px rgba(0,0,0,.23);
+  background:#101311;color:#f2f5ef;
+}
+.clube-shell.clube-live-student.npv-theme-dark :is(.clube-container,.clube-main){background:transparent;color:#f2f5ef}
+.clube-shell.clube-live-student.npv-theme-dark .clube-intro h1,
+.clube-shell.clube-live-student.npv-theme-dark .npv-profile-heading h1,
+.clube-shell.clube-live-student.npv-theme-dark .npv-shop-heading h1,
+.clube-shell.clube-live-student.npv-theme-dark .npv-shop-heading h2,
+.clube-shell.clube-live-student.npv-theme-dark .clube-card-head h1,
+.clube-shell.clube-live-student.npv-theme-dark .clube-card-head h2,
+.clube-shell.clube-live-student.npv-theme-dark .clube-card h2,
+.clube-shell.clube-live-student.npv-theme-dark .npv-profile-panel-title h2{color:#f5f7f3}
+.clube-shell.clube-live-student.npv-theme-dark .clube-intro p,
+.clube-shell.clube-live-student.npv-theme-dark .npv-profile-heading p,
+.clube-shell.clube-live-student.npv-theme-dark .npv-shop-heading p,
+.clube-shell.clube-live-student.npv-theme-dark .clube-card-head p,
+.clube-shell.clube-live-student.npv-theme-dark .clube-card>p,
+.clube-shell.clube-live-student.npv-theme-dark .npv-profile-panel-title p{color:#aeb9b0}
+.clube-shell.clube-live-student.npv-theme-dark :is(.clube-card:not(.clube-activities-card),.clube-kpi:not(.clube-kpi-dark),.npv-shop-card,.npv-shop-requests,.npv-partner-card,.npv-profile-panel,.npv-membership-stats,.npv-wallet-gallery){
+  background:#1a1f1c;border-color:#353e38;color:#eef1eb;box-shadow:0 7px 22px rgba(0,0,0,.16)
+}
+.clube-shell.clube-live-student.npv-theme-dark .clube-activities-expanded,
+.clube-shell.clube-live-student.npv-theme-dark .npv-strava-detail,
+.clube-shell.clube-live-student.npv-theme-dark .npv-shop-info,
+.clube-shell.clube-live-student.npv-theme-dark .npv-partner-info{background:#1a1f1c;color:#e7ede5}
+.clube-shell.clube-live-student.npv-theme-dark .clube-kpi:not(.clube-kpi-dark)>strong,
+.clube-shell.clube-live-student.npv-theme-dark .clube-kpi:not(.clube-kpi-dark)>span,
+.clube-shell.clube-live-student.npv-theme-dark .npv-shop-info strong,
+.clube-shell.clube-live-student.npv-theme-dark .npv-shop-card h3,
+.clube-shell.clube-live-student.npv-theme-dark .npv-partner-info>strong,
+.clube-shell.clube-live-student.npv-theme-dark .npv-shop-requests-head h3,
+.clube-shell.clube-live-student.npv-theme-dark .npv-profile-progress-line strong,
+.clube-shell.clube-live-student.npv-theme-dark .npv-profile-stat-grid strong{color:#f2f6ec}
+.clube-shell.clube-live-student.npv-theme-dark :is(.npv-shop-card small,.npv-shop-progress-label,.npv-shop-stock,.npv-shop-request-row,.npv-partner-info p,.npv-profile-progress small,.npv-profile-stat-grid small,.npv-profile-share p,.npv-profile-trophy small,.npv-wallet-flip-hint,.npv-wallet-gallery>p,.clube-micro){color:#adbaae}
+.clube-shell.clube-live-student.npv-theme-dark .npv-profile-stat-grid{border-top-color:#344038}
+.clube-shell.clube-live-student.npv-theme-dark .npv-profile-track,
+.clube-shell.clube-live-student.npv-theme-dark .npv-shop-progress-track{background:#354138}
+.clube-shell.clube-live-student.npv-theme-dark .npv-profile-track>span,
+.clube-shell.clube-live-student.npv-theme-dark .npv-shop-progress-track span{background:linear-gradient(90deg,#779e49,#d1eb79)}
+.clube-shell.clube-live-student.npv-theme-dark .npv-profile-panel-title>svg,
+.clube-shell.clube-live-student.npv-theme-dark .npv-profile-stat-grid svg{color:#c7dc90}
+.clube-shell.clube-live-student.npv-theme-dark .npv-profile-trophy,
+.clube-shell.clube-live-student.npv-theme-dark .npv-wallet-gallery-item{
+  background:#232a25;border-color:#3b4940;color:#c6d1c6
+}
+.clube-shell.clube-live-student.npv-theme-dark .npv-profile-trophy>span{background:#354138;color:#9fb093}
+.clube-shell.clube-live-student.npv-theme-dark .npv-profile-trophy.is-earned{border-color:#648748;background:#243827;color:#e4f3c0}
+.clube-shell.clube-live-student.npv-theme-dark .npv-profile-trophy.is-earned>span{background:#415931;color:#d9ef98}
+.clube-shell.clube-live-student.npv-theme-dark .npv-wallet-gallery-item.is-selected{background:#2a3a2c;border-color:#a2cc76}
+.clube-shell.clube-live-student.npv-theme-dark .npv-wallet-gallery-item strong{color:#f0f7e8}
+.clube-shell.clube-live-student.npv-theme-dark .npv-wallet-gallery-item small{color:#b7c7b3}
+.clube-shell.clube-live-student.npv-theme-dark .npv-wallet-explore-button{
+  color:#edf5e8;border-color:#45524b;background:#232825
+}
+.clube-shell.clube-live-student.npv-theme-dark .npv-wallet-benefit-preview{
+  color:#eef5e8;background:#28342a;border:1px solid #455840
+}
+.clube-shell.clube-live-student.npv-theme-dark .npv-wallet-benefit-preview small{color:#b9c8b6}
+.clube-shell.clube-live-student.npv-theme-dark .npv-membership-none{background:#202823;border-color:#4a5749;color:#edf5e8}
+.clube-shell.clube-live-student.npv-theme-dark .npv-membership-none p{color:#b7c3b4}
+.clube-shell.clube-live-student.npv-theme-dark .npv-profile-form label{color:#e0e9dd}
+.clube-shell.clube-live-student.npv-theme-dark .npv-profile-form label span{color:#abb9aa}
+.clube-shell.clube-live-student.npv-theme-dark :is(.npv-profile-form input:not([type=checkbox]),.npv-profile-form select,.npv-profile-readonly,.clube-form input,.clube-form select,.clube-form textarea){
+  color:#f1f5ed;background:#222a24;border-color:#425145;box-shadow:none
+}
+.clube-shell.clube-live-student.npv-theme-dark input::placeholder{color:#a3b0a3}
+.clube-shell.clube-live-student.npv-theme-dark .npv-profile-readonly{color:#d7e3d5}
+.clube-shell.clube-live-student.npv-theme-dark .npv-profile-connections button{
+  background:#242d26;border-color:#445345;color:#e6efe2
+}
+.clube-shell.clube-live-student.npv-theme-dark .npv-profile-connections button:hover{background:#293b2e}
+.clube-shell.clube-live-student.npv-theme-dark .npv-profile-notice{color:#c6e8a4}
+.clube-shell.clube-live-student.npv-theme-dark .npv-profile-save{background:#31583a;border-color:#56804a}
+.clube-shell.clube-live-student.npv-theme-dark :is(.npv-shop-requests-head p,.npv-shop-request-text small,.npv-partner-action,.clube-activity-description>span){color:#b8c6b6}
+.clube-shell.clube-live-student.npv-theme-dark .npv-shop-request-row,
+.clube-shell.clube-live-student.npv-theme-dark .clube-activity{border-color:#3b483f}
+.clube-shell.clube-live-student.npv-theme-dark .clube-activity-description strong{color:#eff5ec}
+.clube-shell.clube-live-student.npv-theme-dark .npv-shop-balance{background:#232c25;border-color:#405243;color:#aebead}
+.clube-shell.clube-live-student.npv-theme-dark .npv-shop-balance strong{color:#d2eb93}
+.clube-shell.clube-live-student.npv-theme-dark .npv-partner-action{background:#2f412f;color:#ddf1d2!important;border-color:#536951}
+.clube-shell.clube-live-student.npv-theme-dark .npv-partner-logo{background:#29332b}
+.clube-shell.clube-live-student.npv-theme-dark .npv-shop-empty{background:#222923;color:#bacab8}
+.clube-shell.clube-live-student.npv-theme-dark .clube-how .npv-earn-rule-text strong{color:#eff5eb}
+.clube-shell.clube-live-student.npv-theme-dark .clube-how .npv-earn-rule-text small{color:#b6c6b4}
+.clube-shell.clube-live-student.npv-theme-dark .clube-how .npv-earn-rule{border-color:#354338}
+.clube-shell.clube-live-student.npv-theme-dark .clube-main-footer{color:#acbbae;border-color:#37463b}
+.clube-shell.clube-live-student.npv-theme-dark .clube-main-footer .clube-terms-link{color:#d6e9c5}
+.clube-shell.clube-live-student.npv-theme-dark .clube-student-inner-tab>.clube-card .clube-activity{border-color:#3a473f}
+.clube-shell.clube-live-student.npv-theme-dark .clube-student-inner-tab .npv-shop-heading h1{color:#f5f7f3}
+.clube-shell.clube-live-student.npv-theme-dark .clube-student-inner-tab .npv-shop-heading p{color:#aeb9b0}
+/* Banner, mosaico das atividades e artes dos cartões permanecem intactos. */
