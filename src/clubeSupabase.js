@@ -1,6 +1,7 @@
 /* Exclusivo da BRANCH DE PREVIEW. Nunca publicar ou mesclar com produção.
    O aplicativo ORIGINAL roda com banco fictício em memória. Nenhuma operação
    neste arquivo chega ao Supabase e nenhum dado real é recuperado. */
+import {currentNpvMonth} from '../clube/strava/challengeProgress.mjs'
 export const clubeReady=true
 const demoId='00000000-0000-4000-8000-000000009991'
 const created=days=>new Date(Date.now()-days*86400000).toISOString()
@@ -42,7 +43,7 @@ const tableData={
   clube_display_settings:[{singleton:true,theme:'light',show_journey:true,show_achievements:true}],
   clube_point_events:events,clube_rewards:rewards,clube_redemptions:[],
   clube_partners:partners,clube_point_rules:rules,
-  clube_monthly_challenges:[{id:'demo-month',name:'Desafio de 50 km',goal_km:50,active:true,reward_points:300,position:1}],
+  clube_monthly_challenges:[{id:'demo-month',month_key:currentNpvMonth(),name:'Desafio de 50 km',goal_km:50,active:true,reward_points:300,position:1}],
   clube_km_settings:[{singleton:true,points_per_km:2}]
 }
 function tableQuery(table){
