@@ -89,7 +89,9 @@ export default function ClubeRegisteredActivities({session,onConnectionStatusCha
     checkedOnce.current=true
     const controller=new AbortController()
     readStatus(controller.signal)
-    return()=>controller.abort()
+    // StrictMode desmonta e remonta efeitos em desenvolvimento. A primeira
+    // leitura abortada não pode bloquear a próxima consulta ao Strava.
+    return()=>{controller.abort();checkedOnce.current=false}
   },[expanded,token])
 
   async function connect(){
