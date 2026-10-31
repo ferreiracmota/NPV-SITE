@@ -59,11 +59,10 @@
 .npv-clube-public-steps p{font-size:12px;color:#687868;line-height:1.7;margin-top:12px}
 .npv-clube-public-points{padding:90px 0;background:#eef3e9}
 .npv-clube-public-point-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:17px}
-.npv-clube-public-point-grid article{padding:25px;border:1px solid #dce7d5;border-radius:17px;background:#fff;min-height:213px}
+.npv-clube-public-point-grid article{padding:27px 25px 29px;border:1px solid #dce7d5;border-radius:17px;background:#fff;min-height:203px}
 .npv-clube-public-point-icon{display:grid;place-items:center;width:43px;height:43px;border-radius:12px;background:#ecf4df;color:#527f3b}
-.npv-clube-public-point-grid h3{font-size:14px;font-weight:750;margin-top:14px}
-.npv-clube-public-point-grid strong{display:block;color:#2d5a31;font-size:28px;letter-spacing:-.04em;margin:8px 0 5px}
-.npv-clube-public-point-grid p{color:#6b796e;font-size:12px;line-height:1.6}
+.npv-clube-public-point-grid h3{font-size:18px;font-weight:820;letter-spacing:-.025em;line-height:1.32;margin-top:21px}
+.npv-clube-public-point-grid p{color:#647767;font-size:13px;line-height:1.65;margin-top:12px;max-width:315px}
 .npv-clube-public-fine{color:#738274;font-size:11px;line-height:1.6;margin-top:18px}
 .npv-clube-public-rewards{background:#fafbf8}
 .npv-clube-public-reward-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
@@ -85,10 +84,9 @@
 .npv-clube-public-levels .npv-clube-public-kicker{color:#c9e592}
 .npv-clube-public-levels-inner>div:first-child>p{color:#bbcbb9;font-size:15px;line-height:1.7;margin-top:19px;max-width:390px}
 .npv-clube-public-level-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
-.npv-clube-public-level-grid>div{border:1px solid rgba(216,232,205,.2);border-radius:12px;background:rgba(255,255,255,.04);min-height:116px;padding:17px 13px;display:flex;flex-direction:column}
+.npv-clube-public-level-grid>div{border:1px solid rgba(216,232,205,.2);border-radius:12px;background:rgba(255,255,255,.04);min-height:105px;padding:19px 15px;display:flex;flex-direction:column;justify-content:center}
 .npv-clube-public-level-grid>div>span{font-size:10px;color:#aecf79;font-weight:850;letter-spacing:.12em}
-.npv-clube-public-level-grid strong{font-size:17px;letter-spacing:-.03em;margin-top:7px}
-.npv-clube-public-level-grid small{font-size:11px;color:#b5c6b1;margin-top:4px}
+.npv-clube-public-level-grid strong{font-size:18px;letter-spacing:-.03em;margin-top:8px}
 .npv-clube-public-levels .npv-clube-public-fine{color:#93a990;margin-top:30px}
 .npv-clube-public-final{padding:110px 0 115px;text-align:center;background:#f5f8f0}
 .npv-clube-public-final .npv-clube-public-container{max-width:790px}
