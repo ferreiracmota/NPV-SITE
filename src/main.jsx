@@ -1,6 +1,7 @@
 import { StrictMode, lazy, Suspense } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
+import './clubePreviewRuntime.js'
 import App from './App.jsx'
 import { clubeReady } from './clubeSupabase.js'
 
@@ -39,7 +40,9 @@ function ClubeIndisponivel() {
   </main>
 }
 
-const page = window.location.pathname.replace(/\/$/,'') === '/clube/conheca'
+const page = window.location.pathname.replace(/\/$/,'') === '/clube/previa-aluno'
+  ? <ClubeNPVOnline />
+  : window.location.pathname.replace(/\/$/,'') === '/clube/conheca'
   ? <ClubePublicLanding />
   : isClubeRoute
   ? (window.location.pathname === '/clube/instagram-teste' ? <ClubeInstagramPreview /> : params.get('demo') === '1' ? <ClubeNPV /> :
