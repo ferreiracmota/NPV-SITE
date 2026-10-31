@@ -13,7 +13,7 @@ const fmt=n=>new Intl.NumberFormat('pt-BR').format(n)
 const steps=[
   {n:'01',label:'FAÇA PARTE',title:'Comece com a plataforma',description:'Escolha o plano e aproveite seus treinos e conteúdos NPV. O Clube complementa essa experiência.'},
   {n:'02',label:'ATIVE SEU CLUBE',title:'Solicite sua entrada',description:'Faça seu cadastro no Clube. O acesso é liberado após a verificação e aprovação do vínculo.'},
-  {n:'03',label:'GANHE PONTOS',title:'Sua participação conta',description:'Renovações confirmadas, desafios e atividades elegíveis ajudam você a evoluir.'},
+  {n:'03',label:'GANHE PONTOS',title:'Sua participação conta',description:'Atividades elegíveis no Strava e desafios concluídos podem gerar pontos, conforme as regras do Clube.'},
   {n:'04',label:'VÁ ALÉM',title:'Conquiste novas vantagens',description:'Acompanhe seus níveis, confira parceiros e solicite recompensas conforme as regras do Clube.'}
 ]
 const activities=[
