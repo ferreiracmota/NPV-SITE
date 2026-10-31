@@ -1,19 +1,12 @@
 import React from 'react'
-import {ArrowRight, Award, Gift, LockKeyhole, Sparkles} from 'lucide-react'
+import {ArrowRight, Award, Gift} from 'lucide-react'
 import {memberAchievements} from '../clube/profile/achievements.mjs'
 import {MEMBER_LEVELS} from '../clube/profile/memberCardIdentity.mjs'
+import {selectNextAvailableReward} from '../clube/profile/nextReward.mjs'
 import './ClubeStudentMomentum.css'
 
 const fmt=value=>Number(value||0).toLocaleString('pt-BR')
 const safePoints=value=>Math.max(0,Number(value)||0)
-export function selectNextAvailableReward(rewards,availablePoints){
-  const eligible=(Array.isArray(rewards)?rewards:[])
-    .filter(item=>item.active===true&&item.test_only!==true&&Number(item.stock)>0&&Number(item.points)>0)
-    .slice().sort((a,b)=>Number(a.points)-Number(b.points))
-  if(!eligible.length)return null
-  // Quando o saldo já permite resgate, destacamos uma conquista ao alcance.
-  return eligible.find(item=>Number(item.points)<=availablePoints)||eligible[0]
-}
 
 /**
  * Somente leitura. Níveis usam pontos conquistados (sem eventos de teste),
@@ -46,6 +39,5 @@ export default function ClubeStudentMomentum({events=[],studentId,rewards=[],ava
       <div className="npv-momentum-progress"><span role="progressbar" aria-label="Pontos disponíveis para esta recompensa" aria-valuemin={0} aria-valuemax={100} aria-valuenow={rewardProgress} style={{width:rewardProgress+'%'}}/></div>
       <div className="npv-momentum-bottom"><p>{unlocked?<><strong>Pontos suficientes!</strong> Confira as condições do resgate.</>:<>Faltam <strong>{fmt(rewardRemaining)} pontos disponíveis</strong> para solicitar.</>}</p><button type="button" onClick={onRewards}>Ver prêmios <ArrowRight size={15}/></button></div>
     </div>}
-    {!showJourney&&reward&&<p className="npv-momentum-private"><LockKeyhole size={13}/> Seus níveis estão ocultos pela configuração do Clube.</p>}
   </section>
 }
