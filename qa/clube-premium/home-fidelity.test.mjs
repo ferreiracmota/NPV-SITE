@@ -16,7 +16,7 @@ test('Início premium apresenta artes originais por nível e fotografia real do 
 test('Página Inicial preserva desafio real, parceiros, extrato e conexões',()=>{
  const app=fromRoot('src/ClubeNPVOnline.jsx')
  const home=app.split("{tab==='inicio'&&!isAdmin&&<>")[1]?.split("{tab==='perfil'&&!isAdmin&&")[0]||''
- for(const name of ['<ClubeStudentMomentum','<ClubeRegisteredActivities','<ClubeConnectionGuide','<PartnerCards','rewardsGrid(4)','<BenefitNotice'])assert.ok(home.includes(name),name)
+ for(const name of ['<ClubeStudentMomentum','<ClubeRegisteredActivities','<ClubeConnectionGuide','<PartnerCards','rewardsGrid(4,featuredReward?.id)','<BenefitNotice'])assert.ok(home.includes(name),name)
  assert.ok(home.indexOf('<ClubeStudentMomentum')<home.indexOf('<ClubeRegisteredActivities'))
  assert.ok(home.indexOf('<ClubeRegisteredActivities')<home.indexOf('<ClubeConnectionGuide'))
  assert.match(home,/rewardImageUrl=\{rewardImageUrl\}/)

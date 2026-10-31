@@ -176,3 +176,44 @@
  .clube-shell.clube-live-student .npv-momentum-product-art{max-width:132px;max-height:132px}
 }
 @media(prefers-reduced-motion:reduce){.clube-shell.clube-live-student .npv-momentum-meter>span{transition:none}}
+
+/* Organização editorial da Home: um protagonista por etapa.
+   O prêmio já demonstrado dentro da Lojinha não se repete na vitrine. */
+.clube-shell.clube-live-student .npv-student-momentum.has-only-level{
+  grid-template-columns:minmax(0,1fr);margin-bottom:clamp(14px,2vw,20px);
+}
+.clube-shell.clube-live-student .npv-student-momentum.has-only-level .npv-momentum-tier{
+  min-height:298px;
+  background:radial-gradient(circle at 76% 42%,rgba(181,208,120,.18),transparent 42%),
+    linear-gradient(125deg,#15251a,#1d3423 63%,#112118);
+}
+.clube-shell.clube-live-student .npv-student-momentum.has-only-level .npv-momentum-tier-layout{
+  grid-template-columns:1fr 1fr;
+}
+.clube-shell.clube-live-student .npv-student-momentum.has-only-level .npv-momentum-tier-art img{
+  max-width:355px;max-height:172px;
+}
+.clube-shell.clube-live-student .npv-shop-featured .npv-student-momentum.has-only-reward{
+  grid-template-columns:minmax(0,1fr);margin:0 0 17px;gap:0;
+}
+.clube-shell.clube-live-student .npv-shop-featured .npv-student-momentum.has-only-reward .npv-momentum-gift{
+  min-height:250px;
+}
+.clube-shell.clube-live-student .npv-shop-featured .npv-student-momentum.has-only-reward .npv-momentum-gift-layout{
+  grid-template-columns:minmax(0,1fr) minmax(130px,.52fr);
+}
+.clube-shell.clube-live-student .npv-shop-featured .npv-student-momentum.has-only-reward .npv-momentum-product-art{
+  max-width:205px;max-height:158px;
+}
+@media(max-width:780px){
+ .clube-shell.clube-live-student .npv-student-momentum.has-only-level .npv-momentum-tier{min-height:270px}
+ .clube-shell.clube-live-student .npv-student-momentum.has-only-level .npv-momentum-tier-layout{grid-template-columns:.9fr 1.1fr}
+ .clube-shell.clube-live-student .npv-student-momentum.has-only-level .npv-momentum-tier-art img{max-width:285px;max-height:141px}
+ .clube-shell.clube-live-student .npv-shop-featured .npv-student-momentum.has-only-reward .npv-momentum-gift{min-height:260px}
+ .clube-shell.clube-live-student .npv-shop-featured .npv-student-momentum.has-only-reward .npv-momentum-gift-layout{grid-template-columns:minmax(0,1fr) minmax(100px,.7fr)}
+ .clube-shell.clube-live-student .npv-shop-featured .npv-student-momentum.has-only-reward .npv-momentum-product-art{max-width:145px;max-height:145px}
+}
+@media(max-width:380px){
+ .clube-shell.clube-live-student .npv-student-momentum.has-only-level .npv-momentum-tier{min-height:250px}
+ .clube-shell.clube-live-student .npv-shop-featured .npv-student-momentum.has-only-reward .npv-momentum-gift-layout{grid-template-columns:minmax(0,1fr) minmax(95px,.65fr)}
+}

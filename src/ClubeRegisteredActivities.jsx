@@ -125,14 +125,14 @@ export default function ClubeRegisteredActivities({session,onConnectionStatusCha
     }catch(e){setError(e.message||'Erro ao desconectar.')}finally{setBusy(false)}
   }
 
-  return <section className="clube-card clube-activities-card npv-strava-activities" aria-label="Atividades registradas">
+  return <section className="clube-card clube-activities-card npv-strava-activities" aria-label="Metas e desafios">
     <button type="button" className={'clube-activities-toggle npv-strava-hero-trigger'+(extraGoals.length?' has-extra-challenges':'')} aria-expanded={expanded}
       aria-controls="npv-registered-activity-content" onClick={()=>setExpanded(v=>!v)}>
       <span className="npv-strava-hero-icon" aria-hidden="true"><Footprints size={25} strokeWidth={2.15}/></span>
       <span className="npv-strava-hero-copy">
         <span className="npv-strava-hero-eyebrow">SEU ESPAÇO DE PERFORMANCE <span aria-hidden="true">✦</span></span>
-        <strong>Atividades registradas</strong>
-        <small>Acompanhe seus treinos e sua evolução.</small>
+        <strong>Metas e desafios</strong>
+        <small>Acompanhe suas metas, atividades e evolução.</small>
         <span className="npv-strava-hero-meta" aria-live="polite">
           <span className={'npv-strava-hero-indicator'+(status.connected?' is-active':'')} aria-hidden="true"/>
           <span>{loading?'Atualizando conexão...':status.connected?'Strava conectado':status.disabled?'Strava em preparação':'Seu Strava, suas conquistas'}</span>

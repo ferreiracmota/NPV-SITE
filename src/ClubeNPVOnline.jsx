@@ -25,6 +25,7 @@ import ClubeInstagramAdminSummary from './ClubeInstagramAdminSummary.jsx'
 import ClubeAdminStudents from './ClubeAdminStudents.jsx'
 import ClubeStudentProfile from './ClubeStudentProfile.jsx'
 import ClubeStudentMomentum from './ClubeStudentMomentum.jsx'
+import {selectNextAvailableReward} from '../clube/profile/nextReward.mjs'
 import ClubeEmailAdmin from './ClubeEmailAdmin.jsx'
 import ClubeAppearanceAdmin from './ClubeAppearanceAdmin.jsx'
 import './ClubeStudentDark.css'
@@ -360,6 +361,9 @@ export default function ClubeNPVOnline() {
   const studentMembers=isAdmin?data.members.filter(x=>x.id!==user?.id &&
     (x.approved||confirmedPendingIds?.has(x.id))):data.members
   const catalogRewards=data.rewards.filter(x=>x.active||x.showcase)
+  const featuredReward=!isAdmin&&user
+    ?selectNextAvailableReward(data.rewards,Math.max(0,balance(user.id)-reserved(user.id)))
+    :null
   const totalPoints=data.events.filter(isThisYear).reduce((acc,x)=>acc+x.points,0)
   const pendingCount=data.requests.filter(x=>x.status==='pending').length
   const memberName=id=>data.members.find(x=>x.id===id)?.full_name||'Aluno'
@@ -512,9 +516,11 @@ export default function ClubeNPVOnline() {
     </div></React.Fragment>)}
   </div>
   }
-  function rewardsGrid(limit=null){return <div className="npv-shop-grid">
-    {(isAdmin?data.rewards:catalogRewards).length===0&&<p className="npv-shop-empty">Nenhuma recompensa cadastrada para exibição no momento.</p>}
-    {(isAdmin?data.rewards:catalogRewards).slice(0,limit||undefined).map(item=>{
+  function rewardsGrid(limit=null,excludeId=null){
+    const visibleRewards=(isAdmin?data.rewards:catalogRewards).filter(item=>item.id!==excludeId)
+    return <div className="npv-shop-grid">
+    {visibleRewards.length===0&&!excludeId&&<p className="npv-shop-empty">Nenhuma recompensa cadastrada para exibição no momento.</p>}
+    {visibleRewards.slice(0,limit||undefined).map(item=>{
       const Icon=glyphs[item.icon]||Gift
       const availablePoints=Math.max(0,balance(user?.id)-reserved(user?.id))
       const missingPoints=Math.max(0,item.points-availablePoints)
@@ -632,13 +638,24 @@ export default function ClubeNPVOnline() {
           events={mine} studentId={user.id} rewards={data.rewards}
           availablePoints={Math.max(0,balance(user.id)-reserved(user.id))}
           showJourney={displaySettings.show_journey}
+          showReward={false}
           rewardImageUrl={rewardImageUrl}
           onProfile={()=>setTab('perfil')} onRewards={()=>setTab('recompensas')}
         />
-        <BenefitNotice rewards={data.rewards} points={Math.max(0,balance(user.id)-reserved(user.id))} onOpen={()=>setTab('recompensas')}/>
         <div id="npv-month-challenges-anchor"><ClubeRegisteredActivities session={session} onConnectionStatusChange={setStravaConnection} onPointsSynced={refresh}/></div>
-        {connectionsChecked&&<ClubeConnectionGuide instagram={instagramConnection} strava={stravaConnection} onInstagram={()=>{setTab('instagram');window.scrollTo({top:0,behavior:'smooth'})}} onStrava={openStravaFromGuide}/>} 
-        <section className="npv-shop npv-shop-featured"><div className="npv-shop-heading"><div><div className="npv-shop-eyebrow"><Gift size={15}/>LOJINHA DO CLUBE NPV</div><h2>Troque seus pontos ✦</h2><p>Seu próximo objetivo pode estar aqui.</p></div><button className="npv-shop-view-all" onClick={()=>setTab('recompensas')}>Ver catálogo <ArrowRight size={16}/></button></div>{rewardsGrid(4)}<p className="npv-shop-demo-note">A disponibilidade real será confirmada após a aprovação do prêmio e dos parceiros.</p></section>
+        <BenefitNotice rewards={data.rewards} points={Math.max(0,balance(user.id)-reserved(user.id))} onOpen={()=>setTab('recompensas')}/>
+        <section className="npv-shop npv-shop-featured">
+          <div className="npv-shop-heading"><div><div className="npv-shop-eyebrow"><Gift size={15}/>LOJINHA DO CLUBE NPV</div><h2>Troque seus pontos ✦</h2><p>Seu prêmio mais próximo e outras recompensas para conquistar.</p></div><button className="npv-shop-view-all" onClick={()=>setTab('recompensas')}>Ver catálogo <ArrowRight size={16}/></button></div>
+          {featuredReward&&<ClubeStudentMomentum
+            events={mine} studentId={user.id} rewards={data.rewards}
+            availablePoints={Math.max(0,balance(user.id)-reserved(user.id))}
+            showJourney={false} showLevel={false}
+            rewardImageUrl={rewardImageUrl}
+            onRewards={()=>setTab('recompensas')}
+          />}
+          {rewardsGrid(4,featuredReward?.id)}
+          <p className="npv-shop-demo-note">A disponibilidade real será confirmada após a aprovação do prêmio e dos parceiros.</p>
+        </section>
         {data.partners.some(x=>x.active)&&<section className="npv-partners-section">
           <div className="npv-shop-heading"><div><div className="npv-shop-eyebrow"><Award size={15}/> PARCERIAS NPV</div><h2>Benefícios de parceiros ✦</h2><p>Explore os parceiros e consulte os descontos disponíveis.</p></div>
             <button className="npv-shop-view-all" onClick={()=>setTab('parceiros')}>Ver parceiros <ArrowRight size={16}/></button></div>
@@ -663,6 +680,7 @@ export default function ClubeNPVOnline() {
           })}</div>
           <p className="clube-micro">Atividades sujeitas à confirmação.</p>
         </section>
+        {connectionsChecked&&<ClubeConnectionGuide instagram={instagramConnection} strava={stravaConnection} onInstagram={()=>{setTab('instagram');window.scrollTo({top:0,behavior:'smooth'})}} onStrava={openStravaFromGuide}/>}
       </>}
       {tab==='perfil'&&!isAdmin&&<ClubeStudentProfile
         profile={profile} email={user.email} events={data.events} session={session} displaySettings={displaySettings}
