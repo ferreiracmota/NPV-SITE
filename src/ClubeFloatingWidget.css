@@ -1,4 +1,6 @@
 /* Clube NPV — widget fixo na viewport, fora da hero. Não altera elementos do site. */
+.npv-floating-club .npv-fw-ranking-disclaimer{display:block;align-self:flex-start;color:#c8d4c2;font-size:9px;font-weight:650;line-height:1.35;margin:0 0 2px 1px;opacity:.95}
+.npv-floating-club .npv-fw-shell[style] .npv-fw-ranking-disclaimer{color:var(--npv-widget-text,#fff)}
 .npv-floating-club{
   position:fixed;
   right:clamp(18px,3.6vw,68px);
