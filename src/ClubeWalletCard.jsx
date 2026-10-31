@@ -37,7 +37,7 @@ export default function ClubeWalletCard({profile,achievements}){
       <div className="npv-wallet-stack" style={{'--npv-band-count':otherTiers.length,'--npv-accent':accents[achievements.level]}}>
         {otherTiers.map((tier,index)=><button type="button" key={tier.level}
           className={'npv-wallet-band'+(tier.level>achievements.level?' is-locked':' is-earned')}
-          style={{'--npv-band-index':index,zIndex:index+1}}
+          style={{'--npv-band-index':index,'--npv-band-inset':`${(otherTiers.length-index)*4}px`,zIndex:index+1}}
           onClick={()=>{setSelectedTier(tier.level);setGalleryOpen(true);setFlipped(false)}}
           aria-label={'Explorar '+tier.name+', desbloqueio aos '+fmt(tier.minimum)+' pontos'}>
           <img src={images[tier.level]} alt="" loading="lazy"/>
