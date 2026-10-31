@@ -1,5 +1,5 @@
 import React,{useEffect} from 'react'
-import {ArrowRight, ArrowUpRight, BadgeCheck, Check, ChevronRight, Footprints, Gift, Instagram, LockKeyhole, Medal, ShieldCheck, Sparkles, Trophy, Wallet, Zap} from 'lucide-react'
+import {ArrowRight, ArrowUpRight, Check, ChevronRight, Dumbbell, Footprints, Gift, LockKeyhole, Medal, ShieldCheck, Sparkles, Target, Trophy, Zap} from 'lucide-react'
 import logo from './assets/logo-branca-npv.PNG'
 import {MEMBER_LEVELS} from '../clube/profile/memberCardIdentity.mjs'
 import './ClubePublicLanding.css'
@@ -13,13 +13,13 @@ const fmt=n=>new Intl.NumberFormat('pt-BR').format(n)
 const steps=[
   {n:'01',label:'FAÇA PARTE',title:'Comece com a plataforma',description:'Escolha o plano e aproveite seus treinos e conteúdos NPV. O Clube complementa essa experiência.'},
   {n:'02',label:'ATIVE SEU CLUBE',title:'Solicite sua entrada',description:'Faça seu cadastro no Clube. O acesso é liberado após a verificação e aprovação do vínculo.'},
-  {n:'03',label:'GANHE PONTOS',title:'Sua participação conta',description:'Renovações confirmadas, desafios e atividades elegíveis ajudam você a evoluir.'},
+  {n:'03',label:'EVOLUA NO CLUBE',title:'Sua participação conta',description:'Atividades elegíveis e desafios concluídos fazem parte da sua evolução no Clube.'},
   {n:'04',label:'VÁ ALÉM',title:'Conquiste novas vantagens',description:'Acompanhe seus níveis, confira parceiros e solicite recompensas conforme as regras do Clube.'}
 ]
 const activities=[
- {icon:BadgeCheck,title:'Renovação confirmada',value:'+400 pts',details:'Por mensalidade paga e validada'},
- {icon:Instagram,title:'Story marcando @naopensevai',value:'+200 pts',details:'Até 5 stories válidos por mês'},
- {icon:Footprints,title:'Corrida ou caminhada no Strava',value:'+2 pts/km',details:'Atividade elegível e validada; aplicam-se limites'}
+ {icon:Footprints,title:'Corrida ou caminhada no Strava',details:'Registre atividades elegíveis, avance nas metas e acumule pontos no Clube.'},
+ {icon:Dumbbell,title:'Treinos e constância',details:'Siga os treinos da plataforma e mantenha a sua evolução em movimento.'},
+ {icon:Target,title:'Desafios concluídos',details:'Participe dos desafios válidos, alcance objetivos e acumule pontos.'}
 ]
 export default function ClubePublicLanding(){
  useEffect(()=>{
@@ -74,9 +74,9 @@ export default function ClubePublicLanding(){
 
      <section className="npv-clube-public-points">
        <div className="npv-clube-public-container">
-         <div className="npv-clube-public-section-header"><span className="npv-clube-public-kicker">CONTINUE ACUMULANDO</span><h2>Pequenas ações.<br/><em>Grandes conquistas.</em></h2><p>Alguns exemplos de como a participação pode gerar pontos.</p></div>
-         <div className="npv-clube-public-point-grid">{activities.map(({icon:Icon,title,value,details})=><article key={title}><span className="npv-clube-public-point-icon"><Icon size={23}/></span><h3>{title}</h3><strong>{value}</strong><p>{details}</p></article>)}</div>
-         <p className="npv-clube-public-fine">As pontuações dependem das condições, dos limites e das validações do Clube. Atividades não são automaticamente aprovadas em todos os casos.</p>
+         <div className="npv-clube-public-section-header"><span className="npv-clube-public-kicker">CONTINUE ACUMULANDO</span><h2>Pequenas ações.<br/><em>Grandes conquistas.</em></h2><p>Movimento, dedicação e desafios fazem parte da sua jornada no Clube.</p></div>
+         <div className="npv-clube-public-point-grid">{activities.map(({icon:Icon,title,details})=><article key={title}><span className="npv-clube-public-point-icon"><Icon size={23}/></span><h3>{title}</h3><p>{details}</p></article>)}</div>
+         <p className="npv-clube-public-fine">A concessão de pontos depende das regras, dos limites e da validação de cada atividade. Treinos comuns da plataforma, por si só, não geram pontos automaticamente.</p>
        </div>
      </section>
 
@@ -91,8 +91,8 @@ export default function ClubePublicLanding(){
      <section id="niveis" className="npv-clube-public-levels">
        <div className="npv-clube-public-container">
          <div className="npv-clube-public-levels-inner">
-           <div><span className="npv-clube-public-kicker">MINHA TRAJETÓRIA</span><h2>Um novo nível.<br/><em>Uma nova história.</em></h2><p>Cada etapa tem seu cartão digital. O restante da coleção você descobre conforme evolui.</p></div>
-           <div className="npv-clube-public-level-grid">{MEMBER_LEVELS.map(level=><div key={level.level}><span>{String(level.level).padStart(2,'0')}</span><strong>{level.name}</strong><small>{fmt(level.minimum)} pontos</small></div>)}</div>
+           <div><span className="npv-clube-public-kicker">MINHA TRAJETÓRIA</span><h2>Um novo nível.<br/><em>Uma nova história.</em></h2><p>A cada meta de pontos alcançada, você avança de nível e conquista um novo cartão digital. Descubra sua trajetória dentro do Clube.</p></div>
+           <div className="npv-clube-public-level-grid">{MEMBER_LEVELS.map(level=><div key={level.level}><span>{String(level.level).padStart(2,'0')}</span><strong>{level.name}</strong></div>)}</div>
          </div>
          <p className="npv-clube-public-fine">Níveis são marcos de evolução. As vantagens específicas de cada nível podem ser atualizadas e devem ser consultadas no Clube.</p>
        </div>
