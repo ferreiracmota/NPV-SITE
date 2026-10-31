@@ -1,0 +1,37 @@
+/* Somente o painel administrativo de personalização do Clube. */
+.npv-appearance-admin{max-width:1000px;background:#fff;border:1px solid #dce7d7;border-radius:18px;padding:clamp(18px,2.7vw,30px);box-shadow:0 8px 25px rgba(25,50,25,.05);margin-bottom:24px}
+.npv-appearance-admin header>span{display:inline-flex;align-items:center;gap:8px;letter-spacing:.13em;color:#658d38;font-weight:850;font-size:10px}
+.npv-appearance-admin header h2{margin:8px 0 4px;color:#193929;font-size:clamp(23px,2.7vw,31px);letter-spacing:-.045em}
+.npv-appearance-admin header p{margin:0;color:#67786a;font-size:13px;line-height:1.6}
+.npv-appearance-admin form{display:grid;gap:20px;margin-top:22px}
+.npv-appearance-fieldset{border:1px solid #dfe9da;border-radius:15px;padding:20px;min-width:0}
+.npv-appearance-fieldset legend{padding:0 7px;font-weight:850;color:#27432c;font-size:14px}
+.npv-appearance-fieldset>p{font-size:12px;color:#68796b;margin:0 0 13px;line-height:1.55}
+.npv-appearance-themes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.npv-appearance-theme-choice{border:1px solid #d8e4d2;border-radius:13px;padding:15px;display:grid;align-content:start;gap:7px;cursor:pointer;position:relative;background:#f8faf6}
+.npv-appearance-theme-choice.is-selected{border:2px solid #79a849;padding:14px;box-shadow:0 0 0 2px rgba(136,181,82,.11)}
+.npv-appearance-theme-choice>input{position:absolute;top:12px;right:13px;accent-color:#668e39}
+.npv-appearance-theme-choice>svg{position:absolute;right:12px;bottom:12px;color:#4f7f32}
+.npv-appearance-theme-choice>strong{color:#28412b;font-size:14px}
+.npv-appearance-theme-choice>small{color:#68786d;line-height:1.4;font-size:11px;padding-right:12px}
+.npv-appearance-swatch{height:82px;border-radius:10px;border:1px solid #343b37;display:flex;align-items:end;gap:7px;padding:12px}
+.npv-appearance-swatch i{display:block;height:15px;width:35%;border-radius:5px;opacity:.9}
+.npv-appearance-swatch i:last-child{width:18%}
+.npv-appearance-swatch.is-dark{background:#101311}
+.npv-appearance-swatch.is-dark i{background:#263d2d;border:1px solid #678247}
+.npv-appearance-swatch.is-light{background:#f4f7f2;border-color:#d7dfd3}
+.npv-appearance-swatch.is-light i{background:#e5eddc;border:1px solid #abc497}
+.npv-appearance-switch-row{display:flex;gap:12px;align-items:center;padding:13px 0;cursor:pointer}
+.npv-appearance-switch-row+.npv-appearance-switch-row{border-top:1px solid #e3eae0}
+.npv-appearance-switch-icon{display:grid;place-items:center;width:42px;height:42px;flex:none;border-radius:11px;background:#edf5e6;color:#4b783a}
+.npv-appearance-switch-copy{display:grid;gap:4px;flex:1;min-width:0}
+.npv-appearance-switch-copy strong{color:#294630;font-size:13px}
+.npv-appearance-switch-copy small{font-size:11px;line-height:1.5;color:#6b7c6d}
+.npv-appearance-switch-row>input{width:22px;height:22px;flex:none;accent-color:#568139;cursor:pointer}
+.npv-appearance-admin footer{display:flex;align-items:center;justify-content:space-between;gap:15px}
+.npv-appearance-admin footer p{display:flex;align-items:center;gap:8px;color:#738273;font-size:11px;line-height:1.5;margin:0}
+.npv-appearance-admin footer p svg{flex:none}
+.npv-appearance-admin footer button{display:inline-flex;align-items:center;justify-content:center;gap:9px;background:#193d2b;color:#fff;border:0;border-radius:10px;padding:12px 17px;font-weight:800;font-size:12px;cursor:pointer;white-space:nowrap}
+.npv-appearance-admin footer button:disabled{opacity:.45;cursor:not-allowed}
+.npv-appearance-feedback{font-size:12px;color:#3a6032;margin:0}
+@media(max-width:650px){.npv-appearance-themes{grid-template-columns:1fr}.npv-appearance-admin footer{flex-direction:column;align-items:stretch}.npv-appearance-admin footer button{width:100%}.npv-appearance-fieldset{padding:15px}}
