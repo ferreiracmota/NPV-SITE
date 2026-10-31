@@ -24,7 +24,8 @@ const levelSlug={1:'bronze',2:'prata',3:'ouro',4:'platinum',5:'diamante',6:'blac
  */
 export default function ClubeStudentMomentum({
   events=[],studentId,rewards=[],availablePoints=0,showJourney=true,
-  rewardImageUrl=()=>'',onProfile=()=>{},onRewards=()=>{}
+  rewardImageUrl=()=>'',onProfile=()=>{},onRewards=()=>{},
+  showLevel=true,showReward=true
 }){
   if(!studentId)return null
   const achievements=memberAchievements(events,studentId)
@@ -39,9 +40,11 @@ export default function ClubeStudentMomentum({
   const unlocked=reward&&available>=Number(reward.points)
   const rewardRemaining=reward?Math.max(0,Number(reward.points)-available):0
   const rewardProgress=reward?Math.min(100,Math.round(available/Number(reward.points)*100)):0
-  if(!showJourney&&!reward)return null
-  return <section className={'npv-student-momentum'+(!showJourney?' has-only-reward':'')} aria-label="Seu nível e sua próxima conquista">
-    {showJourney&&<article className={'npv-momentum-feature npv-momentum-tier is-'+levelSlug[visualLevel]}>
+  const levelVisible=showJourney&&showLevel
+  const rewardVisible=showReward&&Boolean(reward)
+  if(!levelVisible&&!rewardVisible)return null
+  return <section className={'npv-student-momentum'+(levelVisible&&!rewardVisible?' has-only-level':'')+(!levelVisible&&rewardVisible?' has-only-reward':'')} aria-label="Seu nível e sua próxima conquista">
+    {levelVisible&&<article className={'npv-momentum-feature npv-momentum-tier is-'+levelSlug[visualLevel]}>
       <div className="npv-momentum-ambient" aria-hidden="true"/>
       <div className="npv-momentum-overline"><span className="npv-momentum-overline-mark"><Award size={15}/></span> SUA TRAJETÓRIA <Sparkles size={12} className="npv-momentum-sparkle"/></div>
       <div className="npv-momentum-tier-layout">
@@ -64,7 +67,7 @@ export default function ClubeStudentMomentum({
         </div>
       </div>
     </article>}
-    {reward&&<article className="npv-momentum-feature npv-momentum-gift">
+    {rewardVisible&&<article className="npv-momentum-feature npv-momentum-gift">
       <div className="npv-momentum-overline"><span className="npv-momentum-overline-mark"><Gift size={15}/></span> PRÓXIMA RECOMPENSA</div>
       <div className="npv-momentum-gift-layout">
         <div className="npv-momentum-gift-copy">
