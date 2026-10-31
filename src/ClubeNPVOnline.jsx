@@ -632,6 +632,7 @@ export default function ClubeNPVOnline() {
           events={mine} studentId={user.id} rewards={data.rewards}
           availablePoints={Math.max(0,balance(user.id)-reserved(user.id))}
           showJourney={displaySettings.show_journey}
+          rewardImageUrl={rewardImageUrl}
           onProfile={()=>setTab('perfil')} onRewards={()=>setTab('recompensas')}
         />
         <BenefitNotice rewards={data.rewards} points={Math.max(0,balance(user.id)-reserved(user.id))} onOpen={()=>setTab('recompensas')}/>
