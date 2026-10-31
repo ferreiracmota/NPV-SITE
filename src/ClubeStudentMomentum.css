@@ -1,0 +1,85 @@
+/* Destaque de evolução e recompensa: apenas área do aluno.
+   Respeita o tema global escolhido no administrativo. */
+.clube-shell.clube-live-student .npv-student-momentum{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;
+  margin:0 0 clamp(16px,2.4vw,23px);
+}
+.clube-shell.clube-live-student .npv-momentum-panel{
+  min-width:0;display:flex;flex-direction:column;gap:14px;
+  background:#fff;border:1px solid #dae6d8;border-radius:17px;
+  padding:19px 19px 16px;box-shadow:0 7px 24px rgba(25,55,26,.045);
+}
+.clube-shell.clube-live-student .npv-momentum-top{display:flex;align-items:center;gap:9px}
+.clube-shell.clube-live-student .npv-momentum-icon{
+  width:30px;height:30px;flex:none;display:grid;place-items:center;
+  border-radius:9px;background:#ecf4df;color:#537d39;
+}
+.clube-shell.clube-live-student .npv-momentum-label{
+  font-size:10px;font-weight:850;letter-spacing:.11em;color:#63834e;
+}
+.clube-shell.clube-live-student .npv-momentum-main{display:flex;align-items:end;justify-content:space-between;gap:10px;min-width:0}
+.clube-shell.clube-live-student .npv-momentum-main>div{min-width:0}
+.clube-shell.clube-live-student .npv-momentum-subtitle{display:block;font-size:11px;color:#68796a;margin-bottom:5px}
+.clube-shell.clube-live-student .npv-momentum-main h2{
+  font-size:clamp(18px,2vw,22px);line-height:1.2;letter-spacing:-.035em;font-weight:850;
+  color:#203a29;overflow-wrap:anywhere;
+}
+.clube-shell.clube-live-student .npv-momentum-earned{
+  display:flex;flex-direction:column;flex:none;align-items:flex-end;
+  color:#3b6435;font-size:17px;font-weight:850;line-height:1.2;white-space:nowrap;
+}
+.clube-shell.clube-live-student .npv-momentum-earned small{
+  font-size:10px;color:#778a78;font-weight:600;letter-spacing:0;margin-top:4px;
+}
+.clube-shell.clube-live-student .npv-momentum-progress{
+  display:block;height:6px;width:100%;overflow:hidden;background:#e9efe5;border-radius:99px;
+}
+.clube-shell.clube-live-student .npv-momentum-progress>span{
+  display:block;height:100%;max-width:100%;border-radius:inherit;
+  background:linear-gradient(90deg,#6d9b4a,#c3e477);
+  transition:width .22s ease;
+}
+.clube-shell.clube-live-student .npv-momentum-bottom{
+  display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-top:auto;
+}
+.clube-shell.clube-live-student .npv-momentum-bottom p{
+  flex:1;min-width:140px;color:#67786a;font-size:12px;line-height:1.55;margin:0;
+}
+.clube-shell.clube-live-student .npv-momentum-bottom p strong{font-weight:800;color:#345937}
+.clube-shell.clube-live-student .npv-momentum-bottom button{
+  display:inline-flex;align-items:center;gap:6px;flex:none;min-height:40px;
+  color:#356136;font-size:12px;font-weight:850;border:0;background:transparent;
+  border-radius:9px;padding:9px 3px;cursor:pointer;
+}
+.clube-shell.clube-live-student .npv-momentum-bottom button:hover{text-decoration:underline;text-underline-offset:3px}
+.clube-shell.clube-live-student .npv-momentum-bottom button:focus-visible{outline:3px solid #7aaf48;outline-offset:2px}
+.clube-shell.clube-live-student .npv-momentum-private{grid-column:1/-1;font-size:11px;display:flex;align-items:center;gap:6px;color:#68806a}
+
+/* Tema escuro opcional: não impõe branco quando administrador escolhe grafite. */
+.clube-shell.clube-live-student.npv-theme-dark .npv-momentum-panel{
+  background:#1b221d;border-color:#38473b;box-shadow:0 7px 20px rgba(0,0,0,.14);
+}
+.clube-shell.clube-live-student.npv-theme-dark .npv-momentum-icon{background:#2d412d;color:#d2eaa2}
+.clube-shell.clube-live-student.npv-theme-dark .npv-momentum-label{color:#c0dc93}
+.clube-shell.clube-live-student.npv-theme-dark .npv-momentum-main h2{color:#edf5e8}
+.clube-shell.clube-live-student.npv-theme-dark .npv-momentum-subtitle,
+.clube-shell.clube-live-student.npv-theme-dark .npv-momentum-earned small,
+.clube-shell.clube-live-student.npv-theme-dark .npv-momentum-bottom p{color:#a8bdaa}
+.clube-shell.clube-live-student.npv-theme-dark .npv-momentum-earned,
+.clube-shell.clube-live-student.npv-theme-dark .npv-momentum-bottom p strong,
+.clube-shell.clube-live-student.npv-theme-dark .npv-momentum-bottom button{color:#d3e99c}
+.clube-shell.clube-live-student.npv-theme-dark .npv-momentum-progress{background:#3c4b3d}
+
+@media(max-width:820px){
+ .clube-shell.clube-live-student .npv-student-momentum{grid-template-columns:1fr;gap:10px}
+ .clube-shell.clube-live-student .npv-momentum-panel{padding:16px;gap:12px}
+ .clube-shell.clube-live-student .npv-momentum-main h2{font-size:19px}
+ .clube-shell.clube-live-student .npv-momentum-bottom button{min-height:42px}
+}
+@media(max-width:380px){
+ .clube-shell.clube-live-student .npv-momentum-main{align-items:flex-start;gap:8px}
+ .clube-shell.clube-live-student .npv-momentum-earned{font-size:15px}
+ .clube-shell.clube-live-student .npv-momentum-earned small{font-size:9px}
+ .clube-shell.clube-live-student .npv-momentum-bottom{align-items:flex-start;gap:5px}
+}
+@media(prefers-reduced-motion:reduce){.clube-shell.clube-live-student .npv-momentum-progress>span{transition:none}}

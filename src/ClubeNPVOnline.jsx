@@ -24,6 +24,7 @@ import ClubeInstagramPanel from './ClubeInstagramPanel.jsx'
 import ClubeInstagramAdminSummary from './ClubeInstagramAdminSummary.jsx'
 import ClubeAdminStudents from './ClubeAdminStudents.jsx'
 import ClubeStudentProfile from './ClubeStudentProfile.jsx'
+import ClubeStudentMomentum from './ClubeStudentMomentum.jsx'
 import ClubeEmailAdmin from './ClubeEmailAdmin.jsx'
 import ClubeAppearanceAdmin from './ClubeAppearanceAdmin.jsx'
 import './ClubeStudentDark.css'
@@ -609,7 +610,6 @@ export default function ClubeNPVOnline() {
       {tab==='versoes'&&isAdmin&&<ClubeVersionsAdmin onNavigate={setTab}/>}
       {tab==='instagram'&&!isAdmin&&<ClubeInstagramPanel session={session} isAdmin={false}/>}
       {tab==='inicio'&&!isAdmin&&<>
-        {connectionsChecked&&!connectionsComplete&&<ClubeConnectionGuide instagram={instagramConnection} strava={stravaConnection} onInstagram={()=>{setTab('instagram');window.scrollTo({top:0,behavior:'smooth'})}} onStrava={openStravaFromGuide}/>}
         <section className={`clube-student-summary clube-student-summary-statement${activitiesOpen?' is-open':''}`} aria-label="Seus pontos e extrato">
           <button type="button" className="clube-student-summary-trigger"
             aria-expanded={activitiesOpen} aria-controls="clube-points-statement-content"
@@ -628,8 +628,15 @@ export default function ClubeNPVOnline() {
             {mine.length>0&&<button type="button" className="clube-student-statement-see-all" onClick={()=>setTab('historico')}>Ver extrato completo <ArrowRight size={16}/></button>}
           </div>}
         </section>
+        <ClubeStudentMomentum
+          events={mine} studentId={user.id} rewards={data.rewards}
+          availablePoints={Math.max(0,balance(user.id)-reserved(user.id))}
+          showJourney={displaySettings.show_journey}
+          onProfile={()=>setTab('perfil')} onRewards={()=>setTab('recompensas')}
+        />
         <BenefitNotice rewards={data.rewards} points={Math.max(0,balance(user.id)-reserved(user.id))} onOpen={()=>setTab('recompensas')}/>
         <div id="npv-month-challenges-anchor"><ClubeRegisteredActivities session={session} onConnectionStatusChange={setStravaConnection} onPointsSynced={refresh}/></div>
+        {connectionsChecked&&<ClubeConnectionGuide instagram={instagramConnection} strava={stravaConnection} onInstagram={()=>{setTab('instagram');window.scrollTo({top:0,behavior:'smooth'})}} onStrava={openStravaFromGuide}/>} 
         <section className="npv-shop npv-shop-featured"><div className="npv-shop-heading"><div><div className="npv-shop-eyebrow"><Gift size={15}/>LOJINHA DO CLUBE NPV</div><h2>Troque seus pontos ✦</h2><p>Seu próximo objetivo pode estar aqui.</p></div><button className="npv-shop-view-all" onClick={()=>setTab('recompensas')}>Ver catálogo <ArrowRight size={16}/></button></div>{rewardsGrid(4)}<p className="npv-shop-demo-note">A disponibilidade real será confirmada após a aprovação do prêmio e dos parceiros.</p></section>
         {data.partners.some(x=>x.active)&&<section className="npv-partners-section">
           <div className="npv-shop-heading"><div><div className="npv-shop-eyebrow"><Award size={15}/> PARCERIAS NPV</div><h2>Benefícios de parceiros ✦</h2><p>Explore os parceiros e consulte os descontos disponíveis.</p></div>
@@ -655,7 +662,6 @@ export default function ClubeNPVOnline() {
           })}</div>
           <p className="clube-micro">Atividades sujeitas à confirmação.</p>
         </section>
-        {connectionsComplete&&<ClubeConnectionGuide instagram={instagramConnection} strava={stravaConnection} onInstagram={()=>{setTab('instagram');window.scrollTo({top:0,behavior:'smooth'})}} onStrava={openStravaFromGuide}/>}
       </>}
       {tab==='perfil'&&!isAdmin&&<ClubeStudentProfile
         profile={profile} email={user.email} events={data.events} session={session} displaySettings={displaySettings}
