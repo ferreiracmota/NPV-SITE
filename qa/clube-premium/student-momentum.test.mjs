@@ -35,7 +35,7 @@ test('Escolha de prêmio não usa item indisponível, inativo ou de teste',()=>{
 })
 test('O componente é somente visual, calcula dados e respeita ocultação da trajetória',()=>{
  const component=read('src/ClubeStudentMomentum.jsx')
- const page=read('src/ClubeNPVOnline.jsx')
+ const page=read('src/ClubeNPVOnline.jsx').split("{tab==='inicio'&&!isAdmin&&<>")[1]?.split("{tab==='perfil'&&!isAdmin&&")[0]||''
  assert.match(component,/memberAchievements\(events,studentId\)/)
  assert.match(component,/showJourney&&/)
  assert.match(component,/onClick=\{onProfile\}/)
