@@ -6,13 +6,14 @@ const root=file=>readFileSync(new URL('../../'+file,import.meta.url),'utf8')
 const ui=root('src/ClubePublicLanding.jsx')
 const css=root('src/ClubePublicLanding.css')
 const activitySection=ui.split('<section className="npv-clube-public-points">')[1]?.split('<section id="premios"')[0]||''
+const activityDefinitions=ui.split('const activities=[')[1]?.split('export default function')[0]||''
 const levelSection=ui.split('<section id="niveis"')[1]?.split('<section className="npv-clube-public-final"')[0]||''
 
 test('A vitrine pública apresenta Strava, treinos e desafios sem revelar quantidades de pontos',()=>{
- for(const title of ['Corrida ou caminhada no Strava','Treinos e constância','Desafios concluídos'])assert.ok(activitySection.includes(title),title)
+ for(const title of ['Corrida ou caminhada no Strava','Treinos e constância','Desafios concluídos'])assert.ok(activityDefinitions.includes(title),title)
  assert.equal((activitySection.match(/<article key=\{title\}>/g)||[]).length,1)
  assert.doesNotMatch(activitySection,/value|pts\s*\/|\+\d+|\d+\s*pontos/i)
- assert.doesNotMatch(activitySection,/Story marcando|Renovação confirmada/i)
+ assert.doesNotMatch(activityDefinitions,/Story marcando|Renovação confirmada/i)
 })
 
 test('Treino comum não é anunciado como crédito automático de pontos',()=>{
