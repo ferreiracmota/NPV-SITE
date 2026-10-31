@@ -14,12 +14,12 @@ const images={
 }
 const accents={1:'#e6ad76',2:'#d5e1ed',3:'#e5c378',4:'#b8d0d9',5:'#7de1c5',6:'#e9cf8c'}
 const backs={
-  1:'/clube/cards/back/bronze.webp',
-  2:'/clube/cards/back/prata.webp',
-  3:'/clube/cards/back/ouro.webp',
-  4:'/clube/cards/back/platinum.webp',
-  5:'/clube/cards/back/diamante.webp',
-  6:'/clube/cards/back/black.webp'
+  1:'/clube/cards/back/bronze.webp?v=20261031-alpha1',
+  2:'/clube/cards/back/prata.webp?v=20261031-alpha1',
+  3:'/clube/cards/back/ouro.webp?v=20261031-alpha1',
+  4:'/clube/cards/back/platinum.webp?v=20261031-alpha1',
+  5:'/clube/cards/back/diamante.webp?v=20261031-alpha1',
+  6:'/clube/cards/back/black.webp?v=20261031-alpha1'
 }
 const fmt=n=>Number(n||0).toLocaleString('pt-BR')
 const displayName=name=>{
