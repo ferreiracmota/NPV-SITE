@@ -13,7 +13,7 @@
 .npv-wallet-face{display:block;position:absolute;inset:0;overflow:hidden;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:3.5%/6.3%}
 .npv-wallet-front img{display:block;width:100%;height:100%;object-fit:contain}
 /* Os seis versos usam artes na mesma proporção das frentes. Apenas dados reais são sobrepostos. */
-.npv-wallet-back-art{display:block;padding:0;border:0;background:transparent;box-shadow:none}
+.npv-wallet-back.npv-wallet-back-art{display:block;padding:0;border:0;background:transparent;box-shadow:none}
 .npv-wallet-back-art>img{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:contain;pointer-events:none}
 .npv-wallet-back-value{position:absolute;left:33%;width:35%;height:7.8%;display:flex;align-items:center;padding:0 1%;box-sizing:border-box;color:#fff9ed;text-shadow:0 1px 3px rgba(0,0,0,.7);font-size:clamp(10px,1.6vw,18px);font-weight:650;line-height:1.1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .npv-wallet-back-name{top:45.6%}
@@ -52,7 +52,7 @@
 @media(max-width:600px){
  .npv-wallet-band{height:27px}
  .npv-wallet-back{padding:clamp(9px,2.2vw,14px);gap:5px}
- .npv-wallet-back-art{padding:0}
+ .npv-wallet-back.npv-wallet-back-art{padding:0}
  .npv-wallet-back-value{font-size:clamp(9px,2.8vw,13px)}
  .npv-wallet-back-qr-soon{font-size:clamp(5px,1.9vw,8px)}
  .npv-wallet-back-grid{gap:5px}
@@ -69,7 +69,7 @@
 }
 @media(max-width:375px){
  .npv-wallet-back{padding:8px;gap:3px}
- .npv-wallet-back-art{padding:0}
+ .npv-wallet-back.npv-wallet-back-art{padding:0}
  .npv-wallet-back-grid strong{font-size:8px}
  .npv-wallet-back-grid small{font-size:6.5px}
  .npv-wallet-qr{width:43px;min-height:40px}
