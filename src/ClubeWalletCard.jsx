@@ -82,8 +82,7 @@ export default function ClubeWalletCard({profile,achievements}){
         {MEMBER_LEVELS.map(tier=><button key={tier.level} type="button" onClick={()=>setSelectedTier(tier.level)}
           aria-pressed={selectedTier===tier.level}
           className={'npv-wallet-gallery-item'+(selectedTier===tier.level?' is-selected':'')}>
-          <img src={images[tier.level]} loading="lazy" alt={'Cartão '+tier.name}/>
-          <span><strong>{tier.name}</strong><small>{fmt(tier.minimum)} pts · {achievements.level===tier.level?'Atual':achievements.level>tier.level?'Conquistado':'Bloqueado'}</small></span>
+          <span><strong>{tier.name}</strong><small>{fmt(tier.minimum)} pontos</small><small>{achievements.level===tier.level?'Seu nível':achievements.level>tier.level?'Conquistado':'A conquistar'}</small></span>
         </button>)}
       </div>
       <div className="npv-wallet-benefit-preview">
