@@ -31,9 +31,11 @@ import {firstNameOf} from '../clube/profile/achievements.mjs'
 import {BIRTHDAY_MONTHS,BIRTHDAY_DAYS,birthdayFromParts,validOptionalPhone} from '../clube/profile/birthday.mjs'
 import './ClubeAdminWorkspace.css'
 import './ClubeBirthday.css'
+import './ClubeStudentPolish.css'
 
 const format = value => Number(value||0).toLocaleString('pt-BR')
 const date = value => new Date(value).toLocaleDateString('pt-BR',{day:'2-digit',month:'short',year:'numeric'})
+const statementMonth = value => Number.isNaN(Date.parse(value))?'Data não informada':new Date(value).toLocaleDateString('pt-BR',{month:'long',year:'numeric'})
 const YEAR = new Date().getFullYear()
 const isThisYear = item => new Date(item.created_at).getFullYear() === YEAR
 const glyphs={shirt:Shirt,cup:CupSoda,package:Package,water:Droplets,ticket:Ticket,gift:Gift}
@@ -490,15 +492,25 @@ export default function ClubeNPVOnline() {
     setSession(null)
     window.scrollTo({top:0,left:0,behavior:'auto'})
   }
+  useEffect(()=>{
+    // Abas do aluno compartilham uma única rota: não manter a rolagem da aba anterior.
+    if(user?.id&&!isAdmin)window.scrollTo({top:0,left:0,behavior:'auto'})
+  },[tab,user?.id,isAdmin])
   function newAward(id){setAward({studentId:id||studentMembers.find(x=>x.approved)?.id||'',type:'renovacao',points:ruleDefaultPoints(data.rules,'renovacao'),note:''})}
-  const activityList=(rows,showMember=false)=><div className="clube-activities">
-    {!rows.length&&<p className="clube-empty">Nenhuma movimentação registrada ainda.</p>}
-    {rows.map(x=><div className="clube-activity" key={x.id}>
+  const activityList=(rows,showMember=false,groupByMonth=false)=>{
+    const ordered=groupByMonth?[...rows].sort((a,b)=>Date.parse(b.created_at)-Date.parse(a.created_at)):rows
+    return <div className="clube-activities">
+    {!ordered.length&&<p className="clube-empty">Nenhuma movimentação registrada ainda.</p>}
+    {ordered.map((x,index)=><React.Fragment key={x.id}>
+      {groupByMonth&&(index===0||statementMonth(ordered[index-1].created_at)!==statementMonth(x.created_at))&&
+        <h3 className="npv-statement-month">{statementMonth(x.created_at)}</h3>}
+      <div className="clube-activity">
       <span className={`clube-activity-icon ${x.points<0?'clube-debit':''}`}><Sparkles size={18}/></span>
       <div className="clube-activity-description"><strong>{ruleLabel(x.event_type)}</strong>{showMember&&<span>{memberName(x.student_id)}</span>}{x.note&&<span>{x.note}</span>}<small>{date(x.created_at)}</small></div>
       <strong className={`clube-activity-points ${x.points<0?'clube-negative':''}`}>{x.points>0?'+':''}{format(x.points)} pts</strong>
-    </div>)}
+    </div></React.Fragment>)}
   </div>
+  }
   function rewardsGrid(limit=null){return <div className="npv-shop-grid">
     {(isAdmin?data.rewards:catalogRewards).length===0&&<p className="npv-shop-empty">Nenhuma recompensa cadastrada para exibição no momento.</p>}
     {(isAdmin?data.rewards:catalogRewards).slice(0,limit||undefined).map(item=>{
@@ -548,9 +560,9 @@ export default function ClubeNPVOnline() {
       <nav className="clube-live-tabs" aria-label="Navegação do Clube NPV">
         <button type="button" aria-label="Visão geral" aria-current={tab==='inicio'?'page':undefined} className={tab==='inicio'?'active':''} onClick={()=>setTab('inicio')}><Wallet size={17}/><span className="npv-nav-desktop">Visão geral</span><span className="npv-nav-mobile" aria-hidden="true">Início</span></button>
         <button type="button" aria-label="Meu perfil" aria-current={tab==='perfil'?'page':undefined} className={tab==='perfil'?'active':''} onClick={()=>setTab('perfil')}><UserRound size={17}/><span>Perfil</span></button>
-        <button type="button" aria-label="Recompensas" aria-current={tab==='recompensas'?'page':undefined} className={tab==='recompensas'?'active':''} onClick={()=>setTab('recompensas')}><Gift size={17}/><span className="npv-nav-desktop">Recompensas</span><span className="npv-nav-mobile" aria-hidden="true">Prêmios</span></button>
+        <button type="button" aria-label="Recompensas" aria-current={tab==='recompensas'?'page':undefined} className={tab==='recompensas'?'active':''} onClick={()=>setTab('recompensas')}><Gift size={17}/><span className="npv-nav-desktop">Prêmios</span><span className="npv-nav-mobile" aria-hidden="true">Prêmios</span></button>
         <button type="button" aria-label="Parceiros" aria-current={tab==='parceiros'?'page':undefined} className={tab==='parceiros'?'active':''} onClick={()=>setTab('parceiros')}><Award size={17}/><span>Parceiros</span></button>
-        <button type="button" aria-label="Histórico de pontos" aria-current={tab==='historico'?'page':undefined} className={tab==='historico'?'active':''} onClick={()=>setTab('historico')}><History size={17}/><span className="npv-nav-desktop">Histórico</span><span className="npv-nav-mobile" aria-hidden="true">Extrato</span></button>
+        <button type="button" aria-label="Histórico de pontos" aria-current={tab==='historico'?'page':undefined} className={tab==='historico'?'active':''} onClick={()=>setTab('historico')}><History size={17}/><span className="npv-nav-desktop">Extrato</span><span className="npv-nav-mobile" aria-hidden="true">Extrato</span></button>
       </nav>
     </section>}
     <div className="clube-container"><aside className="clube-sidebar">
@@ -603,7 +615,7 @@ export default function ClubeNPVOnline() {
             aria-expanded={activitiesOpen} aria-controls="clube-points-statement-content"
             onClick={()=>setActivitiesOpen(open=>!open)}>
             <span className="clube-student-balance-group">
-              <span className="clube-student-balance-label">SEUS PONTOS EM {YEAR}</span>
+              <span className="clube-student-balance-label">SEU SALDO DE PONTOS</span>
               <strong className="clube-student-balance-value">{format(balance(user.id))} <small>pontos</small></strong>
             </span>
             <span className="clube-student-statement-action">
@@ -668,8 +680,8 @@ export default function ClubeNPVOnline() {
         />
       </>}
       {tab==='historico'&&isAdmin&&<div className="npv-admin-rules-bar"><div><strong>Regras de pontuação</strong><span>Valores informativos apresentados aos alunos. Editáveis por você.</span></div><button className="clube-btn clube-btn-outline" onClick={()=>{setNotice('');setRuleDraft(data.rules.map(x=>({...x})))}}><SlidersHorizontal size={16}/> Gerenciar benefícios</button></div>}
-      {tab==='historico'&&<div className="clube-card"><div className="clube-card-head"><div>{isAdmin?<h2>Extrato do Clube</h2>:<h1>Meu extrato</h1>}<p>{isAdmin?'Lançamentos com data e motivo':'Veja quando seus pontos entraram ou saíram do saldo.'}</p></div></div>{activityList(isAdmin?data.events:mine,isAdmin)}</div>}
-      {tab==='recompensas'&&<section className="npv-shop"><div className="npv-shop-heading"><div>{isAdmin&&<div className="npv-shop-eyebrow"><Gift size={15}/> CLUBE NPV</div>}{isAdmin?<h2>Vitrine de recompensas ✦</h2>:<h1>Lojinha NPV ✦</h1>}<p>{isAdmin?'Prêmios, benefícios e pedidos de resgate.':'Troque seus pontos por prêmios e acompanhe seus resgates.'}</p></div>{isAdmin?<button className="clube-btn clube-btn-primary" onClick={()=>editReward({name:'',category:'Benefícios',description:'',points:500,stock:1,icon:'gift',theme:'lime',active:false,showcase:true,test_only:true,image_path:''})}><Plus size={16}/> Novo prêmio</button>:<div className="npv-shop-balance">Saldo disponível<strong>{format(Math.max(0,balance(user.id)-reserved(user.id)))} pts</strong></div>}</div>{rewardsGrid()}
+      {tab==='historico'&&<div className="clube-card"><div className="clube-card-head"><div>{isAdmin?<h2>Extrato do Clube</h2>:<h1>Meu extrato</h1>}<p>{isAdmin?'Lançamentos com data e motivo':'Veja quando seus pontos entraram ou saíram do saldo.'}</p></div></div>{activityList(isAdmin?data.events:mine,isAdmin,!isAdmin)}</div>}
+      {tab==='recompensas'&&<section className="npv-shop"><div className="npv-shop-heading"><div>{isAdmin&&<div className="npv-shop-eyebrow"><Gift size={15}/> CLUBE NPV</div>}{isAdmin?<h2>Vitrine de recompensas ✦</h2>:<h1>Prêmios do Clube</h1>}<p>{isAdmin?'Prêmios, benefícios e pedidos de resgate.':'Troque seus pontos por prêmios e acompanhe seus resgates.'}</p></div>{isAdmin?<button className="clube-btn clube-btn-primary" onClick={()=>editReward({name:'',category:'Benefícios',description:'',points:500,stock:1,icon:'gift',theme:'lime',active:false,showcase:true,test_only:true,image_path:''})}><Plus size={16}/> Novo prêmio</button>:<div className="npv-shop-balance">Saldo disponível<strong>{format(Math.max(0,balance(user.id)-reserved(user.id)))} pts</strong></div>}</div>{rewardsGrid()}
         <div className="npv-shop-requests"><div className="npv-shop-requests-head"><div><h3>{isAdmin?'Solicitações para aprovação':'Meus resgates'}</h3><p>{isAdmin?'Pedidos feitos pelos alunos':'Acompanhe suas solicitações e entregas'}</p></div>{isAdmin&&<span className="npv-shop-pending-count">{pendingCount} pendentes</span>}</div>{(isAdmin?data.requests:mineRequests).length===0&&<p className="npv-shop-no-requests">Nenhum pedido por enquanto.</p>}{(isAdmin?data.requests:mineRequests).map(req=><div className="npv-shop-request-row" key={req.id}><span className="npv-shop-request-icon"><Gift size={19}/></span><div className="npv-shop-request-text"><strong>{req.reward_name}</strong>{isAdmin&&<span>{memberName(req.student_id)}</span>}<small>{date(req.created_at)} · {format(req.points)} pts</small></div>{req.is_test&&<span className="npv-shop-test-tag">TESTE</span>}<span className={`npv-shop-status npv-shop-status-${req.status}`}>{req.status==='pending'?'Aguardando':req.status==='approved'?'Aprovado':'Recusado'}</span>{isAdmin&&req.status==='pending'&&<div className="npv-shop-resolve"><button disabled={busy} onClick={()=>resolve(req,true)}>Aprovar</button><button disabled={busy} onClick={()=>resolve(req,false)}>Recusar</button></div>}</div>)}</div>
       </section>}
       <footer className="clube-main-footer">
