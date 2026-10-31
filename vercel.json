@@ -33,6 +33,14 @@
       "destination": "/api/instagram/admin?npv_ig_route=deletion-status"
     },
     {
+      "source": "/clube/previa-aluno",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/clube/previa-aluno/",
+      "destination": "/index.html"
+    },
+    {
       "source": "/clube/conheca",
       "destination": "/index.html"
     },
