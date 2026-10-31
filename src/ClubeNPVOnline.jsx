@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   ArrowLeft, ArrowRight, Award, Check, Clock3, Gift, History, KeyRound, LockKeyhole,
   LogOut, Mail, Package, Plus, Search, ShieldCheck, Sparkles, TrendingUp,
-  UserRound, Users, Wallet, X, Shirt, CupSoda, Droplets, Ticket, Pencil, ImagePlus, SlidersHorizontal, ChevronDown, ChevronUp, CreditCard, Layers3, Instagram, Link2, Settings2, Activity
+  UserRound, Users, Wallet, X, Shirt, CupSoda, Droplets, Ticket, Pencil, ImagePlus, SlidersHorizontal, ChevronDown, ChevronUp, CreditCard, Layers3, Instagram, Link2, Settings2, Activity, Palette
 } from 'lucide-react'
 import { clubeSupabase as supabase } from './clubeSupabase.js'
 import logoVaiCirculo from './assets/logo-vai-circular.webp'
@@ -25,6 +25,8 @@ import ClubeInstagramAdminSummary from './ClubeInstagramAdminSummary.jsx'
 import ClubeAdminStudents from './ClubeAdminStudents.jsx'
 import ClubeStudentProfile from './ClubeStudentProfile.jsx'
 import ClubeEmailAdmin from './ClubeEmailAdmin.jsx'
+import ClubeAppearanceAdmin from './ClubeAppearanceAdmin.jsx'
+import './ClubeStudentDark.css'
 import {firstNameOf} from '../clube/profile/achievements.mjs'
 import {BIRTHDAY_MONTHS,BIRTHDAY_DAYS,birthdayFromParts,validOptionalPhone} from '../clube/profile/birthday.mjs'
 import './ClubeAdminWorkspace.css'
@@ -167,12 +169,14 @@ async function fetchAllClubeRows(table,columns,ascending=false) {
     if((result.data||[]).length<CLUB_PAGE_SIZE)return {data:rows,error:null}
   }
 }
+const DEFAULT_DISPLAY_SETTINGS={theme:'dark',show_journey:true,show_achievements:true}
 export default function ClubeNPVOnline() {
   const [session,setSession]=useState(null)
   const [recovery,setRecovery]=useState(false)
   const [initializing,setInitializing]=useState(true)
   const [profile,setProfile]=useState(null)
   const [isAdmin,setIsAdmin]=useState(false)
+  const [displaySettings,setDisplaySettings]=useState(DEFAULT_DISPLAY_SETTINGS)
   const [isTester,setIsTester]=useState(false)
   const [data,setData]=useState(emptyState)
   const [tab,setTab]=useState('inicio')
@@ -202,6 +206,28 @@ export default function ClubeNPVOnline() {
     return ()=>URL.revokeObjectURL(objectUrl)
   },[rewardImageFile])
   const user=session?.user
+  useEffect(()=>{
+    let active=true
+    setDisplaySettings(DEFAULT_DISPLAY_SETTINGS)
+    if(!user?.id)return()=>{active=false}
+    supabase.from('clube_display_settings')
+      .select('theme,show_journey,show_achievements').eq('singleton',true).maybeSingle()
+      .then(({data,error})=>{
+        if(active&&!error&&data)setDisplaySettings({
+          theme:data.theme==='light'?'light':'dark',
+          show_journey:data.show_journey!==false,
+          show_achievements:data.show_achievements!==false
+        })
+      }).catch(()=>{})
+    return()=>{active=false}
+  },[user?.id])
+  async function saveDisplaySettings(next){
+    if(!isAdmin||!user?.id)throw new Error('admin_required')
+    const payload={theme:next.theme==='light'?'light':'dark',show_journey:Boolean(next.show_journey),show_achievements:Boolean(next.show_achievements),updated_at:new Date().toISOString()}
+    const {data:updated,error}=await supabase.from('clube_display_settings').update(payload).eq('singleton',true).select('theme,show_journey,show_achievements').single()
+    if(error)throw error
+    setDisplaySettings({theme:updated.theme,show_journey:updated.show_journey,show_achievements:updated.show_achievements})
+  }
   useEffect(()=>{
     setStravaConnection({checked:false,connected:false,disabled:false})
   },[user?.id])
@@ -513,7 +539,7 @@ export default function ClubeNPVOnline() {
   if(!profile&&!error)return <div className="clube-shell"><ShellHeader/><div className="clube-auth-loading">Consultando seu cadastro...</div></div>
   if(!profile&&error)return <div className="clube-shell"><ShellHeader/><div className="clube-auth-loading clube-waiting"><ShieldCheck size={40}/><h1>Seu acesso ainda não está disponível</h1><p>{error}</p><button className="clube-btn clube-btn-outline" onClick={signOut}>Voltar ao login</button></div></div>
   if(!approved&&!error)return <div className="clube-shell"><ShellHeader/><div className="clube-auth-loading clube-waiting"><Clock3 size={44}/><h1>Cadastro recebido!</h1><p>Seu e-mail foi confirmado. Agora falta a aprovação do administrador para você visualizar seus pontos e as recompensas.</p><button className="clube-btn clube-btn-outline" onClick={signOut}>Sair da conta</button></div></div>
-  return <div className={`clube-shell ${isAdmin?'clube-live-admin':'clube-live-student'}`}>
+  return <div className={`clube-shell ${isAdmin?'clube-live-admin':`clube-live-student npv-theme-${displaySettings.theme}`}`}>
     {isAdmin?<ShellHeader/>:<section className="clube-live-banner" aria-label="Cabeçalho do Clube de Benefícios NPV">
       <div className="clube-live-banner-top">
         <div className="clube-live-title"><span>Clube de</span><strong>Benefícios</strong></div>
@@ -539,7 +565,8 @@ export default function ClubeNPVOnline() {
         <button className={tab==='recompensas'?'active':''} onClick={()=>setTab('recompensas')}><Gift size={18}/>Recompensas</button>
         <button className={tab==='parceiros'?'active':''} onClick={()=>setTab('parceiros')}><Award size={18}/>Parceiros</button>
         {isAdmin?<button className={tab==='conexoes'?'active':''} onClick={()=>setTab('conexoes')}><Link2 size={18}/>Conexões · Instagram / Strava</button>:<button className={tab==='instagram'?'active':''} onClick={()=>setTab('instagram')}><Instagram size={18}/>Instagram · Stories</button>}
-        {isAdmin&&<details className="npv-admin-settings-nav" defaultOpen={['email','widget','versoes'].includes(tab)}><summary><Settings2 size={18}/>Configurações <ChevronDown size={14}/></summary>
+        {isAdmin&&<details className="npv-admin-settings-nav" defaultOpen={['email','widget','versoes','aparencia'].includes(tab)}><summary><Settings2 size={18}/>Configurações <ChevronDown size={14}/></summary>
+          <button className={tab==='aparencia'?'active':''} onClick={()=>setTab('aparencia')}><Palette size={17}/>Aparência e perfil</button>
           <button className={tab==='email'?'active':''} onClick={()=>setTab('email')}><Mail size={17}/>E-mails automáticos</button>
           <button className={tab==='widget'?'active':''} onClick={()=>setTab('widget')}><SlidersHorizontal size={17}/>Widget do site</button>
           <button className={tab==='versoes'?'active':''} onClick={()=>setTab('versoes')}><Layers3 size={17}/>Versões e recursos</button>
@@ -552,8 +579,8 @@ export default function ClubeNPVOnline() {
       {isAdmin&&<div className="clube-online-mobile-account"><span>Administrador · {user.email}</span><button onClick={signOut}><LogOut size={15}/> Sair</button></div>}
       {error&&<div className="clube-online-alert" role="alert">{error} <button onClick={refresh}>Tentar novamente</button></div>}
       {notice&&<div className="clube-feedback" role="status"><Check size={17}/>{notice}<button onClick={()=>setNotice('')}><X size={16}/></button></div>}
-      {(isAdmin||tab==='inicio')&&<div className="clube-intro"><div><div className="clube-eyebrow"><span/> {isAdmin?'PAINEL DE GESTÃO':'MINHA CONTA NPV'}</div><h1>{tab==='inicio'?(isAdmin?'Seu clube, sob controle.':<><span className="npv-profile-greeting-desktop">{firstNameOf(profile?.full_name)}, sua evolução vale pontos.</span><span className="npv-profile-greeting-mobile">Sua evolução vale pontos.</span></>):tab==='alunos'?'Alunos do Clube NPV':tab==='hotmart'?'Hotmart — Assinaturas':tab==='historico'?'Histórico de pontos':tab==='parceiros'?'Parceiros e descontos':tab==='instagram'?'Instagram e Stories':tab==='conexoes'?'Conexões · Instagram / Strava':tab==='email'?'E-mails automáticos':tab==='widget'?'Widget do site':tab==='versoes'?'Versões e recursos':'Benefícios e recompensas'}</h1><p>{isAdmin?'Gerencie os cadastros, lançamentos e solicitações com segurança.':<><span className="npv-profile-greeting-mobile">Olá, {firstNameOf(profile?.full_name)}. </span>Pontos, desafios e conquistas em um só lugar.</>}</p></div>
-        {isAdmin&&tab!=='recompensas'&&tab!=='parceiros'&&tab!=='widget'&&tab!=='hotmart'&&tab!=='versoes'&&tab!=='instagram'&&tab!=='conexoes'&&tab!=='email'&&<button className="clube-btn clube-btn-primary" onClick={()=>newAward()}><Plus size={17}/> Lançar pontos</button>}
+      {(isAdmin||tab==='inicio')&&<div className="clube-intro"><div><div className="clube-eyebrow"><span/> {isAdmin?'PAINEL DE GESTÃO':'MINHA CONTA NPV'}</div><h1>{tab==='inicio'?(isAdmin?'Seu clube, sob controle.':<><span className="npv-profile-greeting-desktop">{firstNameOf(profile?.full_name)}, sua evolução vale pontos.</span><span className="npv-profile-greeting-mobile">Sua evolução vale pontos.</span></>):tab==='alunos'?'Alunos do Clube NPV':tab==='hotmart'?'Hotmart — Assinaturas':tab==='historico'?'Histórico de pontos':tab==='parceiros'?'Parceiros e descontos':tab==='instagram'?'Instagram e Stories':tab==='conexoes'?'Conexões · Instagram / Strava':tab==='email'?'E-mails automáticos':tab==='aparencia'?'Aparência e perfil':tab==='widget'?'Widget do site':tab==='versoes'?'Versões e recursos':'Benefícios e recompensas'}</h1><p>{isAdmin?'Gerencie os cadastros, lançamentos e solicitações com segurança.':<><span className="npv-profile-greeting-mobile">Olá, {firstNameOf(profile?.full_name)}. </span>Pontos, desafios e conquistas em um só lugar.</>}</p></div>
+        {isAdmin&&tab!=='recompensas'&&tab!=='parceiros'&&tab!=='widget'&&tab!=='hotmart'&&tab!=='versoes'&&tab!=='instagram'&&tab!=='conexoes'&&tab!=='email'&&tab!=='aparencia'&&<button className="clube-btn clube-btn-primary" onClick={()=>newAward()}><Plus size={17}/> Lançar pontos</button>}
       </div>}
       {loading&&<p className="clube-online-loading">Atualizando dados do clube...</p>}
       {tab==='inicio'&&isAdmin&&<>
@@ -563,6 +590,7 @@ export default function ClubeNPVOnline() {
       </>}
       {tab==='conexoes'&&isAdmin&&<section><div className="npv-admin-connections-tabs" role="tablist" aria-label="Conexões do Clube"><button type="button" role="tab" aria-selected={connectionsTab==='instagram'} className={connectionsTab==='instagram'?'active':''} onClick={()=>setConnectionsTab('instagram')}><Instagram size={18}/> Instagram · Stories</button><button type="button" role="tab" aria-selected={connectionsTab==='strava'} className={connectionsTab==='strava'?'active':''} onClick={()=>setConnectionsTab('strava')}><Activity size={18}/> Strava · Corridas e desafios</button></div>
         {connectionsTab==='instagram'?<ClubeInstagramPanel session={session} isAdmin={true}/>:<div className="npv-admin-operations-content"><ClubeKmSetup/><ClubeMonthlyChallengeAdmin/><ClubeRegisteredActivities session={session} onPointsSynced={refresh}/></div>}</section>}
+      {tab==='aparencia'&&isAdmin&&<ClubeAppearanceAdmin settings={displaySettings} onSave={saveDisplaySettings}/>}
       {tab==='email'&&isAdmin&&<ClubeEmailAdmin session={session}/>}
       {tab==='widget'&&isAdmin&&<ClubeSiteWidgetAdmin rewards={data.rewards} partners={data.partners}/>}
       {tab==='hotmart'&&isAdmin&&<ClubeHotmartAdmin session={session} isAdmin={isAdmin} onPointsSynced={refresh} renewalPointRate={data.rules.find(rule=>rule.event_type==='renovacao')?.points ?? null}/>}
@@ -618,7 +646,7 @@ export default function ClubeNPVOnline() {
         {connectionsComplete&&<ClubeConnectionGuide instagram={instagramConnection} strava={stravaConnection} onInstagram={()=>{setTab('instagram');window.scrollTo({top:0,behavior:'smooth'})}} onStrava={openStravaFromGuide}/>}
       </>}
       {tab==='perfil'&&!isAdmin&&<ClubeStudentProfile
-        profile={profile} email={user.email} events={data.events} session={session}
+        profile={profile} email={user.email} events={data.events} session={session} displaySettings={displaySettings}
         onSaved={updated=>setProfile(current=>current?.id===updated.id?{...current,...updated}:current)}
         onInstagram={()=>{setTab('instagram');window.scrollTo({top:0,behavior:'smooth'})}}
         onStrava={()=>{setTab('inicio');setTimeout(openStravaFromGuide,120)}}
