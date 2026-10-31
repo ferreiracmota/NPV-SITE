@@ -9,6 +9,7 @@ import { clubeReady } from './clubeSupabase.js'
 const ClubeNPV = lazy(() => import('./ClubeNPV.jsx'))
 const ClubeNPVOnline = lazy(() => import('./ClubeNPVOnline.jsx'))
 const ClubeInstagramPreview = lazy(() => import('./ClubeInstagramPreview.jsx'))
+const ClubePublicLanding = lazy(() => import('./ClubePublicLanding.jsx'))
 
 const params = new URLSearchParams(window.location.search)
 const isClubeRoute = window.location.pathname === '/clube' ||
@@ -38,7 +39,9 @@ function ClubeIndisponivel() {
   </main>
 }
 
-const page = isClubeRoute
+const page = window.location.pathname.replace(/\/$/,'') === '/clube/conheca'
+  ? <ClubePublicLanding />
+  : isClubeRoute
   ? (window.location.pathname === '/clube/instagram-teste' ? <ClubeInstagramPreview /> : params.get('demo') === '1' ? <ClubeNPV /> :
     clubeReady ? <ClubeNPVOnline /> : <ClubeIndisponivel />)
   : <App />

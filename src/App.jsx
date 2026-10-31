@@ -1016,6 +1016,7 @@ useEffect(() => {
       <span>QUERO DECOLAR</span>
       <ArrowRight size={21} strokeWidth={2.6} aria-hidden="true"/>
     </a>
+    <a href="/clube/conheca" className="npv-hero-club-discover">Conheça também o Clube de Benefícios <ArrowRight size={16} strokeWidth={2.1} aria-hidden="true"/></a>
   </div>
 
   {/* Segundo slide: fotografia multiesportes enviada, sem controles/contador. */}
