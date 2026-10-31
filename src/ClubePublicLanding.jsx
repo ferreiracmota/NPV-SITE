@@ -1,4 +1,4 @@
-import React from 'react'
+import React,{useEffect} from 'react'
 import {ArrowRight, ArrowUpRight, BadgeCheck, Check, ChevronRight, Footprints, Gift, Instagram, LockKeyhole, Medal, ShieldCheck, Sparkles, Trophy, Wallet, Zap} from 'lucide-react'
 import logo from './assets/logo-branca-npv.PNG'
 import {MEMBER_LEVELS} from '../clube/profile/memberCardIdentity.mjs'
@@ -22,8 +22,20 @@ const activities=[
  {icon:Footprints,title:'Corrida ou caminhada no Strava',value:'+2 pts/km',details:'Atividade elegível e validada; aplicam-se limites'}
 ]
 export default function ClubePublicLanding(){
+ useEffect(()=>{
+   const title='Clube de Benefícios NPV | Não Pense, Vai!'
+   const description='Conheça o Clube de Benefícios Não Pense, Vai!: pontos, desafios, cartões de nível, recompensas e vantagens para quem participa da plataforma.'
+   const canonical='https://www.naopensevai.com/clube/conheca'
+   document.title=title
+   const setMeta=(selector,value)=>{const node=document.querySelector(selector);if(node)node.setAttribute('content',value)}
+   setMeta('meta[name="description"]',description)
+   setMeta('meta[property="og:title"]',title)
+   setMeta('meta[property="og:description"]',description)
+   setMeta('meta[property="og:url"]',canonical)
+   const link=document.querySelector('link[rel="canonical"]')
+   if(link)link.setAttribute('href',canonical)
+ },[])
  return <div className="npv-clube-public">
-   <div className="npv-clube-preview-note" role="status"><span className="npv-clube-preview-dot"/> PRÉVIA DE TESTE · PROPOSTA PARA APROVAÇÃO · NÃO PUBLICADA</div>
    <header className="npv-clube-public-header">
      <a href="/" className="npv-clube-public-brand" aria-label="Não Pense, Vai! — página inicial"><img src={logo} alt="Não Pense, Vai!"/></a>
      <nav aria-label="Navegação da apresentação do Clube"><a href="#como-funciona">Como funciona</a><a href="#premios">Prêmios</a><a href="#niveis">Níveis</a></nav>
@@ -95,6 +107,6 @@ export default function ClubePublicLanding(){
        </div>
      </section>
    </main>
-   <footer className="npv-clube-public-footer"><span>© 2026 Não Pense, Vai!</span><span>Clube NPV · Apresentação pública em teste</span><a href="/">Voltar ao site principal <ArrowUpRight size={14}/></a></footer>
+   <footer className="npv-clube-public-footer"><span>© 2026 Não Pense, Vai!</span><span>Clube de Benefícios NPV</span><a href="/">Voltar ao site principal <ArrowUpRight size={14}/></a></footer>
  </div>
 }
