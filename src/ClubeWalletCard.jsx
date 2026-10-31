@@ -1,5 +1,5 @@
 import React,{useEffect,useState} from 'react'
-import {Check,ChevronDown,Lock,LockKeyhole,QrCode,RotateCw,Trophy} from 'lucide-react'
+import {Check,ChevronDown,Lock,LockKeyhole,RotateCw,Trophy} from 'lucide-react'
 import {MEMBER_LEVELS} from '../clube/profile/memberCardIdentity.mjs'
 import {birthdayParts} from '../clube/profile/birthday.mjs'
 import './ClubeWalletCard.css'
@@ -13,6 +13,14 @@ const images={
   6:'/clube/cards/black.webp?v=20261030-clean'
 }
 const accents={1:'#e6ad76',2:'#d5e1ed',3:'#e5c378',4:'#b8d0d9',5:'#7de1c5',6:'#e9cf8c'}
+const backs={
+  1:'/clube/cards/back/bronze.webp',
+  2:'/clube/cards/back/prata.webp',
+  3:'/clube/cards/back/ouro.webp',
+  4:'/clube/cards/back/platinum.webp',
+  5:'/clube/cards/back/diamante.webp',
+  6:'/clube/cards/back/black.webp'
+}
 const fmt=n=>Number(n||0).toLocaleString('pt-BR')
 const displayName=name=>{
   const parts=String(name||'').trim().split(/\s+/).filter(Boolean)
@@ -51,16 +59,11 @@ export default function ClubeWalletCard({profile,achievements}){
               <img src={images[achievements.level]} alt={'Cartão NPV '+achievements.levelName}/>
               <span className="npv-membership-holder">{displayName(profile?.full_name)}</span>
             </span>
-            <span className="npv-wallet-face npv-wallet-back">
-              <span className="npv-wallet-back-head"><strong>NPV ✦ CLUBE</strong><span>{achievements.levelName.toUpperCase()}</span></span>
-              <span className="npv-wallet-back-grid">
-                <span><small>NOME COMPLETO</small><strong>{profile?.full_name||'Aluna NPV'}</strong></span>
-                <span><small>DATA DE NASCIMENTO</small><strong>{memberBirthday(profile?.birthday_mmdd)}</strong></span>
-              </span>
-              <span className="npv-wallet-back-bottom">
-                <span className="npv-wallet-qr"><QrCode size={26}/><small>QR CODE EM BREVE</small></span>
-                <span className="npv-wallet-back-note">Carteirinha pessoal. Validação em parceiros será disponibilizada futuramente.</span>
-              </span>
+            <span className="npv-wallet-face npv-wallet-back npv-wallet-back-art">
+              <img src={backs[achievements.level]} alt="" aria-hidden="true"/>
+              <span className="npv-wallet-back-value npv-wallet-back-name">{profile?.full_name||'Aluna NPV'}</span>
+              <span className="npv-wallet-back-value npv-wallet-back-birthday">{memberBirthday(profile?.birthday_mmdd)}</span>
+              <span className="npv-wallet-back-qr-soon">EM BREVE</span>
             </span>
           </span>
         </button>
