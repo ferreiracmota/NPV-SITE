@@ -2,6 +2,7 @@
 // A chave privada VAPID, tokens e endpoints de assinaturas nunca chegam ao navegador.
 import {createClient} from '@supabase/supabase-js'
 import {sendWebPush,allowedPushEndpoint} from './web-push.mjs'
+import {isActionableRegistration,countActionableRegistrations} from './pending-registrations.mjs'
 import {timingSafeEqual} from 'node:crypto'
 
 export const config={maxDuration:30}
@@ -60,10 +61,7 @@ async function sendToSubscriptions(svc,kind,adminId=null){
  return {success:true,sent:results.filter(Boolean).length,devices:(data||[]).length}
 }
 async function isStillPending(svc,kind,id){
- if(kind==='registration'){
-  const {data,error}=await svc.from('clube_profiles').select('id,approved').eq('id',id).maybeSingle()
-  return !error&&data?.approved===false
- }
+ if(kind==='registration')return isActionableRegistration(svc,id)
  if(kind==='redemption'){
   const {data,error}=await svc.from('clube_redemptions').select('id,status,is_test').eq('id',id).maybeSingle()
   return !error&&data?.status==='pending'&&data.is_test!==true
@@ -75,15 +73,14 @@ async function isStillPending(svc,kind,id){
  return false
 }
 async function pendingCounts(svc){
- const queries=[
-  svc.from('clube_profiles').select('id',{count:'exact',head:true}).eq('approved',false),
+ const [registration,redemption,story]=await Promise.all([
+  countActionableRegistrations(svc),
   svc.from('clube_redemptions').select('id',{count:'exact',head:true}).eq('status','pending').eq('is_test',false),
   svc.from('clube_instagram_story_events').select('event_id',{count:'exact',head:true}).eq('status','review')
- ]
- const results=await Promise.all(queries)
- return {registration:results[0].error?null:results[0].count,
-  redemption:results[1].error?null:results[1].count,
-  story:results[2].error?null:results[2].count}
+ ])
+ return {registration,
+  redemption:redemption.error?null:redemption.count,
+  story:story.error?null:story.count}
 }
 export async function handleAdminPush(req,res){
  if(!url()||!service())return reply(res,503,{status:'service_not_configured'})
