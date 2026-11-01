@@ -28,6 +28,7 @@ import ClubeStudentMomentum from './ClubeStudentMomentum.jsx'
 import {selectNextAvailableReward} from '../clube/profile/nextReward.mjs'
 import ClubeEmailAdmin from './ClubeEmailAdmin.jsx'
 import ClubeAppearanceAdmin from './ClubeAppearanceAdmin.jsx'
+import ClubeAdminPush from './ClubeAdminPush.jsx'
 import './ClubeStudentDark.css'
 import {firstNameOf} from '../clube/profile/achievements.mjs'
 import {BIRTHDAY_MONTHS,BIRTHDAY_DAYS,birthdayFromParts,validOptionalPhone} from '../clube/profile/birthday.mjs'
@@ -326,6 +327,16 @@ export default function ClubeNPVOnline() {
     }).catch(()=>{if(!controller.signal.aborted)setConfirmedPendingIds(null)})
     return()=>controller.abort()
   },[isAdmin,session?.access_token])
+  useEffect(()=>{
+    if(!isAdmin)return
+    const url=new URL(window.location.href)
+    const target=url.searchParams.get('npv_admin_tab')
+    if(['inicio','alunos','recompensas','conexoes'].includes(target)){
+      setTab(target)
+      url.searchParams.delete('npv_admin_tab')
+      window.history.replaceState(null,'',url.pathname+url.search+url.hash)
+    }
+  },[isAdmin])
   const approved=profile?.approved || isAdmin
   // Uma leitura real por entrada na Visão geral: nenhuma conexão é presumida.
   // Assim o guia só vai para o fim após confirmação dos DOIS provedores.
@@ -603,6 +614,7 @@ export default function ClubeNPVOnline() {
       </div>}
       {loading&&<p className="clube-online-loading">Atualizando dados do clube...</p>}
       {tab==='inicio'&&isAdmin&&<>
+        <ClubeAdminPush session={session} onNavigate={setTab}/>
         <div className="clube-kpis"><div className="clube-kpi clube-kpi-dark"><span>PONTOS DISTRIBUÍDOS EM {YEAR}</span><strong>{format(totalPoints)}</strong><small><TrendingUp size={15}/> Saldo líquido dos lançamentos</small></div><div className="clube-kpi"><span>ALUNOS APROVADOS</span><strong>{studentMembers.filter(x=>x.approved).length}</strong><small>Perfis autorizados</small></div><div className="clube-kpi"><span>RESGATES PENDENTES</span><strong>{pendingCount}</strong><small>Aguardando decisão</small></div></div>
         <ClubeInstagramAdminSummary session={session} pendingRedemptions={pendingCount} pendingRegistrations={studentMembers.filter(x=>!x.approved).length} onNavigate={setTab}/>
         <div className="clube-columns"><section className="clube-card"><div className="clube-card-head"><div><h2>Últimas movimentações</h2><p>Histórico do clube</p></div></div>{activityList(data.events.slice(0,6),true)}</section><section className="clube-card"><div className="clube-card-head"><div><h2>Novos cadastros</h2><p>Alunos aguardando aprovação</p></div></div>{studentMembers.filter(x=>!x.approved).slice(0,6).map(x=><div className="clube-online-member" key={x.id}><div><strong>{x.full_name}</strong><small>{x.email}</small></div><button disabled={busy} className="clube-btn clube-btn-outline" onClick={()=>approve(x.id)}><Check size={15}/> Aprovar</button></div>)}{confirmedPendingIds!==null&&studentMembers.every(x=>x.approved)&&<p className="clube-empty">Nenhum cadastro pendente com e-mail confirmado.</p>}{confirmedPendingIds===null&&<p className="clube-empty">Conferindo confirmação dos cadastros...</p>}<button className="clube-btn clube-btn-outline clube-btn-full" onClick={()=>setTab('alunos')}>Gerenciar alunos</button></section></div>
