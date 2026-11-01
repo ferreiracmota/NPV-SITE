@@ -394,3 +394,40 @@
     transform:none;
   }
 }
+
+
+/* Ranking compacto: manter uma inicial legível enquanto a imagem carrega.
+   A foto válida aparece por cima somente após onLoad; sem flash branco. */
+.npv-floating-club .npv-fw-avatar{
+  position:relative;
+  overflow:hidden;
+  isolation:isolate;
+}
+.npv-floating-club .npv-fw-avatar-initial{
+  display:grid;
+  place-items:center;
+  width:100%;
+  height:100%;
+  color:#355638;
+  font-size:inherit;
+  font-weight:900;
+  line-height:1;
+  text-shadow:none;
+}
+.npv-floating-club .npv-fw-avatar-1 .npv-fw-avatar-initial{color:#65766d}
+.npv-floating-club .npv-fw-avatar-2 .npv-fw-avatar-initial{color:#927a55}
+.npv-floating-club .npv-fw-avatar-photo{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  border-radius:50%;
+  opacity:0;
+  display:block;
+  transition:opacity .14s ease;
+}
+.npv-floating-club .npv-fw-avatar-photo.is-loaded{opacity:1}
+@media(prefers-reduced-motion:reduce){
+  .npv-floating-club .npv-fw-avatar-photo{transition:none}
+}
