@@ -42,6 +42,10 @@ test('Migração protege assinaturas e só aciona novos pedidos válidos',()=>{
 })
 test('web-push é fixado, sem SMS, WhatsApp ou serviços pagos',()=>{
  const p=JSON.parse(get('package.json'))
- assert.equal(p.dependencies['web-push'],'3.6.7')
+ assert.equal(p.dependencies['web-push'],undefined)
+ const crypto=get('clube/push/web-push.mjs')
+ assert.match(crypto,/hkdfSync/)
+ assert.match(crypto,/createCipheriv/)
+ assert.match(crypto,/createPrivateKey/)
  assert.doesNotMatch(get('src/ClubeAdminPush.jsx'),/Telegram|OneSignal|WhatsApp/)
 })
