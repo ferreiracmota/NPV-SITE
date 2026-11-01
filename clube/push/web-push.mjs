@@ -17,7 +17,7 @@ export function allowedPushEndpoint(value){
 export function buildEncryptedPushBody(message,keys,{serverECDH=createECDH('prime256v1'),salt=randomBytes(16)}={}){
  const receiver=from64(keys.p256dh),auth=from64(keys.auth)
  if(receiver.length!==65||receiver[0]!==4||auth.length!==16)throw Error('invalid_push_keys')
- if(!serverECDH.getPublicKey().length)serverECDH.generateKeys()
+ try{serverECDH.getPublicKey()}catch{serverECDH.generateKeys()}
  const sender=serverECDH.getPublicKey(undefined,'uncompressed')
  const shared=serverECDH.computeSecret(receiver)
  const secret=hkdf(shared,auth,Buffer.concat([Buffer.from('WebPush: info\0'),receiver,sender]),32)
