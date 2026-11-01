@@ -1,7 +1,7 @@
 // Web Push gratuito e exclusivo do administrador do Clube NPV.
 // A chave privada VAPID, tokens e endpoints de assinaturas nunca chegam ao navegador.
 import {createClient} from '@supabase/supabase-js'
-import webpush from 'web-push'
+import {sendWebPush,allowedPushEndpoint} from '../../clube/push/web-push.mjs'
 import {timingSafeEqual} from 'node:crypto'
 
 export const config={maxDuration:30}
@@ -41,8 +41,6 @@ function pushMessage(kind){
 }
 async function sendToSubscriptions(svc,kind,adminId=null){
  if(!pushConfigured())return {success:false,reason:'push_not_configured',sent:0}
- webpush.setVapidDetails('https://www.naopensevai.com',
-  process.env.NPV_VAPID_PUBLIC_KEY,process.env.NPV_VAPID_PRIVATE_KEY)
  let query=svc.from('clube_admin_push_subscriptions')
    .select('id,admin_id,endpoint,p256dh,auth').eq('enabled',true).limit(30)
  if(adminId)query=query.eq('admin_id',adminId)
@@ -50,8 +48,8 @@ async function sendToSubscriptions(svc,kind,adminId=null){
  if(error)return {success:false,reason:'subscriptions_unavailable',sent:0}
  const results=await Promise.all((data||[]).map(async(row)=>{
    try{
-     await webpush.sendNotification({endpoint:row.endpoint,keys:{p256dh:row.p256dh,auth:row.auth}},
-       pushMessage(kind),{TTL:3600,urgency:'normal'})
+     await sendWebPush({endpoint:row.endpoint,keys:{p256dh:row.p256dh,auth:row.auth}},
+       pushMessage(kind),{publicKey:process.env.NPV_VAPID_PUBLIC_KEY,privateKey:process.env.NPV_VAPID_PRIVATE_KEY})
      return true
    }catch(err){
      if([404,410].includes(Number(err.statusCode)))
@@ -125,7 +123,7 @@ export default async function handler(req,res){
   const subscription=req.body?.subscription
   const endpoint=subscription?.endpoint,keys=subscription?.keys
   if(!pushConfigured())return reply(res,503,{status:'push_not_configured'})
-  if(typeof endpoint!=='string'||endpoint.length>2048||!/^https:\/\//.test(endpoint)||
+  if(typeof endpoint!=='string'||endpoint.length>2048||!allowedPushEndpoint(endpoint)||
      typeof keys?.p256dh!=='string'||typeof keys?.auth!=='string'||
      keys.p256dh.length>256||keys.auth.length>256)
     return reply(res,400,{status:'invalid_subscription'})
