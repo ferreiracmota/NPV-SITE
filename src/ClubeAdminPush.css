@@ -1,0 +1,25 @@
+.clube-live-admin .npv-admin-push{border:1px solid #dce8d7;border-radius:17px;background:#fff;padding:20px 22px;margin:18px 0 22px;box-shadow:0 8px 28px #152c1810;max-width:100%}
+.clube-live-admin .npv-admin-push-head{display:flex;align-items:center;gap:12px}
+.clube-live-admin .npv-admin-push-head>div{flex:1;min-width:0}
+.clube-live-admin .npv-admin-push-head h2{font-size:18px;letter-spacing:-.025em;margin:0;color:#203b2a}
+.clube-live-admin .npv-admin-push-head p{font-size:12px;color:#728274;margin:5px 0 0;line-height:1.4}
+.clube-live-admin .npv-admin-push-bell{height:42px;width:42px;flex:none;display:grid;place-items:center;background:#eef5e6;color:#497b3a;border-radius:12px;position:relative}
+.clube-live-admin .npv-admin-push-bell small{position:absolute;top:-5px;right:-6px;background:#bdde50;color:#1c321d;font-size:10px;min-width:17px;height:17px;border-radius:99px;display:grid;place-items:center;font-weight:850}
+.clube-live-admin .npv-push-refresh{border:0;background:#f1f5ec;border-radius:9px;height:40px;width:40px;display:grid;place-items:center;color:#557450;cursor:pointer;flex:none}
+.clube-live-admin .npv-admin-push-pending{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:18px 0 15px}
+.clube-live-admin .npv-admin-push-pending button{display:flex;align-items:center;gap:10px;min-height:63px;padding:12px;border:1px solid #e0e9dd;background:#f7faf4;border-radius:12px;cursor:pointer;text-align:left;color:#46663e}
+.clube-live-admin .npv-admin-push-pending button span{font-size:12px;line-height:1.4;flex:1;color:#2c4530;font-weight:650}
+.clube-live-admin .npv-admin-push-pending button strong{font-size:16px;color:#2e5b2d}
+.clube-live-admin .npv-admin-push-actions{padding-top:15px;border-top:1px solid #e4ede0;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.clube-live-admin .npv-admin-push-state{display:flex;align-items:center;gap:8px;color:#607563;font-size:12px;line-height:1.5;flex:1;min-width:170px}
+.clube-live-admin .npv-admin-push-buttons{display:flex;gap:8px;flex-wrap:wrap}
+.clube-live-admin .npv-admin-push-buttons button{display:inline-flex;align-items:center;justify-content:center;gap:7px;border-radius:9px;min-height:40px;padding:10px 13px;cursor:pointer;font-weight:750;font-size:12px}
+.clube-live-admin .npv-push-primary{background:#263d28;color:white;border:1px solid #263d28}
+.clube-live-admin .npv-push-outline{background:white;color:#456746;border:1px solid #c5d7bd}
+.clube-live-admin .npv-admin-push-buttons button:disabled{opacity:.48;cursor:not-allowed}
+.clube-live-admin .npv-admin-push-help{display:flex;align-items:flex-start;gap:7px;color:#6d806a;font-size:11px;line-height:1.55;margin:12px 0 0}
+.clube-live-admin .npv-admin-push-help svg{flex:none;margin-top:1px}
+.clube-live-admin .npv-push-error,.clube-live-admin .npv-push-success{padding:10px;border-radius:9px;font-size:12px;line-height:1.4;margin:12px 0 0}
+.clube-live-admin .npv-push-error{background:#fff1eb;color:#97402f}
+.clube-live-admin .npv-push-success{display:flex;align-items:center;gap:7px;background:#ecf5e8;color:#36633a}
+@media(max-width:800px){.clube-live-admin .npv-admin-push{padding:15px}.clube-live-admin .npv-admin-push-pending{grid-template-columns:1fr;gap:7px}.clube-live-admin .npv-admin-push-pending button{min-height:46px}.clube-live-admin .npv-admin-push-actions{align-items:stretch}.clube-live-admin .npv-admin-push-buttons{width:100%}.clube-live-admin .npv-admin-push-buttons button{flex:1}}
