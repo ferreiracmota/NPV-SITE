@@ -14,7 +14,9 @@ test('PWA do administrador, web push visível e navegação segura',()=>{
  assert.doesNotMatch(sw,/addEventListener\('fetch'/)
 })
 test('API só autoriza administradores reais e bloqueia pedidos externos',()=>{
- const api=get('api/clube/admin-push.js')
+ const api=get('clube/push/admin-handler.mjs')
+ assert.match(get('api/clube/student-connections.js'),/npv_admin_route'\)===\x27push\x27/)
+ assert.match(get('vercel.json'),/api\/clube\/admin-push/)
  for(const phrase of ["auth.getUser","from('clube_admins')","admin_required","timingSafeEqual","NPV_PUSH_WEBHOOK_SECRET","NPV_VAPID_PRIVATE_KEY","clube_admin_push_subscriptions"])assert.ok(api.includes(phrase),phrase)
  assert.match(api,/isStillPending\(svc,kind,id\)/)
  assert.match(api,/\['pending','awaiting_review','received'\]/)
