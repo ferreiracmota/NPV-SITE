@@ -13,11 +13,32 @@ const REWARDS_DEMO=[
 const PARTNERS_SHOWCASE=[{name:'Cacow'},{name:'Liquidz'}]
 const points=n=>Number(n).toLocaleString('pt-BR')
 
+// O carrossel compacto pode ser exibido antes de o navegador buscar imagens lazy.
+// Carregamos a foto imediatamente e mantemos a inicial como fallback visível
+// até o onLoad (ou em caso de falha). Isso evita círculos brancos no celular.
+function RankingAvatar({entry,index}){
+  const photo=widgetPublicImage(clubeSupabase,entry.avatar_path)
+  const [loadedPhoto,setLoadedPhoto]=useState('')
+  const fallback=entry.id?.startsWith('exemplo-')
+    ?String.fromCharCode(65+index)
+    :entry.name?.trim()?.charAt(0)?.toUpperCase()||'A'
+  const loaded=Boolean(photo)&&loadedPhoto===photo
+  return <span className={'npv-fw-avatar npv-fw-avatar-'+index} aria-hidden="true">
+    <span className="npv-fw-avatar-initial">{fallback}</span>
+    {photo&&<img
+      key={photo}
+      src={photo} alt=""
+      className={'npv-fw-avatar-photo'+(loaded?' is-loaded':'')}
+      loading="eager" decoding="async"
+      onLoad={()=>setLoadedPhoto(photo)} onError={()=>setLoadedPhoto('')}
+    />}
+  </span>
+}
 function RankingPreview({compact=false,ranking=[]}){
   return <div className={'npv-fw-ranking'+(compact?' npv-fw-ranking-compact':'')}>
     {ranking.slice(0,compact?2:3).map((entry,index)=><div className="npv-fw-rank" key={entry.id}>
       <span className="npv-fw-rank-position">{index+1}º</span>
-      <span className={'npv-fw-avatar npv-fw-avatar-'+index} aria-hidden="true">{widgetPublicImage(clubeSupabase,entry.avatar_path)?<img src={widgetPublicImage(clubeSupabase,entry.avatar_path)} alt="" className="npv-fw-avatar-photo" loading="lazy"/>:(entry.id?.startsWith('exemplo-')?String.fromCharCode(65+index):entry.name?.trim()?.charAt(0)?.toUpperCase()||'A')}</span>
+      <RankingAvatar entry={entry} index={index}/>
       <span className="npv-fw-rank-name">{entry.name}</span>
       <strong>{points(entry.points)} <small>pts</small></strong>
     </div>)}
