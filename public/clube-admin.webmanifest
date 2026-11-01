@@ -1,0 +1,20 @@
+{
+  "id": "/clube",
+  "name": "Não Pense, Vai! — Administração",
+  "short_name": "NPV Admin",
+  "description": "Clube de Benefícios NPV — avisos de pendências administrativas",
+  "lang": "pt-BR",
+  "start_url": "/clube?npv_admin=1",
+  "scope": "/clube",
+  "display": "standalone",
+  "background_color": "#f7f9f5",
+  "theme_color": "#15271a",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "any",
+      "type": "image/x-icon",
+      "purpose": "any"
+    }
+  ]
+}
