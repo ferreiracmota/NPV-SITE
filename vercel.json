@@ -1,5 +1,6 @@
 {
   "rewrites": [
+    {"source":"/api/clube/admin-push","destination":"/api/clube/student-connections?npv_admin_route=push"},
     {"source":"/api/clube/email-admin","destination":"/api/clube/student-connections?npv_admin_route=email"},
     {"source":"/api/clube/profile","destination":"/api/clube/student-connections?npv_profile_route=update"},
     {"source":"/api/clube/member-card","destination":"/api/clube/student-connections?npv_profile_route=card"},
