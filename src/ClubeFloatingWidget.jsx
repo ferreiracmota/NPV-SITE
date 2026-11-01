@@ -18,11 +18,11 @@ const points=n=>Number(n).toLocaleString('pt-BR')
 // até o onLoad (ou em caso de falha). Isso evita círculos brancos no celular.
 function RankingAvatar({entry,index}){
   const photo=widgetPublicImage(clubeSupabase,entry.avatar_path)
-  const [loaded,setLoaded]=useState(false)
+  const [loadedPhoto,setLoadedPhoto]=useState('')
   const fallback=entry.id?.startsWith('exemplo-')
     ?String.fromCharCode(65+index)
     :entry.name?.trim()?.charAt(0)?.toUpperCase()||'A'
-  useEffect(()=>setLoaded(false),[photo])
+  const loaded=Boolean(photo)&&loadedPhoto===photo
   return <span className={'npv-fw-avatar npv-fw-avatar-'+index} aria-hidden="true">
     <span className="npv-fw-avatar-initial">{fallback}</span>
     {photo&&<img
@@ -30,7 +30,7 @@ function RankingAvatar({entry,index}){
       src={photo} alt=""
       className={'npv-fw-avatar-photo'+(loaded?' is-loaded':'')}
       loading="eager" decoding="async"
-      onLoad={()=>setLoaded(true)} onError={()=>setLoaded(false)}
+      onLoad={()=>setLoadedPhoto(photo)} onError={()=>setLoadedPhoto('')}
     />}
   </span>
 }
