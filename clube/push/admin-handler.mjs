@@ -70,7 +70,7 @@ async function isStillPending(svc,kind,id){
  }
  if(kind==='story'){
   const {data,error}=await svc.from('clube_instagram_story_events').select('event_id,status').eq('event_id',id).maybeSingle()
-  return !error&&['pending','awaiting_review','received'].includes(data?.status)
+  return !error&&data?.status==='review'
  }
  return false
 }
@@ -78,7 +78,7 @@ async function pendingCounts(svc){
  const queries=[
   svc.from('clube_profiles').select('id',{count:'exact',head:true}).eq('approved',false),
   svc.from('clube_redemptions').select('id',{count:'exact',head:true}).eq('status','pending').eq('is_test',false),
-  svc.from('clube_instagram_story_events').select('event_id',{count:'exact',head:true}).in('status',['pending','awaiting_review','received'])
+  svc.from('clube_instagram_story_events').select('event_id',{count:'exact',head:true}).eq('status','review')
  ]
  const results=await Promise.all(queries)
  return {registration:results[0].error?null:results[0].count,
@@ -93,7 +93,7 @@ export async function handleAdminPush(req,res){
   if(!safeMatch(req.headers?.['x-npv-push-secret'],process.env.NPV_PUSH_WEBHOOK_SECRET))
    return reply(res,403,{status:'forbidden'})
   const kind=req.body?.kind,id=String(req.body?.id||'')
-  if(!['registration','redemption','story'].includes(kind)||!/^[-\w]{5,128}$/.test(id))
+  if(!['registration','redemption','story'].includes(kind)||(id.length<4||id.length>320||/[\x00-\x1f\x7f]/.test(id)))
    return reply(res,400,{status:'invalid_event'})
   if(!(await isStillPending(svc,kind,id)))return reply(res,200,{status:'not_pending'})
   const {error:insertError}=await svc.from('clube_admin_push_events')
