@@ -26,14 +26,25 @@ export function matchingSender(messages,expectedHash,businessId,issuedAt,now=Dat
 }
 
 export async function graphRead(url,token){
-  const response=await fetch(url,{
-    headers:{Authorization:'Bearer '+token},
-    signal:AbortSignal.timeout(3500)
-  })
+  let response
+  try{
+    response=await fetch(url,{
+      headers:{Authorization:'Bearer '+token},
+      signal:AbortSignal.timeout(6000)
+    })
+  }catch{
+    throw new Error('meta_network_unavailable')
+  }
   const payload=await response.json().catch(()=>null)
-  if(response.status===401||response.status===403)
-    throw new Error('meta_access_restricted')
-  if(!response.ok||!payload||payload.error)throw new Error('meta_read_unavailable')
+  const code=Number(payload?.error?.code||0)
+  // Apenas categorias técnicas sem texto de erros, conteúdo de DMs ou credenciais.
+  if(response.status===401||response.status===403||[10,190,200].includes(code))
+    throw new Error('meta_permissions_required')
+  if(response.status===429||code===4||code===17)
+    throw new Error('meta_rate_limited')
+  if(!response.ok||payload?.error)
+    throw new Error(code===100?'meta_invalid_query':'meta_http_'+response.status)
+  if(!payload)throw new Error('meta_invalid_response')
   return payload
 }
 
@@ -66,14 +77,15 @@ export async function recoverPendingInstagramLink({db,studentId,code,cfg,now=Dat
 
   try{
     const auth=oauthConfig()
-    if(!auth)return 'meta_unavailable'
+    if(!auth)return 'meta_oauth_not_configured'
     const {data:official,error:authError}=await officialRow(auth)
     if(authError||!official||Date.parse(official.expires_at)<=now||
-       String(official.instagram_user_id)!==String(cfg.businessId))return 'meta_unavailable'
+       String(official.instagram_user_id)!==String(cfg.businessId))return 'meta_official_auth_unavailable'
     const token=decryptToken(official.token_ciphertext,auth)
     const headersToken=token
-    const inbox=await read(urlFor(cfg.businessId,'conversations',{
-      fields:'id,updated_time',limit:25
+    // Endpoint oficial do Instagram Login: plataforma explícita para conversas.
+    const inbox=await read(urlFor('me','conversations',{
+      platform:'instagram',fields:'id,updated_time',limit:25
     }),headersToken)
     const conversations=(Array.isArray(inbox?.data)?inbox.data:[])
       .filter(entry=>typeof entry?.id==='string'&&/^[a-zA-Z0-9_.:-]{5,256}$/.test(entry.id))
@@ -89,6 +101,8 @@ export async function recoverPendingInstagramLink({db,studentId,code,cfg,now=Dat
       }),headersToken)
       return matchingSender(messages,code.code_hash,cfg.businessId,code.created_at,now)
     }))
+    if(candidates.length>0&&candidates.every(candidate=>candidate.status==='rejected'))
+      return 'meta_messages_unavailable'
     for(const candidate of candidates){
       if(candidate.status!=='fulfilled'||!candidate.value)continue
       const {data:claim,error:claimError}=await db.rpc('clube_instagram_claim_link',{
@@ -100,6 +114,9 @@ export async function recoverPendingInstagramLink({db,studentId,code,cfg,now=Dat
     }
     return 'pending'
   }catch(error){
-    return error?.message==='meta_access_restricted'?'meta_permissions_required':'meta_unavailable'
+    const known=['meta_permissions_required','meta_rate_limited','meta_invalid_query',
+      'meta_network_unavailable','meta_invalid_response','meta_messages_unavailable']
+    const reason=String(error?.message||'')
+    return known.includes(reason)?reason:'meta_unavailable'
   }
 }
