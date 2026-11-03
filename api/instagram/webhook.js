@@ -62,7 +62,7 @@ export default async function handler(req,res){
   audit('signature_verified',{object:payload.object,entries:payload.entry.length,parsedEvents:parsed.length,recipientMatchedEvents:events.length})
   const db=adminDb(cfg)
   try{
-    let eligible=0,linked=0
+    let eligible=0,linked=0,linkNotConfirmed=0
     for(const event of events){
       if(cfg.testOnly){
         // Não registrar mensagens nem Stories de outras contas durante o piloto.
@@ -75,11 +75,14 @@ export default async function handler(req,res){
       }
       eligible++
       if(event.kind==='code'){
-        const {error}=await db.rpc('clube_instagram_claim_link',{
+        const {data:result,error}=await db.rpc('clube_instagram_claim_link',{
           p_code_hash:hashCode(event.code),p_instagram_scoped_id:event.sender
         })
         if(error)throw error
-        linked++
+        // O RPC pode retornar invalid_or_expired ou already_linked sem erro.
+        // Não declarar "vinculado" se o banco não confirmou a associação.
+        if(result==='linked')linked++
+        else linkNotConfirmed++
       }
       if(event.kind==='story'){
         const {error}=await db.rpc('clube_instagram_receive_story',{
@@ -90,7 +93,7 @@ export default async function handler(req,res){
         if(error)throw error
       }
     }
-    audit('processed',{eligibleEvents:eligible,linkCodeClaims:linked})
+    audit('processed',{eligibleEvents:eligible,linkCodeClaims:linked,linkNotConfirmed})
     return json(res,200,{status:'received'})
   }catch{
     // Não registrar detalhes de falhas internas para evitar vazamento de dados.
