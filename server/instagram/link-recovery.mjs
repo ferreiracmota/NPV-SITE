@@ -31,6 +31,8 @@ export async function graphRead(url,token){
     signal:AbortSignal.timeout(3500)
   })
   const payload=await response.json().catch(()=>null)
+  if(response.status===401||response.status===403)
+    throw new Error('meta_access_restricted')
   if(!response.ok||!payload||payload.error)throw new Error('meta_read_unavailable')
   return payload
 }
@@ -97,7 +99,7 @@ export async function recoverPendingInstagramLink({db,studentId,code,cfg,now=Dat
       if(claim==='already_linked')return 'already_linked'
     }
     return 'pending'
-  }catch{
-    return 'meta_unavailable'
+  }catch(error){
+    return error?.message==='meta_access_restricted'?'meta_permissions_required':'meta_unavailable'
   }
 }
