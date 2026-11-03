@@ -11,6 +11,10 @@ export function connectionDisplay(kind,row,checkedAt=Date.now()){
  if(!row)return kind==='strava'
   ?{label:'Sem verificação',tone:'neutral',help:'A conexão usa o navegador da aluna; aguarda uma verificação real no Clube.'}
   :{label:'Não vinculado',tone:'neutral',help:'Nenhum vínculo confirmado pelo Clube.'}
+ if(kind==='instagram'&&row.mode==='manual')return {
+  label:'Liberado manualmente',tone:'ok',
+  help:'Perfil @'+row.username+' liberado manualmente no Clube em '+when(row.verified_at)+'. A conexão técnica com a Meta ainda não foi confirmada; Stories automáticos não são creditados por esta liberação.'
+ }
  if(kind==='instagram')return {
   label:'Ativo no Clube',tone:'ok',
   help:'Vínculo de identidade ativo e confirmado no Clube em '+when(row.verified_at)+'. Não comprova que a conta do Instagram esteja ativa neste instante.'
