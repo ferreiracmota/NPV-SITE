@@ -30,6 +30,7 @@ export default function ClubeInstagramPanel({session,isAdmin=false}){
   const pendingLinkRef=useRef(false)
   const pendingUntil=Date.parse(data?.pending_until||'')
   const waitingForCode=Boolean(!data?.connected&&data?.available&&Number.isFinite(pendingUntil)&&pendingUntil>Date.now())
+  const manuallyApproved=Boolean(data?.connected&&data?.connection_mode==='manual')
   const instagramStatus=needsLogin?'neutral':data?.connected?'connected':waitingForCode?'pending':data?.available?'disconnected':'neutral'
 
   const request=useCallback(async(path,method='GET',payload=null)=>{
@@ -80,7 +81,9 @@ export default function ClubeInstagramPanel({session,isAdmin=false}){
         setCode('')
         if(pendingLinkRef.current){
           pendingLinkRef.current=false
-          setNotice('Instagram vinculado com sucesso! Sua conexão já está confirmada no Clube NPV.')
+          setNotice(status.connection_mode==='manual'
+            ?'Instagram liberado manualmente pela equipe do Clube NPV.'
+            :'Instagram vinculado com sucesso! Sua conexão já está confirmada no Clube NPV.')
         }
       }
       if(status.available){
@@ -245,12 +248,14 @@ export default function ClubeInstagramPanel({session,isAdmin=false}){
           <span className="npv-ig-status-icon" aria-hidden="true">
             {needsLogin?<LockKeyhole size={20}/>:data?.connected?<CheckCircle2 size={20}/>:waitingForCode?<Clock3 size={20}/>:data?.available?<AlertCircle size={20}/>:<Clock3 size={20}/>}
           </span>
-          <strong>{needsLogin?'Seu acesso precisa ser renovado':data?.connected?'Instagram vinculado ✓':waitingForCode?'Aguardando confirmação':data?.available?'Instagram não vinculado':'Integração em preparação'}</strong>
+          <strong>{needsLogin?'Seu acesso precisa ser renovado':data?.connected?(manuallyApproved?'Instagram liberado manualmente ✓':'Instagram vinculado ✓'):waitingForCode?'Aguardando confirmação':data?.available?'Instagram não vinculado':'Integração em preparação'}</strong>
         </div>
         {needsLogin?
           <p>Este dispositivo precisa entrar novamente no Clube para gerar o código de vinculação.</p>:
           data?.connected?
-          <p>Conexão confirmada em {ago(data.verified_at)}. Pronto! Não é necessário fazer mais nada para vincular seu perfil.</p>:
+          manuallyApproved?
+          <p>O perfil <strong>@{data.instagram_username}</strong> foi liberado manualmente pela equipe em {ago(data.verified_at)}. Não é necessário gerar outro código agora. A leitura automática de Directs e Stories ainda depende da autorização da Meta; nenhuma pontuação foi alterada.</p>:
+          <p>Conexão oficial confirmada em {ago(data.verified_at)}. Pronto! Não é necessário fazer mais nada para vincular seu perfil.</p>:
           waitingForCode?
           <p>Envie o código por Direct para <strong>@naopensevai</strong> e volte a esta página. O Clube verifica a confirmação automaticamente; não precisa esperar nossa resposta no Instagram.</p>:
           data?.available?
@@ -284,7 +289,9 @@ export default function ClubeInstagramPanel({session,isAdmin=false}){
       </div>
       {error&&<p className="npv-ig-message npv-ig-error" role="alert"><AlertCircle size={15}/>{error}</p>}
       {notice&&<p className="npv-ig-message" role="status"><CheckCircle2 size={15}/>{notice}</p>}
-      <p className="npv-ig-privacy"><ShieldCheck size={15}/> O Clube nunca solicita sua senha do Instagram. O reconhecimento depende da notificação oficial da Meta, que pode não chegar para todos os perfis privados.</p>
+      <p className="npv-ig-privacy"><ShieldCheck size={15}/> {manuallyApproved
+        ?'A liberação manual não solicita sua senha e não equivale à conexão técnica pela API da Meta.'
+        :'O Clube nunca solicita sua senha do Instagram. O reconhecimento depende da notificação oficial da Meta, que pode não chegar para todos os perfis privados.'}</p>
     </section>
     <section className="npv-ig-card">
       <div className="npv-ig-section-title"><h2>Stories registrados</h2><span>+200 pts por Story válido</span></div>
