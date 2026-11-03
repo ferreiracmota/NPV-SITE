@@ -1,5 +1,6 @@
 // Vinculação verificável por DM oficial. Nunca pede senha do Instagram nem aceita @ como prova.
 import {json,settings,adminDb,authorizedMember,checkOrigin,hashCode,makeCode,brazilMonthBounds} from '../../server/instagram/common.mjs'
+import {recoverPendingInstagramLink} from '../../server/instagram/link-recovery.mjs'
 
 export default async function handler(req,res){
   if(!['GET','POST','DELETE'].includes(req.method)){
@@ -34,18 +35,34 @@ export default async function handler(req,res){
       const month=brazilMonthBounds()
       const [linkResult,codeResult,historyResult]=await Promise.all([
         db.from('clube_instagram_links').select('verified_at').eq('student_id',id).maybeSingle(),
-        db.from('clube_instagram_link_codes').select('expires_at').eq('student_id',id).maybeSingle(),
+        db.from('clube_instagram_link_codes').select('expires_at,created_at,code_hash,last_meta_checked_at').eq('student_id',id).maybeSingle(),
         db.from('clube_instagram_story_events').select('created_at,points,status')
           .eq('student_id',id).eq('status','credited')
           .gte('created_at',month.start).lt('created_at',month.end)
       ])
       if(linkResult.error||codeResult.error||historyResult.error)
         return json(res,503,{status:'instagram_database_setup_required'})
+      // Caso o webhook da Meta não tenha entregue o Direct, a própria consulta
+      // automática do aluno tenta recuperar a mensagem pela API oficial.
+      // Somente um código ainda válido, enviado pela conta comprovada, vincula.
+      let confirmedLink=linkResult.data
+      if(!confirmedLink&&codeResult.data?.code_hash
+         &&Date.parse(codeResult.data.expires_at)>Date.now()){
+        const recovered=await recoverPendingInstagramLink({
+          db,studentId:id,code:codeResult.data,cfg
+        })
+        if(recovered!=='skipped')console.info('npv_instagram_recovery',JSON.stringify({status:recovered}))
+        if(recovered==='linked'){
+          const result=await db.from('clube_instagram_links')
+            .select('verified_at').eq('student_id',id).maybeSingle()
+          if(!result.error)confirmedLink=result.data
+        }
+      }
       const confirmedThisMonth=historyResult.data||[]
       return json(res,200,{
-        available:true,connected:Boolean(linkResult.data),
-        verified_at:linkResult.data?.verified_at||null,
-        pending_until:codeResult.data?.expires_at||null,
+        available:true,connected:Boolean(confirmedLink),
+        verified_at:confirmedLink?.verified_at||null,
+        pending_until:confirmedLink?null:(codeResult.data?.expires_at||null),
         credited_stories:confirmedThisMonth.length,
         credited_points:confirmedThisMonth.reduce((total,row)=>total+row.points,0),
         note:'Somente dados confirmados pelo servidor são exibidos.'
@@ -68,7 +85,8 @@ export default async function handler(req,res){
     const code=makeCode()
     const {error}=await db.from('clube_instagram_link_codes').upsert({
       student_id:id,code_hash:hashCode(code),
-      created_at:new Date().toISOString(),expires_at:new Date(Date.now()+10*60000).toISOString()
+      created_at:new Date().toISOString(),expires_at:new Date(Date.now()+10*60000).toISOString(),
+      last_meta_checked_at:null
     },{onConflict:'student_id'})
     if(error)return json(res,503,{status:'code_unavailable'})
     return json(res,200,{status:'pending',code,expires_in_seconds:600,
