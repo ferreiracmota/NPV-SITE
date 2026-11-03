@@ -48,9 +48,15 @@ export default async function handler(req,res){
       let confirmedLink=linkResult.data
       if(!confirmedLink&&codeResult.data?.code_hash
          &&Date.parse(codeResult.data.expires_at)>Date.now()){
-        const recovered=await recoverPendingInstagramLink({
-          db,studentId:id,code:codeResult.data,cfg
-        })
+        let recovered='meta_unavailable'
+        try{
+          recovered=await recoverPendingInstagramLink({
+            db,studentId:id,code:codeResult.data,cfg
+          })
+        }catch{
+          // A consulta ao Instagram não pode derrubar a área do aluno.
+          recovered='meta_unavailable'
+        }
         if(recovered!=='skipped')console.info('npv_instagram_recovery',JSON.stringify({status:recovered}))
         if(recovered==='linked'){
           const result=await db.from('clube_instagram_links')
