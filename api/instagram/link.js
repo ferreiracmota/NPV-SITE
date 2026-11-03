@@ -1,6 +1,7 @@
 // Vinculação verificável por DM oficial. Nunca pede senha do Instagram nem aceita @ como prova.
 import {json,settings,adminDb,authorizedMember,checkOrigin,hashCode,makeCode,brazilMonthBounds} from '../../server/instagram/common.mjs'
 import {recoverPendingInstagramLink} from '../../server/instagram/link-recovery.mjs'
+import {instagramConnectionView} from '../../server/instagram/manual-links.mjs'
 
 export default async function handler(req,res){
   if(!['GET','POST','DELETE'].includes(req.method)){
@@ -33,20 +34,22 @@ export default async function handler(req,res){
       // Consulta apenas o mês civil de São Paulo. Os limites UTC são
       // calculados no backend e coincidem com a regra de pontuação do banco.
       const month=brazilMonthBounds()
-      const [linkResult,codeResult,historyResult]=await Promise.all([
+      const [linkResult,manualResult,codeResult,historyResult]=await Promise.all([
         db.from('clube_instagram_links').select('verified_at').eq('student_id',id).maybeSingle(),
+        db.from('clube_instagram_manual_links').select('username,approved_at').eq('student_id',id).maybeSingle(),
         db.from('clube_instagram_link_codes').select('expires_at,created_at,code_hash,last_meta_checked_at').eq('student_id',id).maybeSingle(),
         db.from('clube_instagram_story_events').select('created_at,points,status')
           .eq('student_id',id).eq('status','credited')
           .gte('created_at',month.start).lt('created_at',month.end)
       ])
-      if(linkResult.error||codeResult.error||historyResult.error)
+      if(linkResult.error||manualResult.error||codeResult.error||historyResult.error)
         return json(res,503,{status:'instagram_database_setup_required'})
       // Caso o webhook da Meta não tenha entregue o Direct, a própria consulta
       // automática do aluno tenta recuperar a mensagem pela API oficial.
       // Somente um código ainda válido, enviado pela conta comprovada, vincula.
       let confirmedLink=linkResult.data
-      if(!confirmedLink&&codeResult.data?.code_hash
+      const manualLink=manualResult.data
+      if(!confirmedLink&&!manualLink&&codeResult.data?.code_hash
          &&Date.parse(codeResult.data.expires_at)>Date.now()){
         let recovered='meta_unavailable'
         try{
@@ -65,24 +68,30 @@ export default async function handler(req,res){
         }
       }
       const confirmedThisMonth=historyResult.data||[]
+      const connection=instagramConnectionView(confirmedLink,manualLink)
       return json(res,200,{
-        available:true,connected:Boolean(confirmedLink),
-        verified_at:confirmedLink?.verified_at||null,
-        pending_until:confirmedLink?null:(codeResult.data?.expires_at||null),
+        available:true,...connection,
+        pending_until:connection.connected?null:(codeResult.data?.expires_at||null),
         credited_stories:confirmedThisMonth.length,
         credited_points:confirmedThisMonth.reduce((total,row)=>total+row.points,0),
         note:'Somente dados confirmados pelo servidor são exibidos.'
       })
     }
     if(req.method==='DELETE'){
-      const [a,b]=await Promise.all([
+      const [a,b,c]=await Promise.all([
         db.from('clube_instagram_link_codes').delete().eq('student_id',id),
-        db.from('clube_instagram_links').delete().eq('student_id',id)
+        db.from('clube_instagram_links').delete().eq('student_id',id),
+        db.from('clube_instagram_manual_links').delete().eq('student_id',id)
       ])
-      if(a.error||b.error)return json(res,503,{status:'unlink_failed'})
+      if(a.error||b.error||c.error)return json(res,503,{status:'unlink_failed'})
       return json(res,200,{connected:false,status:'disconnected'})
     }
     if(!member.approved)return json(res,403,{status:'member_not_approved',message:'Seu perfil precisa estar aprovado antes de vincular o Instagram.'})
+    // Não gerar código de forma acidental enquanto a liberação manual estiver ativa.
+    const {data:manual,error:manualError}=await db.from('clube_instagram_manual_links')
+      .select('student_id').eq('student_id',id).maybeSingle()
+    if(manualError)return json(res,503,{status:'instagram_database_setup_required'})
+    if(manual)return json(res,409,{status:'manual_link_active',message:'Instagram já liberado manualmente pelo Clube.'})
     const {data:existing,error:readError}=await db.from('clube_instagram_link_codes')
       .select('created_at').eq('student_id',id).maybeSingle()
     if(readError)return json(res,503,{status:'instagram_database_setup_required'})
