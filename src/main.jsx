@@ -10,6 +10,7 @@ const ClubeNPV = lazy(() => import('./ClubeNPV.jsx'))
 const ClubeNPVOnline = lazy(() => import('./ClubeNPVOnline.jsx'))
 const ClubeInstagramPreview = lazy(() => import('./ClubeInstagramPreview.jsx'))
 const ClubePublicLanding = lazy(() => import('./ClubePublicLanding.jsx'))
+const ClubeStudentPreview = lazy(() => import('./ClubeStudentPreview.jsx'))
 
 const params = new URLSearchParams(window.location.search)
 const isClubeRoute = window.location.pathname === '/clube' ||
@@ -39,7 +40,9 @@ function ClubeIndisponivel() {
   </main>
 }
 
-const page = window.location.pathname.replace(/\/$/,'') === '/clube/conheca'
+const page = window.location.pathname.replace(/\/$/,'') === '/clube/previa-aluno'
+  ? <ClubeStudentPreview />
+  : window.location.pathname.replace(/\/$/,'') === '/clube/conheca'
   ? <ClubePublicLanding />
   : isClubeRoute
   ? (window.location.pathname === '/clube/instagram-teste' ? <ClubeInstagramPreview /> : params.get('demo') === '1' ? <ClubeNPV /> :
