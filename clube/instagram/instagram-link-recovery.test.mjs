@@ -45,3 +45,10 @@ test('não aceita hash inválido nem mensagens futuras',()=>{
     message(code,'1234567891234','2026-11-03T15:26:00.000Z')
   ]},hashCode(code),business,issued,now),null)
 })
+
+test('A recuperação usa somente o remetente do Direct, mesmo com conta privada',()=>{
+  const sample={data:[
+    message('NPV-123456ABCDEF','17840000123456789')
+  ]}
+  assert.equal(matchingSender(sample,hashCode(code),business,issued,now),'17840000123456789')
+})
