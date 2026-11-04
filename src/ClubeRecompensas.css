@@ -111,3 +111,10 @@
 .npv-shop-pending-banner small{font-size:10px;color:#77885e}
 .npv-shop-pending-banner:hover{background:#e4f0c8}
 .clube-reserved-note{display:block;margin-top:8px!important;color:#efebb8!important}
+
+
+/* Preview de enquadramento reutilizado no modal administrativo da lojinha. */
+.npv-reward-photo-editor .npv-frame-editor{min-width:0}
+.npv-reward-photo-editor .npv-frame-editor-preview{border-radius:10px}
+.npv-reward-photo-editor .npv-frame-editor-sliders label{font-size:11px}
+.npv-reward-photo-editor>.npv-frame-editor+label{font-size:12px;color:#2d523b}
