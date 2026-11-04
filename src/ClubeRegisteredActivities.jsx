@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { ChevronDown, ChevronUp, Footprints, LockKeyhole, Eye, EyeOff, CheckCircle2, RefreshCw } from 'lucide-react'
 import { clubeSupabase as supabase } from './clubeSupabase.js'
 import { currentNpvMonth, challengeBar } from '../clube/strava/challengeProgress.mjs'
+import {imageFrameFromRow,imageFrameStyle} from '../clube/image/framing.mjs'
 import './ClubeRegisteredActivities.css'
 import './ClubeMonthlyChallengeBar.css'
 
@@ -37,18 +38,18 @@ export default function ClubeRegisteredActivities({session,onConnectionStatusCha
   const extraGoals=activeGoals.slice(1)
   const monthlyGoal=goal?Number(goal.goal_km):null
   const progress=monthKm!==null&&monthlyGoal!==null?challengeBar(monthKm,monthlyGoal):{valid:false,percentage:0,completed:false}
-  const coverPath=goal?.cover_path||goalState.items[0]?.cover_path
+  const coverOwner=goal?.cover_path?goal:goalState.items.find(item=>item.cover_path)
+  const coverPath=coverOwner?.cover_path
   const coverUrl=/^images\/[a-f0-9-]{36}\.(?:jpg|png|webp)$/.test(coverPath||'')
     ?supabase.storage.from('clube-npv-desafios').getPublicUrl(coverPath).data.publicUrl:null
-  const coverStyle=coverUrl
-    ?{backgroundImage:'linear-gradient(95deg,rgba(5,20,14,.90) 0%,rgba(6,22,16,.82) 40%,rgba(9,28,20,.64) 100%),url("'+coverUrl+'")'}
-    :undefined
+  const coverStyle=coverUrl?{backgroundImage:'linear-gradient(95deg,#092116,#142b1d)'}:undefined
+  const coverFrameStyle=imageFrameStyle(imageFrameFromRow(coverOwner,'cover'))
   useEffect(()=>{
     let live=true
     setGoalState({loaded:false,items:[]})
     supabase.rpc('clube_ensure_challenge_month',{p_month_key:monthKey})
       .then(()=>supabase.from('clube_monthly_challenges')
-        .select('id,name,goal_km,active,reward_points,position,cover_path')
+        .select('id,name,goal_km,active,reward_points,position,cover_path,cover_position_x,cover_position_y,cover_zoom')
         .eq('month_key',monthKey).order('position',{ascending:true}))
       .then(({data,error:dbError})=>{
         if(!live)return
@@ -136,6 +137,9 @@ export default function ClubeRegisteredActivities({session,onConnectionStatusCha
   return <section className="clube-card clube-activities-card npv-strava-activities" aria-label="Metas e desafios">
     <button type="button" className={'clube-activities-toggle npv-strava-hero-trigger'+(extraGoals.length?' has-extra-challenges':'')} aria-expanded={expanded}
       aria-controls="npv-registered-activity-content" style={coverStyle} onClick={()=>setExpanded(v=>!v)}>
+      {coverUrl&&<><img src={coverUrl} alt="" className="npv-strava-custom-cover"
+        style={coverFrameStyle} loading="eager" draggable={false}/>
+        <span className="npv-strava-custom-cover-shade" aria-hidden="true"/></>}
       <span className="npv-strava-hero-icon" aria-hidden="true"><Footprints size={25} strokeWidth={2.15}/></span>
       <span className="npv-strava-hero-copy">
         <span className="npv-strava-hero-eyebrow">SEU ESPAÇO DE PERFORMANCE <span aria-hidden="true">✦</span></span>
