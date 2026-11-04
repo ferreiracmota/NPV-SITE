@@ -3,6 +3,7 @@ import {ArrowUpRight, ArrowRight, Award, Gift, Sparkles, CheckCircle2} from 'luc
 import {memberAchievements} from '../clube/profile/achievements.mjs'
 import {MEMBER_LEVELS} from '../clube/profile/memberCardIdentity.mjs'
 import {selectNextAvailableReward} from '../clube/profile/nextReward.mjs'
+import {imageFrameFromRow,imageFrameStyle} from '../clube/image/framing.mjs'
 import './ClubeStudentMomentum.css'
 
 const fmt=value=>Number(value||0).toLocaleString('pt-BR')
@@ -37,6 +38,9 @@ export default function ClubeStudentMomentum({
   const missingNext=nextLevel?safePoints(achievements.remaining):0
   const levelTarget=nextLevel?.minimum||currentLevel?.minimum||2000
   const image=reward?rewardImageUrl(reward.image_path)||'':''
+  const rewardFrame=imageFrameFromRow(reward,'image')
+  const customRewardFrame=rewardFrame.x!==50||rewardFrame.y!==50||rewardFrame.zoom!==1
+  const rewardFrameStyle=customRewardFrame?imageFrameStyle(rewardFrame):undefined
   const unlocked=reward&&available>=Number(reward.points)
   const rewardRemaining=reward?Math.max(0,Number(reward.points)-available):0
   const rewardProgress=reward?Math.min(100,Math.round(available/Number(reward.points)*100)):0
@@ -76,7 +80,7 @@ export default function ClubeStudentMomentum({
           <div className="npv-momentum-price"><strong>{fmt(reward.points)}</strong><span>pontos</span></div>
         </div>
         <div className="npv-momentum-product-art">
-          {image?<img src={image} alt={'Foto de '+reward.name} loading="eager"/>:<Gift size={59} strokeWidth={1.25} aria-hidden="true"/>}
+          {image?<img src={image} alt={'Foto de '+reward.name} loading="eager" style={rewardFrameStyle}/>:<Gift size={59} strokeWidth={1.25} aria-hidden="true"/>}
         </div>
       </div>
       <div className="npv-momentum-gift-footer">

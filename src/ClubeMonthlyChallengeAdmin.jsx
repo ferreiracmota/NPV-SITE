@@ -2,6 +2,8 @@ import React, {useEffect,useState} from 'react'
 import {Flag,Save,CheckCircle2,Plus,Trash2,ImagePlus} from 'lucide-react'
 import {clubeSupabase as supabase} from './clubeSupabase.js'
 import {currentNpvMonth,nextNpvMonth} from '../clube/strava/challengeProgress.mjs'
+import ClubeImageFrameEditor from './ClubeImageFrameEditor.jsx'
+import {DEFAULT_IMAGE_FRAME,imageFrameFromRow,imageFramePayload} from '../clube/image/framing.mjs'
 import './ClubeMonthlyChallengeAdmin.css'
 
 const newChallenge=()=>({
@@ -32,6 +34,7 @@ export default function ClubeMonthlyChallengeAdmin(){
   const [coverFile,setCoverFile]=useState(null)
   const [coverPreviewUrl,setCoverPreviewUrl]=useState('')
   const [coverSaving,setCoverSaving]=useState(false)
+  const [coverFrame,setCoverFrame]=useState(DEFAULT_IMAGE_FRAME)
   const coverDisplayUrl=coverPreviewUrl||coverUrl(items[0]?.cover_path)
   useEffect(()=>{
     if(!coverFile){setCoverPreviewUrl('');return}
@@ -41,18 +44,19 @@ export default function ClubeMonthlyChallengeAdmin(){
   },[coverFile])
   useEffect(()=>{
     let live=true
-    setLoading(true);setError('');setFeedback('');setCoverFile(null)
+    setLoading(true);setError('');setFeedback('');setCoverFile(null);setCoverFrame(DEFAULT_IMAGE_FRAME)
     supabase.rpc('clube_ensure_challenge_month',{p_month_key:monthKey})
       .then(({error:ensureError})=>{
         if(ensureError)throw ensureError
         return supabase.from('clube_monthly_challenges')
-          .select('id,name,goal_km,active,reward_points,position,cover_path')
+          .select('id,name,goal_km,active,reward_points,position,cover_path,cover_position_x,cover_position_y,cover_zoom')
           .eq('month_key',monthKey).order('position',{ascending:true})
       })
       .then(({data,error:dbError})=>{
         if(!live)return
         if(dbError)throw dbError
         setItems((data||[]).map(toDraft))
+        setCoverFrame(imageFrameFromRow(data?.[0],'cover'))
       })
       .catch(()=>{if(live)setError('Não foi possível consultar os desafios do mês.')})
       .finally(()=>{if(live)setLoading(false)})
@@ -91,24 +95,29 @@ export default function ClubeMonthlyChallengeAdmin(){
   }
   async function saveCover(){
     const primary=items[0]
-    if(!coverFile||!primary?.saved||loading||saving||deletingId||coverSaving)return
-    const extension=COVER_EXTENSIONS[coverFile.type]
-    if(!extension||coverFile.size<1||coverFile.size>4*1024*1024){
+    if(!primary?.saved||(!coverFile&&!primary.cover_path)||loading||saving||deletingId||coverSaving)return
+    const extension=coverFile?COVER_EXTENSIONS[coverFile.type]:null
+    if(coverFile&&(!extension||coverFile.size<1||coverFile.size>4*1024*1024)){
       setError('Use uma imagem JPG, PNG ou WebP de até 4 MB.');return
     }
     setCoverSaving(true);setError('');setFeedback('')
     try{
-      const imagePath='images/'+crypto.randomUUID()+'.'+extension
-      const {error:uploadError}=await supabase.storage.from(COVER_BUCKET)
-        .upload(imagePath,coverFile,{contentType:coverFile.type,cacheControl:'3600',upsert:false})
-      if(uploadError)throw uploadError
+      let imagePath=primary.cover_path||null
+      if(coverFile){
+        imagePath='images/'+crypto.randomUUID()+'.'+extension
+        const {error:uploadError}=await supabase.storage.from(COVER_BUCKET)
+          .upload(imagePath,coverFile,{contentType:coverFile.type,cacheControl:'3600',upsert:false})
+        if(uploadError)throw uploadError
+      }
       const {data,error:dbError}=await supabase.from('clube_monthly_challenges')
-        .update({cover_path:imagePath,updated_at:new Date().toISOString()})
-        .eq('id',primary.id).eq('month_key',monthKey).select('id,cover_path').single()
+        .update({cover_path:imagePath,...imageFramePayload(coverFrame,'cover'),updated_at:new Date().toISOString()})
+        .eq('id',primary.id).eq('month_key',monthKey)
+        .select('id,cover_path,cover_position_x,cover_position_y,cover_zoom').single()
       if(dbError||!data)throw dbError||new Error('A imagem não foi associada ao mês.')
-      setItems(current=>current.map(item=>item.id===data.id?{...item,cover_path:data.cover_path}:item))
+      setItems(current=>current.map(item=>item.id===data.id?{...item,...data}:item))
+      setCoverFrame(imageFrameFromRow(data,'cover'))
       setCoverFile(null)
-      setFeedback('Imagem de fundo atualizada para '+monthLabel(monthKey)+'.')
+      setFeedback('Enquadramento salvo para '+monthLabel(monthKey)+'. A fotografia original foi preservada.')
     }catch{
       setError('Não foi possível substituir a imagem. Confira a conexão e a permissão de administrador.')
     }finally{setCoverSaving(false)}
@@ -160,24 +169,23 @@ export default function ClubeMonthlyChallengeAdmin(){
       <small>Se o mês ainda não tiver desafios cadastrados, o padrão será criado sem apagar configurações anteriores.</small>
     </div>
     <div className="npv-challenge-cover-admin">
-      <div className="npv-challenge-cover-preview" style={coverDisplayUrl
-        ?{backgroundImage:'linear-gradient(95deg,rgba(5,20,14,.80),rgba(6,22,16,.36)),url("'+coverDisplayUrl+'")'}
-        :undefined} role="img" aria-label="Prévia da imagem de fundo de Metas e desafios">
-        <strong>Metas e desafios</strong>
-        <span>{monthLabel(monthKey)} · {items[0]?.name||'Desafio do mês'}</span>
+      <div className="npv-challenge-cover-frame">
+        <ClubeImageFrameEditor src={coverDisplayUrl} value={coverFrame}
+          onChange={setCoverFrame} kind="challenge" title={monthLabel(monthKey)+' · '+(items[0]?.name||'Desafio do mês')}
+          disabled={loading||coverSaving||saving||!!deletingId}/>
       </div>
       <div className="npv-challenge-cover-controls">
         <strong><ImagePlus size={17}/> Imagem de fundo do desafio</strong>
-        <p>Substitua a fotografia exibida atrás de “Metas e desafios” para este mês. O mês seguinte terá sua própria imagem.</p>
+        <p>Envie a foto, arraste na prévia para posicionar e ajuste o zoom. Salve o enquadramento para este mês sem modificar a imagem original.</p>
         <label className="npv-challenge-cover-file">
           <span>Escolher imagem</span>
           <input type="file" accept="image/jpeg,image/png,image/webp" disabled={loading||saving||coverSaving||!!deletingId}
-            onChange={e=>setCoverFile(e.target.files?.[0]||null)}/>
+            onChange={e=>{setCoverFile(e.target.files?.[0]||null);setCoverFrame(DEFAULT_IMAGE_FRAME)}}/>
         </label>
-        <button type="button" onClick={saveCover} disabled={!coverFile||!items[0]?.saved||loading||saving||coverSaving||!!deletingId}>
-          <Save size={15}/>{coverSaving?'Enviando imagem...':'Salvar imagem'}
+        <button type="button" onClick={saveCover} disabled={(!coverFile&&!items[0]?.cover_path)||!items[0]?.saved||loading||saving||coverSaving||!!deletingId}>
+          <Save size={15}/>{coverSaving?'Salvando enquadramento...':'Salvar imagem e enquadramento'}
         </button>
-        <small>JPG, PNG ou WebP, até 4 MB · Proporção recomendada: 1536 × 863 px.</small>
+        <small>JPG, PNG ou WebP, até 4 MB. O original é mantido: ajuste o enquadramento para celular e computador acima.</small>
       </div>
     </div>
     <form onSubmit={submit} className="npv-challenge-admin-form">

@@ -396,3 +396,16 @@
   .npv-strava-activities .npv-strava-challenge-caption{font-size:7.5px}
   .npv-strava-activities .clube-activities-toggle>.npv-strava-hero-action{top:7px;right:8px}
 }
+
+
+/* Foto mensal em camada independente: posição e zoom seguem os dados do mês,
+   sem alterar o background de reserva nem alongar a fotografia. */
+.npv-strava-activities .npv-strava-hero-trigger>.npv-strava-custom-cover{
+  display:block;position:absolute;inset:0;z-index:0;width:100%;height:100%;
+  max-width:none;max-height:none;pointer-events:none;user-select:none;
+}
+.npv-strava-activities .npv-strava-hero-trigger>.npv-strava-custom-cover-shade{
+  position:absolute;inset:0;z-index:0;
+  background:linear-gradient(95deg,rgba(5,20,14,.90) 0%,rgba(6,22,16,.82) 40%,rgba(9,28,20,.58) 100%);
+  pointer-events:none;
+}

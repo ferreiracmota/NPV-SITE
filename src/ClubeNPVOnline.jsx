@@ -16,6 +16,8 @@ import ClubeKmSetup from './ClubeKmSetup.jsx'
 import ClubeRegisteredActivities from './ClubeRegisteredActivities.jsx'
 import ClubeConnectionGuide from './ClubeConnectionGuide.jsx'
 import ClubeMonthlyChallengeAdmin from './ClubeMonthlyChallengeAdmin.jsx'
+import ClubeImageFrameEditor from './ClubeImageFrameEditor.jsx'
+import {DEFAULT_IMAGE_FRAME,imageFrameFromRow,imageFramePayload,imageFrameStyle} from '../clube/image/framing.mjs'
 import { currentNpvMonth } from '../clube/strava/challengeProgress.mjs'
 import ClubeSiteWidgetAdmin from './ClubeSiteWidgetAdmin.jsx'
 import ClubeHotmartAdmin from './ClubeHotmartAdmin.jsx'
@@ -313,7 +315,7 @@ export default function ClubeNPVOnline() {
       const queries=[
         isAdmin ? fetchAllClubeRows('clube_profiles','id,full_name,email,approved,created_at,birthday_mmdd,phone') : Promise.resolve({data:[],error:null}),
         fetchAllClubeRows('clube_point_events','id,student_id,event_type,points,note,reference_id,is_test,created_at'),
-        fetchAllClubeRows('clube_rewards','id,name,category,description,points,stock,icon,theme,active,test_only,showcase,image_path,created_at',true),
+        fetchAllClubeRows('clube_rewards','id,name,category,description,points,stock,icon,theme,active,test_only,showcase,image_path,image_position_x,image_position_y,image_zoom,created_at',true),
         fetchAllClubeRows('clube_redemptions','id,student_id,reward_id,reward_name,points,status,is_test,created_at,resolved_at'),
         supabase.from('clube_point_rules').select('event_type,label,points,position').order('position',{ascending:true}),
         fetchAllClubeRows('clube_partners','id,name,logo_key,logo_url,link_url,discount_percent,coupon_code,details,active,position,created_at',true)
@@ -453,11 +455,11 @@ export default function ClubeNPVOnline() {
       if(error)throw error
     },approve?'Resgate aprovado; pontos e estoque atualizados.':'Resgate recusado; pontos liberados.')
   }
-  function editReward(item){setRewardImageFile(null);setRewardDraft({...item})}
+  function editReward(item){setRewardImageFile(null);setRewardDraft({...item,...imageFramePayload(imageFrameFromRow(item,'image'),'image')})}
   async function saveReward(e){
     e.preventDefault();if(!isAdmin||!rewardDraft)return
     const item={...rewardDraft}
-    const payload={name:item.name.trim(),category:item.category.trim()||'Benefícios',description:item.description.trim(),points:Number(item.points),stock:Number(item.stock),icon:item.icon,theme:item.theme,active:Boolean(item.active),test_only:Boolean(item.test_only),showcase:Boolean(item.showcase||item.active),image_path:item.image_path||''}
+    const payload={name:item.name.trim(),category:item.category.trim()||'Benefícios',description:item.description.trim(),points:Number(item.points),stock:Number(item.stock),icon:item.icon,theme:item.theme,active:Boolean(item.active),test_only:Boolean(item.test_only),showcase:Boolean(item.showcase||item.active),image_path:item.image_path||'',...imageFramePayload(imageFrameFromRow(item,'image'),'image')}
     if(payload.name.length<3||!Number.isSafeInteger(payload.points)||payload.points<1||!Number.isSafeInteger(payload.stock)||payload.stock<0){setNotice('Confira nome, pontos e estoque.');return}
     await run(async()=>{
       if(rewardImageFile){
@@ -560,7 +562,8 @@ export default function ClubeNPVOnline() {
       const progress=item.points>0?Math.min(100,Math.round(availablePoints/item.points*100)):0
       return <article className={`npv-shop-card ${!isAdmin&&enough?'npv-shop-card-milestone':''}`} key={item.id}>
         <div className={`npv-shop-art npv-shop-art-${themeSet.has(item.theme)?item.theme:'lime'}`}>
-          {rewardImageUrl(item.image_path)?<img src={rewardImageUrl(item.image_path)} alt={`Foto de ${item.name}`} className="npv-shop-photo" loading="lazy"/>:<Icon size={87} strokeWidth={1.2}/>}
+          {rewardImageUrl(item.image_path)?<img src={rewardImageUrl(item.image_path)} alt={`Foto de ${item.name}`} className="npv-shop-photo" loading="lazy"
+            style={imageFrameStyle(imageFrameFromRow(item,'image'))}/>:<Icon size={87} strokeWidth={1.2}/>}
           <span className="npv-shop-art-stamp">CLUBE NPV ✦</span><span className="npv-shop-art-corner">NPV / {YEAR}</span>
         </div>
         <div className="npv-shop-info">
@@ -795,10 +798,15 @@ export default function ClubeNPVOnline() {
       <label>Descrição<textarea rows={2} value={rewardDraft.description} onChange={e=>setRewardDraft(d=>({...d,description:e.target.value}))}/></label>
       <div className="npv-reward-photo-editor">
         <strong>Foto do produto</strong>
-        <div className="npv-photo-preview">{imagePreviewUrl?<img src={imagePreviewUrl} alt="Prévia da nova foto"/>:rewardImageUrl(rewardDraft.image_path)?<img src={rewardImageUrl(rewardDraft.image_path)} alt="Foto atual"/>:<ImagePlus size={40}/>}</div>
-        <label>Substituir por uma foto do celular<input type="file" accept="image/jpeg,image/png,image/webp" onChange={e=>setRewardImageFile(e.target.files?.[0]||null)}/></label>
-        {rewardDraft.image_path&&<button type="button" className="npv-shop-edit" onClick={()=>{setRewardImageFile(null);setRewardDraft(d=>({...d,image_path:''}))}}>Remover foto atual</button>}
-        <small>JPG, PNG ou WebP, máximo 4 MB. A foto do catálogo será pública.</small>
+        <ClubeImageFrameEditor kind="reward" src={imagePreviewUrl||rewardImageUrl(rewardDraft.image_path)}
+          value={imageFrameFromRow(rewardDraft,'image')} title={rewardDraft.name}
+          disabled={busy} onChange={frame=>setRewardDraft(d=>({...d,...imageFramePayload(frame,'image')}))}/>
+        <label>Substituir por uma foto do celular<input type="file" accept="image/jpeg,image/png,image/webp"
+          onChange={e=>{setRewardImageFile(e.target.files?.[0]||null);setRewardDraft(d=>({...d,...imageFramePayload(DEFAULT_IMAGE_FRAME,'image')}))}}/></label>
+        {rewardDraft.image_path&&<button type="button" className="npv-shop-edit" onClick={()=>{
+          setRewardImageFile(null);setRewardDraft(d=>({...d,image_path:'',...imageFramePayload(DEFAULT_IMAGE_FRAME,'image')}))
+        }}>Remover foto atual</button>}
+        <small>Arraste a imagem e ajuste o zoom antes de salvar o prêmio. Arquivo original preservado. JPG, PNG ou WebP, até 4 MB.</small>
       </div>
       <label className="npv-shop-check"><input type="checkbox" checked={Boolean(rewardDraft.showcase)} onChange={e=>setRewardDraft(d=>({...d,showcase:e.target.checked}))}/> Exibir na lojinha, mesmo sem resgate</label>
       <label className="npv-shop-check"><input type="checkbox" checked={Boolean(rewardDraft.test_only)} onChange={e=>setRewardDraft(d=>({...d,test_only:e.target.checked}))}/> Produto somente para teste (sem entrega)</label>
