@@ -1,0 +1,33 @@
+name: NPV — QA enquadramento de imagens
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'clube/image/**'
+      - 'clube/migrations/*image_framing*'
+      - 'src/ClubeImageFrameEditor.*'
+      - 'src/ClubeMonthlyChallengeAdmin.*'
+      - 'src/ClubeRegisteredActivities.*'
+      - 'src/ClubeStudentMomentum.jsx'
+      - 'src/ClubeNPVOnline.jsx'
+      - 'src/ClubeRecompensas.css'
+      - '.github/workflows/clube-image-framing-qa.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  framing-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: pnpm
+      - name: Instalar dependências
+        run: pnpm install --frozen-lockfile
+      - name: Validar arraste, zoom e limites por área
+        run: node --test clube/image/framing.test.mjs
+      - name: Validar build do Clube
+        run: pnpm run build
