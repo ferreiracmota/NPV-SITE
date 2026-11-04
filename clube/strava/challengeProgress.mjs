@@ -11,6 +11,14 @@ export function currentNpvMonth(now=new Date()){
   if(!Number.isInteger(year)||!Number.isInteger(month)||month<1||month>12)throw new Error('Invalid calendar');
   return `${year}-${String(month).padStart(2,'0')}`;
 }
+// Próximo ciclo no fuso oficial NPV; também cobre dezembro -> janeiro.
+export function nextNpvMonth(now=new Date()){
+  const [year,month]=currentNpvMonth(now).split('-').map(Number);
+  const nextYear=month===12?year+1:year;
+  const nextMonth=month===12?1:month+1;
+  return nextYear+'-'+String(nextMonth).padStart(2,'0');
+}
+
 export function activityWindow(now=new Date()){
   const monthKey=currentNpvMonth(now);
   const [y,m]=monthKey.split('-').map(Number);

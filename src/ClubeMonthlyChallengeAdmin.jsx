@@ -1,7 +1,7 @@
 import React, {useEffect,useState} from 'react'
-import {Flag,Save,CheckCircle2,Plus,Trash2} from 'lucide-react'
+import {Flag,Save,CheckCircle2,Plus,Trash2,ImagePlus} from 'lucide-react'
 import {clubeSupabase as supabase} from './clubeSupabase.js'
-import {currentNpvMonth} from '../clube/strava/challengeProgress.mjs'
+import {currentNpvMonth,nextNpvMonth} from '../clube/strava/challengeProgress.mjs'
 import './ClubeMonthlyChallengeAdmin.css'
 
 const newChallenge=()=>({
@@ -12,20 +12,43 @@ const toDraft=row=>({
   reward_points:String(row.reward_points)
 })
 
+const COVER_BUCKET='clube-npv-desafios'
+const COVER_EXTENSIONS={'image/jpeg':'jpg','image/png':'png','image/webp':'webp'}
+const coverUrl=path=>/^images\/[a-f0-9-]{36}\.(?:jpg|png|webp)$/.test(path||'')
+  ?supabase.storage.from(COVER_BUCKET).getPublicUrl(path).data.publicUrl:''
+const monthLabel=key=>new Date(key+'-01T12:00:00Z')
+  .toLocaleDateString('pt-BR',{month:'long',year:'numeric',timeZone:'UTC'})
+
 export default function ClubeMonthlyChallengeAdmin(){
-  const monthKey=currentNpvMonth()
+  const [monthKey,setMonthKey]=useState(currentNpvMonth)
+  const currentMonth=currentNpvMonth()
+  const nextMonth=nextNpvMonth()
   const [items,setItems]=useState([])
   const [loading,setLoading]=useState(true)
   const [saving,setSaving]=useState(false)
   const [deletingId,setDeletingId]=useState(null)
   const [feedback,setFeedback]=useState('')
   const [error,setError]=useState('')
+  const [coverFile,setCoverFile]=useState(null)
+  const [coverPreviewUrl,setCoverPreviewUrl]=useState('')
+  const [coverSaving,setCoverSaving]=useState(false)
+  const coverDisplayUrl=coverPreviewUrl||coverUrl(items[0]?.cover_path)
+  useEffect(()=>{
+    if(!coverFile){setCoverPreviewUrl('');return}
+    const url=URL.createObjectURL(coverFile)
+    setCoverPreviewUrl(url)
+    return()=>URL.revokeObjectURL(url)
+  },[coverFile])
   useEffect(()=>{
     let live=true
-    setLoading(true);setError('');setFeedback('')
-    supabase.from('clube_monthly_challenges')
-      .select('id,name,goal_km,active,reward_points,position')
-      .eq('month_key',monthKey).order('position',{ascending:true})
+    setLoading(true);setError('');setFeedback('');setCoverFile(null)
+    supabase.rpc('clube_ensure_challenge_month',{p_month_key:monthKey})
+      .then(({error:ensureError})=>{
+        if(ensureError)throw ensureError
+        return supabase.from('clube_monthly_challenges')
+          .select('id,name,goal_km,active,reward_points,position,cover_path')
+          .eq('month_key',monthKey).order('position',{ascending:true})
+      })
       .then(({data,error:dbError})=>{
         if(!live)return
         if(dbError)throw dbError
@@ -40,7 +63,7 @@ export default function ClubeMonthlyChallengeAdmin(){
     setItems(previous=>previous.map(item=>item.id===id?{...item,[field]:value}:item))
   }
   async function removeChallenge(item){
-    if(loading||saving||deletingId)return
+    if(loading||saving||deletingId||coverSaving)return
     const label=(item.name||'Desafio sem nome').trim()
     const message=item.saved
       ? `Excluir o desafio "${label}"? Ele deixará de aparecer para os alunos. Esta ação não apaga os pontos já lançados.`
@@ -66,9 +89,33 @@ export default function ClubeMonthlyChallengeAdmin(){
       setDeletingId(null)
     }
   }
+  async function saveCover(){
+    const primary=items[0]
+    if(!coverFile||!primary?.saved||loading||saving||deletingId||coverSaving)return
+    const extension=COVER_EXTENSIONS[coverFile.type]
+    if(!extension||coverFile.size<1||coverFile.size>4*1024*1024){
+      setError('Use uma imagem JPG, PNG ou WebP de até 4 MB.');return
+    }
+    setCoverSaving(true);setError('');setFeedback('')
+    try{
+      const imagePath='images/'+crypto.randomUUID()+'.'+extension
+      const {error:uploadError}=await supabase.storage.from(COVER_BUCKET)
+        .upload(imagePath,coverFile,{contentType:coverFile.type,cacheControl:'3600',upsert:false})
+      if(uploadError)throw uploadError
+      const {data,error:dbError}=await supabase.from('clube_monthly_challenges')
+        .update({cover_path:imagePath,updated_at:new Date().toISOString()})
+        .eq('id',primary.id).eq('month_key',monthKey).select('id,cover_path').single()
+      if(dbError||!data)throw dbError||new Error('A imagem não foi associada ao mês.')
+      setItems(current=>current.map(item=>item.id===data.id?{...item,cover_path:data.cover_path}:item))
+      setCoverFile(null)
+      setFeedback('Imagem de fundo atualizada para '+monthLabel(monthKey)+'.')
+    }catch{
+      setError('Não foi possível substituir a imagem. Confira a conexão e a permissão de administrador.')
+    }finally{setCoverSaving(false)}
+  }
   async function submit(event){
     event.preventDefault()
-    if(loading||saving||deletingId||!items.length)return
+    if(loading||saving||deletingId||coverSaving||!items.length)return
     const names=items.map(item=>item.name.trim())
     if(names.some(name=>name.length<2||name.length>75)){
       setError('Dê a cada desafio um nome de 2 a 75 caracteres.');return
@@ -89,7 +136,7 @@ export default function ClubeMonthlyChallengeAdmin(){
     try{
       const {data,error:dbError}=await supabase.from('clube_monthly_challenges')
         .upsert(payload,{onConflict:'id'})
-        .select('id,name,goal_km,active,reward_points,position')
+        .select('id,name,goal_km,active,reward_points,position,cover_path')
       if(dbError)throw dbError
       setItems((data||[]).sort((a,b)=>a.position-b.position).map(toDraft))
       setFeedback('Desafios salvos! O histórico foi mantido e nenhum ponto foi lançado automaticamente.')
@@ -100,7 +147,37 @@ export default function ClubeMonthlyChallengeAdmin(){
   return <section className="npv-challenge-admin" aria-labelledby="npv-challenge-admin-title">
     <div className="npv-challenge-admin-heading"><Flag size={21}/>
       <div><strong id="npv-challenge-admin-title">Desafios do mês</strong>
-        <small>Crie, renomeie ou ajuste desafios de {monthKey}. Cada desafio tem nome, meta e recompensa próprios. O crédito de pontos não é automático.</small>
+        <small>O desafio padrão de 50 km e 300 pontos é criado automaticamente a cada mês. Você pode personalizar as metas e a imagem. A premiação depende da validação pelo Strava.</small>
+      </div>
+    </div>
+    <div className="npv-challenge-month-selector">
+      <label htmlFor="npv-challenge-admin-month">Mês do desafio</label>
+      <select id="npv-challenge-admin-month" value={monthKey} disabled={loading||saving||coverSaving||!!deletingId}
+        onChange={e=>setMonthKey(e.target.value)}>
+        <option value={currentMonth}>{monthLabel(currentMonth)} — atual</option>
+        <option value={nextMonth}>{monthLabel(nextMonth)} — próximo mês</option>
+      </select>
+      <small>Se o mês ainda não tiver desafios cadastrados, o padrão será criado sem apagar configurações anteriores.</small>
+    </div>
+    <div className="npv-challenge-cover-admin">
+      <div className="npv-challenge-cover-preview" style={coverDisplayUrl
+        ?{backgroundImage:'linear-gradient(95deg,rgba(5,20,14,.80),rgba(6,22,16,.36)),url("'+coverDisplayUrl+'")'}
+        :undefined} role="img" aria-label="Prévia da imagem de fundo de Metas e desafios">
+        <strong>Metas e desafios</strong>
+        <span>{monthLabel(monthKey)} · {items[0]?.name||'Desafio do mês'}</span>
+      </div>
+      <div className="npv-challenge-cover-controls">
+        <strong><ImagePlus size={17}/> Imagem de fundo do desafio</strong>
+        <p>Substitua a fotografia exibida atrás de “Metas e desafios” para este mês. O mês seguinte terá sua própria imagem.</p>
+        <label className="npv-challenge-cover-file">
+          <span>Escolher imagem</span>
+          <input type="file" accept="image/jpeg,image/png,image/webp" disabled={loading||saving||coverSaving||!!deletingId}
+            onChange={e=>setCoverFile(e.target.files?.[0]||null)}/>
+        </label>
+        <button type="button" onClick={saveCover} disabled={!coverFile||!items[0]?.saved||loading||saving||coverSaving||!!deletingId}>
+          <Save size={15}/>{coverSaving?'Enviando imagem...':'Salvar imagem'}
+        </button>
+        <small>JPG, PNG ou WebP, até 4 MB · Proporção recomendada: 1536 × 863 px.</small>
       </div>
     </div>
     <form onSubmit={submit} className="npv-challenge-admin-form">
@@ -110,31 +187,31 @@ export default function ClubeMonthlyChallengeAdmin(){
             <div className="npv-challenge-admin-item-actions">
               <span>{item.active?'Ativo':'Inativo'}</span>
               <button type="button" className="npv-challenge-delete" aria-label={`Excluir desafio ${item.name||index+1}`}
-                disabled={loading||saving||!!deletingId} onClick={()=>removeChallenge(item)}>
+                disabled={loading||saving||coverSaving||!!deletingId} onClick={()=>removeChallenge(item)}>
                 <Trash2 size={14}/>{deletingId===item.id?'Excluindo...':'Excluir'}
               </button>
             </div>
           </div>
           <label className="npv-challenge-name"><span>Nome do desafio</span>
             <input required minLength={2} maxLength={75} placeholder="Ex.: Desafio 50 km" value={item.name}
-              disabled={loading||saving||!!deletingId} onChange={e=>edit(item.id,'name',e.target.value)}/></label>
+              disabled={loading||saving||coverSaving||!!deletingId} onChange={e=>edit(item.id,'name',e.target.value)}/></label>
           <div className="npv-challenge-admin-fields">
             <label><span>Meta de distância</span><span className="npv-challenge-input-row">
               <input inputMode="decimal" type="number" min="0.1" max="10000" step="0.01" placeholder="Ex.: 50" value={item.goal_km}
-                disabled={loading||saving||!!deletingId} onChange={e=>edit(item.id,'goal_km',e.target.value)}/><b>km</b></span></label>
+                disabled={loading||saving||coverSaving||!!deletingId} onChange={e=>edit(item.id,'goal_km',e.target.value)}/><b>km</b></span></label>
             <label><span>Recompensa ao completar</span><span className="npv-challenge-input-row">
               <input inputMode="numeric" type="number" min="1" max="100000" step="1" value={item.reward_points}
-                disabled={loading||saving||!!deletingId} onChange={e=>edit(item.id,'reward_points',e.target.value)}/><b>pts</b></span></label>
+                disabled={loading||saving||coverSaving||!!deletingId} onChange={e=>edit(item.id,'reward_points',e.target.value)}/><b>pts</b></span></label>
             <label className="npv-challenge-admin-check"><input type="checkbox" checked={item.active}
-              disabled={loading||saving||!!deletingId} onChange={e=>edit(item.id,'active',e.target.checked)}/> Desafio ativo</label>
+              disabled={loading||saving||coverSaving||!!deletingId} onChange={e=>edit(item.id,'active',e.target.checked)}/> Desafio ativo</label>
           </div>
         </div>)}
-        {!items.length&&!loading&&<p className="npv-challenge-admin-empty">Nenhum desafio cadastrado para este mês. Crie o primeiro abaixo.</p>}
+        {!items.length&&!loading&&<p className="npv-challenge-admin-empty">Sem desafios salvos para este mês. Verifique a conexão ou crie um desafio.</p>}
       </div>
       <div className="npv-challenge-admin-actions">
-        <button type="button" className="npv-challenge-add" disabled={loading||saving||!!deletingId||items.length>=25}
+        <button type="button" className="npv-challenge-add" disabled={loading||saving||coverSaving||!!deletingId||items.length>=25}
           onClick={()=>{setItems(current=>[...current,newChallenge()]);setError('');setFeedback('')}}><Plus size={16}/> Adicionar desafio</button>
-        <button type="submit" disabled={loading||saving||!!deletingId||!items.length}><Save size={16}/>{saving?'Salvando...':'Salvar desafios'}</button>
+        <button type="submit" disabled={loading||saving||coverSaving||!!deletingId||!items.length}><Save size={16}/>{saving?'Salvando...':'Salvar desafios'}</button>
       </div>
     </form>
     {error&&<p className="npv-challenge-admin-error" role="alert">{error}</p>}

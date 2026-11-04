@@ -14,6 +14,13 @@ export async function reconcileStravaPoints(studentId,activities,monthKey){
  const enabled=Array.isArray(settings.eligible_sports)
   ?settings.eligible_sports:STRAVA_SPORTS;
  const monthly=eligibleMonthMetrics(activities,monthKey,enabled);
+ // Cria apenas o desafio padrão ausente, sem bloquear a regra existente de km.
+ try{
+  const {error:challengeError}=await db.rpc('clube_ensure_challenge_month',{p_month_key:monthKey});
+  if(challengeError)console.warn('[strava] default challenge not initialized',challengeError.code||'unknown');
+ }catch(err){
+  console.warn('[strava] default challenge unavailable',err?.code||'unknown');
+ }
  const {data,error}=await db.rpc('clube_sync_strava_month',{
   p_student_id:studentId,p_month_key:monthKey,p_eligible_meters:monthly.meters
  });
