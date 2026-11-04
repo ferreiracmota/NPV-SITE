@@ -35,6 +35,7 @@ import {BIRTHDAY_MONTHS,BIRTHDAY_DAYS,birthdayFromParts,validOptionalPhone} from
 import './ClubeAdminWorkspace.css'
 import './ClubeBirthday.css'
 import './ClubeStudentPolish.css'
+import './ClubeAdminRefinement.css'
 
 const format = value => Number(value||0).toLocaleString('pt-BR')
 const date = value => new Date(value).toLocaleDateString('pt-BR',{day:'2-digit',month:'short',year:'numeric'})
