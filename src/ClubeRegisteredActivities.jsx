@@ -37,11 +37,19 @@ export default function ClubeRegisteredActivities({session,onConnectionStatusCha
   const extraGoals=activeGoals.slice(1)
   const monthlyGoal=goal?Number(goal.goal_km):null
   const progress=monthKm!==null&&monthlyGoal!==null?challengeBar(monthKm,monthlyGoal):{valid:false,percentage:0,completed:false}
+  const coverPath=goal?.cover_path||goalState.items[0]?.cover_path
+  const coverUrl=/^images\/[a-f0-9-]{36}\.(?:jpg|png|webp)$/.test(coverPath||'')
+    ?supabase.storage.from('clube-npv-desafios').getPublicUrl(coverPath).data.publicUrl:null
+  const coverStyle=coverUrl
+    ?{backgroundImage:'linear-gradient(95deg,rgba(5,20,14,.90) 0%,rgba(6,22,16,.82) 40%,rgba(9,28,20,.64) 100%),url("'+coverUrl+'")'}
+    :undefined
   useEffect(()=>{
     let live=true
     setGoalState({loaded:false,items:[]})
-    supabase.from('clube_monthly_challenges').select('id,name,goal_km,active,reward_points,position')
-      .eq('month_key',monthKey).order('position',{ascending:true})
+    supabase.rpc('clube_ensure_challenge_month',{p_month_key:monthKey})
+      .then(()=>supabase.from('clube_monthly_challenges')
+        .select('id,name,goal_km,active,reward_points,position,cover_path')
+        .eq('month_key',monthKey).order('position',{ascending:true}))
       .then(({data,error:dbError})=>{
         if(!live)return
         setGoalState({loaded:true,items:dbError?[]:(data||[])})
@@ -127,7 +135,7 @@ export default function ClubeRegisteredActivities({session,onConnectionStatusCha
 
   return <section className="clube-card clube-activities-card npv-strava-activities" aria-label="Metas e desafios">
     <button type="button" className={'clube-activities-toggle npv-strava-hero-trigger'+(extraGoals.length?' has-extra-challenges':'')} aria-expanded={expanded}
-      aria-controls="npv-registered-activity-content" onClick={()=>setExpanded(v=>!v)}>
+      aria-controls="npv-registered-activity-content" style={coverStyle} onClick={()=>setExpanded(v=>!v)}>
       <span className="npv-strava-hero-icon" aria-hidden="true"><Footprints size={25} strokeWidth={2.15}/></span>
       <span className="npv-strava-hero-copy">
         <span className="npv-strava-hero-eyebrow">SEU ESPAÇO DE PERFORMANCE <span aria-hidden="true">✦</span></span>
@@ -151,11 +159,11 @@ export default function ClubeRegisteredActivities({session,onConnectionStatusCha
               ?(progress.completed
                 ?<strong className="npv-strava-challenge-number">Meta concluída ✦</strong>
                 :<><strong className="npv-strava-challenge-number">{format(monthKm)} km</strong><span className="npv-strava-challenge-target">de {format(monthlyGoal)} km</span></>)
-              :<span className="npv-strava-challenge-placeholder">{monthKm!==null?format(monthKm)+' km percorridos':status.connected?'Consultando quilômetros...':status.disabled?'Strava em preparação':'Conecte seu Strava'}</span>}</span>
+              :<span className="npv-strava-challenge-placeholder">{monthlyGoal!==null?'Meta de '+format(monthlyGoal)+' km · ':''}{monthKm!==null?format(monthKm)+' km percorridos':status.connected?'Consultando quilômetros...':status.disabled?'Strava em preparação':'Conecte seu Strava'}</span>}</span>
           <span className={'npv-strava-challenge-track'+(progress.completed?' is-complete':'')}
             role="progressbar" aria-label="Progresso do desafio do mês"
             aria-valuemin={0} aria-valuemax={100} aria-valuenow={progress.valid?progress.percentage:undefined}
-            aria-valuetext={progress.valid?format(monthKm)+' de '+format(monthlyGoal)+' quilômetros':'Meta do desafio ainda não disponível'}>
+            aria-valuetext={progress.valid?format(monthKm)+' de '+format(monthlyGoal)+' quilômetros':monthlyGoal!==null?'Meta de '+format(monthlyGoal)+' quilômetros; aguardando dados do Strava':'Meta do desafio ainda não disponível'}>
             <span className="npv-strava-challenge-fill" style={{width:(progress.valid?progress.percentage:0)+'%'}}/>
           </span>
           <span className="npv-strava-challenge-caption">
@@ -182,6 +190,7 @@ export default function ClubeRegisteredActivities({session,onConnectionStatusCha
                   :<><strong className="npv-strava-challenge-number">{format(monthKm)} km</strong>
                      <span className="npv-strava-challenge-target">de {format(extraKmGoal)} km</span></>)
                 :<span className="npv-strava-challenge-placeholder">
+                  {'Meta de '+format(extraKmGoal)+' km · '}
                   {monthKm!==null?format(monthKm)+' km percorridos':status.connected?'Consultando quilômetros...':status.disabled?'Strava em preparação':'Conecte seu Strava'}
                 </span>}
             </span>
