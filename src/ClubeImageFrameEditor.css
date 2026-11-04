@@ -29,3 +29,29 @@
 .npv-reward-photo-editor .npv-frame-editor-preview{max-width:100%}
 @media(max-width:580px){.npv-frame-editor-sliders{grid-template-columns:1fr;gap:8px}.npv-frame-editor-sliders label{grid-template-columns:100px 1fr 43px;gap:8px}.npv-frame-editor-sliders label>span{grid-column:3;grid-row:1;text-align:right}.npv-frame-editor-sliders input{grid-column:2;grid-row:1}.npv-frame-editor-foot button{width:100%}}
 @media(prefers-reduced-motion:reduce){.npv-frame-editor *{transition:none!important}}
+
+
+/* Os formulários legados do Clube usam display:flex em todos os labels:
+   preservar a grade específica do editor, inclusive no modal de recompensa. */
+.clube-shell .npv-frame-editor .npv-frame-editor-sliders label{
+  display:grid;
+  grid-template-columns:auto auto;
+  flex-direction:initial;
+  justify-content:space-between;
+  gap:6px;
+  align-items:center;
+}
+.clube-shell .npv-frame-editor .npv-frame-editor-sliders input[type="range"]{
+  width:100%;min-height:22px;height:22px;
+  padding:0;grid-column:1/-1;background:transparent;border:0;
+  box-shadow:none;
+}
+@media(max-width:580px){
+  .clube-shell .npv-frame-editor .npv-frame-editor-sliders label{
+    grid-template-columns:100px minmax(0,1fr) 43px;gap:8px;
+  }
+  .clube-shell .npv-frame-editor .npv-frame-editor-sliders label>span{grid-column:3;grid-row:1}
+  .clube-shell .npv-frame-editor .npv-frame-editor-sliders input[type="range"]{
+    grid-column:2;grid-row:1;
+  }
+}
