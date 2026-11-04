@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   ArrowLeft, ArrowRight, Award, Check, Clock3, Gift, History, KeyRound, LockKeyhole,
   LogOut, Mail, Package, Plus, Search, ShieldCheck, Sparkles, TrendingUp,
-  UserRound, Users, Wallet, X, Shirt, CupSoda, Droplets, Ticket, Pencil, ImagePlus, SlidersHorizontal, ChevronDown, ChevronUp, CreditCard, Layers3, Instagram, Link2, Settings2, Activity, Palette, Flag
+  UserRound, Users, Wallet, X, Shirt, CupSoda, Droplets, Ticket, Pencil, ImagePlus, SlidersHorizontal, ChevronDown, ChevronUp, CreditCard, Layers3, Instagram, Link2, Settings2, Activity, Palette, Flag, Menu
 } from 'lucide-react'
 import { clubeSupabase as supabase } from './clubeSupabase.js'
 import logoVaiCirculo from './assets/logo-vai-circular.webp'
@@ -201,6 +201,8 @@ export default function ClubeNPVOnline() {
   const [isTester,setIsTester]=useState(false)
   const [data,setData]=useState(emptyState)
   const [tab,setTab]=useState('inicio')
+  const [adminMenuOpen,setAdminMenuOpen]=useState(false)
+  useEffect(()=>{setAdminMenuOpen(false)},[tab])
   const [activitiesOpen,setActivitiesOpen]=useState(false)
   const [stravaConnection,setStravaConnection]=useState({checked:false,connected:false,disabled:false})
   const [instagramConnection,setInstagramConnection]=useState({checked:false,connected:false,available:false})
@@ -603,7 +605,13 @@ export default function ClubeNPVOnline() {
     <div className="clube-container"><aside className="clube-sidebar">
       <div className="clube-person"><span className="clube-avatar">{(profile?.full_name||user?.email||'A').charAt(0).toUpperCase()}</span><div><strong>{profile?.full_name||user?.email}</strong><span>{isAdmin?'Administração':'Minha conta'}</span></div></div>
       <div className="clube-side-label">{isAdmin?'CENTRAL DE GESTÃO':'MINHA NAVEGAÇÃO'}</div>
-      <nav className="clube-nav" aria-label={isAdmin?'Seções do administrador':'Navegação do aluno'}>
+      {isAdmin&&<button type="button" className="npv-admin-menu-toggle" aria-expanded={adminMenuOpen}
+        aria-controls="npv-admin-navigation" onClick={()=>setAdminMenuOpen(open=>!open)}>
+        <Menu size={18}/><span>Menu administrativo <small>{adminSection.label}</small></span><ChevronDown size={17} className={adminMenuOpen?'is-open':''}/>
+      </button>}
+      <nav id={isAdmin?'npv-admin-navigation':undefined}
+        className={'clube-nav'+(isAdmin?(adminMenuOpen?' is-admin-menu-open':' is-admin-menu-closed'):'')}
+        aria-label={isAdmin?'Seções do administrador':'Navegação do aluno'}>
         {isAdmin&&<span className="npv-admin-nav-group-label">GESTÃO DO CLUBE</span>}
         <button type="button" className={tab==='inicio'?'active':''} aria-current={tab==='inicio'?'page':undefined} onClick={()=>setTab('inicio')}><Wallet size={18}/>Visão geral</button>
         {isAdmin&&<button type="button" className={tab==='alunos'?'active':''} aria-current={tab==='alunos'?'page':undefined} onClick={()=>setTab('alunos')}><Users size={18}/>Alunos</button>}
@@ -619,7 +627,8 @@ export default function ClubeNPVOnline() {
           <button type="button" className={tab==='strava'?'active':''} aria-current={tab==='strava'?'page':undefined} onClick={()=>setTab('strava')}><Activity size={18}/>Strava · Atividades</button></>
           :<button type="button" className={tab==='instagram'?'active':''} onClick={()=>setTab('instagram')}><Instagram size={18}/>Instagram · Stories</button>}
         {isAdmin&&<><span className="npv-admin-nav-group-label">PERSONALIZAÇÃO</span>
-          <details className="npv-admin-settings-nav" defaultOpen={['email','widget','versoes','aparencia'].includes(tab)}>
+          <details key={['email','widget','versoes','aparencia'].includes(tab)?'settings-active':'settings-idle'}
+            className="npv-admin-settings-nav" defaultOpen={['email','widget','versoes','aparencia'].includes(tab)}>
             <summary><Settings2 size={18}/>Configurações <ChevronDown size={14}/></summary>
             <button type="button" className={tab==='aparencia'?'active':''} onClick={()=>setTab('aparencia')}><Palette size={17}/>Aparência e perfil</button>
             <button type="button" className={tab==='email'?'active':''} onClick={()=>setTab('email')}><Mail size={17}/>E-mails automáticos</button>
