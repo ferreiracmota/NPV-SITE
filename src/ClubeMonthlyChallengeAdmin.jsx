@@ -4,6 +4,7 @@ import {clubeSupabase as supabase} from './clubeSupabase.js'
 import {currentNpvMonth,nextNpvMonth} from '../clube/strava/challengeProgress.mjs'
 import ClubeImageFrameEditor from './ClubeImageFrameEditor.jsx'
 import {DEFAULT_IMAGE_FRAME,imageFrameFromRow,imageFramePayload} from '../clube/image/framing.mjs'
+import {DEFAULT_CHALLENGE_OVERLAY,normalizeChallengeOverlay} from '../clube/image/challengeOverlay.mjs'
 import './ClubeMonthlyChallengeAdmin.css'
 
 const newChallenge=()=>({
@@ -35,6 +36,7 @@ export default function ClubeMonthlyChallengeAdmin(){
   const [coverPreviewUrl,setCoverPreviewUrl]=useState('')
   const [coverSaving,setCoverSaving]=useState(false)
   const [coverFrame,setCoverFrame]=useState(DEFAULT_IMAGE_FRAME)
+  const [coverOverlayStrength,setCoverOverlayStrength]=useState(DEFAULT_CHALLENGE_OVERLAY)
   const coverDisplayUrl=coverPreviewUrl||coverUrl(items[0]?.cover_path)
   useEffect(()=>{
     if(!coverFile){setCoverPreviewUrl('');return}
@@ -44,12 +46,12 @@ export default function ClubeMonthlyChallengeAdmin(){
   },[coverFile])
   useEffect(()=>{
     let live=true
-    setLoading(true);setError('');setFeedback('');setCoverFile(null);setCoverFrame(DEFAULT_IMAGE_FRAME)
+    setLoading(true);setError('');setFeedback('');setCoverFile(null);setCoverFrame(DEFAULT_IMAGE_FRAME);setCoverOverlayStrength(DEFAULT_CHALLENGE_OVERLAY)
     supabase.rpc('clube_ensure_challenge_month',{p_month_key:monthKey})
       .then(({error:ensureError})=>{
         if(ensureError)throw ensureError
         return supabase.from('clube_monthly_challenges')
-          .select('id,name,goal_km,active,reward_points,position,cover_path,cover_position_x,cover_position_y,cover_zoom')
+          .select('id,name,goal_km,active,reward_points,position,cover_path,cover_position_x,cover_position_y,cover_zoom,cover_overlay_strength')
           .eq('month_key',monthKey).order('position',{ascending:true})
       })
       .then(({data,error:dbError})=>{
@@ -57,6 +59,7 @@ export default function ClubeMonthlyChallengeAdmin(){
         if(dbError)throw dbError
         setItems((data||[]).map(toDraft))
         setCoverFrame(imageFrameFromRow(data?.[0],'cover'))
+        setCoverOverlayStrength(normalizeChallengeOverlay(data?.[0]?.cover_overlay_strength))
       })
       .catch(()=>{if(live)setError('Não foi possível consultar os desafios do mês.')})
       .finally(()=>{if(live)setLoading(false)})
@@ -110,14 +113,15 @@ export default function ClubeMonthlyChallengeAdmin(){
         if(uploadError)throw uploadError
       }
       const {data,error:dbError}=await supabase.from('clube_monthly_challenges')
-        .update({cover_path:imagePath,...imageFramePayload(coverFrame,'cover'),updated_at:new Date().toISOString()})
+        .update({cover_path:imagePath,...imageFramePayload(coverFrame,'cover'),cover_overlay_strength:normalizeChallengeOverlay(coverOverlayStrength),updated_at:new Date().toISOString()})
         .eq('id',primary.id).eq('month_key',monthKey)
-        .select('id,cover_path,cover_position_x,cover_position_y,cover_zoom').single()
+        .select('id,cover_path,cover_position_x,cover_position_y,cover_zoom,cover_overlay_strength').single()
       if(dbError||!data)throw dbError||new Error('A imagem não foi associada ao mês.')
       setItems(current=>current.map(item=>item.id===data.id?{...item,...data}:item))
       setCoverFrame(imageFrameFromRow(data,'cover'))
+      setCoverOverlayStrength(normalizeChallengeOverlay(data.cover_overlay_strength))
       setCoverFile(null)
-      setFeedback('Enquadramento salvo para '+monthLabel(monthKey)+'. A fotografia original foi preservada.')
+      setFeedback('Imagem, enquadramento e intensidade do gradiente salvos para '+monthLabel(monthKey)+'.')
     }catch{
       setError('Não foi possível substituir a imagem. Confira a conexão e a permissão de administrador.')
     }finally{setCoverSaving(false)}
@@ -145,7 +149,7 @@ export default function ClubeMonthlyChallengeAdmin(){
     try{
       const {data,error:dbError}=await supabase.from('clube_monthly_challenges')
         .upsert(payload,{onConflict:'id'})
-        .select('id,name,goal_km,active,reward_points,position,cover_path')
+        .select('id,name,goal_km,active,reward_points,position,cover_path,cover_position_x,cover_position_y,cover_zoom,cover_overlay_strength')
       if(dbError)throw dbError
       setItems((data||[]).sort((a,b)=>a.position-b.position).map(toDraft))
       setFeedback('Desafios salvos! O histórico foi mantido e nenhum ponto foi lançado automaticamente.')
@@ -172,11 +176,12 @@ export default function ClubeMonthlyChallengeAdmin(){
       <div className="npv-challenge-cover-frame">
         <ClubeImageFrameEditor src={coverDisplayUrl} value={coverFrame}
           onChange={setCoverFrame} kind="challenge" title={monthLabel(monthKey)+' · '+(items[0]?.name||'Desafio do mês')}
+          overlayStrength={coverOverlayStrength} onOverlayChange={setCoverOverlayStrength}
           disabled={loading||coverSaving||saving||!!deletingId}/>
       </div>
       <div className="npv-challenge-cover-controls">
         <strong><ImagePlus size={17}/> Imagem de fundo do desafio</strong>
-        <p>Envie a foto, arraste na prévia para posicionar e ajuste o zoom. Salve o enquadramento para este mês sem modificar a imagem original.</p>
+        <p>Envie a foto, arraste para posicionar e ajuste o zoom e a intensidade do gradiente verde (de 0% a 100%). Salve o visual deste mês sem modificar a imagem original.</p>
         <label className="npv-challenge-cover-file">
           <span>Escolher imagem</span>
           <input type="file" accept="image/jpeg,image/png,image/webp" disabled={loading||saving||coverSaving||!!deletingId}
@@ -185,7 +190,7 @@ export default function ClubeMonthlyChallengeAdmin(){
         <button type="button" onClick={saveCover} disabled={(!coverFile&&!items[0]?.cover_path)||!items[0]?.saved||loading||saving||coverSaving||!!deletingId}>
           <Save size={15}/>{coverSaving?'Salvando enquadramento...':'Salvar imagem e enquadramento'}
         </button>
-        <small>JPG, PNG ou WebP, até 4 MB. O original é mantido: ajuste o enquadramento para celular e computador acima.</small>
+        <small>JPG, PNG ou WebP, até 4 MB. A posição e a intensidade do gradiente ficam salvas separadamente em cada mês.</small>
       </div>
     </div>
     <form onSubmit={submit} className="npv-challenge-admin-form">

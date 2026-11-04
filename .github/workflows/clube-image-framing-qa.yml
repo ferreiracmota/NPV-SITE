@@ -28,6 +28,6 @@ jobs:
       - name: Instalar dependências
         run: pnpm install --frozen-lockfile
       - name: Validar arraste, zoom e limites por área
-        run: node --test clube/image/framing.test.mjs
+        run: node --test clube/image/*.test.mjs
       - name: Validar build do Clube
         run: pnpm run build

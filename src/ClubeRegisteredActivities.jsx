@@ -3,6 +3,7 @@ import { ChevronDown, ChevronUp, Footprints, LockKeyhole, Eye, EyeOff, CheckCirc
 import { clubeSupabase as supabase } from './clubeSupabase.js'
 import { currentNpvMonth, challengeBar } from '../clube/strava/challengeProgress.mjs'
 import {imageFrameFromRow,imageFrameStyle} from '../clube/image/framing.mjs'
+import {challengeOverlayGradient} from '../clube/image/challengeOverlay.mjs'
 import './ClubeRegisteredActivities.css'
 import './ClubeMonthlyChallengeBar.css'
 
@@ -49,7 +50,7 @@ export default function ClubeRegisteredActivities({session,onConnectionStatusCha
     setGoalState({loaded:false,items:[]})
     supabase.rpc('clube_ensure_challenge_month',{p_month_key:monthKey})
       .then(()=>supabase.from('clube_monthly_challenges')
-        .select('id,name,goal_km,active,reward_points,position,cover_path,cover_position_x,cover_position_y,cover_zoom')
+        .select('id,name,goal_km,active,reward_points,position,cover_path,cover_position_x,cover_position_y,cover_zoom,cover_overlay_strength')
         .eq('month_key',monthKey).order('position',{ascending:true}))
       .then(({data,error:dbError})=>{
         if(!live)return
@@ -139,7 +140,7 @@ export default function ClubeRegisteredActivities({session,onConnectionStatusCha
       aria-controls="npv-registered-activity-content" style={coverStyle} onClick={()=>setExpanded(v=>!v)}>
       {coverUrl&&<><img src={coverUrl} alt="" className="npv-strava-custom-cover"
         style={coverFrameStyle} loading="eager" draggable={false}/>
-        <span className="npv-strava-custom-cover-shade" aria-hidden="true"/></>}
+        <span className="npv-strava-custom-cover-shade" style={{background:challengeOverlayGradient(coverOwner?.cover_overlay_strength)}} aria-hidden="true"/></>}
       <span className="npv-strava-hero-icon" aria-hidden="true"><Footprints size={25} strokeWidth={2.15}/></span>
       <span className="npv-strava-hero-copy">
         <span className="npv-strava-hero-eyebrow">SEU ESPAÇO DE PERFORMANCE <span aria-hidden="true">✦</span></span>

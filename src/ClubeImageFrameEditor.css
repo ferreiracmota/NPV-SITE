@@ -55,3 +55,10 @@
     grid-column:2;grid-row:1;
   }
 }
+
+/* Quatro ajustes somente no desafio: dois por linha em telas maiores,
+   um por linha no celular para manter a barra 0–100% confortável ao toque. */
+.npv-frame-editor-sliders.has-overlay{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media(max-width:580px){
+  .npv-frame-editor-sliders.has-overlay{grid-template-columns:minmax(0,1fr)}
+}

@@ -1,6 +1,7 @@
 import React,{useRef,useState} from 'react'
 import {Maximize2,Monitor,RotateCcw,Smartphone} from 'lucide-react'
 import {DEFAULT_IMAGE_FRAME,dragImageFrame,imageFrameStyle,normalizeImageFrame} from '../clube/image/framing.mjs'
+import {DEFAULT_CHALLENGE_OVERLAY,normalizeChallengeOverlay,challengeOverlayGradient} from '../clube/image/challengeOverlay.mjs'
 import './ClubeImageFrameEditor.css'
 
 /**
@@ -9,7 +10,7 @@ import './ClubeImageFrameEditor.css'
  */
 export default function ClubeImageFrameEditor({
   src='',value=DEFAULT_IMAGE_FRAME,onChange,kind='challenge',
-  title='',disabled=false
+  title='',disabled=false,overlayStrength=DEFAULT_CHALLENGE_OVERLAY,onOverlayChange
 }){
   const frame=normalizeImageFrame(value)
   const [layout,setLayout]=useState('mobile')
@@ -60,12 +61,12 @@ export default function ClubeImageFrameEditor({
       aria-label="Prévia do enquadramento. Arraste a foto para ajustar a posição."
       onPointerDown={onDown} onPointerMove={onMove} onPointerUp={finish} onPointerCancel={finish}>
       <img src={src} alt="" draggable={false} style={imageFrameStyle(frame)}/>
-      {isChallenge?<><span className="npv-frame-preview-shade"/>
+      {isChallenge?<><span className="npv-frame-preview-shade" style={{background:challengeOverlayGradient(overlayStrength)}}/>
         <span className="npv-frame-preview-challenge-text"><strong>Metas e desafios</strong><small>{title||'Desafio do mês'}</small></span></>
         :<><span className="npv-frame-preview-stamp">CLUBE NPV ✦</span><span className="npv-frame-preview-corner">NPV</span></>}
       <span className="npv-frame-editor-hint">{dragging?'Ajustando...':'Arraste a foto para enquadrar'}</span>
     </div>:<div className="npv-frame-editor-empty">Selecione uma fotografia para visualizar e ajustar o enquadramento.</div>}
-    <div className="npv-frame-editor-sliders" aria-label="Ajuste fino da fotografia">
+    <div className={'npv-frame-editor-sliders'+(isChallenge?' has-overlay':'')} aria-label="Ajuste fino da fotografia">
       <label>Horizontal <span>{Math.round(frame.x)}%</span>
         <input aria-label="Posição horizontal da imagem" type="range" min="0" max="100" step="1"
           value={frame.x} disabled={disabled||!src} onChange={e=>update({...frame,x:Number(e.target.value)})}/>
@@ -79,6 +80,11 @@ export default function ClubeImageFrameEditor({
           value={Math.round(frame.zoom*100)} disabled={disabled||!src}
           onChange={e=>update({...frame,zoom:Number(e.target.value)/100})}/>
       </label>
+      {isChallenge&&<label>Intensidade do gradiente <span>{normalizeChallengeOverlay(overlayStrength)}%</span>
+        <input aria-label="Intensidade do gradiente verde do desafio" type="range" min="0" max="100" step="1"
+          value={normalizeChallengeOverlay(overlayStrength)} disabled={disabled||!src}
+          onChange={e=>{if(!disabled)onOverlayChange?.(Number(e.target.value))}}/>
+      </label>}
     </div>
     <div className="npv-frame-editor-foot">
       <small>O enquadramento se adapta ao tamanho do cartão. A foto original mantém a qualidade e a proporção.</small>
