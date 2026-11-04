@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   ArrowLeft, ArrowRight, Award, Check, Clock3, Gift, History, KeyRound, LockKeyhole,
   LogOut, Mail, Package, Plus, Search, ShieldCheck, Sparkles, TrendingUp,
-  UserRound, Users, Wallet, X, Shirt, CupSoda, Droplets, Ticket, Pencil, ImagePlus, SlidersHorizontal, ChevronDown, ChevronUp, CreditCard, Layers3, Instagram, Link2, Settings2, Activity, Palette
+  UserRound, Users, Wallet, X, Shirt, CupSoda, Droplets, Ticket, Pencil, ImagePlus, SlidersHorizontal, ChevronDown, ChevronUp, CreditCard, Layers3, Instagram, Link2, Settings2, Activity, Palette, Flag
 } from 'lucide-react'
 import { clubeSupabase as supabase } from './clubeSupabase.js'
 import logoVaiCirculo from './assets/logo-vai-circular.webp'
@@ -245,10 +245,11 @@ export default function ClubeNPVOnline() {
   useEffect(()=>{
     if(!user?.id)return
     let live=true
-    Promise.all([
-      supabase.from('clube_km_settings').select('points_per_km').eq('singleton',true).maybeSingle(),
-      supabase.from('clube_monthly_challenges').select('id').eq('month_key',currentNpvMonth()).eq('active',true).limit(1)
-    ]).then(([km,challenge])=>{
+    supabase.rpc('clube_ensure_challenge_month',{p_month_key:currentNpvMonth()})
+      .then(()=>Promise.all([
+        supabase.from('clube_km_settings').select('points_per_km').eq('singleton',true).maybeSingle(),
+        supabase.from('clube_monthly_challenges').select('id').eq('month_key',currentNpvMonth()).eq('active',true).limit(1)
+      ])).then(([km,challenge])=>{
       if(!live)return
       if(!km.error&&km.data)setKmRate(Number(km.data.points_per_km))
       if(!challenge.error)setHasActiveChallenge(Boolean(challenge.data?.length))
@@ -594,7 +595,8 @@ export default function ClubeNPVOnline() {
         {isAdmin&&<span className="npv-admin-nav-group-label">BENEFÍCIOS E COMUNIDADE</span>}
         <button className={tab==='recompensas'?'active':''} onClick={()=>setTab('recompensas')}><Gift size={18}/>Recompensas</button>
         <button className={tab==='parceiros'?'active':''} onClick={()=>setTab('parceiros')}><Award size={18}/>Parceiros</button>
-        {isAdmin?<button className={tab==='conexoes'?'active':''} onClick={()=>setTab('conexoes')}><Link2 size={18}/>Conexões · Instagram / Strava</button>:<button className={tab==='instagram'?'active':''} onClick={()=>setTab('instagram')}><Instagram size={18}/>Instagram · Stories</button>}
+        {isAdmin&&<button className={tab==='desafios'?'active':''} onClick={()=>setTab('desafios')}><Flag size={18}/>Desafios do mês</button>}
+         {isAdmin?<button className={tab==='conexoes'?'active':''} onClick={()=>setTab('conexoes')}><Link2 size={18}/>Conexões · Instagram / Strava</button>:<button className={tab==='instagram'?'active':''} onClick={()=>setTab('instagram')}><Instagram size={18}/>Instagram · Stories</button>}
         {isAdmin&&<details className="npv-admin-settings-nav" defaultOpen={['email','widget','versoes','aparencia'].includes(tab)}><summary><Settings2 size={18}/>Configurações <ChevronDown size={14}/></summary>
           <button className={tab==='aparencia'?'active':''} onClick={()=>setTab('aparencia')}><Palette size={17}/>Aparência e perfil</button>
           <button className={tab==='email'?'active':''} onClick={()=>setTab('email')}><Mail size={17}/>E-mails automáticos</button>
@@ -620,8 +622,9 @@ export default function ClubeNPVOnline() {
         <div className="clube-columns"><section className="clube-card"><div className="clube-card-head"><div><h2>Últimas movimentações</h2><p>Histórico do clube</p></div></div>{activityList(data.events.slice(0,6),true)}</section><section className="clube-card"><div className="clube-card-head"><div><h2>Novos cadastros</h2><p>Alunos aguardando aprovação</p></div></div>{studentMembers.filter(x=>!x.approved).slice(0,6).map(x=><div className="clube-online-member" key={x.id}><div><strong>{x.full_name}</strong><small>{x.email}</small></div><button disabled={busy} className="clube-btn clube-btn-outline" onClick={()=>approve(x.id)}><Check size={15}/> Aprovar</button></div>)}{confirmedPendingIds!==null&&studentMembers.every(x=>x.approved)&&<p className="clube-empty">Nenhum cadastro pendente com e-mail confirmado.</p>}{confirmedPendingIds===null&&<p className="clube-empty">Conferindo confirmação dos cadastros...</p>}<button className="clube-btn clube-btn-outline clube-btn-full" onClick={()=>setTab('alunos')}>Gerenciar alunos</button></section></div>
       </>}
       {tab==='conexoes'&&isAdmin&&<section><div className="npv-admin-connections-tabs" role="tablist" aria-label="Conexões do Clube"><button type="button" role="tab" aria-selected={connectionsTab==='instagram'} className={connectionsTab==='instagram'?'active':''} onClick={()=>setConnectionsTab('instagram')}><Instagram size={18}/> Instagram · Stories</button><button type="button" role="tab" aria-selected={connectionsTab==='strava'} className={connectionsTab==='strava'?'active':''} onClick={()=>setConnectionsTab('strava')}><Activity size={18}/> Strava · Corridas e desafios</button></div>
-        {connectionsTab==='instagram'?<ClubeInstagramPanel session={session} isAdmin={true}/>:<div className="npv-admin-operations-content"><ClubeKmSetup/><ClubeMonthlyChallengeAdmin/><ClubeRegisteredActivities session={session} onPointsSynced={refresh}/></div>}</section>}
-      {tab==='aparencia'&&isAdmin&&<ClubeAppearanceAdmin settings={displaySettings} onSave={saveDisplaySettings}/>}
+        {connectionsTab==='instagram'?<ClubeInstagramPanel session={session} isAdmin={true}/>:<div className="npv-admin-operations-content"><ClubeKmSetup/><ClubeRegisteredActivities session={session} onPointsSynced={refresh}/></div>}</section>}
+      {tab==='desafios'&&isAdmin&&<ClubeMonthlyChallengeAdmin/>}
+       {tab==='aparencia'&&isAdmin&&<ClubeAppearanceAdmin settings={displaySettings} onSave={saveDisplaySettings}/>}
       {tab==='email'&&isAdmin&&<ClubeEmailAdmin session={session}/>}
       {tab==='widget'&&isAdmin&&<ClubeSiteWidgetAdmin rewards={data.rewards} partners={data.partners}/>}
       {tab==='hotmart'&&isAdmin&&<ClubeHotmartAdmin session={session} isAdmin={isAdmin} onPointsSynced={refresh} renewalPointRate={data.rules.find(rule=>rule.event_type==='renovacao')?.points ?? null}/>}
