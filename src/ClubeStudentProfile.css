@@ -37,8 +37,10 @@
 .npv-profile-trophies{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
 .npv-profile-trophy{display:flex;flex-direction:column;align-items:center;text-align:center;gap:7px;border:1px solid #e1e6dd;background:#f6f7f5;color:#879287;padding:16px 8px;border-radius:13px;min-width:0}
 .npv-profile-trophy>span{display:grid;place-items:center;width:39px;height:39px;border-radius:50%;background:#e7ebe5;color:#9ca99c}
-.npv-profile-trophy.is-earned{color:#284b28;background:#f2f8eb;border-color:#c9dcad}
-.npv-profile-trophy.is-earned>span{background:#d8ecb0;color:#355622}
+/* Conquistas já desbloqueadas: verde mais evidente, mantendo as pendentes neutras. */
+.npv-profile-trophy.is-earned{color:#21492b;background:#e0f0d0;border-color:#91bf72;box-shadow:inset 0 0 0 1px rgba(86,137,65,.10)}
+.npv-profile-trophy.is-earned>span{background:#afd781;color:#234e28}
+.npv-profile-trophy.is-earned strong{color:#1f4728}
 .npv-profile-trophy strong{font-size:12px;line-height:1.25}
 .npv-profile-trophy small{font-size:10px;line-height:1.25}
 .npv-profile-form{max-width:650px;display:grid;gap:14px}
