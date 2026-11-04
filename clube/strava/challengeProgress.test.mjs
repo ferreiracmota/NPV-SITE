@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import {currentNpvMonth,activityWindow,monthlyActivitySummary,recentActivities,challengeBar} from './challengeProgress.mjs'
+import {currentNpvMonth,nextNpvMonth,activityWindow,monthlyActivitySummary,recentActivities,challengeBar} from './challengeProgress.mjs'
 
 test('fuso NPV define o mês em horário de Brasília',()=>{
   assert.equal(currentNpvMonth(new Date('2026-11-01T02:59:00Z')),'2026-10')
@@ -8,6 +8,11 @@ test('fuso NPV define o mês em horário de Brasília',()=>{
   const w=activityWindow(new Date('2026-10-18T14:00:00Z'))
   assert.equal(w.monthKey,'2026-10')
   assert.ok(w.after<w.before)
+})
+test('próximo desafio mensal muda corretamente na virada do ano em São Paulo',()=>{
+  assert.equal(nextNpvMonth(new Date('2026-11-01T03:01:00Z')),'2026-12')
+  assert.equal(nextNpvMonth(new Date('2027-01-01T02:59:00Z')),'2027-01')
+  assert.equal(nextNpvMonth(new Date('2027-01-01T03:01:00Z')),'2027-02')
 })
 test('desafio mensal soma km válidos, sem duplicar atividades nem cruzar meses',()=>{
   const list=[
