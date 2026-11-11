@@ -118,7 +118,10 @@ export default function ClubeStudentTraining({session}){
       if(String(draft.repetitions).trim()!==''&&reps===null){
         setError('Informe de 1 a 100 repetições ou deixe o campo vazio em '+exercise.name+'.');return
       }
+      // Mantém o identificador estável ao corrigir uma carga do mesmo dia.
+      const sameDay=entryOnDay(entries,exercise.slug,recordDate)
       rows.push({
+        ...(sameDay?.id?{id:sameDay.id}:{}),
         student_id:userId,exercise_slug:exercise.slug,recorded_on:recordDate,
         load_kg:weight,repetitions:reps,updated_at:new Date().toISOString()
       })
