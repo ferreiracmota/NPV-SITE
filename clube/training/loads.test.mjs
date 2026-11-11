@@ -3,7 +3,7 @@ import assert from 'node:assert/strict'
 import {
   MAX_TRAINING_LOAD_KG,parseTrainingLoad,parseTrainingRepetitions,
   trainingToday,trainingHistory,trainingChartData,entryOnDay,
-  lastEntryOnOrBefore,formatTrainingLoad,trainingInputForDate,trainingSaveableSlugs
+  lastEntryOnOrBefore,formatTrainingLoad,trainingInputForDate,trainingSaveableSlugs,trainingGeneralHistory,trainingGeneralChartData
 } from './loads.mjs'
 
 const fixtures=[
@@ -88,4 +88,47 @@ test('registro já salvo é imutável, mesmo quando um rascunho posterior existe
 test('apenas exercícios modificados explicitamente são incluídos no salvamento',()=>{
   assert.deepEqual(trainingSaveableSlugs({},fixtures,'2026-11-11'),[])
   assert.deepEqual(trainingSaveableSlugs({'stiff':true,'leg-press':false},fixtures,'2026-11-11'),['stiff'])
+})
+
+test('geral calcula a média da última carga conhecida de cada exercício em cada dia',()=>{
+  const general=trainingGeneralHistory(fixtures)
+  assert.deepEqual(general.rows.map(r=>[r.recorded_on,r.load_kg,r.exercise_count]),[
+    ['2026-09-01',40,1],
+    ['2026-09-10',110,2],
+    ['2026-10-01',116.25,2],
+    ['2026-11-11',125,2]
+  ])
+  assert.equal(general.initial.load_kg,40)
+  assert.equal(general.latest.load_kg,125)
+  assert.equal(general.latest.exercise_count,2)
+  assert.equal(general.changePercent,212.5)
+})
+test('geral não zera exercícios ausentes em um dia nem conta atualizações duplicadas',()=>{
+  const data=[
+    {exercise_slug:'stiff',recorded_on:'2026-10-01',load_kg:60},
+    {exercise_slug:'agachamento-livre',recorded_on:'2026-10-01',load_kg:40},
+    {exercise_slug:'stiff',recorded_on:'2026-10-10',load_kg:70},
+    {exercise_slug:'stiff',recorded_on:'2026-10-20',load_kg:80}
+  ]
+  const general=trainingGeneralHistory(data)
+  assert.deepEqual(general.rows.map(r=>r.load_kg),[50,55,60])
+  assert.deepEqual(general.rows.map(r=>r.exercise_count),[2,2,2])
+})
+test('geral mantém ordem cronológica, arredonda e respeita catálogo',()=>{
+  const unsorted=[
+    {exercise_slug:'fora-do-catalogo',recorded_on:'2026-05-02',load_kg:500},
+    {exercise_slug:'leg-press',recorded_on:'2026-05-02',load_kg:91.25},
+    {exercise_slug:'stiff',recorded_on:'2026-05-01',load_kg:10},
+    {exercise_slug:'stiff',recorded_on:'2026-05-02',load_kg:12},
+    {exercise_slug:'leg-press',recorded_on:'2026-05-03',load_kg:92.5}
+  ]
+  const general=trainingGeneralHistory(unsorted,['stiff','leg-press'])
+  assert.deepEqual(general.rows.map(r=>r.load_kg),[10,51.63,52.25])
+  assert.equal(trainingGeneralChartData(unsorted,['stiff','leg-press'])[2].label,'03/05')
+  assert.deepEqual(trainingGeneralHistory([],[]).rows,[])
+})
+test('geral não transforma registro de exercício inexistente em dado fictício',()=>{
+  assert.deepEqual(trainingGeneralHistory(fixtures,['mesa-flexora']).rows,[])
+  assert.equal(trainingGeneralHistory(fixtures,['leg-press']).rows.length,1)
+  assert.equal(trainingGeneralHistory(fixtures,['leg-press']).changePercent,0)
 })
