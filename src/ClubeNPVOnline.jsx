@@ -24,7 +24,7 @@ import ClubeHotmartAdmin from './ClubeHotmartAdmin.jsx'
 import ClubeVersionsAdmin from './ClubeVersionsAdmin.jsx'
 import ClubeInstagramPanel from './ClubeInstagramPanel.jsx'
 import ClubeStoryNoticeBanner from './ClubeStoryNoticeBanner.jsx'
-import {NPV_HOTMART_TRAINING_URL} from '../clube/hotmart/trainingAccess.mjs'
+const ClubeStudentTraining=React.lazy(()=>import('./ClubeStudentTraining.jsx'))
 import ClubeInstagramAdminSummary from './ClubeInstagramAdminSummary.jsx'
 import ClubeAdminStudents from './ClubeAdminStudents.jsx'
 import ClubeStudentProfile from './ClubeStudentProfile.jsx'
@@ -603,11 +603,11 @@ export default function ClubeNPVOnline() {
       </div>
       <nav className="clube-live-tabs" aria-label="Navegação do Clube NPV">
         <button type="button" aria-label="Visão geral" aria-current={tab==='inicio'?'page':undefined} className={tab==='inicio'?'active':''} onClick={()=>setTab('inicio')}><Wallet size={17}/><span className="npv-nav-desktop">Visão geral</span><span className="npv-nav-mobile" aria-hidden="true">Início</span></button>
-        <a className="npv-student-workouts-link" href={NPV_HOTMART_TRAINING_URL}
-          target="_blank" rel="noopener noreferrer" title="Abrir meus treinos na Hotmart"
-          aria-label="Treinos da Não Pense, Vai! na Hotmart (abre em nova aba)">
+        <button type="button" className={'npv-student-workouts-link'+(tab==='treinos'?' active':'')}
+          aria-current={tab==='treinos'?'page':undefined} aria-label="Treinos e evolução de cargas"
+          onClick={()=>setTab('treinos')}>
           <Dumbbell size={17} aria-hidden="true"/><span>Treinos</span>
-        </a>
+        </button>
         <button type="button" aria-label="Meu perfil" aria-current={tab==='perfil'?'page':undefined} className={tab==='perfil'?'active':''} onClick={()=>setTab('perfil')}><UserRound size={17}/><span>Perfil</span></button>
         <button type="button" aria-label="Recompensas" aria-current={tab==='recompensas'?'page':undefined} className={tab==='recompensas'?'active':''} onClick={()=>setTab('recompensas')}><Gift size={17}/><span className="npv-nav-desktop">Prêmios</span><span className="npv-nav-mobile" aria-hidden="true">Prêmios</span></button>
         <button type="button" aria-label="Parceiros" aria-current={tab==='parceiros'?'page':undefined} className={tab==='parceiros'?'active':''} onClick={()=>setTab('parceiros')}><Award size={17}/><span>Parceiros</span></button>
@@ -628,6 +628,7 @@ export default function ClubeNPVOnline() {
         <button type="button" className={tab==='inicio'?'active':''} aria-current={tab==='inicio'?'page':undefined} onClick={()=>setTab('inicio')}><Wallet size={18}/>Visão geral</button>
         {isAdmin&&<button type="button" className={tab==='alunos'?'active':''} aria-current={tab==='alunos'?'page':undefined} onClick={()=>setTab('alunos')}><Users size={18}/>Alunos</button>}
         {isAdmin&&<button type="button" className={tab==='hotmart'?'active':''} aria-current={tab==='hotmart'?'page':undefined} onClick={()=>setTab('hotmart')}><CreditCard size={18}/>Hotmart · Assinaturas</button>}
+        {!isAdmin&&<button type="button" className={tab==='treinos'?'active':''} aria-current={tab==='treinos'?'page':undefined} onClick={()=>setTab('treinos')}><Dumbbell size={18}/>Treinos</button>}
         {!isAdmin&&<button type="button" className={tab==='perfil'?'active':''} onClick={()=>setTab('perfil')}><UserRound size={18}/>Meu perfil</button>}
         <button type="button" className={tab==='historico'?'active':''} aria-current={tab==='historico'?'page':undefined} onClick={()=>setTab('historico')}><History size={18}/>{isAdmin?'Pontos e histórico':'Histórico'}</button>
         {isAdmin&&<span className="npv-admin-nav-group-label">PRÊMIOS E DESAFIOS</span>}
@@ -692,6 +693,9 @@ export default function ClubeNPVOnline() {
       {tab==='hotmart'&&isAdmin&&<ClubeHotmartAdmin session={session} isAdmin={isAdmin} onPointsSynced={refresh} renewalPointRate={data.rules.find(rule=>rule.event_type==='renovacao')?.points ?? null}/>}
       {tab==='versoes'&&isAdmin&&<ClubeVersionsAdmin onNavigate={setTab}/>}
       {tab==='instagram'&&!isAdmin&&<ClubeInstagramPanel session={session} isAdmin={false}/>}
+      {tab==='treinos'&&!isAdmin&&<React.Suspense fallback={<p className="clube-online-loading">Preparando seu espaço de treinos...</p>}>
+        <ClubeStudentTraining key={user.id} session={session}/>
+      </React.Suspense>}
       {tab==='inicio'&&!isAdmin&&<>
         <section className={`clube-student-summary clube-student-summary-statement${activitiesOpen?' is-open':''}`} aria-label="Seus pontos e extrato">
           <button type="button" className="clube-student-summary-trigger"
