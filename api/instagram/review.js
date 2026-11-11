@@ -1,6 +1,7 @@
 // Decisão manual e auditável sobre menções recebidas pelo Instagram.
 // Protegida por autenticação de administrador, verificação de origem e RPC transacional.
 import {json,settings,authorizedMember,checkOrigin} from '../../server/instagram/common.mjs'
+import {canSendHiddenMentionNotice} from '../../clube/instagram/storyNotice.mjs'
 
 export default async function handler(req,res){
   if(req.method!=='POST'){
@@ -25,7 +26,7 @@ export default async function handler(req,res){
   const eventId=input?.event_id
   const decision=input?.decision
   if(typeof eventId!=='string'||eventId.length<4||eventId.length>320
-     ||!['approve','reject'].includes(decision))
+     ||!['approve','reject','notify_hidden'].includes(decision))
     return json(res,400,{status:'invalid_request'})
 
   // O piloto só permite decisões sobre a aluna de teste, mesmo para administradores.
@@ -35,6 +36,27 @@ export default async function handler(req,res){
     if(error)return json(res,503,{status:'review_unavailable'})
     if(!data||data.student_id!==cfg.testStudentId)
       return json(res,403,{status:'test_account_only'})
+  }
+
+  if(decision==='notify_hidden'){
+    try{
+      const {data:story,error:storyError}=await member.db
+        .from('clube_instagram_story_events')
+        .select('event_id,student_id,status')
+        .eq('event_id',eventId).maybeSingle()
+      if(storyError)return json(res,503,{status:'notice_unavailable'})
+      if(!story)return json(res,404,{status:'not_found'})
+      if(story.status!=='review')return json(res,409,{status:'already_reviewed'})
+      if(!canSendHiddenMentionNotice(story))return json(res,409,{status:'unlinked'})
+      // Uma notificação por Story; não rejeita a menção e não lança pontos.
+      const {error:insertError}=await member.db.from('clube_instagram_story_notices')
+        .insert({event_id:eventId,student_id:story.student_id,
+          sent_by:member.id,notice_type:'hidden_mention'})
+      if(insertError?.code==='23505')
+        return json(res,200,{status:'already_notified',points:0})
+      if(insertError)return json(res,503,{status:'notice_unavailable'})
+      return json(res,200,{status:'notified',points:0})
+    }catch{return json(res,503,{status:'notice_unavailable'})}
   }
 
   try{
