@@ -188,7 +188,7 @@ export default function ClubeStudentTraining({session}){
         <label className="npv-training-choose">Visualizar
           <select aria-label="Selecionar geral ou exercício para ver evolução"
             value={actualExercise} onChange={e=>setSelectedExercise(e.target.value)} disabled={saving}>
-            <option value="geral">Geral · média de cargas</option>
+            <option value="geral">Geral</option>
             {catalog.map(ex=><option key={ex.slug} value={ex.slug}>{ex.name}</option>)}
           </select>
         </label>
