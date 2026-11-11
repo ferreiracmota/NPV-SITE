@@ -25,7 +25,7 @@ export default async function handler(req,res){
   const eventId=input?.event_id
   const decision=input?.decision
   if(typeof eventId!=='string'||eventId.length<4||eventId.length>320
-     ||!['approve','reject'].includes(decision))
+     ||!['approve','reject','notify_hidden_mention'].includes(decision))
     return json(res,400,{status:'invalid_request'})
 
   // O piloto só permite decisões sobre a aluna de teste, mesmo para administradores.
@@ -38,6 +38,21 @@ export default async function handler(req,res){
   }
 
   try{
+    if(decision==='notify_hidden_mention'){
+      // Aviso visual dentro do Clube: nao recusa Story nem concede pontos.
+      // A funcao SQL exige evento em analise, aluna vinculada e admin, com lock.
+      const {data,error}=await member.db.rpc('clube_instagram_notify_hidden_mention',{
+        p_event_id:eventId,p_admin_id:member.id
+      })
+      if(error)return json(res,503,{status:'story_notice_unavailable'})
+      if(data==='notice_sent'||data==='already_notified')
+        return json(res,200,{status:data,notice_sent:true,points:0})
+      const codes={
+        invalid_request:400,admin_required:403,not_found:404,
+        unlinked:409,student_unavailable:409,already_reviewed:409
+      }
+      return json(res,codes[data]||409,{status:data||'notice_not_sent'})
+    }
     const {data,error}=await member.db.rpc('clube_instagram_review_story',{
       p_event_id:eventId,p_decision:decision,p_admin_id:member.id,
       p_is_test:cfg.testOnly
