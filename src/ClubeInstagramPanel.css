@@ -186,3 +186,55 @@
     font-size:clamp(22px,6.2vw,27px);
   }
 }
+
+
+/* Aviso educativo dentro do Clube: visível sem expor detalhes de outros alunos. */
+.npv-ig-student .npv-ig-hidden-mention-alert{
+  display:flex;align-items:flex-start;gap:13px;
+  padding:17px 18px;border:1.5px solid #df7573;border-left:5px solid #c53036;
+  border-radius:14px;background:#fff0ef;color:#54272b;
+  box-shadow:0 8px 22px rgba(149,37,39,.09);
+}
+.npv-ig-hidden-mention-icon{
+  display:grid;place-items:center;flex:none;width:37px;height:37px;
+  color:#fff;background:#bd3039;border-radius:10px;
+}
+.npv-ig-hidden-mention-copy{flex:1;min-width:0}
+.npv-ig-hidden-mention-copy strong{display:block;font-size:15px;font-weight:900;color:#9c202a;line-height:1.3}
+.npv-ig-hidden-mention-copy p{margin:6px 0 8px;font-size:13px;line-height:1.55;color:#633439}
+.npv-ig-hidden-mention-copy small{display:block;color:#895659;font-size:11px;line-height:1.45}
+.npv-ig-student .npv-ig-hidden-mention-alert>button{
+  align-self:center;flex:none;min-height:38px;
+  border:1px solid #a92b31;background:#a92b31;color:#fff;
+  padding:9px 13px;border-radius:9px;font-size:12px;font-weight:850;
+}
+.npv-ig-student .npv-ig-hidden-mention-alert>button:hover:not(:disabled){
+  background:#851e26;color:#fff;
+}
+.npv-ig-student .npv-ig-hidden-mention-alert>button:disabled{background:#d7acac;color:#442a2a;border-color:#d7acac}
+.npv-ig-admin .npv-ig-review-actions .npv-ig-review-hidden-mention{
+  background:#fff0ed;border-color:#e1aba7;color:#962d34;
+}
+.npv-ig-admin .npv-ig-review-actions .npv-ig-review-hidden-mention:hover:not(:disabled){
+  background:#fde0dd;border-color:#d1817b;color:#7f1d25;
+}
+.npv-ig-admin .npv-ig-review-actions .npv-ig-review-hidden-mention:disabled{
+  opacity:1;background:#f0f1ed;border-color:#d7ded5;color:#607164;
+}
+.npv-ig-review-warn-sent{
+  display:inline-flex;align-items:center;gap:6px;margin-top:3px;
+  color:#4d7459;font-size:11px;font-weight:800;line-height:1.4;
+}
+.npv-ig-root button:focus-visible{outline:3px solid #a3cb79;outline-offset:2px}
+.clube-shell.clube-live-student.npv-theme-dark .npv-ig-hidden-mention-alert{
+  background:#40272b;border-color:#a95458;border-left-color:#d47779;
+}
+.clube-shell.clube-live-student.npv-theme-dark .npv-ig-hidden-mention-copy strong{color:#ffcccb}
+.clube-shell.clube-live-student.npv-theme-dark .npv-ig-hidden-mention-copy p{color:#f6d9d8}
+.clube-shell.clube-live-student.npv-theme-dark .npv-ig-hidden-mention-copy small{color:#dfb9b9}
+@media(max-width:700px){
+  .npv-ig-student .npv-ig-hidden-mention-alert{flex-wrap:wrap;gap:10px;padding:14px}
+  .npv-ig-hidden-mention-copy{flex:1 1 calc(100% - 55px)}
+  .npv-ig-student .npv-ig-hidden-mention-alert>button{width:100%;justify-content:center}
+  .npv-ig-admin .npv-ig-review-actions .npv-ig-review-hidden-mention{flex:1 1 100%}
+}
