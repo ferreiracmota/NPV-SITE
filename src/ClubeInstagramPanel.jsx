@@ -1,7 +1,8 @@
 import React,{useCallback,useEffect,useRef,useState} from 'react'
-import {Instagram,ShieldCheck,Copy,ArrowUpRight,RefreshCw,Link2,Unplug,Clock3,CheckCircle2,AlertCircle,LockKeyhole,ChevronDown} from 'lucide-react'
+import {Instagram,ShieldCheck,Copy,ArrowUpRight,RefreshCw,Link2,Unplug,Clock3,CheckCircle2,AlertCircle,AlertTriangle,EyeOff,LockKeyhole,ChevronDown} from 'lucide-react'
 import './ClubeInstagramPanel.css'
 import {clubeSupabase as supabase} from './clubeSupabase.js'
+import {HIDDEN_MENTION_NOTICE,isNoticePending} from '../clube/instagram/storyNotice.mjs'
 
 const INSTAGRAM_DM='https://ig.me/m/naopensevai'
 const STORY_LABEL={credited:'Crédito confirmado',review:'Recebido · aguardando validação',unlinked:'Perfil não identificado',rejected:'Não aprovado',limit_reached:'Limite mensal atingido',disabled:'Automação desativada'}
@@ -14,6 +15,8 @@ const ago = date => {
 export default function ClubeInstagramPanel({session,isAdmin=false}){
   const [data,setData]=useState(null)
   const [events,setEvents]=useState([])
+  const [storyNotices,setStoryNotices]=useState([])
+  const [noticeBusy,setNoticeBusy]=useState('')
   const [adminData,setAdminData]=useState(null)
   const [reviewBusy,setReviewBusy]=useState('')
   const [official,setOfficial]=useState(null)
@@ -86,11 +89,12 @@ export default function ClubeInstagramPanel({session,isAdmin=false}){
       if(status.available){
         const next=await request('/api/instagram/activity')
         setEvents(Array.isArray(next.events)?next.events:[])
+        setStoryNotices(Array.isArray(next.notices)?next.notices.filter(isNoticePending):[])
         if(isAdmin){
           const admin=await request('/api/instagram/admin')
           setAdminData(admin)
         }
-      }else{setEvents([]);setAdminData(null)}
+      }else{setEvents([]);setStoryNotices([]);setAdminData(null)}
       if(!quiet)setError('')
     }catch(e){if(!quiet)setError(e.message)}
     finally{if(!quiet)setLoading(false)}
@@ -180,6 +184,47 @@ export default function ClubeInstagramPanel({session,isAdmin=false}){
     }
   },[isAdmin,session?.access_token,load])
 
+  // O alerta também chega quando a aluna já está com a aba aberta.
+  // Consulta leve apenas enquanto a área do Instagram estiver visível.
+  useEffect(()=>{
+    if(isAdmin||!session?.access_token)return
+    const timer=setInterval(()=>{
+      if(document.visibilityState==='visible')load({quiet:true})
+    },30000)
+    return()=>clearInterval(timer)
+  },[isAdmin,session?.access_token,load])
+
+  async function acknowledgeStoryNotice(eventId){
+    if(isAdmin||noticeBusy||!eventId)return
+    setNoticeBusy(eventId);setError('')
+    try{
+      const result=await request('/api/instagram/activity','POST',{
+        action:'acknowledge_hidden_mention',event_id:eventId
+      })
+      if(!['acknowledged','already_acknowledged'].includes(result.status))
+        throw new Error('Não foi possível marcar o aviso como lido.')
+      setStoryNotices(current=>current.filter(item=>item.event_id!==eventId))
+      setNotice('Aviso recebido! 💚 Obrigado por deixar a marcação visível nos próximos Stories.')
+    }catch(e){setError(e?.message||'Não foi possível confirmar a leitura do aviso.')}
+    finally{setNoticeBusy('')}
+  }
+
+  async function notifyHiddenMention(event){
+    if(!isAdmin||reviewBusy||!event?.linked||event.notice_sent_at)return
+    setReviewBusy(event.event_id);setError('');setNotice('')
+    try{
+      const result=await request('/api/instagram/review','POST',{
+        event_id:event.event_id,decision:'notify_hidden_mention'
+      })
+      if(!result.notice_sent)throw new Error('Não foi possível registrar o aviso.')
+      setNotice(result.status==='already_notified'
+        ?'Esta aluna já recebeu o aviso para este Story.'
+        :'Aviso de marcação não visível enviado à aluna no Clube. O Story continua aguardando análise; nenhum ponto foi alterado.')
+      await load({quiet:true})
+    }catch(e){setError(e?.message||'Não foi possível enviar o aviso à aluna.')}
+    finally{setReviewBusy('')}
+  }
+
   async function restartLogin(){
     setLoading(true);setError('')
     try{
@@ -235,6 +280,19 @@ export default function ClubeInstagramPanel({session,isAdmin=false}){
     finally{setReviewBusy('')}
   }
   return <div className={isAdmin?'npv-ig-root':'npv-ig-root npv-ig-student'}>
+    {!isAdmin&&storyNotices.map(item=><section className="npv-ig-hidden-mention-alert"
+      key={item.event_id} role="alert" aria-label={HIDDEN_MENTION_NOTICE.title}>
+      <span className="npv-ig-hidden-mention-icon"><AlertTriangle size={20}/></span>
+      <div className="npv-ig-hidden-mention-copy">
+        <strong>{HIDDEN_MENTION_NOTICE.title}</strong>
+        <p>{HIDDEN_MENTION_NOTICE.message}</p>
+        <small>Aviso referente a um Story recebido em {ago(item.sent_at)} · nenhum ponto foi descontado.</small>
+      </div>
+      <button type="button" disabled={Boolean(noticeBusy)}
+        onClick={()=>acknowledgeStoryNotice(item.event_id)}>
+        {noticeBusy===item.event_id?'Confirmando...':HIDDEN_MENTION_NOTICE.action}
+      </button>
+    </section>)}
     <section className="npv-ig-card">
       <div className="npv-ig-heading">
         <span className="npv-ig-symbol"><Instagram size={25}/></span>
@@ -317,6 +375,9 @@ export default function ClubeInstagramPanel({session,isAdmin=false}){
               <strong>{evt.student_name||'Perfil não identificado'}</strong>
               <small>Menção recebida em {ago(evt.created_at)}</small>
               <span className="npv-ig-review-pending"><Clock3 size={13}/> Aguardando decisão</span>
+              {evt.notice_sent_at&&<span className="npv-ig-review-warn-sent"><EyeOff size={13}/>
+                Aviso enviado em {ago(evt.notice_sent_at)} · {evt.notice_acknowledged_at?'lido':'aguardando leitura'}
+              </span>}
             </div>
             <div className="npv-ig-review-actions">
               <button type="button" className="npv-ig-review-approve" disabled={Boolean(reviewBusy)} onClick={()=>reviewStory(evt,'approve')}>
@@ -324,6 +385,12 @@ export default function ClubeInstagramPanel({session,isAdmin=false}){
               </button>
               <button type="button" className="npv-ig-review-reject" disabled={Boolean(reviewBusy)} onClick={()=>reviewStory(evt,'reject')}>
                 <AlertCircle size={15}/> Rejeitar
+              </button>
+              <button type="button" className="npv-ig-review-hidden-mention"
+                disabled={Boolean(reviewBusy)||!evt.linked||Boolean(evt.notice_sent_at)}
+                title={!evt.linked?'Vincule o Instagram a uma aluna antes de enviar o aviso':evt.notice_sent_at?'O aviso já foi enviado para este Story':HIDDEN_MENTION_NOTICE.adminAction}
+                onClick={()=>notifyHiddenMention(evt)}>
+                <EyeOff size={15}/> {reviewBusy===evt.event_id?'Enviando...':evt.notice_sent_at?'Aviso enviado':HIDDEN_MENTION_NOTICE.adminAction}
               </button>
             </div>
           </div>)}</div>:
