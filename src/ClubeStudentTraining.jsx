@@ -5,7 +5,7 @@ import {clubeSupabase as supabase} from './clubeSupabase.js'
 import {NPV_HOTMART_TRAINING_URL} from '../clube/hotmart/trainingAccess.mjs'
 import {
   MAX_TRAINING_LOAD_KG,trainingToday,parseTrainingLoad,parseTrainingRepetitions,
-  formatTrainingLoad,trainingHistory,trainingChartData,entryOnDay,trainingInputForDate,trainingSaveableSlugs
+  formatTrainingLoad,trainingHistory,trainingChartData,trainingGeneralHistory,trainingGeneralChartData,entryOnDay,trainingInputForDate,trainingSaveableSlugs
 } from '../clube/training/loads.mjs'
 import './ClubeStudentTraining.css'
 
@@ -23,7 +23,7 @@ export default function ClubeStudentTraining({session}){
   const [recordDate,setRecordDate]=useState(today)
   const [catalog,setCatalog]=useState([])
   const [entries,setEntries]=useState([])
-  const [selectedExercise,setSelectedExercise]=useState('')
+  const [selectedExercise,setSelectedExercise]=useState('geral')
   const [changes,setChanges]=useState({})
   const [dirtyExercises,setDirtyExercises]=useState({})
   const [loading,setLoading]=useState(true)
@@ -66,14 +66,18 @@ export default function ClubeStudentTraining({session}){
     return()=>{alive=false}
   },[userId])
 
-  // Na primeira visita, exibir automaticamente um gráfico que já tenha
-  // registros reais, se houver. A seleção manual continua respeitada.
-  const firstRecordedExercise=catalog.find(ex=>entries.some(row=>row.exercise_slug===ex.slug))
-  const actualExercise=catalog.some(e=>e.slug===selectedExercise)
-    ?selectedExercise:(firstRecordedExercise?.slug||catalog[0]?.slug||selectedExercise)
-  const selectedName=catalog.find(e=>e.slug===actualExercise)?.name||'Exercício'
-  const history=useMemo(()=>trainingHistory(entries,actualExercise),[entries,actualExercise])
-  const chart=useMemo(()=>trainingChartData(entries,actualExercise),[entries,actualExercise])
+  // A visualização Geral é sempre a padrão. O gráfico só muda para um
+  // exercício quando a aluna o escolhe explicitamente no seletor.
+  const isGeneral=selectedExercise==='geral'||!catalog.some(ex=>ex.slug===selectedExercise)
+  const actualExercise=isGeneral?'geral':selectedExercise
+  const selectedName=isGeneral?'Geral':catalog.find(e=>e.slug===actualExercise)?.name||'Exercício'
+  const catalogSlugs=useMemo(()=>catalog.map(ex=>ex.slug),[catalog])
+  const history=useMemo(()=>isGeneral
+    ?trainingGeneralHistory(entries,catalogSlugs)
+    :trainingHistory(entries,actualExercise),[entries,actualExercise,isGeneral,catalogSlugs])
+  const chart=useMemo(()=>isGeneral
+    ?trainingGeneralChartData(entries,catalogSlugs)
+    :trainingChartData(entries,actualExercise),[entries,actualExercise,isGeneral,catalogSlugs])
   const saveableSlugs=trainingSaveableSlugs(dirtyExercises,entries,recordDate)
   const dirtyCount=saveableSlugs.length
 
@@ -179,12 +183,12 @@ export default function ClubeStudentTraining({session}){
         <div>
           <span className="npv-training-eyebrow"><TrendingUp size={16}/> MINHA EVOLUÇÃO</span>
           <h2>Cargas e progresso</h2>
-          <p>Veja sua primeira carga, a atual e seus recordes por exercício.</p>
+          <p>{isGeneral?'Acompanhe a média de todos os exercícios ou selecione um para ver os detalhes.':'Acompanhe sua carga inicial, atual e recorde neste exercício.'}</p>
         </div>
-        <label className="npv-training-choose">Exercício
-          <select aria-label="Selecionar exercício para ver evolução"
-            value={actualExercise} onChange={e=>setSelectedExercise(e.target.value)} disabled={!catalog.length||saving}>
-            {!catalog.length&&<option value={selectedExercise}>Exercícios</option>}
+        <label className="npv-training-choose">Visualizar
+          <select aria-label="Selecionar geral ou exercício para ver evolução"
+            value={actualExercise} onChange={e=>setSelectedExercise(e.target.value)} disabled={saving}>
+            <option value="geral">Geral · média de cargas</option>
             {catalog.map(ex=><option key={ex.slug} value={ex.slug}>{ex.name}</option>)}
           </select>
         </label>
@@ -195,7 +199,7 @@ export default function ClubeStudentTraining({session}){
       !chart.length?<div className="npv-training-empty npv-training-empty-graph">
           <Activity size={26}/>
           <strong>Seu gráfico começa com o primeiro registro!</strong>
-          <p>Registre sua carga de {selectedName.toLowerCase()} para acompanhar sua evolução de verdade.</p>
+          <p>{isGeneral?'Registre a primeira carga de um exercício para começar seu gráfico geral.':'Registre sua carga de '+selectedName.toLowerCase()+' para acompanhar sua evolução de verdade.'}</p>
           <button type="button" onClick={()=>recordRef.current?.scrollIntoView({behavior:'smooth'})}>
             Registrar primeira carga <ArrowRight size={15}/>
           </button>
@@ -203,7 +207,7 @@ export default function ClubeStudentTraining({session}){
         <div className="npv-training-visual">
           <div className="npv-training-chart-overview">
             <div>
-              <span>CARGA ATUAL</span>
+              <span>{isGeneral?'MÉDIA ATUAL':'CARGA ATUAL'}</span>
               <strong>{formatTrainingLoad(history.latest?.load_kg)}</strong>
             </div>
             <span className={'npv-training-chart-growth'+(history.changeKg>0?' is-positive':'')}>
@@ -211,7 +215,7 @@ export default function ClubeStudentTraining({session}){
               {history.rows.length>1?showChange(history.changePercent):'Primeiro registro'}
             </span>
           </div>
-          <div className="npv-training-chart" role="img" aria-label={'Gráfico da evolução em quilogramas para '+selectedName}>
+          <div className="npv-training-chart" role="img" aria-label={isGeneral?'Gráfico geral da média das cargas registradas, em quilogramas':'Gráfico da evolução em quilogramas para '+selectedName}>
             <ResponsiveContainer width="100%" height={216}>
               <AreaChart data={chart} margin={{top:17,right:12,left:-24,bottom:0}}>
                 <defs>
@@ -229,7 +233,7 @@ export default function ClubeStudentTraining({session}){
                   tick={{fontSize:10,fill:'#8a9e91'}} width={49}/>
                 <Tooltip cursor={{stroke:'#a5c99a',strokeDasharray:'3 5'}}
                   contentStyle={{borderRadius:12,border:'1px solid #dce9df',boxShadow:'0 12px 24px rgba(17,71,36,.12)',fontSize:12}}
-                  formatter={value=>[formatTrainingLoad(value),'Carga']}
+                  formatter={value=>[formatTrainingLoad(value),isGeneral?'Média das cargas':'Carga']}
                   labelFormatter={(label,payload)=>payload?.[0]?.payload?.fullDate||label}/>
                 <Area type="monotone" dataKey="carga" stroke="#277b50" strokeWidth={3.5}
                   fill="url(#npv-training-area-fill)"
@@ -240,21 +244,24 @@ export default function ClubeStudentTraining({session}){
             </ResponsiveContainer>
           </div>
           <div className="npv-training-chart-bottom">
-            <span>{history.rows.length} {history.rows.length===1?'registro':'registros'} no histórico</span>
+            <span>{isGeneral?history.rows.length+' datas registradas':history.rows.length+' '+(history.rows.length===1?'registro':'registros')+' no histórico'}</span>
             <span>{LABEL_DATE(history.initial?.recorded_on)} — {LABEL_DATE(history.latest?.recorded_on)}</span>
           </div>
         </div>}
 
       <div className="npv-training-metrics">
-        <div><small>Carga inicial</small><strong>{formatTrainingLoad(history.initial?.load_kg)}</strong></div>
-        <div><small>Melhor marca</small><strong>{formatTrainingLoad(history.record?.load_kg)}</strong></div>
+        <div><small>{isGeneral?'Média inicial':'Carga inicial'}</small><strong>{formatTrainingLoad(history.initial?.load_kg)}</strong></div>
+        <div><small>{isGeneral?'Maior média':'Melhor marca'}</small><strong>{formatTrainingLoad(history.record?.load_kg)}</strong></div>
         <div><small>Progresso</small><strong className={history.changeKg>0?'is-positive':''}>
           {history.rows.length<2?'—':showChange(history.changePercent)}
         </strong></div>
       </div>
       {history.record&&<div className="npv-training-record"><Trophy size={17}/>
-        <span>Recorde pessoal em {selectedName}: <strong>{formatTrainingLoad(history.record.load_kg)}</strong></span>
+        {isGeneral
+          ?<span>Média de <strong>{history.latest.exercise_count} {history.latest.exercise_count===1?'exercício registrado':'exercícios registrados'}</strong> no último dia. Cada carga continua valendo até ser atualizada.</span>
+          :<span>Recorde pessoal em {selectedName}: <strong>{formatTrainingLoad(history.record.load_kg)}</strong></span>}
       </div>}
+      {isGeneral&&history.rows.length>0&&<p className="npv-training-chart-footnote">A média usa a última carga registrada de cada exercício. Exercícios novos entram no cálculo depois do primeiro registro.</p>}
       {!history.rows.length&&<p className="npv-training-chart-footnote">Nenhuma carga fictícia: o gráfico será criado com seus registros reais.</p>}
     </section>
 
@@ -332,7 +339,7 @@ export default function ClubeStudentTraining({session}){
         <div>
           <span className="npv-training-eyebrow"><History size={16}/> SUA TRAJETÓRIA</span>
           <h2>Histórico de cargas</h2>
-          <p>{selectedName} · {history.rows.length} {history.rows.length===1?'registro':'registros'} preservados, sem edição</p>
+          <p>{isGeneral?'Geral · médias por data':selectedName} · {history.rows.length} {history.rows.length===1?'registro':'registros'} preservados, sem edição</p>
         </div>
       </div>
       {history.rows.length===0?<p className="npv-training-history-empty">Quando você registrar suas cargas, as datas aparecerão aqui.</p>:
@@ -343,7 +350,7 @@ export default function ClubeStudentTraining({session}){
               <span>{LABEL_DATE(entry.recorded_on)}</span>
             </div>
             <strong>{formatTrainingLoad(entry.load_kg)}</strong>
-            <small>{entry.repetitions==null?'':entry.repetitions+' rep.'}</small>
+            <small>{isGeneral?entry.exercise_count+' exerc.':entry.repetitions==null?'':entry.repetitions+' rep.'}</small>
             <span className="npv-training-history-locked" title="Registro salvo, sem edição">
               <LockKeyhole size={14}/> Salvo
             </span>
