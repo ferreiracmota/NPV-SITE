@@ -369,3 +369,38 @@
   .clube-shell.clube-live-student .npv-training-history-locked{gap:3px;font-size:10px}
   .clube-shell.clube-live-student .npv-training-history-locked svg{width:12px;height:12px}
 }
+
+/* Evolução 2.1 — inspiração em gráficos de performance, sem copiar imagens.
+   Fundo grafite verde, linha contínua verde/vermelha e preenchimento relativo
+   à primeira carga ou média registrada. */
+.clube-shell.clube-live-student .npv-training-visual{
+  border-color:#2e604a;
+  background:
+    radial-gradient(ellipse at 12% -45%,rgba(51,255,139,.12),transparent 65%),
+    linear-gradient(145deg,#102c23 0%,#0b211b 55%,#091916 100%);
+  box-shadow:inset 0 1px 0 rgba(170,246,189,.08),0 10px 24px rgba(13,42,24,.12);
+}
+.clube-shell.clube-live-student .npv-training-chart-overview>div>span{color:#a0ceb0}
+.clube-shell.clube-live-student .npv-training-chart-overview>div>strong{color:#f1fff4}
+.clube-shell.clube-live-student .npv-training-chart-bottom{color:#a2c8b1}
+.clube-shell.clube-live-student .npv-training-chart-growth{
+  background:rgba(219,239,224,.10);border-color:rgba(187,226,198,.20);color:#b6d2bc;
+}
+.clube-shell.clube-live-student .npv-training-chart-growth.is-positive{
+  background:rgba(53,255,144,.13);border-color:rgba(53,255,144,.32);color:#76ffae;
+}
+.clube-shell.clube-live-student .npv-training-chart-growth.is-negative{
+  background:rgba(255,83,106,.14);border-color:rgba(255,83,106,.3);color:#ff8d9b;
+}
+.clube-shell.clube-live-student.npv-theme-dark .npv-training-visual{
+  background:
+    radial-gradient(ellipse at 12% -45%,rgba(51,255,139,.12),transparent 65%),
+    linear-gradient(145deg,#102c23 0%,#0b211b 55%,#091916 100%);
+  border-color:#2e604a;
+}
+.clube-shell.clube-live-student.npv-theme-dark .npv-training-chart-overview>div>strong{color:#f1fff4}
+.clube-shell.clube-live-student.npv-theme-dark .npv-training-chart-overview>div>span,
+.clube-shell.clube-live-student.npv-theme-dark .npv-training-chart-bottom{color:#a2c8b1}
+.clube-shell.clube-live-student.npv-theme-dark .npv-training-chart-growth.is-negative{
+  background:rgba(255,83,106,.14);border-color:rgba(255,83,106,.3);color:#ff8d9b;
+}
