@@ -1,4 +1,6 @@
-/* Acesso aos treinos NPV na Hotmart: sexta opção na MESMA linha de navegação.
+/* Acesso aos treinos NPV na Hotmart: estilo neutro como os demais botões.
+   Somente a aba interna ativa ganha seleção; link externo não fica selecionado.
+   Sexta opção na MESMA linha de navegação.
    Apenas área do aluno, sem alterar menu administrativo ou altura do banner. */
 .clube-shell.clube-live-student .clube-live-tabs>a.npv-student-workouts-link{
   display:inline-flex;
@@ -8,13 +10,13 @@
   min-width:0;
   min-height:43px;
   padding:0 16px;
-  border:1px solid rgba(230,252,198,.39);
+  border:1px solid transparent;
   border-radius:12px;
-  background:rgba(216,244,169,.15);
-  color:#f6ffe8;
+  background:transparent;
+  color:#fff;
   font-size:12px;
   line-height:1.2;
-  font-weight:850;
+  font-weight:800;
   white-space:nowrap;
   text-align:center;
   text-decoration:none;
@@ -23,8 +25,8 @@
 }
 .clube-shell.clube-live-student .clube-live-tabs>a.npv-student-workouts-link:hover{
   color:#fff;
-  background:rgba(216,244,169,.24);
-  border-color:rgba(230,252,198,.6);
+  background:rgba(255,255,255,.11);
+  border-color:transparent;
 }
 .clube-shell.clube-live-student .clube-live-tabs>a.npv-student-workouts-link:focus-visible{
   outline:3px solid #c4e653;
