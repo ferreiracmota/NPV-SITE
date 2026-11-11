@@ -40,6 +40,14 @@ export default async function handler(req,res){
     ])
     if(all.error||pending.error)return json(res,503,{status:'instagram_database_setup_required'})
     const events=all.data||[]
+    const noticeIds=events.map(e=>e.event_id)
+    let notices=new Map()
+    if(noticeIds.length){
+      const result=await member.db.from('clube_instagram_story_notices')
+        .select('event_id,sent_at,acknowledged_at').in('event_id',noticeIds)
+      if(result.error)return json(res,503,{status:'notice_unavailable'})
+      notices=new Map((result.data||[]).map(n=>[n.event_id,n]))
+    }
     const ids=[...new Set(events.map(e=>e.student_id).filter(Boolean))]
     let names=new Map()
     if(ids.length){
@@ -53,7 +61,10 @@ export default async function handler(req,res){
       pending_events:pending.count??0,
       events:events.map(e=>({
         event_id:e.event_id,created_at:e.created_at,status:e.status,points:e.points,
-        student_name:names.get(e.student_id)||null
+        student_name:names.get(e.student_id)||null,
+        notice_sent:Boolean(notices.get(e.event_id)),
+        notice_acknowledged:Boolean(notices.get(e.event_id)?.acknowledged_at),
+        notice_sent_at:notices.get(e.event_id)?.sent_at||null
       }))
     })
   }catch{return json(res,503,{status:'admin_unavailable'})}
