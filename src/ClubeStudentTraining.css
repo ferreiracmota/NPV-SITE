@@ -1,0 +1,278 @@
+/* Evolução de cargas NPV — isolada da navegação/admin e da pontuação. */
+.clube-shell.clube-live-student .npv-training-area{
+  display:grid;gap:17px;width:100%;min-width:0;
+  color:#1d3b2a;
+}
+.clube-shell.clube-live-student .npv-training-heading{padding:0 2px}
+.clube-shell.clube-live-student .npv-training-heading h1{
+  margin:6px 0 5px;font-size:clamp(27px,3.4vw,38px);
+  font-weight:900;letter-spacing:-.05em;line-height:1.1;color:#173b27;
+}
+.clube-shell.clube-live-student .npv-training-heading h1 span{color:#7fac55}
+.clube-shell.clube-live-student .npv-training-heading p{margin:0;color:#64766a;font-size:13px;line-height:1.5}
+.clube-shell.clube-live-student .npv-training-eyebrow{
+  display:inline-flex;align-items:center;gap:7px;
+  color:#567c51;letter-spacing:.09em;font-size:10px;font-weight:900;
+}
+.clube-shell.clube-live-student .npv-training-hotmart{
+  display:flex;align-items:center;gap:15px;
+  padding:19px 21px;min-height:95px;border-radius:17px;
+  background:linear-gradient(115deg,#143a27,#235639 68%,#2a6241);
+  box-shadow:0 10px 26px rgba(9,43,26,.18);
+  color:#fff;text-decoration:none;
+}
+.clube-shell.clube-live-student .npv-training-hotmart:focus-visible,
+.clube-shell.clube-live-student .npv-training-area :is(button,input,select):focus-visible{
+  outline:3px solid #9bc971;outline-offset:3px;
+}
+.clube-shell.clube-live-student .npv-training-hotmart:hover{color:#fff;background:linear-gradient(115deg,#113221,#1c4a30 68%,#245437)}
+.clube-shell.clube-live-student .npv-training-hotmart-mark{
+  flex:none;display:grid;place-items:center;width:53px;height:53px;
+  border-radius:13px;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.22)
+}
+.clube-shell.clube-live-student .npv-training-hotmart-text{flex:1;display:grid;gap:4px;min-width:0}
+.clube-shell.clube-live-student .npv-training-hotmart-text strong{font-size:19px;line-height:1.12;color:#fff;font-weight:900}
+.clube-shell.clube-live-student .npv-training-hotmart-text small{font-size:12px;color:#d7e6d7;line-height:1.35}
+.clube-shell.clube-live-student .npv-training-hotmart>svg{flex:none;color:#efffeb}
+
+.clube-shell.clube-live-student .npv-training-card{
+  min-width:0;padding:23px 24px;
+  border:1px solid #d8e3d7;border-radius:19px;
+  background:#fff;box-shadow:0 8px 23px rgba(23,54,31,.04);
+}
+.clube-shell.clube-live-student .npv-training-section-heading{
+  display:flex;align-items:flex-start;justify-content:space-between;
+  gap:13px;margin-bottom:17px;min-width:0;
+}
+.clube-shell.clube-live-student .npv-training-section-heading h2{
+  margin:6px 0 4px;color:#173b27;font-size:clamp(20px,2.7vw,26px);
+  letter-spacing:-.035em;font-weight:900;line-height:1.22;
+}
+.clube-shell.clube-live-student .npv-training-section-heading p{
+  margin:0;color:#66776b;font-size:12px;line-height:1.45;
+}
+.clube-shell.clube-live-student .npv-training-choose,
+.clube-shell.clube-live-student .npv-training-date{
+  display:grid;gap:7px;flex:none;align-self:flex-start;
+  font-size:11px;font-weight:800;color:#526d58;
+}
+.clube-shell.clube-live-student .npv-training-date{min-width:158px}
+.clube-shell.clube-live-student .npv-training-choose{max-width:220px}
+.clube-shell.clube-live-student .npv-training-choose select,
+.clube-shell.clube-live-student .npv-training-date input{
+  box-sizing:border-box;width:100%;max-width:100%;min-height:39px;
+  padding:8px 10px;border:1px solid #ccd9cb;border-radius:9px;
+  background:#f8faf7;color:#1b3c29;font-size:12px;
+  font-weight:700;font-family:inherit;
+}
+.clube-shell.clube-live-student .npv-training-date>svg{display:none}
+.clube-shell.clube-live-student .npv-training-chart{
+  min-width:0;width:100%;height:234px;overflow:hidden;
+  border-radius:13px;background:linear-gradient(180deg,#f9fcf8,#fff);
+  padding:5px 4px;
+}
+.clube-shell.clube-live-student .npv-training-chart .recharts-tooltip-wrapper{
+  font-size:12px
+}
+.clube-shell.clube-live-student .npv-training-empty{
+  display:flex;flex-direction:column;justify-content:center;align-items:center;
+  min-height:188px;gap:10px;padding:23px 13px;
+  border:1px dashed #cbdcc8;border-radius:13px;
+  background:#f7faf6;text-align:center;
+  color:#687f6e;font-size:12px;
+}
+.clube-shell.clube-live-student .npv-training-empty-graph strong{font-size:14px;color:#244d32}
+.clube-shell.clube-live-student .npv-training-empty-graph p{max-width:340px;margin:0;line-height:1.5}
+.clube-shell.clube-live-student .npv-training-empty-graph>button{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:8px 13px;border:1px solid #b2cbae;border-radius:9px;
+  background:#eaf4e7;color:#295a36;font-weight:850;font-size:12px;cursor:pointer;
+}
+.clube-shell.clube-live-student .npv-training-metrics{
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-top:14px;
+}
+.clube-shell.clube-live-student .npv-training-metrics>div{
+  min-width:0;display:grid;gap:4px;padding:13px 11px;
+  border:1px solid #e1e9df;border-radius:11px;background:#f6f9f4;
+}
+.clube-shell.clube-live-student .npv-training-metrics small{
+  font-size:10px;font-weight:700;color:#738475;
+}
+.clube-shell.clube-live-student .npv-training-metrics strong{
+  font-size:clamp(15px,2.2vw,20px);font-weight:900;color:#243d2b;white-space:nowrap
+}
+.clube-shell.clube-live-student .npv-training-metrics strong.is-positive{color:#2c8246}
+.clube-shell.clube-live-student .npv-training-record{
+  display:flex;align-items:center;gap:8px;
+  margin-top:14px;font-size:12px;color:#4c7245;line-height:1.4;
+}
+.clube-shell.clube-live-student .npv-training-record>svg{flex:none;color:#91a848}
+.clube-shell.clube-live-student .npv-training-chart-footnote{
+  font-size:11px;line-height:1.5;color:#718074;margin:12px 0 0;
+}
+
+.clube-shell.clube-live-student .npv-training-register{scroll-margin-top:15px}
+.clube-shell.clube-live-student .npv-training-exercise-list{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;
+}
+.clube-shell.clube-live-student .npv-training-exercise{
+  min-width:0;display:grid;gap:9px;
+  padding:14px;border-radius:13px;
+  border:1px solid #dce5db;background:#fbfcfa;
+}
+.clube-shell.clube-live-student .npv-training-exercise.is-edited{
+  border-color:#84b989;background:#f5fbf4;
+}
+.clube-shell.clube-live-student .npv-training-exercise-heading{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:0;
+}
+.clube-shell.clube-live-student .npv-training-exercise-name{display:grid;gap:4px;min-width:0}
+.clube-shell.clube-live-student .npv-training-exercise-name strong{
+  font-size:13px;line-height:1.25;color:#244631;font-weight:850;
+}
+.clube-shell.clube-live-student .npv-training-exercise-name small{
+  font-size:10px;color:#687b6d;line-height:1.35;
+}
+.clube-shell.clube-live-student .npv-training-weight{
+  display:flex;align-items:center;justify-content:center;gap:4px;flex:none;
+  padding:3px 6px;border:1px solid #c8d8c9;border-radius:9px;background:#fff;
+  font-size:11px;font-weight:800;color:#5b755e;
+}
+.clube-shell.clube-live-student .npv-training-weight input{
+  box-sizing:border-box;width:62px;height:31px;padding:3px 1px;border:0;
+  outline:none;text-align:right;color:#1d4b32;background:transparent;
+  font-size:16px;font-weight:900;font-family:inherit;min-width:0;
+}
+.clube-shell.clube-live-student .npv-training-weight:focus-within{outline:2px solid #98c58d}
+.clube-shell.clube-live-student .npv-training-range{
+  width:100%;height:22px;min-height:22px;cursor:pointer;
+  accent-color:#468858;
+}
+.clube-shell.clube-live-student .npv-training-exercise-foot{
+  display:flex;align-items:center;flex-wrap:wrap;gap:7px;
+  font-size:10px;color:#829187;
+}
+.clube-shell.clube-live-student .npv-training-exercise-foot>span:first-child{margin-right:auto}
+.clube-shell.clube-live-student .npv-training-exercise-foot label{
+  display:flex;align-items:center;gap:5px;font-size:10px;color:#697b6b;
+}
+.clube-shell.clube-live-student .npv-training-exercise-foot label input{
+  box-sizing:border-box;width:72px;height:28px;
+  padding:3px 5px;border-radius:6px;border:1px solid #d2ded0;
+  font-size:11px;color:#365940;background:#fff;font-family:inherit;
+}
+.clube-shell.clube-live-student .npv-training-exercise-foot .npv-training-unsaved{
+  color:#268148;font-weight:850;
+}
+.clube-shell.clube-live-student .npv-training-delete-day{
+  display:inline-flex;align-items:center;gap:3px;padding:5px 6px;
+  border:0;background:transparent;color:#9a5353;font-size:10px;
+  cursor:pointer;
+}
+.clube-shell.clube-live-student .npv-training-delete-day:hover{color:#b32e2e;text-decoration:underline}
+.clube-shell.clube-live-student .npv-training-actions{
+  display:flex;justify-content:space-between;align-items:center;gap:12px;
+  margin-top:17px;min-width:0;
+}
+.clube-shell.clube-live-student .npv-training-actions p{
+  display:flex;align-items:flex-start;gap:7px;max-width:380px;
+  color:#6c806e;font-size:11px;line-height:1.45;margin:0;
+}
+.clube-shell.clube-live-student .npv-training-actions p svg{flex:none}
+.clube-shell.clube-live-student .npv-training-actions>button{
+  flex:none;display:inline-flex;justify-content:center;align-items:center;gap:8px;
+  padding:12px 18px;min-height:43px;
+  border:1px solid #286241;border-radius:10px;
+  background:#1c5235;color:#fff;font-size:12px;font-weight:900;cursor:pointer;
+}
+.clube-shell.clube-live-student .npv-training-actions>button:hover:not(:disabled){background:#163d28;color:#fff}
+.clube-shell.clube-live-student .npv-training-actions>button:disabled{
+  border-color:#cbd9ce;background:#e4ebe4;color:#76897b;cursor:not-allowed
+}
+.clube-shell.clube-live-student .npv-training-message{
+  display:flex;align-items:center;flex-wrap:wrap;gap:8px;
+  margin:0 0 13px;padding:11px 13px;border-radius:9px;
+  font-size:12px;font-weight:700;line-height:1.5;
+}
+.clube-shell.clube-live-student .npv-training-message.is-error{
+  background:#fff0ed;border:1px solid #edbeb7;color:#a43230;
+}
+.clube-shell.clube-live-student .npv-training-message.is-success{
+  background:#edf7e9;border:1px solid #bfdec0;color:#27683e;
+}
+.clube-shell.clube-live-student .npv-training-message button{
+  margin-left:auto;background:transparent;border:0;
+  color:inherit;text-decoration:underline;cursor:pointer;
+}
+.clube-shell.clube-live-student .npv-training-loading{color:#718173;font-size:12px}
+
+.clube-shell.clube-live-student .npv-training-history-list{display:grid;gap:2px}
+.clube-shell.clube-live-student .npv-training-history-row{
+  display:grid;grid-template-columns:minmax(90px,1fr) 96px 67px 65px;
+  align-items:center;gap:10px;padding:12px 5px;
+  border-bottom:1px solid #e6ede4;color:#274632;
+}
+.clube-shell.clube-live-student .npv-training-history-date{
+  display:flex;align-items:center;gap:8px;font-size:12px;color:#647765
+}
+.clube-shell.clube-live-student .npv-training-history-row strong{font-size:13px;white-space:nowrap}
+.clube-shell.clube-live-student .npv-training-history-row small{font-size:11px;color:#829183}
+.clube-shell.clube-live-student .npv-training-history-row button{
+  display:flex;align-items:center;gap:2px;justify-content:flex-end;
+  padding:7px 1px;background:transparent;border:0;color:#386943;font-size:11px;font-weight:850;cursor:pointer
+}
+.clube-shell.clube-live-student .npv-training-history-row button:hover{text-decoration:underline}
+.clube-shell.clube-live-student .npv-training-history-empty{font-size:12px;color:#7a8a7c;margin:0}
+
+.clube-shell.clube-live-student.npv-theme-dark .npv-training-card{
+  background:#202b23;border-color:#435847;color:#e4f2e7
+}
+.clube-shell.clube-live-student.npv-theme-dark .npv-training-heading h1,
+.clube-shell.clube-live-student.npv-theme-dark .npv-training-section-heading h2{
+  color:#ebf6eb;
+}
+.clube-shell.clube-live-student.npv-theme-dark .npv-training-section-heading p,
+.clube-shell.clube-live-student.npv-theme-dark .npv-training-heading p{color:#b2c7b4}
+.clube-shell.clube-live-student.npv-theme-dark .npv-training-exercise,
+.clube-shell.clube-live-student.npv-theme-dark .npv-training-metrics>div,
+.clube-shell.clube-live-student.npv-theme-dark .npv-training-empty{
+  background:#28372c;border-color:#4a654e;color:#d9ebdd
+}
+.clube-shell.clube-live-student.npv-theme-dark .npv-training-exercise-name strong,
+.clube-shell.clube-live-student.npv-theme-dark .npv-training-metrics strong{
+  color:#e8f4ea;
+}
+.clube-shell.clube-live-student.npv-theme-dark .npv-training-chart{background:#f9fcf8}
+.clube-shell.clube-live-student.npv-theme-dark .npv-training-history-row{color:#e5f1e6;border-color:#435b48}
+.clube-shell.clube-live-student.npv-theme-dark .npv-training-history-row strong{color:#eef9ef}
+
+@media(max-width:760px){
+  .clube-shell.clube-live-student .npv-training-area{gap:14px}
+  .clube-shell.clube-live-student .npv-training-card{padding:17px 15px;border-radius:15px}
+  .clube-shell.clube-live-student .npv-training-hotmart{
+    padding:15px 14px;min-height:76px;border-radius:14px;gap:12px;
+  }
+  .clube-shell.clube-live-student .npv-training-hotmart-mark{width:44px;height:44px}
+  .clube-shell.clube-live-student .npv-training-hotmart-text strong{font-size:17px}
+  .clube-shell.clube-live-student .npv-training-hotmart-text small{font-size:11px}
+  .clube-shell.clube-live-student .npv-training-section-heading{flex-wrap:wrap;gap:12px}
+  .clube-shell.clube-live-student .npv-training-choose,.clube-shell.clube-live-student .npv-training-date{width:100%;max-width:100%}
+  .clube-shell.clube-live-student .npv-training-exercise-list{grid-template-columns:minmax(0,1fr)}
+  .clube-shell.clube-live-student .npv-training-metrics>div{padding:12px 8px}
+  .clube-shell.clube-live-student .npv-training-metrics small{font-size:9px}
+  .clube-shell.clube-live-student .npv-training-metrics strong{font-size:clamp(13px,3.7vw,18px)}
+  .clube-shell.clube-live-student .npv-training-actions{flex-direction:column;align-items:stretch}
+  .clube-shell.clube-live-student .npv-training-actions>button{width:100%}
+  .clube-shell.clube-live-student .npv-training-history-row{
+    grid-template-columns:minmax(84px,1fr) 72px 53px 54px;gap:5px
+  }
+  .clube-shell.clube-live-student .npv-training-history-row strong{font-size:12px}
+  .clube-shell.clube-live-student .npv-training-history-date{gap:4px;font-size:11px}
+  .clube-shell.clube-live-student .npv-training-history-date svg{width:13px;height:13px}
+  .clube-shell.clube-live-student .npv-training-history-row small{font-size:10px}
+}
+@media(max-width:360px){
+  .clube-shell.clube-live-student .npv-training-card{padding:15px 12px}
+  .clube-shell.clube-live-student .npv-training-metrics{gap:5px}
+  .clube-shell.clube-live-student .npv-training-metrics>div{padding:11px 6px}
+}

@@ -1,0 +1,30 @@
+name: NPV — Registro de cargas e evolução
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/ClubeStudentTraining.*'
+      - 'src/ClubeTrainingNav.css'
+      - 'src/ClubeNPVOnline.jsx'
+      - 'clube/training/**'
+      - 'clube/migrations/*training_loads*'
+      - '.github/workflows/clube-training-loads-qa.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  training-loads-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: pnpm
+      - name: Instalar dependências
+        run: pnpm install --frozen-lockfile
+      - name: Testar datas, cargas, evolução e isolamento por exercício
+        run: node --test clube/training/*.test.mjs clube/hotmart/trainingAccess.test.mjs
+      - name: Compilar o Clube com a nova área Treinos
+        run: pnpm run build
