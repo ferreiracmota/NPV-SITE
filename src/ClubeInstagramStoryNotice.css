@@ -1,0 +1,59 @@
+/* Aviso de correção para a aluna: vermelho acolhedor e legível em qualquer tela. */
+.clube-shell.clube-live-student .npv-ig-story-alert{
+  display:grid;gap:11px;width:100%;margin:0 0 16px;color:#77262c;
+}
+.clube-shell.clube-live-student .npv-ig-story-alert-item{
+  display:flex;align-items:flex-start;gap:13px;padding:17px 19px;
+  border:1px solid #e9aeb0;border-left:5px solid #b63240;border-radius:13px;
+  background:linear-gradient(120deg,#fff0f0,#fff8f6);
+  box-shadow:0 5px 20px rgba(110,26,34,.055);
+}
+.clube-shell.clube-live-student .npv-ig-story-alert-icon{
+  display:grid;place-items:center;width:39px;height:39px;flex:none;
+  color:#aa2d3a;background:#fbdcdf;border-radius:11px;
+}
+.clube-shell.clube-live-student .npv-ig-story-alert-content{min-width:0;flex:1}
+.clube-shell.clube-live-student .npv-ig-story-alert-content>small{
+  display:flex;gap:6px;align-items:center;color:#a63a40;
+  font-size:10px;letter-spacing:.09em;font-weight:900;
+}
+.clube-shell.clube-live-student .npv-ig-story-alert-content h2{
+  margin:6px 0;font-size:18px;letter-spacing:-.025em;line-height:1.25;
+  color:#7a2731;font-weight:850;
+}
+.clube-shell.clube-live-student .npv-ig-story-alert-content p{
+  margin:0;max-width:760px;font-size:13px;line-height:1.55;color:#6b3d42;
+}
+.clube-shell.clube-live-student .npv-ig-story-alert-actions{
+  display:flex;align-items:center;flex-wrap:wrap;gap:9px;margin-top:13px;
+}
+.clube-shell.clube-live-student .npv-ig-story-alert-actions button{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  min-height:40px;border-radius:9px;padding:9px 14px;
+  font-size:12px;font-weight:850;cursor:pointer;
+}
+.clube-shell.clube-live-student .npv-ig-story-alert-confirm{
+  background:#a52e3a;border:1px solid #a52e3a;color:#fff;
+}
+.clube-shell.clube-live-student .npv-ig-story-alert-confirm:hover:not(:disabled){
+  background:#85202c;border-color:#85202c;color:#fff;
+}
+.clube-shell.clube-live-student .npv-ig-story-alert-open{
+  border:1px solid #d8a3a7;background:#fff;color:#7c2c35;
+}
+.clube-shell.clube-live-student .npv-ig-story-alert-open:hover{
+  background:#fce9e9;color:#7c2c35;
+}
+.clube-shell.clube-live-student .npv-ig-story-alert-actions button:disabled{
+  opacity:.6;cursor:not-allowed;
+}
+.clube-shell.clube-live-student .npv-ig-story-alert-error{
+  font-size:12px;font-weight:700;margin:3px 0;color:#a02c36;
+}
+@media(max-width:560px){
+  .clube-shell.clube-live-student .npv-ig-story-alert-item{padding:14px 12px;gap:10px}
+  .clube-shell.clube-live-student .npv-ig-story-alert-icon{width:32px;height:32px}
+  .clube-shell.clube-live-student .npv-ig-story-alert-content h2{font-size:16px}
+  .clube-shell.clube-live-student .npv-ig-story-alert-content p{font-size:12px}
+  .clube-shell.clube-live-student .npv-ig-story-alert-actions button{flex:1 1 110px}
+}
