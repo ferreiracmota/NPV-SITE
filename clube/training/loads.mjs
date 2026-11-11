@@ -88,3 +88,55 @@ export function trainingSaveableSlugs(dirtySlugs,entries,recordDate){
     dirtySlugs[slug]&&!entryOnDay(entries,slug,recordDate)
   )
 }
+
+// Gráfico Geral: média aritmética da última carga registrada de CADA
+// exercício conhecido, na data de cada registro. Cargas dos exercícios
+// não atualizados naquele dia continuam a compor a média, sem inventar
+// novos registros nem dar peso maior a exercícios registrados mais vezes.
+// A média considera somente exercícios que já têm pelo menos 1 registro.
+export function trainingGeneralHistory(entries,allowedSlugs=null){
+  const whitelist=Array.isArray(allowedSlugs)?new Set(allowedSlugs):null
+  const chronological=(Array.isArray(entries)?entries:[])
+    .filter(row=>row && typeof row.exercise_slug==='string'
+      &&(!whitelist||whitelist.has(row.exercise_slug))
+      &&/^\d{4}-\d{2}-\d{2}$/.test(row.recorded_on||'')
+      &&Number.isFinite(Number(row.load_kg))
+      &&Number(row.load_kg)>=MIN_TRAINING_LOAD_KG
+      &&Number(row.load_kg)<=MAX_TRAINING_LOAD_KG)
+    .sort((a,b)=>a.recorded_on.localeCompare(b.recorded_on)
+      ||String(a.created_at||'').localeCompare(String(b.created_at||'')))
+
+  const lastByExercise=new Map()
+  const rows=[]
+  for(let index=0;index<chronological.length;){
+    const day=chronological[index].recorded_on
+    while(index<chronological.length && chronological[index].recorded_on===day){
+      const row=chronological[index]
+      lastByExercise.set(row.exercise_slug,Number(row.load_kg))
+      index++
+    }
+    if(lastByExercise.size===0)continue
+    const loads=[...lastByExercise.values()]
+    const mean=Number((loads.reduce((sum,n)=>sum+n,0)/loads.length).toFixed(2))
+    rows.push({id:'geral-'+day,exercise_slug:'geral',recorded_on:day,
+      load_kg:mean,exercise_count:loads.length})
+  }
+  if(!rows.length)return {rows:[],initial:null,latest:null,record:null,
+    changeKg:null,changePercent:null}
+  const initial=rows[0]
+  const latest=rows.at(-1)
+  const record=rows.reduce((best,row)=>row.load_kg>best.load_kg?row:best,initial)
+  const changeKg=Number((latest.load_kg-initial.load_kg).toFixed(2))
+  const changePercent=initial.load_kg>0
+    ?Number((changeKg/initial.load_kg*100).toFixed(1)):null
+  return {rows,initial,latest,record,changeKg,changePercent}
+}
+
+export function trainingGeneralChartData(entries,allowedSlugs=null){
+  return trainingGeneralHistory(entries,allowedSlugs).rows.map(row=>{
+    const [year,month,day]=row.recorded_on.split('-')
+    return {date:row.recorded_on,label:day+'/'+month,
+      fullDate:day+'/'+month+'/'+year,
+      carga:row.load_kg,exerciseCount:row.exercise_count}
+  })
+}
