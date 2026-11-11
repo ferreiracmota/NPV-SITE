@@ -23,7 +23,7 @@ export default function ClubeStudentTraining({session}){
   const [recordDate,setRecordDate]=useState(today)
   const [catalog,setCatalog]=useState([])
   const [entries,setEntries]=useState([])
-  const [selectedExercise,setSelectedExercise]=useState('agachamento-livre')
+  const [selectedExercise,setSelectedExercise]=useState('')
   const [changes,setChanges]=useState({})
   const [dirtyExercises,setDirtyExercises]=useState({})
   const [loading,setLoading]=useState(true)
@@ -66,8 +66,11 @@ export default function ClubeStudentTraining({session}){
     return()=>{alive=false}
   },[userId])
 
+  // Na primeira visita, exibir automaticamente um gráfico que já tenha
+  // registros reais, se houver. A seleção manual continua respeitada.
+  const firstRecordedExercise=catalog.find(ex=>entries.some(row=>row.exercise_slug===ex.slug))
   const actualExercise=catalog.some(e=>e.slug===selectedExercise)
-    ?selectedExercise:catalog[0]?.slug||selectedExercise
+    ?selectedExercise:(firstRecordedExercise?.slug||catalog[0]?.slug||selectedExercise)
   const selectedName=catalog.find(e=>e.slug===actualExercise)?.name||'Exercício'
   const history=useMemo(()=>trainingHistory(entries,actualExercise),[entries,actualExercise])
   const chart=useMemo(()=>trainingChartData(entries,actualExercise),[entries,actualExercise])
