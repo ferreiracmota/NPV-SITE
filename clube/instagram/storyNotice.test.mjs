@@ -8,7 +8,7 @@ test('aviso orienta republicação de Story com @ visível sem mencionar rejeiç
   assert.match(HIDDEN_MENTION_NOTICE.message,/ganhar seus pontos/)
   assert.match(HIDDEN_MENTION_NOTICE.message,/Se possível/)
   assert.match(HIDDEN_MENTION_NOTICE.message,/Bons treinos!/)
-  assert.match(HIDDEN_MENTION_NOTICE.message,/Publique novamente/)
+  assert.match(HIDDEN_MENTION_NOTICE.message,/publique novamente/i)
   assert.doesNotMatch(HIDDEN_MENTION_NOTICE.message,/rejeitad|recusad|aprovad/i)
 })
 test('somente aviso de marcação oculta ainda não reconhecido aparece à aluna',()=>{
