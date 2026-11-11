@@ -1,11 +1,11 @@
 import React,{useCallback,useEffect,useMemo,useRef,useState} from 'react'
-import {Activity,ArrowRight,CalendarDays,Check,ChevronRight,Dumbbell,ExternalLink,History,Info,Save,Target,Trash2,TrendingUp,Trophy} from 'lucide-react'
-import {CartesianGrid,Line,LineChart,ResponsiveContainer,Tooltip,XAxis,YAxis} from 'recharts'
+import {Activity,ArrowRight,CalendarDays,Check,Dumbbell,ExternalLink,History,Info,LockKeyhole,Save,Target,Trash2,TrendingUp,Trophy} from 'lucide-react'
+import {Area,AreaChart,CartesianGrid,ResponsiveContainer,Tooltip,XAxis,YAxis} from 'recharts'
 import {clubeSupabase as supabase} from './clubeSupabase.js'
 import {NPV_HOTMART_TRAINING_URL} from '../clube/hotmart/trainingAccess.mjs'
 import {
   MAX_TRAINING_LOAD_KG,trainingToday,parseTrainingLoad,parseTrainingRepetitions,
-  formatTrainingLoad,trainingHistory,trainingChartData,entryOnDay,lastEntryOnOrBefore
+  formatTrainingLoad,trainingHistory,trainingChartData,entryOnDay,trainingInputForDate,trainingSaveableSlugs
 } from '../clube/training/loads.mjs'
 import './ClubeStudentTraining.css'
 
@@ -23,8 +23,9 @@ export default function ClubeStudentTraining({session}){
   const [recordDate,setRecordDate]=useState(today)
   const [catalog,setCatalog]=useState([])
   const [entries,setEntries]=useState([])
-  const [selectedExercise,setSelectedExercise]=useState('agachamento-livre')
+  const [selectedExercise,setSelectedExercise]=useState('')
   const [changes,setChanges]=useState({})
+  const [dirtyExercises,setDirtyExercises]=useState({})
   const [loading,setLoading]=useState(true)
   const [saving,setSaving]=useState(false)
   const [error,setError]=useState('')
@@ -49,7 +50,7 @@ export default function ClubeStudentTraining({session}){
 
   useEffect(()=>{
     let alive=true
-    setLoading(true);setError('');setEntries([]);setCatalog([]);setChanges({})
+    setLoading(true);setError('');setEntries([]);setCatalog([]);setChanges({});setDirtyExercises({})
     if(!supabase||!userId){setLoading(false);return}
     Promise.all([
       supabase.from('clube_training_exercises').select('slug,name,display_order,active')
@@ -65,30 +66,25 @@ export default function ClubeStudentTraining({session}){
     return()=>{alive=false}
   },[userId])
 
-  useEffect(()=>{setChanges({})},[recordDate,entries])
-
+  // Na primeira visita, exibir automaticamente um gráfico que já tenha
+  // registros reais, se houver. A seleção manual continua respeitada.
+  const firstRecordedExercise=catalog.find(ex=>entries.some(row=>row.exercise_slug===ex.slug))
   const actualExercise=catalog.some(e=>e.slug===selectedExercise)
-    ?selectedExercise:catalog[0]?.slug||selectedExercise
+    ?selectedExercise:(firstRecordedExercise?.slug||catalog[0]?.slug||selectedExercise)
   const selectedName=catalog.find(e=>e.slug===actualExercise)?.name||'Exercício'
   const history=useMemo(()=>trainingHistory(entries,actualExercise),[entries,actualExercise])
   const chart=useMemo(()=>trainingChartData(entries,actualExercise),[entries,actualExercise])
-  const dirtyCount=Object.keys(changes).length
+  const saveableSlugs=trainingSaveableSlugs(dirtyExercises,entries,recordDate)
+  const dirtyCount=saveableSlugs.length
 
   function fieldsFor(exercise){
-    const existing=entryOnDay(entries,exercise.slug,recordDate)
-    const previous=existing||lastEntryOnOrBefore(entries,exercise.slug,recordDate)
-    const defaultLoad=previous?String(Number(previous.load_kg)):''
-    const defaultReps=existing?.repetitions==null?'':String(existing.repetitions)
-    return {
-      existing,
-      latest:trainingHistory(entries,exercise.slug).latest,
-      load:changes[exercise.slug]?.load??defaultLoad,
-      repetitions:changes[exercise.slug]?.repetitions??defaultReps
-    }
+    return trainingInputForDate(entries,exercise.slug,recordDate,changes[exercise.slug])
   }
 
   function edit(exercise,field,value){
     const initial=fieldsFor(exercise)
+    // Uma vez salvo, o registro do dia não pode ser alterado pela aluna.
+    if(initial.locked)return
     setChanges(current=>({
       ...current,
       [exercise.slug]:{
@@ -97,6 +93,7 @@ export default function ClubeStudentTraining({session}){
         [field]:value
       }
     }))
+    setDirtyExercises(current=>({...current,[exercise.slug]:true}))
     setNotice('');setError('')
   }
 
@@ -108,8 +105,10 @@ export default function ClubeStudentTraining({session}){
     }
     const rows=[]
     for(const exercise of catalog){
-      const draft=changes[exercise.slug]
-      if(!draft)continue
+      if(!saveableSlugs.includes(exercise.slug))continue
+      // O valor à vista permanece mesmo quando o dia escolhido muda.
+      const draft=fieldsFor(exercise)
+      if(draft.locked)continue
       const weight=parseTrainingLoad(draft.load)
       if(weight===null){
         setError('Informe uma carga entre 0 e 500 kg para '+exercise.name+'.');return
@@ -118,23 +117,22 @@ export default function ClubeStudentTraining({session}){
       if(String(draft.repetitions).trim()!==''&&reps===null){
         setError('Informe de 1 a 100 repetições ou deixe o campo vazio em '+exercise.name+'.');return
       }
-      // Mantém o identificador estável ao corrigir uma carga do mesmo dia.
-      const sameDay=entryOnDay(entries,exercise.slug,recordDate)
       rows.push({
-        ...(sameDay?.id?{id:sameDay.id}:{}),
         student_id:userId,exercise_slug:exercise.slug,recorded_on:recordDate,
-        load_kg:weight,repetitions:reps,updated_at:new Date().toISOString()
+        load_kg:weight,repetitions:reps
       })
     }
     if(!rows.length)return
     setSaving(true);setError('');setNotice('')
     try{
-      // Uma carga por exercício e por dia. Atualização do mesmo dia mantém o histórico.
+      // Só INSERT: registros já salvos são imutáveis por decisão do Clube.
+      // A unicidade no banco impede substituição silenciosa por outra sessão.
       const {error:saveError}=await supabase.from('clube_training_load_entries')
-        .upsert(rows,{onConflict:'student_id,exercise_slug,recorded_on'})
-      if(saveError)throw new Error('Não foi possível salvar. Confira sua conexão e tente novamente.')
+        .insert(rows)
+      if(saveError)throw new Error(saveError.code==='23505'?'Já existe um registro nesta data para um dos exercícios. Atualize a página para conferir.':'Não foi possível salvar. Confira sua conexão e tente novamente.')
       await refresh()
-      setChanges({})
+      // Limpa somente a marca de alteração. Mantém os pesos preenchidos.
+      setDirtyExercises(current=>Object.fromEntries(Object.entries(current).filter(([slug])=>!saveableSlugs.includes(slug))))
       setNotice(rows.length===1?'Carga salva com sucesso! 💚':rows.length+' cargas salvas com sucesso! 💚')
     }catch(e){setError(e?.message||'Erro ao salvar as cargas.')}
     finally{setSaving(false)}
@@ -149,16 +147,12 @@ export default function ClubeStudentTraining({session}){
         .delete().eq('id',entry.id).eq('student_id',userId).select('id')
       if(removeError||!data?.length)throw new Error('Não foi possível excluir esse registro.')
       await refresh()
-      setChanges({})
-      setNotice('Registro excluído. Os outros dias foram preservados.')
+      setDirtyExercises(current=>{
+        const next={...current};delete next[entry.exercise_slug];return next
+      })
+      setNotice('Registro excluído por escolha explícita. Os outros dias foram preservados.')
     }catch(e){setError(e?.message||'Erro ao excluir registro.')}
     finally{setSaving(false)}
-  }
-
-  function editHistorical(entry){
-    setRecordDate(entry.recorded_on)
-    setNotice('Você está editando o registro de '+LABEL_DATE(entry.recorded_on)+'.')
-    recordRef.current?.scrollIntoView({behavior:'smooth',block:'start'})
   }
 
   return <div className="npv-training-area">
@@ -206,26 +200,55 @@ export default function ClubeStudentTraining({session}){
             Registrar primeira carga <ArrowRight size={15}/>
           </button>
         </div>:
-        <div className="npv-training-chart" role="img" aria-label={'Evolução de cargas em quilogramas para '+selectedName}>
-          <ResponsiveContainer width="100%" height={220}>
-            <LineChart data={chart} margin={{top:13,right:12,left:-18,bottom:1}}>
-              <CartesianGrid stroke="#dfebdf" strokeDasharray="3 4" vertical={false}/>
-              <XAxis dataKey="label" tickLine={false} axisLine={false} tick={{fontSize:11,fill:'#66806b'}}/>
-              <YAxis domain={[0,'auto']} tickLine={false} axisLine={false} tick={{fontSize:10,fill:'#66806b'}} width={52}/>
-              <Tooltip cursor={{stroke:'#a5c99a',strokeDasharray:'3 3'}}
-                formatter={value=>[formatTrainingLoad(value),'Carga']}
-                labelFormatter={(label,payload)=>payload?.[0]?.payload?.fullDate||label}/>
-              <Line type="monotone" dataKey="carga" stroke="#2b744e" strokeWidth={3}
-                dot={{r:4,stroke:'#2b744e',strokeWidth:2,fill:'#fff'}}
-                activeDot={{r:6,stroke:'#2b744e',strokeWidth:2}} isAnimationActive={false}/>
-            </LineChart>
-          </ResponsiveContainer>
+        <div className="npv-training-visual">
+          <div className="npv-training-chart-overview">
+            <div>
+              <span>CARGA ATUAL</span>
+              <strong>{formatTrainingLoad(history.latest?.load_kg)}</strong>
+            </div>
+            <span className={'npv-training-chart-growth'+(history.changeKg>0?' is-positive':'')}>
+              <TrendingUp size={15}/>
+              {history.rows.length>1?showChange(history.changePercent):'Primeiro registro'}
+            </span>
+          </div>
+          <div className="npv-training-chart" role="img" aria-label={'Gráfico da evolução em quilogramas para '+selectedName}>
+            <ResponsiveContainer width="100%" height={216}>
+              <AreaChart data={chart} margin={{top:17,right:12,left:-24,bottom:0}}>
+                <defs>
+                  <linearGradient id="npv-training-area-fill" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#4baa73" stopOpacity={0.36}/>
+                    <stop offset="80%" stopColor="#79c596" stopOpacity={0.06}/>
+                    <stop offset="100%" stopColor="#ffffff" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid stroke="#dfeae3" strokeDasharray="2 7" vertical={false}/>
+                <XAxis dataKey="label" tickLine={false} axisLine={false}
+                  minTickGap={26} interval="preserveStartEnd"
+                  tick={{fontSize:11,fill:'#688574'}}/>
+                <YAxis domain={[0,'auto']} tickLine={false} axisLine={false}
+                  tick={{fontSize:10,fill:'#8a9e91'}} width={49}/>
+                <Tooltip cursor={{stroke:'#a5c99a',strokeDasharray:'3 5'}}
+                  contentStyle={{borderRadius:12,border:'1px solid #dce9df',boxShadow:'0 12px 24px rgba(17,71,36,.12)',fontSize:12}}
+                  formatter={value=>[formatTrainingLoad(value),'Carga']}
+                  labelFormatter={(label,payload)=>payload?.[0]?.payload?.fullDate||label}/>
+                <Area type="monotone" dataKey="carga" stroke="#277b50" strokeWidth={3.5}
+                  fill="url(#npv-training-area-fill)"
+                  dot={{r:3.5,stroke:'#267a4f',strokeWidth:2,fill:'#fff'}}
+                  activeDot={{r:6,stroke:'#236d46',strokeWidth:2,fill:'#fff'}}
+                  isAnimationActive={false}/>
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+          <div className="npv-training-chart-bottom">
+            <span>{history.rows.length} {history.rows.length===1?'registro':'registros'} no histórico</span>
+            <span>{LABEL_DATE(history.initial?.recorded_on)} — {LABEL_DATE(history.latest?.recorded_on)}</span>
+          </div>
         </div>}
 
       <div className="npv-training-metrics">
         <div><small>Carga inicial</small><strong>{formatTrainingLoad(history.initial?.load_kg)}</strong></div>
-        <div><small>Carga atual</small><strong>{formatTrainingLoad(history.latest?.load_kg)}</strong></div>
-        <div><small>Evolução</small><strong className={history.changeKg>0?'is-positive':''}>
+        <div><small>Melhor marca</small><strong>{formatTrainingLoad(history.record?.load_kg)}</strong></div>
+        <div><small>Progresso</small><strong className={history.changeKg>0?'is-positive':''}>
           {history.rows.length<2?'—':showChange(history.changePercent)}
         </strong></div>
       </div>
@@ -240,7 +263,7 @@ export default function ClubeStudentTraining({session}){
         <div>
           <span className="npv-training-eyebrow"><Target size={16}/> REGISTRO RÁPIDO</span>
           <h2>Atualizar minhas cargas</h2>
-          <p>Arraste a barra ou digite o peso. Salve vários exercícios de uma vez.</p>
+          <p>Seu último peso fica preenchido ao mudar a data. Apenas novas cargas são salvas.</p>
         </div>
         <label className="npv-training-date"><CalendarDays size={15}/> Data do treino
           <input type="date" value={recordDate} max={today} min="2020-01-01"
@@ -256,7 +279,7 @@ export default function ClubeStudentTraining({session}){
         <div className="npv-training-exercise-list">
           {catalog.map(ex=>{
             const current=fieldsFor(ex)
-            const changed=Object.prototype.hasOwnProperty.call(changes,ex.slug)
+            const changed=Boolean(dirtyExercises[ex.slug])&&!current.locked
             const parsed=parseTrainingLoad(current.load)
             const slide=parsed===null?0:Math.round(parsed/2.5)*2.5
             return <div className={'npv-training-exercise'+(changed?' is-edited':'')} key={ex.slug}>
@@ -264,12 +287,12 @@ export default function ClubeStudentTraining({session}){
                 <div className="npv-training-exercise-name">
                   <strong>{ex.name}</strong>
                   <small>{current.latest?'Última registrada: '+formatTrainingLoad(current.latest.load_kg):'Primeira carga ainda não registrada'}
-                    {current.existing?' · Registro deste dia':''}</small>
+                    {current.locked?' · Já registrado nesta data':''}</small>
                 </div>
                 <label className="npv-training-weight">
                   <input type="number" inputMode="decimal" min="0" max={MAX_TRAINING_LOAD_KG} step="0.01"
                     aria-label={'Carga em quilogramas de '+ex.name} placeholder="—"
-                    value={current.load} disabled={saving}
+                    value={current.load} disabled={saving||current.locked}
                     onChange={e=>edit(ex,'load',e.target.value)}/>
                   <span>kg</span>
                 </label>
@@ -277,24 +300,25 @@ export default function ClubeStudentTraining({session}){
               <input className="npv-training-range" type="range"
                 aria-label={'Arrastar carga de '+ex.name+' de 0 a 500 kg'}
                 min="0" max={MAX_TRAINING_LOAD_KG} step="2.5" value={slide}
-                disabled={saving} onChange={e=>edit(ex,'load',e.target.value)}/>
+                disabled={saving||current.locked} onChange={e=>edit(ex,'load',e.target.value)}/>
               <div className="npv-training-exercise-foot">
                 <span>0–500 kg</span>
                 <label>Repetições <input type="number" inputMode="numeric" min="1" max="100"
                   step="1" placeholder="opcional" value={current.repetitions}
-                  disabled={saving} aria-label={'Repetições realizadas em '+ex.name}
+                  disabled={saving||current.locked} aria-label={'Repetições realizadas em '+ex.name}
                   onChange={e=>edit(ex,'repetitions',e.target.value)}/></label>
                 {current.existing&&<button className="npv-training-delete-day" type="button"
                   disabled={saving} onClick={()=>remove(current.existing,ex.name)} title="Excluir apenas o registro desta data">
                   <Trash2 size={13}/> Excluir registro
                 </button>}
-                {changed&&<span className="npv-training-unsaved">Alterado</span>}
+                {current.locked&&<span className="npv-training-locked"><LockKeyhole size={12}/> Registrado · protegido</span>}
+                {changed&&<span className="npv-training-unsaved">Não salvo</span>}
               </div>
             </div>
           })}
         </div>
         <div className="npv-training-actions">
-          <p><Info size={15}/> O histórico permanece por exercício e por data. Nenhum ponto do Clube é alterado.</p>
+          <p><Info size={15}/> O peso permanece preenchido. Registros salvos não podem ser editados; a exclusão é uma ação separada e exige confirmação. Nenhum ponto é alterado.</p>
           <button type="submit" disabled={saving||dirtyCount===0}>
             {saving?<span>Salvando...</span>:<><Save size={17}/> Salvar {dirtyCount?dirtyCount+' '+(dirtyCount===1?'carga':'cargas'):'cargas do dia'}</>}
           </button>
@@ -308,7 +332,7 @@ export default function ClubeStudentTraining({session}){
         <div>
           <span className="npv-training-eyebrow"><History size={16}/> SUA TRAJETÓRIA</span>
           <h2>Histórico de cargas</h2>
-          <p>{selectedName} · {history.rows.length} {history.rows.length===1?'registro':'registros'}</p>
+          <p>{selectedName} · {history.rows.length} {history.rows.length===1?'registro':'registros'} preservados, sem edição</p>
         </div>
       </div>
       {history.rows.length===0?<p className="npv-training-history-empty">Quando você registrar suas cargas, as datas aparecerão aqui.</p>:
@@ -320,9 +344,9 @@ export default function ClubeStudentTraining({session}){
             </div>
             <strong>{formatTrainingLoad(entry.load_kg)}</strong>
             <small>{entry.repetitions==null?'':entry.repetitions+' rep.'}</small>
-            <button type="button" disabled={saving||loading} onClick={()=>editHistorical(entry)}>
-              Editar <ChevronRight size={14}/>
-            </button>
+            <span className="npv-training-history-locked" title="Registro salvo, sem edição">
+              <LockKeyhole size={14}/> Salvo
+            </span>
           </div>
         )}
       </div>}

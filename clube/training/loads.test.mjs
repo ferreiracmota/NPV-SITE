@@ -3,7 +3,7 @@ import assert from 'node:assert/strict'
 import {
   MAX_TRAINING_LOAD_KG,parseTrainingLoad,parseTrainingRepetitions,
   trainingToday,trainingHistory,trainingChartData,entryOnDay,
-  lastEntryOnOrBefore,formatTrainingLoad
+  lastEntryOnOrBefore,formatTrainingLoad,trainingInputForDate,trainingSaveableSlugs
 } from './loads.mjs'
 
 const fixtures=[
@@ -56,4 +56,36 @@ test('uma carga inicial de zero não gera percentual infinito',()=>{
   ],'stiff')
   assert.equal(data.changeKg,10)
   assert.equal(data.changePercent,null)
+})
+
+test('troca de data anterior ao primeiro treino preserva a última carga registrada',()=>{
+  const previous=trainingInputForDate(fixtures,'agachamento-livre','2026-08-30')
+  assert.equal(previous.load,'70')
+  assert.equal(previous.locked,false)
+  const futureDay=trainingInputForDate(fixtures,'agachamento-livre','2026-11-12')
+  assert.equal(futureDay.load,'70')
+})
+test('carga preenchida e ainda não salva persiste entre datas, mesmo sem histórico',()=>{
+  const draft={load:'92,5',repetitions:'8'}
+  for(const day of ['2026-09-01','2026-10-20','2026-11-12']){
+    const result=trainingInputForDate([], 'stiff',day,draft)
+    assert.equal(result.load,'92,5')
+    assert.equal(result.repetitions,'8')
+    assert.equal(result.locked,false)
+  }
+})
+test('registro já salvo é imutável, mesmo quando um rascunho posterior existe',()=>{
+  const draft={load:'120',repetitions:'10'}
+  const saved=trainingInputForDate(fixtures,'agachamento-livre','2026-10-01',draft)
+  assert.equal(saved.locked,true)
+  assert.equal(saved.load,'52.5')
+  assert.equal(saved.repetitions,'10')
+  const unsaved=trainingInputForDate(fixtures,'agachamento-livre','2026-10-02',draft)
+  assert.equal(unsaved.locked,false)
+  assert.equal(unsaved.load,'120')
+  assert.deepEqual(trainingSaveableSlugs({'agachamento-livre':true,'leg-press':true},fixtures,'2026-10-01'),['leg-press'])
+})
+test('apenas exercícios modificados explicitamente são incluídos no salvamento',()=>{
+  assert.deepEqual(trainingSaveableSlugs({},fixtures,'2026-11-11'),[])
+  assert.deepEqual(trainingSaveableSlugs({'stiff':true,'leg-press':false},fixtures,'2026-11-11'),['stiff'])
 })

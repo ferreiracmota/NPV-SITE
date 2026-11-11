@@ -65,3 +65,26 @@ export function entryOnDay(entries,exerciseSlug,day){
 export function lastEntryOnOrBefore(entries,exerciseSlug,day){
   return trainingHistory(entries,exerciseSlug).rows.filter(row=>row.recorded_on<=day).at(-1)||null
 }
+
+// O campo de carga representa a última carga conhecida (ou o rascunho ainda
+// não salvo), não a carga da data escolhida. Mudar de data NUNCA zera os campos.
+// Registros da data selecionada são mostrados como SOMENTE LEITURA.
+export function trainingInputForDate(entries,exerciseSlug,recordDate,working){
+  const existing=entryOnDay(entries,exerciseSlug,recordDate)
+  const latest=trainingHistory(entries,exerciseSlug).latest
+  const load=existing
+    ?String(Number(existing.load_kg))
+    :working?.load??(latest?String(Number(latest.load_kg)):'')
+  const repetitions=existing
+    ?(existing.repetitions==null?'':String(existing.repetitions))
+    :working?.repetitions??(latest?.repetitions==null?'':String(latest.repetitions))
+  return {existing,latest,locked:Boolean(existing),load,repetitions}
+}
+
+// Uma carga só é salva quando a aluna a modifica explicitamente. Não criar
+// registros automáticos por mudar a data, ainda que os pesos estejam visíveis.
+export function trainingSaveableSlugs(dirtySlugs,entries,recordDate){
+  return Object.keys(dirtySlugs||{}).filter(slug=>
+    dirtySlugs[slug]&&!entryOnDay(entries,slug,recordDate)
+  )
+}
