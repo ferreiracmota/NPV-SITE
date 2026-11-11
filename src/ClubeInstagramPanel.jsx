@@ -1,5 +1,5 @@
 import React,{useCallback,useEffect,useRef,useState} from 'react'
-import {Instagram,ShieldCheck,Copy,ArrowUpRight,RefreshCw,Link2,Unplug,Clock3,CheckCircle2,AlertCircle,LockKeyhole,ChevronDown} from 'lucide-react'
+import {Instagram,ShieldCheck,Copy,ArrowUpRight,RefreshCw,Link2,Unplug,Clock3,CheckCircle2,AlertCircle,LockKeyhole,ChevronDown,EyeOff} from 'lucide-react'
 import './ClubeInstagramPanel.css'
 import {clubeSupabase as supabase} from './clubeSupabase.js'
 
@@ -217,15 +217,21 @@ export default function ClubeInstagramPanel({session,isAdmin=false}){
   async function reviewStory(event,decision){
     if(!isAdmin||reviewBusy)return
     const approve=decision==='approve'
-    if(!window.confirm(approve
-      ?'Confirmou a menção no Instagram? Aprovar concede 200 pontos à aluna. Essa decisão não pode ser desfeita por aqui.'
-      :'Rejeitar esta menção sem conceder pontos?'))return
+    const notify=decision==='notify_hidden'
+    const confirmText=notify
+      ?'Enviar o aviso “Marcação não visível” para esta aluna no Clube? O Story continuará aguardando análise, sem crédito de pontos.'
+      :approve
+        ?'Confirmou a menção no Instagram? Aprovar concede 200 pontos à aluna. Essa decisão não pode ser desfeita por aqui.'
+        :'Rejeitar esta menção sem conceder pontos?'
+    if(!window.confirm(confirmText))return
     setReviewBusy(event.event_id);setError('');setNotice('')
     try{
       const result=await request('/api/instagram/review','POST',{
         event_id:event.event_id,decision
       })
-      setNotice(result.status==='credited'
+      setNotice(result.status==='notified'||result.status==='already_notified'
+        ?'Aviso “Marcação não visível” enviado à aluna no Clube. O Story segue em análise, sem pontos lançados.'
+        :result.status==='credited'
         ?'Story aprovado: 200 pontos lançados após sua confirmação.'
         :result.status==='limit_reached'
         ?'O limite de cinco Stories do mês foi atingido. Nenhum ponto adicional foi lançado.'
@@ -317,6 +323,9 @@ export default function ClubeInstagramPanel({session,isAdmin=false}){
               <strong>{evt.student_name||'Perfil não identificado'}</strong>
               <small>Menção recebida em {ago(evt.created_at)}</small>
               <span className="npv-ig-review-pending"><Clock3 size={13}/> Aguardando decisão</span>
+              {evt.notice_sent&&<span className="npv-ig-review-warned">
+                <EyeOff size={13}/> Aviso enviado{evt.notice_acknowledged?' · aluna ciente':''}
+              </span>}
             </div>
             <div className="npv-ig-review-actions">
               <button type="button" className="npv-ig-review-approve" disabled={Boolean(reviewBusy)} onClick={()=>reviewStory(evt,'approve')}>
@@ -324,6 +333,11 @@ export default function ClubeInstagramPanel({session,isAdmin=false}){
               </button>
               <button type="button" className="npv-ig-review-reject" disabled={Boolean(reviewBusy)} onClick={()=>reviewStory(evt,'reject')}>
                 <AlertCircle size={15}/> Rejeitar
+              </button>
+              <button type="button" className="npv-ig-review-notify" disabled={Boolean(reviewBusy)||evt.notice_sent}
+                title={evt.notice_sent?'Aviso já enviado para este Story':'Avisar que a marcação do @naopensevai ficou escondida'}
+                onClick={()=>reviewStory(evt,'notify_hidden')}>
+                <EyeOff size={15}/> {evt.notice_sent?'Aviso enviado':'Marcação não visível'}
               </button>
             </div>
           </div>)}</div>:
