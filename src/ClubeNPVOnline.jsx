@@ -23,6 +23,7 @@ import ClubeSiteWidgetAdmin from './ClubeSiteWidgetAdmin.jsx'
 import ClubeHotmartAdmin from './ClubeHotmartAdmin.jsx'
 import ClubeVersionsAdmin from './ClubeVersionsAdmin.jsx'
 import ClubeInstagramPanel from './ClubeInstagramPanel.jsx'
+import ClubeInstagramStoryNotice from './ClubeInstagramStoryNotice.jsx'
 import ClubeInstagramAdminSummary from './ClubeInstagramAdminSummary.jsx'
 import ClubeAdminStudents from './ClubeAdminStudents.jsx'
 import ClubeStudentProfile from './ClubeStudentProfile.jsx'
@@ -647,6 +648,8 @@ export default function ClubeNPVOnline() {
       {isAdmin&&<div className="clube-online-mobile-account"><span>Administrador · {user.email}</span><button onClick={signOut}><LogOut size={15}/> Sair</button></div>}
       {error&&<div className="clube-online-alert" role="alert">{error} <button onClick={refresh}>Tentar novamente</button></div>}
       {notice&&<div className="clube-feedback" role="status"><Check size={17}/>{notice}<button onClick={()=>setNotice('')}><X size={16}/></button></div>}
+       {!isAdmin&&<ClubeInstagramStoryNotice session={session}
+         onOpenStories={()=>{setTab('instagram');window.scrollTo({top:0,behavior:'smooth'})}}/>
       {(isAdmin||tab==='inicio')&&<div className="clube-intro"><div><div className="clube-eyebrow"><span/> {isAdmin?adminSection.group+' / '+adminSection.label:'MINHA CONTA NPV'}</div><h1>{isAdmin?adminSection.title:tab==='inicio'?(isAdmin?'Seu clube, sob controle.':<><span className="npv-profile-greeting-desktop">{firstNameOf(profile?.full_name)}, sua evolução vale pontos.</span><span className="npv-profile-greeting-mobile">Sua evolução vale pontos.</span></>):tab==='alunos'?'Alunos do Clube NPV':tab==='hotmart'?'Hotmart — Assinaturas':tab==='historico'?'Histórico de pontos':tab==='parceiros'?'Parceiros e descontos':tab==='instagram'?'Instagram e Stories':tab==='conexoes'?'Conexões · Instagram / Strava':tab==='desafios'?'Desafios do mês':tab==='email'?'E-mails automáticos':tab==='aparencia'?'Aparência e perfil':tab==='widget'?'Widget do site':tab==='versoes'?'Versões e recursos':'Benefícios e recompensas'}</h1><p>{isAdmin?adminSection.description:<><span className="npv-profile-greeting-mobile">Olá, {firstNameOf(profile?.full_name)}. </span>Pontos, desafios e conquistas em um só lugar.</>}</p></div>
         {isAdmin&&['inicio','alunos','historico'].includes(tab)&&<button className="clube-btn clube-btn-primary" onClick={()=>newAward()}><Plus size={17}/> Lançar pontos</button>}
       </div>}
