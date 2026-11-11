@@ -1,0 +1,70 @@
+/* Notificação de Story no topo de todas as páginas da aluna. */
+.clube-shell.clube-live-student .npv-global-story-notices{
+  display:grid;
+  gap:10px;
+  margin:0 0 19px;
+}
+.clube-shell.clube-live-student .npv-global-story-notice{
+  display:flex;
+  align-items:flex-start;
+  flex-wrap:wrap;
+  gap:13px;
+  padding:17px 18px;
+  border:1.5px solid #df7573;
+  border-left:5px solid #c53036;
+  border-radius:14px;
+  background:#fff0ef;
+  color:#54272b;
+  box-shadow:0 8px 22px rgba(149,37,39,.09);
+}
+.clube-shell.clube-live-student .npv-global-story-notice-icon{
+  display:grid;
+  flex:none;
+  place-items:center;
+  width:39px;height:39px;
+  border-radius:11px;
+  color:#fff;
+  background:#bd3039;
+}
+.clube-shell.clube-live-student .npv-global-story-notice-copy{flex:1;min-width:0}
+.clube-shell.clube-live-student .npv-global-story-notice-copy strong{
+  display:block;font-size:16px;font-weight:900;line-height:1.35;color:#98232a;
+}
+.clube-shell.clube-live-student .npv-global-story-notice-copy p{
+  margin:7px 0 10px;font-size:13px;line-height:1.6;color:#633439;
+}
+.clube-shell.clube-live-student .npv-global-story-notice-copy small{
+  display:block;color:#855357;font-size:11px;line-height:1.45;
+}
+.clube-shell.clube-live-student .npv-global-story-notice>button{
+  flex:none;align-self:center;min-height:40px;
+  padding:10px 16px;
+  border:1px solid #a92b31;border-radius:9px;
+  color:#fff;background:#a92b31;
+  font-size:12px;font-weight:850;
+  cursor:pointer;
+}
+.clube-shell.clube-live-student .npv-global-story-notice>button:hover:not(:disabled){
+  background:#851e26;border-color:#851e26;color:#fff;
+}
+.clube-shell.clube-live-student .npv-global-story-notice>button:disabled{
+  background:#d7acac;border-color:#d7acac;color:#442a2a;cursor:not-allowed;
+}
+.clube-shell.clube-live-student .npv-global-story-notice button:focus-visible{
+  outline:3px solid #a3cb79;outline-offset:3px;
+}
+.clube-shell.clube-live-student .npv-global-story-notice-error{
+  margin:0;padding:10px 12px;border-radius:8px;
+  background:#fff1f0;color:#a3232e;font-size:12px;
+}
+.clube-shell.clube-live-student.npv-theme-dark .npv-global-story-notice{
+  background:#40272b;border-color:#a95458;border-left-color:#d47779;
+}
+.clube-shell.clube-live-student.npv-theme-dark .npv-global-story-notice-copy strong{color:#ffcccb}
+.clube-shell.clube-live-student.npv-theme-dark .npv-global-story-notice-copy p{color:#f6d9d8}
+.clube-shell.clube-live-student.npv-theme-dark .npv-global-story-notice-copy small{color:#dfb9b9}
+@media(max-width:700px){
+  .clube-shell.clube-live-student .npv-global-story-notice{padding:14px;gap:10px}
+  .clube-shell.clube-live-student .npv-global-story-notice-copy{flex:1 1 calc(100% - 55px)}
+  .clube-shell.clube-live-student .npv-global-story-notice>button{width:100%;justify-content:center}
+}
