@@ -26,6 +26,7 @@ export function parseTrainingRepetitions(value){
 }
 
 export function formatTrainingLoad(value){
+  if(value===undefined||value===null||value==='')return '—'
   const n=Number(value)
   return Number.isFinite(n)?n.toLocaleString('pt-BR',{maximumFractionDigits:2})+' kg':'—'
 }
