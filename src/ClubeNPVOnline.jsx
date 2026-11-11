@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   ArrowLeft, ArrowRight, Award, Check, Clock3, Gift, History, KeyRound, LockKeyhole,
   LogOut, Mail, Package, Plus, Search, ShieldCheck, Sparkles, TrendingUp,
-  UserRound, Users, Wallet, X, Shirt, CupSoda, Droplets, Ticket, Pencil, ImagePlus, SlidersHorizontal, ChevronDown, ChevronUp, CreditCard, Layers3, Instagram, Link2, Settings2, Activity, Palette, Flag, Menu
+  UserRound, Users, Wallet, X, Shirt, CupSoda, Droplets, Ticket, Pencil, ImagePlus, SlidersHorizontal, ChevronDown, ChevronUp, CreditCard, Layers3, Instagram, Link2, Settings2, Activity, Palette, Flag, Menu, Dumbbell
 } from 'lucide-react'
 import { clubeSupabase as supabase } from './clubeSupabase.js'
 import logoVaiCirculo from './assets/logo-vai-circular.webp'
@@ -24,6 +24,7 @@ import ClubeHotmartAdmin from './ClubeHotmartAdmin.jsx'
 import ClubeVersionsAdmin from './ClubeVersionsAdmin.jsx'
 import ClubeInstagramPanel from './ClubeInstagramPanel.jsx'
 import ClubeStoryNoticeBanner from './ClubeStoryNoticeBanner.jsx'
+import {NPV_HOTMART_TRAINING_URL} from '../clube/hotmart/trainingAccess.mjs'
 import ClubeInstagramAdminSummary from './ClubeInstagramAdminSummary.jsx'
 import ClubeAdminStudents from './ClubeAdminStudents.jsx'
 import ClubeStudentProfile from './ClubeStudentProfile.jsx'
@@ -39,6 +40,7 @@ import './ClubeAdminWorkspace.css'
 import './ClubeBirthday.css'
 import './ClubeStudentPolish.css'
 import './ClubeAdminRefinement.css'
+import './ClubeTrainingNav.css'
 
 const format = value => Number(value||0).toLocaleString('pt-BR')
 const date = value => new Date(value).toLocaleDateString('pt-BR',{day:'2-digit',month:'short',year:'numeric'})
@@ -601,6 +603,11 @@ export default function ClubeNPVOnline() {
       </div>
       <nav className="clube-live-tabs" aria-label="Navegação do Clube NPV">
         <button type="button" aria-label="Visão geral" aria-current={tab==='inicio'?'page':undefined} className={tab==='inicio'?'active':''} onClick={()=>setTab('inicio')}><Wallet size={17}/><span className="npv-nav-desktop">Visão geral</span><span className="npv-nav-mobile" aria-hidden="true">Início</span></button>
+        <a className="npv-student-workouts-link" href={NPV_HOTMART_TRAINING_URL}
+          target="_blank" rel="noopener noreferrer" title="Abrir meus treinos na Hotmart"
+          aria-label="Treinos da Não Pense, Vai! na Hotmart (abre em nova aba)">
+          <Dumbbell size={17} aria-hidden="true"/><span>Treinos</span>
+        </a>
         <button type="button" aria-label="Meu perfil" aria-current={tab==='perfil'?'page':undefined} className={tab==='perfil'?'active':''} onClick={()=>setTab('perfil')}><UserRound size={17}/><span>Perfil</span></button>
         <button type="button" aria-label="Recompensas" aria-current={tab==='recompensas'?'page':undefined} className={tab==='recompensas'?'active':''} onClick={()=>setTab('recompensas')}><Gift size={17}/><span className="npv-nav-desktop">Prêmios</span><span className="npv-nav-mobile" aria-hidden="true">Prêmios</span></button>
         <button type="button" aria-label="Parceiros" aria-current={tab==='parceiros'?'page':undefined} className={tab==='parceiros'?'active':''} onClick={()=>setTab('parceiros')}><Award size={17}/><span>Parceiros</span></button>
