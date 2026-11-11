@@ -1,6 +1,6 @@
 import React,{useCallback,useEffect,useMemo,useRef,useState} from 'react'
-import {Activity,ArrowRight,CalendarDays,Check,Dumbbell,ExternalLink,History,Info,LockKeyhole,Save,Target,Trash2,TrendingUp,Trophy} from 'lucide-react'
-import {Area,AreaChart,CartesianGrid,ResponsiveContainer,Tooltip,XAxis,YAxis} from 'recharts'
+import {Activity,ArrowRight,CalendarDays,Check,Dumbbell,ExternalLink,History,Info,LockKeyhole,Save,Target,Trash2,TrendingDown,TrendingUp,Trophy} from 'lucide-react'
+import {Area,AreaChart,CartesianGrid,ReferenceLine,ResponsiveContainer,Tooltip,XAxis,YAxis} from 'recharts'
 import {clubeSupabase as supabase} from './clubeSupabase.js'
 import {NPV_HOTMART_TRAINING_URL} from '../clube/hotmart/trainingAccess.mjs'
 import {
@@ -78,6 +78,24 @@ export default function ClubeStudentTraining({session}){
   const chart=useMemo(()=>isGeneral
     ?trainingGeneralChartData(entries,catalogSlugs)
     :trainingChartData(entries,actualExercise),[entries,actualExercise,isGeneral,catalogSlugs])
+
+  // A referência visual é sempre o primeiro registro real do filtro atual.
+  // O verde representa valores acima do início e o vermelho, abaixo dele.
+  // Nunca alteramos a média, o histórico nem os registros salvos.
+  const chartTone=useMemo(()=>{
+    const initial=Number(history.initial?.load_kg??0)
+    const values=chart.map(point=>Number(point.carga)).filter(Number.isFinite)
+    const lowest=Math.min(initial,...values)
+    const highest=Math.max(initial,...values)
+    const span=highest-lowest
+    const cutPercent=span===0?100:Math.min(100,Math.max(0,(highest-initial)/span*100))
+    const padding=Math.max(2,span*.18)
+    return {
+      initial,
+      cutPercent,
+      yDomain:[Math.max(0,Number((lowest-padding).toFixed(2))),Number((highest+padding).toFixed(2))]
+    }
+  },[history.initial,chart])
   const saveableSlugs=trainingSaveableSlugs(dirtyExercises,entries,recordDate)
   const dirtyCount=saveableSlugs.length
 
@@ -210,35 +228,60 @@ export default function ClubeStudentTraining({session}){
               <span>{isGeneral?'MÉDIA ATUAL':'CARGA ATUAL'}</span>
               <strong>{formatTrainingLoad(history.latest?.load_kg)}</strong>
             </div>
-            <span className={'npv-training-chart-growth'+(history.changeKg>0?' is-positive':'')}>
-              <TrendingUp size={15}/>
+            <span className={'npv-training-chart-growth'+(history.changeKg>0?' is-positive':history.changeKg<0?' is-negative':'')}>
+              {history.changeKg<0?<TrendingDown size={15}/>:<TrendingUp size={15}/>}
               {history.rows.length>1?showChange(history.changePercent):'Primeiro registro'}
             </span>
           </div>
-          <div className="npv-training-chart" role="img" aria-label={isGeneral?'Gráfico geral da média das cargas registradas, em quilogramas':'Gráfico da evolução em quilogramas para '+selectedName}>
+
+          <div className="npv-training-chart" role="img"
+            aria-label={isGeneral?'Evolução geral da média das cargas. Verde acima e vermelho abaixo da média inicial.':'Evolução da carga em '+selectedName+'. Verde acima e vermelho abaixo da carga inicial.'}>
             <ResponsiveContainer width="100%" height={216}>
-              <AreaChart data={chart} margin={{top:17,right:12,left:-24,bottom:0}}>
+              <AreaChart data={chart} margin={{top:18,right:11,left:-24,bottom:0}}>
                 <defs>
                   <linearGradient id="npv-training-area-fill" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#4baa73" stopOpacity={0.36}/>
-                    <stop offset="80%" stopColor="#79c596" stopOpacity={0.06}/>
-                    <stop offset="100%" stopColor="#ffffff" stopOpacity={0}/>
+                    <stop offset="0%" stopColor="#24e87d" stopOpacity={0.58}/>
+                    <stop offset={chartTone.cutPercent+'%'} stopColor="#27c879" stopOpacity={0.30}/>
+                    <stop offset={chartTone.cutPercent+'%'} stopColor="#e84357" stopOpacity={0.30}/>
+                    <stop offset="100%" stopColor="#fa435d" stopOpacity={0.56}/>
+                  </linearGradient>
+                  <linearGradient id="npv-training-line-tone" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#35ff90"/>
+                    <stop offset={chartTone.cutPercent+'%'} stopColor="#35ff90"/>
+                    <stop offset={chartTone.cutPercent+'%'} stopColor="#ff536a"/>
+                    <stop offset="100%" stopColor="#ff536a"/>
                   </linearGradient>
                 </defs>
-                <CartesianGrid stroke="#dfeae3" strokeDasharray="2 7" vertical={false}/>
+                <CartesianGrid stroke="#335247" strokeOpacity={0.52} strokeDasharray="2 7" vertical={false}/>
                 <XAxis dataKey="label" tickLine={false} axisLine={false}
                   minTickGap={26} interval="preserveStartEnd"
-                  tick={{fontSize:11,fill:'#688574'}}/>
-                <YAxis domain={[0,'auto']} tickLine={false} axisLine={false}
-                  tick={{fontSize:10,fill:'#8a9e91'}} width={49}/>
-                <Tooltip cursor={{stroke:'#a5c99a',strokeDasharray:'3 5'}}
-                  contentStyle={{borderRadius:12,border:'1px solid #dce9df',boxShadow:'0 12px 24px rgba(17,71,36,.12)',fontSize:12}}
+                  tick={{fontSize:11,fill:'#a4c7b5'}}/>
+                <YAxis domain={chartTone.yDomain} tickLine={false} axisLine={false}
+                  allowDataOverflow={false}
+                  tick={{fontSize:10,fill:'#9cb9a9'}} width={49}/>
+                <Tooltip cursor={{stroke:'#83c9a3',strokeDasharray:'3 5'}}
+                  contentStyle={{borderRadius:12,background:'#17352a',color:'#f5fff7',border:'1px solid #3e6951',boxShadow:'0 12px 24px rgba(3,15,9,.3)',fontSize:12}}
+                  itemStyle={{color:'#effff3'}}
+                  labelStyle={{color:'#a9d8bb'}}
                   formatter={value=>[formatTrainingLoad(value),isGeneral?'Média das cargas':'Carga']}
                   labelFormatter={(label,payload)=>payload?.[0]?.payload?.fullDate||label}/>
-                <Area type="monotone" dataKey="carga" stroke="#277b50" strokeWidth={3.5}
+                <ReferenceLine y={chartTone.initial} stroke="#98bea5"
+                  strokeOpacity={0.68} strokeDasharray="4 6" ifOverflow="extendDomain"/>
+                <Area type="linear" dataKey="carga" baseValue={chartTone.initial}
+                  stroke="url(#npv-training-line-tone)" strokeWidth={3.5}
                   fill="url(#npv-training-area-fill)"
-                  dot={{r:3.5,stroke:'#267a4f',strokeWidth:2,fill:'#fff'}}
-                  activeDot={{r:6,stroke:'#236d46',strokeWidth:2,fill:'#fff'}}
+                  dot={chart.length<=24?props=>{
+                    if(!Number.isFinite(props.cx)||!Number.isFinite(props.cy))return null
+                    const down=Number(props.payload?.carga)<chartTone.initial
+                    return <circle key={'npv-chart-point-'+props.index} cx={props.cx} cy={props.cy}
+                      r={3.3} fill="#11291e" stroke={down?'#ff536a':'#35ff90'} strokeWidth={2}/>
+                  }:false}
+                  activeDot={props=>{
+                    if(!Number.isFinite(props.cx)||!Number.isFinite(props.cy))return null
+                    const down=Number(props.payload?.carga)<chartTone.initial
+                    return <circle key="npv-chart-active" cx={props.cx} cy={props.cy}
+                      r={6} fill="#10291e" stroke={down?'#ff536a':'#35ff90'} strokeWidth={2.6}/>
+                  }}
                   isAnimationActive={false}/>
               </AreaChart>
             </ResponsiveContainer>
